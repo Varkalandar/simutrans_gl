@@ -187,7 +187,7 @@ static int display_gadget_box(sint8 code,
 	if(  img != NULL  ) {
 
 		// Max Kielland: This center the gadget image and compensates for any left/top margins within the image to be backward compatible with older PAK sets.
-		display_img_aligned(img->imageid, scr_rect(x, y, D_GADGET_WIDTH, D_TITLEBAR_HEIGHT), ALIGN_CENTER_H | ALIGN_CENTER_V, false);
+		display_img_aligned(img->imageid, scr_rect(x, y, D_GADGET_WIDTH, D_TITLEBAR_HEIGHT), ALIGN_CENTER_H | ALIGN_CENTER_V, 0, false);
 
 	}
 	else {
@@ -322,23 +322,45 @@ static void win_draw_window_title(const scr_coord pos, const scr_size size,
 		const uint16 gadget_state,
 		const bool sticky,
 		const bool goto_pushed,
-		simwin_gadget_flags_t &flags )
+		simwin_gadget_flags_t &flags,
+	    const bool is_player)
 {
 	PUSH_CLIP_FIT(pos.x, pos.y, size.w, size.h);
 
-	PIXVAL lighter = display_blend_colors(title_color, color_idx_to_rgb(COL_WHITE), 25);
-	PIXVAL darker  = display_blend_colors(title_color, color_idx_to_rgb(COL_BLACK), 25);
+	const PIXVAL color = title_color & 0xFFFF;
+	PIXVAL lighter, darker;
 
-	// fill title bar with color
-	display_fillbox_wh_clip_rgb(pos.x, pos.y, size.w, D_TITLEBAR_HEIGHT, title_color, true);
+	// Hajo: use themed title bars?
+	if(skinverwaltung_t::title_bar) {
+		const scr_rect area(pos.x, pos.y, size.w, D_TITLEBAR_HEIGHT);
 
-	// border of title bar
-	display_fillbox_wh_clip_rgb( pos.x + 1, pos.y,                         size.w - 2, 1, lighter, false ); // top
-	display_fillbox_wh_clip_rgb( pos.x + 1, pos.y + D_TITLEBAR_HEIGHT - 1, size.w - 2, 1, darker,  false ); // bottom
+		// Hajo: trickery - player no. is in bits 16 to 23, color is in bits 0 to 15
+		const int pn = (title_color >> 16) & 0x7F;
+		
+		// Hajo: calculate real shading
+		lighter = display_blend_colors(color, color_idx_to_rgb(COL_WHITE), 25);
+		darker  = display_blend_colors(color, color_idx_to_rgb(COL_BLACK), 25);
 
-	display_vline_wh_clip_rgb( pos.x,              pos.y, D_TITLEBAR_HEIGHT, lighter, false ); // left
-	display_vline_wh_clip_rgb( pos.x + size.w - 1, pos.y, D_TITLEBAR_HEIGHT, darker,  false ); // right
+		if(is_player) {
+			display_img_stretch(gui_theme_t::gui_title_bar_player, area, pn);
+		} else {
+			display_img_stretch(gui_theme_t::gui_title_bar, area, 0);
+		}
+	} else {
+		lighter = display_blend_colors(color, color_idx_to_rgb(COL_WHITE), 25);
+		darker  = display_blend_colors(color, color_idx_to_rgb(COL_BLACK), 25);
 
+		// fill title bar with color
+		display_fillbox_wh_clip_rgb(pos.x, pos.y, size.w, D_TITLEBAR_HEIGHT, color, true);
+
+		// border of title bar
+		display_fillbox_wh_clip_rgb( pos.x + 1, pos.y,                         size.w - 2, 1, lighter, false ); // top
+		display_fillbox_wh_clip_rgb( pos.x + 1, pos.y + D_TITLEBAR_HEIGHT - 1, size.w - 2, 1, darker,  false ); // bottom
+
+		display_vline_wh_clip_rgb( pos.x,              pos.y, D_TITLEBAR_HEIGHT, lighter, false ); // left
+		display_vline_wh_clip_rgb( pos.x + size.w - 1, pos.y, D_TITLEBAR_HEIGHT, darker,  false ); // right
+	}
+        
 	// Draw the gadgets and then move left and draw text.
 	flags.gotopos = (welt_pos != koord3d::invalid);
 	int width = display_gadget_boxes( &flags, pos.x+(REVERSE_GADGETS?0:size.w-D_GADGET_WIDTH), pos.y, lighter, darker, gadget_state, sticky, goto_pushed );
@@ -1096,11 +1118,15 @@ void display_win(int win)
 	// minimising flag if resize allowed
 	wins[win].flags.size = (comp->get_resizemode() != 0);
 	scr_coord pos = wins[win].pos;
-	FLAGGED_PIXVAL title_color = (comp->get_titlecolor()&0xFFFF);
+	FLAGGED_PIXVAL title_color = comp->get_titlecolor();
 	FLAGGED_PIXVAL text_color = env_t::front_window_text_color;
-	if(  (unsigned)win!=wins.get_count()-1  ) {
+	bool is_player = title_color & PLAYER_FLAG;
+	
+	if((unsigned)win!=wins.get_count()-1  ) {
 		// not top => darker
-		title_color = display_blend_colors(title_color, color_idx_to_rgb(COL_BLACK), env_t::bottom_window_darkness);
+		FLAGGED_PIXVAL special_bits = title_color & 0xFFFF0000;
+		title_color = display_blend_colors(title_color & 0xFFFF, color_idx_to_rgb(COL_BLACK), env_t::bottom_window_darkness);
+		title_color |= special_bits;
 		text_color = env_t::bottom_window_text_color;
 	}
 	bool need_dragger = comp->get_resizemode() != gui_frame_t::no_resize;
@@ -1117,7 +1143,8 @@ void display_win(int win)
 				wins[win].gadget_state,
 				wins[win].sticky,
 				comp->is_weltpos(),
-				wins[win].flags );
+				wins[win].flags,
+			    is_player);
 	}
 	if(  wins[win].dirty  ) {
 		// not sure this is still a useful call
@@ -1776,7 +1803,7 @@ void win_display_flush(double konto)
 		display_fit_img_to_width( back_img, env_t::iconsize.w );
 
 		stretch_map_t imag = { {IMG_EMPTY, IMG_EMPTY, IMG_EMPTY}, {IMG_EMPTY, back_img, IMG_EMPTY}, {IMG_EMPTY, IMG_EMPTY, IMG_EMPTY} };
-		display_img_stretch(imag, scr_rect(menu_pos, menu_size));
+		display_img_stretch(imag, scr_rect(menu_pos, menu_size), 0);
 	}
 	else {
 		display_fillbox_wh_rgb( menu_pos.x, menu_pos.y, menu_size.w, menu_size.h, color_idx_to_rgb(MN_GREY2), false );
@@ -1803,7 +1830,7 @@ void win_display_flush(double konto)
 	}
 
 	if(  skinverwaltung_t::compass_iso  &&  env_t::compass_screen_position  ) {
-		display_img_aligned( skinverwaltung_t::compass_iso->get_image_id( wl->get_settings().get_rotation() ), scr_rect(D_MARGIN_LEFT, env_t::iconsize.h+D_MARGIN_TOP,disp_width-2*4,disp_height- env_t::iconsize.h -D_MARGIN_TOP-D_MARGIN_BOTTOM-win_get_statusbar_height()-(TICKER_HEIGHT)*show_ticker), env_t::compass_screen_position, false );
+		display_img_aligned(skinverwaltung_t::compass_iso->get_image_id( wl->get_settings().get_rotation() ), scr_rect(D_MARGIN_LEFT, env_t::iconsize.h+D_MARGIN_TOP,disp_width-2*4,disp_height- env_t::iconsize.h -D_MARGIN_TOP-D_MARGIN_BOTTOM-win_get_statusbar_height()-(TICKER_HEIGHT)*show_ticker), env_t::compass_screen_position, 0, false);
 	}
 
 	{

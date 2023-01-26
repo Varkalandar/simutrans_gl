@@ -1,7 +1,7 @@
 ﻿You can put your own music files here. Edit music.tab to list them and Simutrans will read and play them.
 
-
 Credits:
+
 ---|---------------------------------|----------------|-----------------|
 Nº | Title                           | Composer       | Arranger(s)     |
 ---|---------------------------------|----------------|-----------------|
@@ -60,4 +60,3 @@ Nº | Title                           | Composer       | Arranger(s)     |
 53 | Where Thomassons Lie            | Shingoushori   | -               |
 ---|---------------------------------|----------------|-----------------|
 
-Musical Project Leader from songs 43 to 53: Reti_N.

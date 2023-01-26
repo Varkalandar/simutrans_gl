@@ -33,7 +33,6 @@ gui_tab_panel_t::gui_tab_panel_t() :
 }
 
 
-
 void gui_tab_panel_t::add_tab(gui_component_t *c, const char *name, const skin_desc_t *desc, const char *tooltip )
 {
 	tabs.append( tab(c, desc?NULL:name, desc?desc->get_image(0):NULL, tooltip) );
@@ -42,8 +41,6 @@ void gui_tab_panel_t::add_tab(gui_component_t *c, const char *name, const skin_d
 		set_size( get_size() );
 	}
 }
-
-
 
 
 void gui_tab_panel_t::set_size(scr_size size)
@@ -216,7 +213,6 @@ bool gui_tab_panel_t::infowin_event(const event_t *ev)
 	}
 	return false;
 }
-
 
 
 void gui_tab_panel_t::draw(scr_coord parent_pos)

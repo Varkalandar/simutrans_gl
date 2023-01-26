@@ -26,7 +26,7 @@
 #include "simwin.h"
 
 // display text label in player colors
-void display_text_label(sint16 xpos, sint16 ypos, const char* text, const player_t *player, bool dirty); // grund.cc
+void display_text_label(sint16 xpos, sint16 ypos, const char* text, const player_t *player, char flag, bool dirty); // grund.cc
 
 enum {
 	IDBTN_SCROLL_INVERSE,
@@ -71,7 +71,7 @@ public:
 		const player_t* player = welt->get_active_player();
 		const char *text = get_text_pointer();
 
-		display_text_label(p.x, p.y, text, player, true);
+		display_text_label(p.x, p.y, text, player, 'H', true);
 	}
 
 	scr_size get_min_size() const OVERRIDE
@@ -657,18 +657,29 @@ bool color_gui_t::action_triggered( gui_action_creator_t *comp, value_t)
 		grund_t::toggle_grid();
 		break;
 	case IDBTN_SHOW_STATION_NAMES_ARROW:
-		if( env_t::show_names & 1 ) {
-			if( (env_t::show_names >> 2) == 2 ) {
-				env_t::show_names &= 2;
-			}
-			else {
-				env_t::show_names += 4;
-			}
-		}
-		else {
-			env_t::show_names &= 2;
-			env_t::show_names |= 1;
-		}
+                
+                // Hajo: first check the "show" bit ... do we show names at all?                
+                if(env_t::show_names & 1) {
+                        // Yes ... so cycle the styles
+                        
+                        int style = env_t::show_names >> 2;
+                        style ++;
+                        
+                        // if we reach the end of the cycle, we must also 
+                        // turn off showing the names
+                        int limit = 3 + (skinverwaltung_t::display_text_label != 0);
+                        if(style >= limit) {
+                                style = 0;
+                                env_t::show_names &= 2;
+                        }
+                        
+                        env_t::show_names &= 0xFFF3;
+                        env_t::show_names |= (style << 2);    
+                } else {
+                        // name display was off. Now turn it on with style 0
+                        env_t::show_names |= 1;
+                }
+                                        
 		break;
 	case IDBTN_SHOW_WAITING_BARS:
 		env_t::show_names ^= 2;

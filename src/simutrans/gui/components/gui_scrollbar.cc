@@ -254,7 +254,7 @@ void scrollbar_t::draw(scr_coord pos_par)
 	// Draw place holder if scrollbar is full in auto mode
 	if ( visible_mode == show_auto  &&  full  ) {
 		// Draw place holder themed with scrollbar background
-		display_img_stretch( gui_theme_t::v_scroll_back_tiles, scr_rect( pos_par, size ) );
+		display_img_stretch( gui_theme_t::v_scroll_back_tiles, scr_rect( pos_par, size ), 0 );
 		return;
 	}
 
@@ -264,11 +264,11 @@ void scrollbar_t::draw(scr_coord pos_par)
 
 	// now background and slider
 	if(  type == vertical  ) {
-		display_img_stretch( gui_theme_t::v_scroll_back_tiles, scr_rect( pos_par + sliderarea.get_pos(), sliderarea.get_size() ) );
-		display_img_stretch( gui_theme_t::v_scroll_knob_tiles, scr_rect( pos_par + knobarea.get_pos(), knobarea.get_size() ) );
+		display_img_stretch( gui_theme_t::v_scroll_back_tiles, scr_rect( pos_par + sliderarea.get_pos(), sliderarea.get_size() ), 0 );
+		display_img_stretch( gui_theme_t::v_scroll_knob_tiles, scr_rect( pos_par + knobarea.get_pos(), knobarea.get_size() ), 0 );
 	}
 	else {
-		display_img_stretch( gui_theme_t::h_scroll_back_tiles, scr_rect( pos_par + sliderarea.get_pos(), sliderarea.get_size() ) );
-		display_img_stretch( gui_theme_t::h_scroll_knob_tiles, scr_rect( pos_par + knobarea.get_pos(), knobarea.get_size() ) );
+		display_img_stretch( gui_theme_t::h_scroll_back_tiles, scr_rect( pos_par + sliderarea.get_pos(), sliderarea.get_size() ), 0 );
+		display_img_stretch( gui_theme_t::h_scroll_knob_tiles, scr_rect( pos_par + knobarea.get_pos(), knobarea.get_size() ), 0 );
 	}
 }

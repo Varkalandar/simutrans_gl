@@ -459,6 +459,236 @@ uint8 display_night_lights[LIGHT_COUNT*3] = {
 
 // the players colors and colors for simple drawing operations
 // each three values correspond to a color, each 8 colors are a player color
+/*
+static const uint8 special_pal[SPECIAL_COLOR_COUNT*3] =
+{
+0, 0, 0,
+57, 94, 124,
+76, 113, 145,
+96, 132, 167,
+116, 151, 189,
+136, 171, 211,
+156, 190, 233,
+176, 210, 255,
+88, 88, 88,
+107, 107, 107,
+125, 125, 125,
+144, 144, 144,
+162, 162, 162,
+181, 181, 181,
+200, 200, 200,
+219, 219, 219,
+107, 0, 52,
+127, 18, 69,
+148, 37, 86,
+169, 56, 103,
+190, 75, 120,
+211, 94, 137,
+232, 113, 154,
+253, 132, 171,
+97, 16, 3,
+117, 34, 18,
+138, 52, 33,
+159, 70, 48,
+180, 89, 63,
+201, 107, 78,
+222, 125, 93,
+243, 144, 109,
+62, 48, 0,
+80, 65, 10,
+99, 83, 21,
+118, 100, 32,
+136, 118, 43,
+155, 135, 54,
+174, 153, 65,
+193, 171, 76,
+0, 59, 0,
+17, 77, 14,
+34, 95, 29,
+51, 113, 44,
+68, 132, 59,
+85, 150, 74,
+102, 168, 89,
+119, 187, 104,
+0, 64, 48,
+0, 82, 65,
+0, 101, 82,
+0, 120, 99,
+0, 138, 117,
+0, 157, 134,
+0, 176, 151,
+0, 195, 169,
+0, 62, 100,
+0, 80, 119,
+0, 98, 138,
+0, 117, 157,
+0, 135, 177,
+0, 154, 196,
+0, 172, 215,
+0, 191, 235,
+0, 52, 124,
+16, 69, 142,
+33, 87, 161,
+50, 104, 180,
+66, 122, 198,
+83, 139, 217,
+100, 157, 236,
+117, 175, 255,
+77, 22, 101,
+96, 40, 120,
+115, 58, 139,
+134, 76, 159,
+153, 94, 178,
+172, 112, 198,
+191, 130, 217,
+211, 148, 237,
+20, 48, 10,
+44, 74, 28,
+68, 99, 45,
+93, 124, 62,
+118, 149, 79,
+143, 174, 96,
+168, 199, 113,
+193, 225, 130,
+54, 19, 29,
+82, 44, 44,
+110, 69, 58,
+139, 95, 72,
+168, 121, 86,
+197, 147, 101,
+226, 173, 115,
+255, 199, 130,
+8, 11, 100,
+14, 22, 116,
+20, 33, 139,
+26, 44, 162,
+41, 74, 185,
+57, 104, 208,
+76, 132, 231,
+96, 160, 255,
+43, 30, 46,
+68, 50, 85,
+93, 70, 110,
+118, 91, 130,
+143, 111, 170,
+168, 132, 190,
+193, 153, 210,
+219, 174, 230,
+63, 18, 12,
+90, 38, 30,
+117, 58, 42,
+145, 78, 55,
+172, 98, 67,
+200, 118, 80,
+227, 138, 92,
+255, 159, 105,
+11, 68, 30,
+33, 94, 56,
+54, 120, 81,
+76, 147, 106,
+98, 174, 131,
+120, 201, 156,
+142, 228, 181,
+164, 255, 207,
+64, 0, 0,
+96, 0, 0,
+128, 0, 0,
+192, 0, 0,
+255, 0, 0,
+255, 64, 64,
+255, 96, 96,
+255, 128, 128,
+0, 128, 0,
+0, 196, 0,
+0, 225, 0,
+0, 240, 0,
+0, 255, 0,
+64, 255, 64,
+94, 255, 94,
+128, 255, 128,
+0, 0, 128,
+0, 0, 192,
+0, 0, 224,
+0, 0, 255,
+0, 64, 255,
+0, 94, 255,
+0, 106, 255,
+0, 128, 255,
+128, 64, 0,
+193, 97, 0,
+215, 107, 0,
+235, 118, 0,
+255, 128, 0,
+255, 149, 43,
+255, 170, 85,
+255, 193, 132,
+8, 52, 0,
+16, 64, 0,
+32, 80, 4,
+48, 96, 4,
+64, 112, 12,
+84, 132, 20,
+104, 148, 28,
+128, 168, 44,
+164, 164, 0,
+180, 180, 0,
+193, 193, 0,
+215, 215, 0,
+235, 235, 0,
+255, 255, 0,
+255, 255, 64,
+255, 255, 128,
+32, 4, 0,
+64, 20, 8,
+84, 28, 16,
+108, 44, 28,
+128, 56, 40,
+148, 72, 56,
+168, 92, 76,
+184, 108, 88,
+64, 0, 0,
+96, 8, 0,
+112, 16, 0,
+120, 32, 8,
+138, 64, 16,
+156, 72, 32,
+174, 96, 48,
+192, 128, 64,
+32, 32, 0,
+64, 64, 0,
+96, 96, 0,
+128, 128, 0,
+144, 144, 0,
+172, 172, 0,
+192, 192, 0,
+224, 224, 0,
+64, 96, 8,
+80, 108, 32,
+96, 120, 48,
+112, 144, 56,
+128, 172, 64,
+150, 210, 68,
+172, 238, 80,
+192, 255, 96,
+32, 32, 32,
+48, 48, 48,
+64, 64, 64,
+80, 80, 80,
+96, 96, 96,
+172, 172, 172,
+236, 236, 236,
+255, 255, 255,
+41, 41, 54,
+60, 45, 70,
+75, 62, 108,
+95, 77, 136,
+113, 105, 150,
+135, 120, 176,
+165, 145, 218,
+198, 191, 232,
+};
+*/
+
 static const uint8 special_pal[SPECIAL_COLOR_COUNT*3] =
 {
 	36, 75, 103,
@@ -2618,7 +2848,7 @@ static void display_img_nc(scr_coord_val h, const scr_coord_val xp, const scr_co
 
 
 // only used for GUI
-void display_img_aligned( const image_id n, scr_rect area, int align, const bool dirty)
+void display_img_aligned(const image_id n, scr_rect area, int align, sint8 player_nr_raw, const bool dirty)
 {
 	if(  n < anz_images  ) {
 		scr_coord_val x,y;
@@ -2643,7 +2873,7 @@ void display_img_aligned( const image_id n, scr_rect area, int align, const bool
 			y = area.get_bottom() - images[n].y - images[n].h;
 		}
 
-		display_color_img( n, x, y, 0, false, dirty  CLIP_NUM_DEFAULT);
+		display_color_img( n, x, y, player_nr_raw, false, dirty  CLIP_NUM_DEFAULT);
 	}
 }
 
@@ -2758,18 +2988,18 @@ void display_img_aux(const image_id n, scr_coord_val xp, scr_coord_val yp, const
 
 
 // local helper function for tiles buttons
-static void display_three_image_row( image_id i1, image_id i2, image_id i3, scr_rect row, FLAGGED_PIXVAL)
+static void display_three_image_row( image_id i1, image_id i2, image_id i3, scr_rect row, FLAGGED_PIXVAL color)
 {
 	if(  i1!=IMG_EMPTY  ) {
 		scr_coord_val w = images[i1].w;
-		display_color_img( i1, row.x, row.y, 0, false, true  CLIP_NUM_DEFAULT);
+		display_color_img( i1, row.x, row.y, color, false, true  CLIP_NUM_DEFAULT);
 		row.x += w;
 		row.w -= w;
 	}
 	// right
 	if(  i3!=IMG_EMPTY  ) {
 		scr_coord_val w = images[i3].w;
-		display_color_img( i3, row.get_right()-w, row.y, 0, false, true  CLIP_NUM_DEFAULT);
+		display_color_img( i3, row.get_right()-w, row.y, color, false, true  CLIP_NUM_DEFAULT);
 		row.w -= w;
 	}
 	// middle
@@ -2777,7 +3007,7 @@ static void display_three_image_row( image_id i1, image_id i2, image_id i3, scr_
 		scr_coord_val w = images[i2].w;
 		// tile it wide
 		while(  w <= row.w  ) {
-			display_color_img( i2, row.x, row.y, 0, false, true  CLIP_NUM_DEFAULT);
+			display_color_img( i2, row.x, row.y, color, false, true  CLIP_NUM_DEFAULT);
 			row.x += w;
 			row.w -= w;
 		}
@@ -2785,7 +3015,7 @@ static void display_three_image_row( image_id i1, image_id i2, image_id i3, scr_
 		if(  row.w > 0  ) {
 			clip_dimension const cl = display_get_clip_wh();
 			display_set_clip_wh( cl.x, cl.y, max(0,min(row.get_right(),cl.xx)-cl.x), cl.h );
-			display_color_img( i2, row.x, row.y, 0, false, true  CLIP_NUM_DEFAULT);
+			display_color_img( i2, row.x, row.y, color, false, true  CLIP_NUM_DEFAULT);
 			display_set_clip_wh(cl.x, cl.y, cl.w, cl.h );
 		}
 	}
@@ -2856,9 +3086,9 @@ static void display_img_stretch_intern( const stretch_map_t &imag, scr_rect area
 	}
 }
 
-void display_img_stretch( const stretch_map_t &imag, scr_rect area)
+void display_img_stretch( const stretch_map_t &imag, scr_rect area, FLAGGED_PIXVAL color )
 {
-	display_img_stretch_intern(imag, area, display_three_image_row, 0);
+	display_img_stretch_intern(imag, area, display_three_image_row, color);
 }
 
 static void display_three_blend_row( image_id i1, image_id i2, image_id i3, scr_rect row, FLAGGED_PIXVAL color )

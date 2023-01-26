@@ -531,7 +531,7 @@ void gui_textinput_t::display_with_focus(scr_coord offset, bool has_focus)
 
 void gui_textinput_t::display_with_cursor(scr_coord offset, bool cursor_active, bool cursor_visible)
 {
-	display_img_stretch( gui_theme_t::editfield, scr_rect( pos+offset, size ) );
+	display_img_stretch(gui_theme_t::editfield, scr_rect( pos+offset, size ), 0);
 
 	if(  text  ) {
 		// recalculate scroll offset
@@ -669,7 +669,7 @@ bool gui_hidden_textinput_t::infowin_event(const event_t *ev)
 
 void gui_hidden_textinput_t::display_with_cursor(scr_coord const offset, bool, bool const cursor_visible)
 {
-	display_img_stretch( gui_theme_t::editfield, scr_rect( pos+offset, size ) );
+	display_img_stretch(gui_theme_t::editfield, scr_rect( pos+offset, size ), 0);
 
 	if(  text  ) {
 		// the text will be all asterisk, thus we draw them letter by letter

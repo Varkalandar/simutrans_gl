@@ -96,7 +96,17 @@ void gui_frame_t::reset_min_windowsize()
  */
 FLAGGED_PIXVAL gui_frame_t::get_titlecolor() const
 {
-	return owner ? PLAYER_FLAG|color_idx_to_rgb(owner->get_player_color1()+env_t::gui_player_color_dark) : env_t::default_window_title_color;
+	if(skinverwaltung_t::title_bar) {
+		// Hajo: we have themed title bars, combine the color values into one 32 bit number
+		FLAGGED_PIXVAL color = env_t::default_window_title_color;
+		if(owner) {
+			color |= PLAYER_FLAG | (owner->get_player_nr() << 16);
+		}
+		return color; 
+	} else {
+		// Hajo: use traditional bar colors
+		return owner ? PLAYER_FLAG | color_idx_to_rgb(owner->get_player_color1()+env_t::gui_player_color_dark) : env_t::default_window_title_color;
+	}
 }
 
 
@@ -168,7 +178,7 @@ void gui_frame_t::draw(scr_coord pos, scr_size size)
 	scr_size titlebar_size(0, ( has_title()*D_TITLEBAR_HEIGHT ));
 	// draw background
 	if(  opaque  ) {
-		display_img_stretch( gui_theme_t::windowback, scr_rect( pos + titlebar_size, size - titlebar_size ) );
+		display_img_stretch(gui_theme_t::windowback, scr_rect( pos + titlebar_size, size - titlebar_size ), 0);
 		if(  dirty  ) {
 			mark_rect_dirty_wc(pos.x, pos.y, pos.x + size.w, pos.y + titlebar_size.h );
 		}

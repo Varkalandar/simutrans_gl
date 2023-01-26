@@ -898,6 +898,7 @@ void ground_desc_t::init_ground_textures(karte_t *world)
 				alpha_corners_image[dslope * 15 + corners - 1] = final_tile->get_id();
 
 				double_corners = corners == 15 ? 80 : slope_from_slope4(slope4_t(15-corners), 1);
+
 				if(  all_rotations_beach[double_corners]  ) {
 					final_tile = create_alpha_tile( light_map->get_image_ptr( slope ), dslope, all_rotations_beach[double_corners] );
 					alpha_water_image[dslope * 15 + corners - 1] = final_tile->get_id();

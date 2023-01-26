@@ -20,7 +20,7 @@ char curiositylist_frame_t::name_filter[256];
 
 const char* sort_text[curiositylist::SORT_MODES] = {
 	"hl_btn_sort_name",
-	"Passagierrate"
+	"Passagierrate",
 };
 
 
@@ -37,30 +37,32 @@ curiositylist_frame_t::curiositylist_frame_t() :
 	attraction_count = 0;
 
 	set_table_layout(1,0);
-	add_table(3, 3);
+	add_table(2, 4);
 	{
 		new_component<gui_label_t>("Filter:");
 		name_filter_input.set_text(name_filter, lengthof(name_filter));
 		add_component(&name_filter_input);
-		new_component<gui_fill_t>();
+		// new_component<gui_fill_t>();
 
-		filter_by_owner.init(button_t::square_automatic, "Served by");
-		filter_by_owner.add_listener(this);
-		filter_by_owner.set_tooltip("At least one tile is connected to one stop.");
-		add_component(&filter_by_owner);
+                new_component<gui_label_t>("Show served by:");
 
-		filterowner.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("No player"), SYSCOL_TEXT);
+		filterowner.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("Anyone"), SYSCOL_TEXT);
+		filterowner.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("No one"), SYSCOL_TEXT);
 		for (int i = 0; i < MAX_PLAYER_COUNT; i++) {
 			if (player_t* pl = welt->get_player(i)) {
 				filterowner.new_component<playername_const_scroll_item_t>(pl);
+                                /*
 				if (pl == welt->get_active_player()) {
 					filterowner.set_selection(filterowner.count_elements() - 1);
 				}
+                                */
 			}
 		}
+                filterowner.set_selection(0);
 		filterowner.add_listener(this);
 		add_component(&filterowner);
-		new_component<gui_fill_t>();
+
+		// new_component<gui_fill_t>();
 
 		new_component<gui_label_t>("hl_txt_sort");
 		sortedby.set_unsorted(); // do not sort
@@ -76,7 +78,7 @@ curiositylist_frame_t::curiositylist_frame_t() :
 		sorteddir.pressed = curiositylist_stats_t::sortby;
 		add_component(&sorteddir);
 
-		new_component<gui_fill_t>();
+		// new_component<gui_fill_t>();
 	}
 	end_table();
 
@@ -94,9 +96,23 @@ void curiositylist_frame_t::fill_list()
 	scrolly.clear_elements();
 	const weighted_vector_tpl<gebaeude_t*>& world_attractions = welt->get_attractions();
 	attraction_count = world_attractions.get_count();
-	player_t* pl = (filter_by_owner.pressed && filterowner.get_selection() >= 0) ? welt->get_player(((const playername_const_scroll_item_t*)(filterowner.get_selected_item()))->player_nr) : NULL;
+	player_t* pl = (filterowner.get_selection() >= 0) ? welt->get_player(((const playername_const_scroll_item_t*)(filterowner.get_selected_item()))->player_nr) : NULL;
 
-	if (filter_by_owner.pressed && filterowner.get_selection() == 0) {
+        // Hajo: This is the "show all" case
+	if (filterowner.get_selection() == 0) {
+		for(gebaeude_t* const geb : world_attractions) {
+			if (geb != NULL &&
+				geb->get_first_tile() == geb &&
+				geb->get_passagier_level() != 0) {
+				bool add = (name_filter[0] == 0 || utf8caseutf8(translator::translate(geb->get_tile()->get_desc()->get_name()), name_filter));
+				if (add) {
+					scrolly.new_component<curiositylist_stats_t>(geb);
+				}
+			}
+		}
+        }
+        // Hajo: This is the "No one" case
+	else if (filterowner.get_selection() == 1) {
 		for(gebaeude_t* const geb : world_attractions) {
 			if (geb != NULL &&
 				geb->get_first_tile() == geb &&
@@ -150,14 +166,9 @@ bool curiositylist_frame_t::action_triggered( gui_action_creator_t *comp,value_t
 		sorteddir.pressed = curiositylist_stats_t::sortreverse;
 		scrolly.sort(0);
 	}
-	else if(comp == &filterowner) {
-		if(  filter_by_owner.pressed ) {
-			fill_list();
-		}
-	}
-	else if( comp == &filter_by_owner ) {
-		fill_list();
-	}
+        else {
+                fill_list();
+        }
 	return true;
 }
 

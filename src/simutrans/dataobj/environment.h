@@ -352,7 +352,11 @@ public:
 	 * Show labels (city and station names, ...)
 	 * and waiting indicator bar for stations
 	 * @see grund_t::display_overlay
-	 */
+	 * Hajo: Identified flags:
+         * 1 = Show names at all
+         * 2 = Show waiting bars
+         * 4, 8, 12, 16 = Show name options 
+         */
 	static sint32 show_names;
 
 	/// Show factory storage bar
