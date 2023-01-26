@@ -142,8 +142,6 @@ static inline slope_t::type slope_from_slope4(slope4_t sl, sint8 pak_height_fact
 						  scorner_ne(sl) * pak_height_factor,
 						  scorner_nw(sl) * pak_height_factor);
 }
-
-
 /**
  * Directions in simutrans.
  * ribi_t = Richtungs-Bit = Directions-Bitfield
