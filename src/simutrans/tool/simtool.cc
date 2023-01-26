@@ -7049,7 +7049,7 @@ void tool_rotate90_t::draw_after(scr_coord pos, bool dirty) const
 {
 	if(  !env_t::networkmode  ) {
 		if(  skinverwaltung_t::compass_map  ) {
-			display_img_aligned( skinverwaltung_t::compass_map->get_image_id( welt->get_settings().get_rotation()+4 ), scr_rect(pos,env_t::iconsize), ALIGN_CENTER_V|ALIGN_CENTER_H, false );
+			display_img_aligned(skinverwaltung_t::compass_map->get_image_id( welt->get_settings().get_rotation()+4 ), scr_rect(pos,env_t::iconsize), ALIGN_CENTER_V|ALIGN_CENTER_H, 0, false);
 		}
 		tool_t::draw_after( pos, dirty );
 	}

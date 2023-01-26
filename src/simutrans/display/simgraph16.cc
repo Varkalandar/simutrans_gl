@@ -2618,7 +2618,7 @@ static void display_img_nc(scr_coord_val h, const scr_coord_val xp, const scr_co
 
 
 // only used for GUI
-void display_img_aligned( const image_id n, scr_rect area, int align, const bool dirty)
+void display_img_aligned(const image_id n, scr_rect area, int align, sint8 player_nr_raw, const bool dirty)
 {
 	if(  n < anz_images  ) {
 		scr_coord_val x,y;
@@ -2643,7 +2643,7 @@ void display_img_aligned( const image_id n, scr_rect area, int align, const bool
 			y = area.get_bottom() - images[n].y - images[n].h;
 		}
 
-		display_color_img( n, x, y, 0, false, dirty  CLIP_NUM_DEFAULT);
+		display_color_img( n, x, y, player_nr_raw, false, dirty  CLIP_NUM_DEFAULT);
 	}
 }
 
@@ -2758,18 +2758,18 @@ void display_img_aux(const image_id n, scr_coord_val xp, scr_coord_val yp, const
 
 
 // local helper function for tiles buttons
-static void display_three_image_row( image_id i1, image_id i2, image_id i3, scr_rect row, FLAGGED_PIXVAL)
+static void display_three_image_row( image_id i1, image_id i2, image_id i3, scr_rect row, FLAGGED_PIXVAL color)
 {
 	if(  i1!=IMG_EMPTY  ) {
 		scr_coord_val w = images[i1].w;
-		display_color_img( i1, row.x, row.y, 0, false, true  CLIP_NUM_DEFAULT);
+		display_color_img( i1, row.x, row.y, color, false, true  CLIP_NUM_DEFAULT);
 		row.x += w;
 		row.w -= w;
 	}
 	// right
 	if(  i3!=IMG_EMPTY  ) {
 		scr_coord_val w = images[i3].w;
-		display_color_img( i3, row.get_right()-w, row.y, 0, false, true  CLIP_NUM_DEFAULT);
+		display_color_img( i3, row.get_right()-w, row.y, color, false, true  CLIP_NUM_DEFAULT);
 		row.w -= w;
 	}
 	// middle
@@ -2777,7 +2777,7 @@ static void display_three_image_row( image_id i1, image_id i2, image_id i3, scr_
 		scr_coord_val w = images[i2].w;
 		// tile it wide
 		while(  w <= row.w  ) {
-			display_color_img( i2, row.x, row.y, 0, false, true  CLIP_NUM_DEFAULT);
+			display_color_img( i2, row.x, row.y, color, false, true  CLIP_NUM_DEFAULT);
 			row.x += w;
 			row.w -= w;
 		}
@@ -2785,7 +2785,7 @@ static void display_three_image_row( image_id i1, image_id i2, image_id i3, scr_
 		if(  row.w > 0  ) {
 			clip_dimension const cl = display_get_clip_wh();
 			display_set_clip_wh( cl.x, cl.y, max(0,min(row.get_right(),cl.xx)-cl.x), cl.h );
-			display_color_img( i2, row.x, row.y, 0, false, true  CLIP_NUM_DEFAULT);
+			display_color_img( i2, row.x, row.y, color, false, true  CLIP_NUM_DEFAULT);
 			display_set_clip_wh(cl.x, cl.y, cl.w, cl.h );
 		}
 	}
@@ -2856,9 +2856,9 @@ static void display_img_stretch_intern( const stretch_map_t &imag, scr_rect area
 	}
 }
 
-void display_img_stretch( const stretch_map_t &imag, scr_rect area)
+void display_img_stretch( const stretch_map_t &imag, scr_rect area, FLAGGED_PIXVAL color )
 {
-	display_img_stretch_intern(imag, area, display_three_image_row, 0);
+	display_img_stretch_intern(imag, area, display_three_image_row, color);
 }
 
 static void display_three_blend_row( image_id i1, image_id i2, image_id i3, scr_rect row, FLAGGED_PIXVAL color )

@@ -298,10 +298,10 @@ void gui_scrolled_list_t::draw(scr_coord offset)
 		scr_rect rect(pos + offset, get_size());
 		switch(type) {
 			case windowskin:
-				display_img_stretch( gui_theme_t::windowback, rect);
+				display_img_stretch( gui_theme_t::windowback, rect, 0);
 				break;
 			case listskin:
-				display_img_stretch( gui_theme_t::listbox, rect);
+				display_img_stretch( gui_theme_t::listbox, rect, 0);
 				break;
 			case transparent:
 				break;

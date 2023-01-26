@@ -287,6 +287,30 @@ public:
 	static scr_coord_val gui_vspace;
 	static scr_coord_val gui_waitingbar_width;
 
+	static sint32        gui_display_text_label_color; // >= 0 is RGB555, < 0 is a player color brightness
+	static scr_coord_val gui_display_text_label_margin_left;
+	static scr_coord_val gui_display_text_label_margin_top;
+	static scr_coord_val gui_display_text_label_margin_right;
+	static scr_coord_val gui_display_text_label_margin_bottom;
+
+	static sint32        gui_display_station_label_color; // >= 0 is RGB555, < 0 is a player color brightness
+	static scr_coord_val gui_display_station_label_margin_left;
+	static scr_coord_val gui_display_station_label_margin_top;
+	static scr_coord_val gui_display_station_label_margin_right;
+	static scr_coord_val gui_display_station_label_margin_bottom;
+        
+	static sint32        gui_display_marker_label_color; // >= 0 is RGB555, < 0 is a player color brightness
+	static scr_coord_val gui_display_marker_label_margin_left;
+	static scr_coord_val gui_display_marker_label_margin_top;
+	static scr_coord_val gui_display_marker_label_margin_right;
+	static scr_coord_val gui_display_marker_label_margin_bottom;
+        
+	static sint32        gui_display_factory_label_color; // >= 0 is RGB555, < 0 is a player color brightness
+	static scr_coord_val gui_display_factory_label_margin_left;
+	static scr_coord_val gui_display_factory_label_margin_top;
+	static scr_coord_val gui_display_factory_label_margin_right;
+	static scr_coord_val gui_display_factory_label_margin_bottom;
+        
 	// one special entries, since there are lot of lists with files/fonts/paks/... where zero spacing could fit more entires on the screen
 	static scr_coord_val gui_filelist_vspace;
 	/// @}
@@ -303,6 +327,10 @@ public:
 	static stretch_map_t editfield;
 	static stretch_map_t listbox;
 	static stretch_map_t windowback;
+	static stretch_map_t display_text_label;
+	static stretch_map_t display_station_label;
+	static stretch_map_t display_marker_label;
+	static stretch_map_t display_factory_label;
 
 	// those are the normal, selected and disabled simple buttons
 	static image_id arrow_button_left_img[3];

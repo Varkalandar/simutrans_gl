@@ -342,7 +342,8 @@ show_delete_buttons = 0
 #   0 = black name in color box
 #   4 = name in player color with outline
 #   8 = box left of name in yellow outline
-show_names = 3
+#  12 = theme defined label
+#show_names = 3
 
 # Draw the earth slope to mark the border (default 1 on)
 draw_earth_border = 1

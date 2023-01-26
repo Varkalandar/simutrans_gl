@@ -168,7 +168,7 @@ void gui_frame_t::draw(scr_coord pos, scr_size size)
 	scr_size titlebar_size(0, ( has_title()*D_TITLEBAR_HEIGHT ));
 	// draw background
 	if(  opaque  ) {
-		display_img_stretch( gui_theme_t::windowback, scr_rect( pos + titlebar_size, size - titlebar_size ) );
+		display_img_stretch(gui_theme_t::windowback, scr_rect( pos + titlebar_size, size - titlebar_size ), 0);
 		if(  dirty  ) {
 			mark_rect_dirty_wc(pos.x, pos.y, pos.x + size.w, pos.y + titlebar_size.h );
 		}
