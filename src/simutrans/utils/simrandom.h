@@ -15,6 +15,28 @@
 class loadsave_t;
 
 
+/**
+ * 1-dimensional value noise
+ * @return A semi-random value based on the x parameter
+ * @author Hajo
+ */
+extern double value_noise_1(const int x);
+
+/**
+ * 2-dimensional value noise
+ * @return A semi-random value based on the y and y parameters
+ * @author Hajo
+ */
+extern double value_noise_2(const int x, const int y);
+
+/**
+ * 2-dimensional smoothed value noise
+ * @return A semi-random value based on the y and y parameters
+ * @author Hajo
+ */
+extern double smoothed_value_noise_2(const int x, const int y);
+
+
 uint32 get_random_seed();
 
 uint32 setsimrand(uint32 seed, uint32 noise_seed);
@@ -31,7 +53,9 @@ uint32 simrand(const uint32 max);
 /* generates a random number on [0,0xFFFFFFFFu]-interval */
 uint32 simrand_plain();
 
-/// reads/writes the sate of the random number generator
+/**
+ * reads/writes the state of the random number generator
+ */
 void simrand_rdwr(loadsave_t *file);
 
 double perlin_noise_2D(const double x, const double y, const double persistence);

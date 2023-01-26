@@ -300,20 +300,21 @@ void karte_t::perlin_hoehe_loop( sint16 x_min, sint16 x_max, sint16 y_min, sint1
 		for(  int x = x_min; x < x_max;  x++  ) {
 			// loop all tiles
 			koord k(x,y);
-			sint16 const h = perlin_hoehe(&settings, k, koord(0, 0));
+			sint16 const h = perlin_height(&settings, k, koord(0, 0));
 			set_grid_hgt_nocheck( k, (sint8) h);
 		}
 	}
 }
 
 
-sint32 karte_t::perlin_hoehe(settings_t const* const sets, koord k, koord const size)
+sint32 karte_t::perlin_height(settings_t const* const sets, koord k, koord const size)
 {
 	// replace the fixed values with your settings. Amplitude is the top highness of the mountains,
 	// frequency is something like landscape 'roughness'; amplitude may not be greater than 160.0 !!!
 	// please don't allow frequencies higher than 0.8, it'll break the AI's pathfinding.
 	// Frequency values of 0.5 .. 0.7 seem to be ok, less is boring flat, more is too crumbled
 	// the old defaults are given here: f=0.6, a=160.0
+	
 	switch( sets->get_rotation() ) {
 		// 0: do nothing
 		case 1: k = koord(k.y,size.x-k.x); break;
@@ -323,7 +324,42 @@ sint32 karte_t::perlin_hoehe(settings_t const* const sets, koord k, koord const 
 //    double perlin_noise_2D(double x, double y, double persistence);
 //    return ((int)(perlin_noise_2D(x, y, 0.6)*160.0)) & 0xFFFFFFF0;
 	k = k + koord(sets->get_origin_x(), sets->get_origin_y());
-	return ((int)(perlin_noise_2D(k.x, k.y, sets->get_map_roughness())*(double)sets->get_max_mountain_height())) / 16;
+
+	/*
+	int h = ((int)(perlin_noise_2D(k.x, k.y, sets->get_map_roughness())*(double)sets->get_max_mountain_height())) / 16;
+	printf("%d %d -> %d\n", k.x, k.y, h);	
+	*/
+	
+	// Hajo: make the map an island
+
+	// The desired island size
+	const double island_rad = min(sets->get_size_x(), sets->get_size_y()) * 0.5;
+	
+	// find the distance of the current point to the island center
+	const double dist2 = (k.x-island_rad)*(k.x-island_rad) + (k.y-island_rad)*(k.y-island_rad);
+	const double dist = sqrt(dist2);
+	
+	// give the island fuzzy borders
+	const double fuzzed_dist = dist + smoothed_value_noise_2(k.x, k.y) * 15;
+	
+	// should not exceed M_PI where cos is -1
+	const double p = fuzzed_dist * M_PI * 1.5 / (island_rad);
+	
+	double wave = cos(p);
+	if(p >= M_PI) 
+	{
+		// linear drop
+		wave = -1 + (M_PI - p) * 8;
+	}
+	
+	const double perlin = perlin_noise_2D(k.x, k.y, sets->get_map_roughness());
+	const double alpha = 0.05;
+	const double height = ((perlin * (1 - alpha)) + (wave * alpha)) * (double)sets->get_max_mountain_height();
+	const int h = max((int)(height / 16), -10); 
+	
+	// printf("%f %d %d -> %f %f %f -> %d\n", island_rad, k.x, k.y, perlin, p, wave, h);
+	
+	return h;
 }
 
 
@@ -1741,7 +1777,7 @@ void karte_t::enlarge_map(settings_t const* sets, sint8 const* const h_field)
 			for(  sint16 y = 0;  y<=new_size.y;  y++  ) {
 				for(  sint16 x = (y>old_size.y) ? 0 : old_size.x+1;  x<=new_size.x;  x++  ) {
 					koord k(x,y);
-					sint16 const h = perlin_hoehe(&settings, k, koord(old_size.x, old_size.y));
+					sint16 const h = perlin_height(&settings, k, koord(old_size.x, old_size.y));
 					set_grid_hgt_nocheck( k, (sint8) h);
 				}
 				ls.set_progress( (y*16)/new_size.y );

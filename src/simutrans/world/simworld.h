@@ -74,9 +74,12 @@ class karte_t : public surface_t
 public:
 	/**
 	 * Height of a point of the map with "perlin noise".
-	 * Uses map roughness and mountain height from @p sets.
+	 * Uses map roughness and mountain height from sets.
+         * @param sets Global settings
+         * @param k the coordinate of the point
+         * @param size map size
 	 */
-	static sint32 perlin_hoehe(settings_t const *sets, koord k, koord size);
+	static sint32 perlin_height(settings_t const *sets, koord k, koord size);
 
 	/**
 	 * Loops over tiles setting heights from perlin noise

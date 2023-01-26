@@ -11,6 +11,66 @@
 #include "../dataobj/loadsave.h"
 
 
+/**
+ * Seed for value noise functions.
+ * @author Hajo
+ */
+static const int value_noise_seed = 1360795;
+
+
+/**
+ * 1-dimensional value noise
+ * @return A semi-random value based on the x parameter
+ * @author Hajo
+ */
+double value_noise_1(const int x)
+{
+	int n = x + x * x * 1009l + value_noise_seed;
+
+	n = (n << 13) ^ n;
+	return (1.0 - (double)((n * (n * n * 15731 + 789221) + 1376312589) & 0x7fffffff) / 1073741824.0);
+}
+
+
+/**
+ * 2-dimensional value noise
+ * @return A semi-random value based on the y and y parameters
+ * @author Hajo
+ */
+double value_noise_2(const int x, const int y)
+{
+	int n = x + y + x * y * 1009l + value_noise_seed;
+
+	n = (n << 13) ^ n;
+	return (1.0 - (double)((n * (n * n * 15731 + 789221) + 1376312589) & 0x7fffffff) / 1073741824.0);
+}
+
+
+/**
+ * 2-dimensional smoothed value noise
+ * @return A semi-random value based on the y and y parameters
+ * @author Hajo
+ */
+double smoothed_value_noise_2(const int x, const int y)
+{
+	double v = 0.0;
+	
+	v += value_noise_2(x-1, y-1);
+	v += value_noise_2(x,   y-1);
+	v += value_noise_2(x+1, y-1);
+
+	v += value_noise_2(x-1, y);
+	v += value_noise_2(x,   y);
+	v += value_noise_2(x+1, y);
+
+	v += value_noise_2(x-1, y+1);
+	v += value_noise_2(x,   y+1);
+	v += value_noise_2(x+1, y+1);
+	
+	return v / 9.0;
+}
+
+
 /* This is the mersenne random generator: More random and faster! */
 
 /* Period parameters */
