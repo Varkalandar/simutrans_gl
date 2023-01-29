@@ -31,6 +31,11 @@ public:
 	const char *get_str() const;
 	const char *get_fullstr() const; // including brackets
 
+        /**
+         * @return A string representation of the 2D coordinates, with brackets
+         */
+        const char* get_2d_str() const;
+
 	void rotate90( sint16 y_diff );
 
 	void rdwr(loadsave_t* file);

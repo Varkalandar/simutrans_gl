@@ -317,17 +317,16 @@ static sint8 decode_gadget_boxes(simwin_gadget_flags_t const * const flags, int 
 static void win_draw_window_title(const scr_coord pos, const scr_size size,
 		const FLAGGED_PIXVAL title_color,
 		const char * const text,
-		const FLAGGED_PIXVAL text_color,
+		FLAGGED_PIXVAL text_color,
 		const koord3d welt_pos,
 		const uint16 gadget_state,
 		const bool sticky,
 		const bool goto_pushed,
 		simwin_gadget_flags_t &flags,
-	    const bool is_player)
+	    const bool is_player,
+		const bool is_top)
 {
 	PUSH_CLIP_FIT(pos.x, pos.y, size.w, size.h);
-
-	const PIXVAL color = title_color & 0xFFFF;
 	PIXVAL lighter, darker;
 
 	// Hajo: use themed title bars?
@@ -335,18 +334,41 @@ static void win_draw_window_title(const scr_coord pos, const scr_size size,
 		const scr_rect area(pos.x, pos.y, size.w, D_TITLEBAR_HEIGHT);
 
 		// Hajo: trickery - player no. is in bits 16 to 23, color is in bits 0 to 15
-		const int pn = (title_color >> 16) & 0x7F;
+		const int pn = (title_color >> 16) & 0x0F;
+		const int pc = (title_color >> 24) & 0xFF;
 		
-		// Hajo: calculate real shading
-		lighter = display_blend_colors(color, color_idx_to_rgb(COL_WHITE), 25);
-		darker  = display_blend_colors(color, color_idx_to_rgb(COL_BLACK), 25);
+		// Hajo: calculate real shading, how?
+		lighter = get_system_color(128, 128, 128);
+		darker  = get_system_color(0, 0, 0);
 
-		if(is_player) {
-			display_img_stretch(gui_theme_t::gui_title_bar_player, area, pn);
+		// Hajo: does this theme have player colored title bars?
+		if(skinverwaltung_t::title_bar_player) {
+			// Yes, so we can use normal text and player color bar
+			if(is_player) {
+				display_img_stretch(gui_theme_t::gui_title_bar_player, area, pn);
+			} else {
+				display_img_stretch(gui_theme_t::gui_title_bar, area, 0);
+			}
 		} else {
-			display_img_stretch(gui_theme_t::gui_title_bar, area, 0);
+			// A theme without player color title bars. In this case we change
+			// the title text to player color
+			
+			text_color = (is_player) ? color_idx_to_rgb(pc+7) : get_system_color(255, 255, 255);
+			
+			display_img_stretch(gui_theme_t::gui_title_bar, area, 0);			
 		}
+		
 	} else {
+		
+		PIXVAL color = title_color & 0xFFFF;
+
+		if(!is_top) {
+			// not top => darker
+			FLAGGED_PIXVAL special_bits = title_color & 0xFFFF0000;
+			color = display_blend_colors(title_color & 0xFFFF, color_idx_to_rgb(COL_BLACK), env_t::bottom_window_darkness);
+			color |= special_bits;
+		}
+
 		lighter = display_blend_colors(color, color_idx_to_rgb(COL_WHITE), 25);
 		darker  = display_blend_colors(color, color_idx_to_rgb(COL_BLACK), 25);
 
@@ -362,11 +384,21 @@ static void win_draw_window_title(const scr_coord pos, const scr_size size,
 	}
         
 	// Draw the gadgets and then move left and draw text.
+	const int width = display_gadget_boxes( &flags, pos.x+(REVERSE_GADGETS?0:size.w-D_GADGET_WIDTH), pos.y, lighter, darker, gadget_state, sticky, goto_pushed );
+	const int left = (REVERSE_GADGETS ? width + 4 : 4);
+	const int top = (D_TITLEBAR_HEIGHT-LINEASCENT)/2;
+
+	if(!is_top) {
+		// not top => darker
+		text_color = env_t::bottom_window_text_color;
+	}
+	
+	int titlewidth = display_proportional_clip_rgb(pos.x + left, pos.y + top, text, ALIGN_LEFT, text_color, false);
+	
+	// if the object has a world position, show the coordinates
 	flags.gotopos = (welt_pos != koord3d::invalid);
-	int width = display_gadget_boxes( &flags, pos.x+(REVERSE_GADGETS?0:size.w-D_GADGET_WIDTH), pos.y, lighter, darker, gadget_state, sticky, goto_pushed );
-	int titlewidth = display_proportional_clip_rgb( pos.x + (REVERSE_GADGETS?width+4:4), pos.y+(D_TITLEBAR_HEIGHT-LINEASCENT)/2, text, ALIGN_LEFT, text_color, false );
-	if(  flags.gotopos  ) {
-		display_proportional_clip_rgb( pos.x + (REVERSE_GADGETS?width+4:4)+titlewidth+8, pos.y+(D_TITLEBAR_HEIGHT-LINEASCENT)/2, welt_pos.get_fullstr(), ALIGN_LEFT, text_color, false );
+	if(flags.gotopos) {
+		display_proportional_clip_rgb(pos.x + left + titlewidth + 8, pos.y + top, welt_pos.get_2d_str(), ALIGN_LEFT, text_color, false);
 	}
 	POP_CLIP();
 }
@@ -1122,13 +1154,6 @@ void display_win(int win)
 	FLAGGED_PIXVAL text_color = env_t::front_window_text_color;
 	bool is_player = title_color & PLAYER_FLAG;
 	
-	if((unsigned)win!=wins.get_count()-1  ) {
-		// not top => darker
-		FLAGGED_PIXVAL special_bits = title_color & 0xFFFF0000;
-		title_color = display_blend_colors(title_color & 0xFFFF, color_idx_to_rgb(COL_BLACK), env_t::bottom_window_darkness);
-		title_color |= special_bits;
-		text_color = env_t::bottom_window_text_color;
-	}
 	bool need_dragger = comp->get_resizemode() != gui_frame_t::no_resize;
 
 	// HACK  So draw will know if gadget is needed.
@@ -1144,7 +1169,8 @@ void display_win(int win)
 				wins[win].sticky,
 				comp->is_weltpos(),
 				wins[win].flags,
-			    is_player);
+			    is_player,
+				(unsigned)win == wins.get_count()-1);
 	}
 	if(  wins[win].dirty  ) {
 		// not sure this is still a useful call

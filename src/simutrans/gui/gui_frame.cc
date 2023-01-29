@@ -100,7 +100,7 @@ FLAGGED_PIXVAL gui_frame_t::get_titlecolor() const
 		// Hajo: we have themed title bars, combine the color values into one 32 bit number
 		FLAGGED_PIXVAL color = env_t::default_window_title_color;
 		if(owner) {
-			color |= PLAYER_FLAG | (owner->get_player_nr() << 16);
+			color |= PLAYER_FLAG | (owner->get_player_color1() << 24) | (owner->get_player_nr() << 16);
 		}
 		return color; 
 	} else {

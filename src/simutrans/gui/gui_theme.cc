@@ -367,7 +367,10 @@ void gui_theme_t::init_gui_from_images()
 			display_marker_label[j%3][j/3] = skinverwaltung_t::display_marker_label->get_image_id(j);
 			display_factory_label[j%3][j/3] = skinverwaltung_t::display_factory_label->get_image_id(j);
 			gui_title_bar[j%3][j/3] = skinverwaltung_t::title_bar->get_image_id(j);
-			gui_title_bar_player[j%3][j/3] = skinverwaltung_t::title_bar_player->get_image_id(j);
+			
+			if(skinverwaltung_t::title_bar_player) {
+				gui_title_bar_player[j%3][j/3] = skinverwaltung_t::title_bar_player->get_image_id(j);
+			}
 		}
 	}
 

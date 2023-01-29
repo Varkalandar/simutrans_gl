@@ -1,0 +1,4 @@
+Changes in this branch:
+
+- Theme defined window title bars
+- Theme defined station, city, marker and factory labels

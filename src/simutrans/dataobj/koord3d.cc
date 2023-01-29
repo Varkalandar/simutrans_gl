@@ -81,6 +81,20 @@ const char *koord3d::get_fullstr() const
 }
 
 
+/**
+ * @return A string representation of the 2D coordinates, with brackets
+ */
+const char *koord3d::get_2d_str() const
+{
+	static char pos_str[32];
+	if(x==-1  &&  y==-1  &&  z==-1) {
+		return "invalid";
+	}
+	sprintf(pos_str, "(%i, %i)", x, y);
+	return pos_str;
+}
+
+
 ribi_t::ribi koord3d_vector_t::get_ribi( uint32 index ) const
 {
 	ribi_t::ribi ribi = ribi_t::none;
