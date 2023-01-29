@@ -4744,6 +4744,20 @@ static unsigned char get_h_mask(const int xL, const int xR, const int cL, const 
 }
 
 
+static PIXVAL handle_color_sequences(utf32 c, PIXVAL default_color)
+{
+	PIXVAL color;
+	
+	if(c == 'd') {
+		color = default_color;
+	} else {
+		color = get_system_color(255, 255, 255);
+	}
+	
+	return color;
+}
+
+
 /**
  * len parameter added - use -1 for previous behaviour.
  * completely renovated for unicode and 10 bit width and variable height
@@ -4834,11 +4848,7 @@ int display_text_proportional_len_clip_rgb(scr_coord_val x, scr_coord_val y, con
 		if(c == '\e') {
 			if(decoder.has_next()) {
 				utf32 c2 = decoder.next();
-				if(c2 == 'd') {
-					color = default_color;
-				} else {
-					color = get_system_color(255, 255, 255);
-				}
+				color = handle_color_sequences(c2, default_color);
 			}
 		}
 
