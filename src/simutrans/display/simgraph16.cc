@@ -4744,11 +4744,11 @@ static unsigned char get_h_mask(const int xL, const int xR, const int cL, const 
 }
 
 
-static PIXVAL handle_color_sequences(utf32 c, PIXVAL default_color)
+static PIXVAL handle_color_sequences(utf32 code, PIXVAL default_color)
 {
 	PIXVAL color;
 	
-	if(c == 'd') {
+	if(code == 'd') {
 		color = default_color;
 	} else {
 		color = get_system_color(255, 255, 255);
