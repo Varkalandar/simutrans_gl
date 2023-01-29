@@ -4661,6 +4661,14 @@ int display_calc_proportional_string_len_width(const char *text, size_t len)
 		const utf32 iUnicode = utf8_decoder_t::decode(p);
 		text = reinterpret_cast<const char *>(p);
 
+		if(iUnicode == '\t') {
+			int tabsize = 40;
+			// advance to next tab stop
+			int p = width % tabsize;
+			width = (width - p) + tabsize;		
+		}
+
+		
 		if(  iUnicode == UNICODE_NUL ||  iUnicode == '\n') {
 			return width;
 		}
@@ -4740,8 +4748,9 @@ static unsigned char get_h_mask(const int xL, const int xR, const int cL, const 
  * len parameter added - use -1 for previous behaviour.
  * completely renovated for unicode and 10 bit width and variable height
  */
-int display_text_proportional_len_clip_rgb(scr_coord_val x, scr_coord_val y, const char* txt, control_alignment_t flags, const PIXVAL color, bool dirty, sint32 len  CLIP_NUM_DEF)
+int display_text_proportional_len_clip_rgb(scr_coord_val x, scr_coord_val y, const char* txt, control_alignment_t flags, const PIXVAL default_color, bool dirty, sint32 len  CLIP_NUM_DEF)
 {
+	PIXVAL color = default_color;
 	scr_coord_val cL, cR, cT, cB;
 
 	// TAKE CARE: Clipping area may be larger than actual screen size
@@ -4810,12 +4819,31 @@ int display_text_proportional_len_clip_rgb(scr_coord_val x, scr_coord_val y, con
 		utf32 c = decoder.next();
 		iTextPos = decoder.get_position() - (utf8 const*)txt;
 
-		if(  c == '\n'  ) {
+		if(c == '\n') {
 			// stop at linebreak
 			break;
 		}
+
+		if(c == '\t') {
+			int tabsize = 40;
+			// advance to next tab stop
+			int p = (x - x0) % tabsize;
+			x = x - p + tabsize;			
+		}
+
+		if(c == '\e') {
+			if(decoder.has_next()) {
+				utf32 c2 = decoder.next();
+				if(c2 == 'd') {
+					color = default_color;
+				} else {
+					color = get_system_color(255, 255, 255);
+				}
+			}
+		}
+
 		// print unknown character?
-		else if(  !fnt->is_valid_glyph(c)  ) {
+		else if(!fnt->is_valid_glyph(c)) {
 			c = 0;
 		}
 

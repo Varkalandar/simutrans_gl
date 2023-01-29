@@ -543,8 +543,8 @@ Can only move from halt to halt or waypoint to waypoint.
 Can only move \nfrom halt to halt or \nfrom waypoint to waypoint.
 Capacity: %.0f MW
 Capacity: %.0f MW\n
-Capacity: %d%s %s\n
-Capacity: %3d%s %s\n
+Payload:
+Payload:
 Capacity: %s\nLoad: %d (%d%%)
 Capacity: %s\n\nProportion: %d (%d%%)
 Cars are not available yet!
@@ -659,8 +659,10 @@ Copy the selected convoi and its schedule or line
 Copy the selected convoy and its schedule or line
 cost for removal
 Cost to remove 
-Cost: %8s (%.2f$/km %.2f$/m)\n
-Cost: %s (%.2f$/km %.2f$/month)\n
+Vehicle costs:
+Costs:\t\t
+per month
+month
 curiosity builder
 Curiosity builder
 curlist_title
@@ -935,8 +937,8 @@ Legend
 Map legend
 Leistung
 Power
-Leistung: %d kW
-Power: %d kW
+Engine power:
+Power:\t
 Leitung
 Power line
 letzen Monat: diesen Monat:

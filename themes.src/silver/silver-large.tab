@@ -60,7 +60,7 @@ default_window_title_color = #84939e
 
 # gui_color_text = #000000
 gui_color_text_highlight = #706000
-gui_color_text_shadow = #BDD3DF
+gui_color_text_shadow = #333333
 gui_color_text_title = #338FCC
 gui_color_text_strong = #E46A0B
 

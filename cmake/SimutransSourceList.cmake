@@ -109,6 +109,7 @@ target_sources(simutrans PRIVATE
 		src/simutrans/gui/components/gui_scrollbar.cc
 		src/simutrans/gui/components/gui_scrolled_list.cc
 		src/simutrans/gui/components/gui_scrollpane.cc
+		src/simutrans/gui/components/gui_spacer.cc
 		src/simutrans/gui/components/gui_speedbar.cc
 		src/simutrans/gui/components/gui_tab_panel.cc
 		src/simutrans/gui/components/gui_textarea.cc

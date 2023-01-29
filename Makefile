@@ -394,6 +394,7 @@ SOURCES += src/simutrans/gui/components/gui_schedule.cc
 SOURCES += src/simutrans/gui/components/gui_scrollbar.cc
 SOURCES += src/simutrans/gui/components/gui_scrolled_list.cc
 SOURCES += src/simutrans/gui/components/gui_scrollpane.cc
+SOURCES += src/simutrans/gui/components/gui_spacer.cc
 SOURCES += src/simutrans/gui/components/gui_speedbar.cc
 SOURCES += src/simutrans/gui/components/gui_tab_panel.cc
 SOURCES += src/simutrans/gui/components/gui_textarea.cc
