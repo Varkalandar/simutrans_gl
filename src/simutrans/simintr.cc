@@ -292,16 +292,16 @@ char const *difftick_to_string( sint32 ticks, bool round_to_quaters )
 	case env_t::DATE_FMT_GERMAN_NO_SEASON:
 	case env_t::DATE_FMT_US:
 	case env_t::DATE_FMT_US_NO_SEASON:
-		sprintf(time, "%s%2d:%02dh", days, hours, minuten);
+		sprintf(time, "%s%02d:%02dh", days, hours, minuten);
 		break;
 
 	case env_t::DATE_FMT_JAPANESE:
 	case env_t::DATE_FMT_JAPANESE_NO_SEASON:
-		sprintf(time, "%s%2d:%02dh", days, hours, minuten);
+		sprintf(time, "%s%02d:%02dh", days, hours, minuten);
 		break;
 
 	case env_t::DATE_FMT_MONTH:
-		sprintf(time, "%s%2d:%02dh", days, hours, minuten);
+		sprintf(time, "%s%02d:%02dh", days, hours, minuten);
 		break;
 	}
 	return time;

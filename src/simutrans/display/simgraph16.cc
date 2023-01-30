@@ -4661,6 +4661,14 @@ int display_calc_proportional_string_len_width(const char *text, size_t len)
 		const utf32 iUnicode = utf8_decoder_t::decode(p);
 		text = reinterpret_cast<const char *>(p);
 
+		if(iUnicode == '\t') {
+			int tabsize = 40;
+			// advance to next tab stop
+			int p = width % tabsize;
+			width = (width - p) + tabsize;		
+		}
+
+		
 		if(  iUnicode == UNICODE_NUL ||  iUnicode == '\n') {
 			return width;
 		}
@@ -4810,12 +4818,20 @@ int display_text_proportional_len_clip_rgb(scr_coord_val x, scr_coord_val y, con
 		utf32 c = decoder.next();
 		iTextPos = decoder.get_position() - (utf8 const*)txt;
 
-		if(  c == '\n'  ) {
+		if(c == '\n') {
 			// stop at linebreak
 			break;
 		}
+
+		if(c == '\t') {
+			int tabsize = 40;
+			// advance to next tab stop
+			int p = (x - x0) % tabsize;
+			x = x - p + tabsize;			
+		}
+
 		// print unknown character?
-		else if(  !fnt->is_valid_glyph(c)  ) {
+		else if(!fnt->is_valid_glyph(c)) {
 			c = 0;
 		}
 
