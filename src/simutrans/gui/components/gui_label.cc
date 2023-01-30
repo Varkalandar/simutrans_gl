@@ -38,7 +38,8 @@ gui_label_t::gui_label_t(const char* text, PIXVAL color_, align_t align_) :
 
 scr_size gui_label_t::get_min_size() const
 {
-	return scr_size( text ? display_calc_proportional_string_len_width(text,strlen(text)) : D_BUTTON_WIDTH, D_LABEL_HEIGHT );
+	return scr_size( text ? display_calc_proportional_string_len_width(text,strlen(text)) : D_BUTTON_WIDTH, 
+			max(D_LABEL_HEIGHT, fixed_min_height) );
 }
 
 scr_size gui_label_t::get_max_size() const
@@ -113,7 +114,10 @@ void gui_label_t::draw(scr_coord offset)
 	}
 
 	else if(text) {
-		const scr_rect area( offset+pos, size );
+		scr_coord_val top = (fixed_min_height - LINESPACE) / 2;
+		
+		const scr_rect area(offset+pos+scr_coord(0, top), size);
+		
 		int a = align == left ? ALIGN_LEFT : ( align == right ? ALIGN_RIGHT : ALIGN_CENTER_H);
 		display_proportional_ellipsis_rgb( area, text,  a | DT_CLIP, color, true, shadowed, color_shadow );
 	}

@@ -67,6 +67,7 @@ savegame_frame_t::savegame_frame_t(const char *suffix, bool only_directories, co
 	top_frame.set_table_layout(2,0);
 	add_component(&top_frame);
 	{
+		fnlabel.fixed_min_height = 28;
 		top_frame.add_component(&fnlabel);
 
 		tstrncpy(ibuf, "", lengthof(ibuf));
@@ -291,6 +292,8 @@ void savegame_frame_t::list_filled( void )
 				label->set_visible(false);
 				continue;
 			}
+			
+			label->fixed_min_height = 28;
 			button_frame.add_component(label, cols);
 		}
 		else {
@@ -309,6 +312,7 @@ void savegame_frame_t::list_filled( void )
 			}
 			button_frame.add_component(action_button);
 			if (label_enabled) {
+				label->fixed_min_height = gui_theme_t::gui_button_size.h;
 				button_frame.add_component(label);
 			}
 		}
@@ -316,7 +320,7 @@ void savegame_frame_t::list_filled( void )
 	}
 	button_frame.end_table();
 
-	const scr_coord_val row_height = max( D_LABEL_HEIGHT, D_BUTTON_HEIGHT ) + D_V_SPACE;
+	const scr_coord_val row_height = max( D_LABEL_HEIGHT, D_BUTTON_HEIGHT );
 
 	reset_min_windowsize();
 	scr_size size = get_min_size() + scr_size(0, min(entries.get_count(), L_DEFAULT_ROWS) * row_height);

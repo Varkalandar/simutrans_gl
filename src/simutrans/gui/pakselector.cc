@@ -15,7 +15,7 @@ pakselector_t::pakselector_t() :
 	savegame_frame_t( NULL, true, NULL, true ),
 	notice_label(&notice_buffer)
 {
-	// if true, we would call the installler afterwards
+	// if true, we would call the installer afterwards
 	pakinstaller_t::finish_install = false;
 
 	// remove unnecessary buttons
@@ -23,11 +23,22 @@ pakselector_t::pakselector_t() :
 	savebutton.set_visible(false);
 	cancelbutton.set_visible(false);
 
-
 	// don't show list item labels
 	label_enabled = false;
 
-	fnlabel.set_text( "Choose one graphics set for playing:" );
+	fnlabel.set_text("Choose a Graphics Set For Playing");
+	fnlabel.fixed_min_height = 28;
+	fnlabel.set_align(gui_label_t::centered);
+	
+	top_frame.new_component<gui_margin_t>();
+	top_frame.new_component<gui_divider_t>();
+	
+	installbutton.init(button_t::roundbox, " Install a new graphics set ");
+	installbutton.add_listener( &ps );
+	add_component(&installbutton);
+
+	new_component<gui_divider_t>();
+	
 	notice_buffer.printf("%s",
 		"To avoid seeing this dialogue define a path by:\n"
 		" - adding 'pak_file_path = pak/' to your simuconf.tab\n"
@@ -36,9 +47,6 @@ pakselector_t::pakselector_t() :
 	notice_label.recalc_size();
 	add_component(&notice_label);
 
-	installbutton.init( button_t::roundbox, "Install" );
-	installbutton.add_listener( &ps );
-	add_component(&installbutton);
 
 	resize(scr_coord(0,0));
 
@@ -55,6 +63,16 @@ pakselector_t::pakselector_t() :
 			add_path(dummy);
 		}
 	}
+	
+	for(dir_entry_t &i : entries) {
+
+		if (i.type == LI_HEADER) {
+			i.label->set_size(scr_size(100, 40));
+			continue;
+		}
+	}
+
+	resize(scr_coord(0, 0));
 }
 
 

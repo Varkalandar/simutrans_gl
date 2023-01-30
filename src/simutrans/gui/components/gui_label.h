@@ -55,6 +55,8 @@ public:
 		set_align( align_par );
 	}
 
+        scr_coord_val fixed_min_height = 0;
+
 	/**
 	 * Sets the text to display, after translating it.
 	 */
