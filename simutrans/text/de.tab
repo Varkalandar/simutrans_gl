@@ -741,8 +741,8 @@ Capacity:
 Kapazität
 Capacity: %.0f MW
 Kapazität: %.0f MW
-Capacity: %d%s %s\n
-Zuladung: %3d%s %s\n
+Payload:
+Zuladung:
 Capacity: %s\nLoad: %d (%d%%)
 Kapazität: %s\n» %d (%d%%)
 Cars are not available yet!
@@ -901,10 +901,10 @@ cost for removal
 Kosten für Entfernung 
 Cost per unit
 Kosten/Einheit
-Cost: %8s (%.2f$/km %.2f$/m)\n
-Kosten: %s (%.2f$/km, %.2f$/Monat)\n
-Cost: %8s (%.2f$/km)\n
-Kosten: %8s (%.2f$/km)\n
+Vehicle costs:
+Costs:\t\t
+per month
+Monat
 Costs
 Kosten
 Create a new line based on this schedule
@@ -1657,8 +1657,8 @@ Power (MW)
 Leistung (MW)
 Power:
 Leistung: 
-Power: %4d kW\n
-Leistung: %4d kW\n
+Engine power:
+Leistung:
 Powerlines
 Freileitungen
 Price

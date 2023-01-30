@@ -4744,12 +4744,27 @@ static unsigned char get_h_mask(const int xL, const int xR, const int cL, const 
 }
 
 
+static PIXVAL handle_color_sequences(utf32 code, PIXVAL default_color)
+{
+	PIXVAL color;
+	
+	if(code == 'd') {
+		color = default_color;
+	} else {
+		color = get_system_color(255, 255, 255);
+	}
+	
+	return color;
+}
+
+
 /**
  * len parameter added - use -1 for previous behaviour.
  * completely renovated for unicode and 10 bit width and variable height
  */
-int display_text_proportional_len_clip_rgb(scr_coord_val x, scr_coord_val y, const char* txt, control_alignment_t flags, const PIXVAL color, bool dirty, sint32 len  CLIP_NUM_DEF)
+int display_text_proportional_len_clip_rgb(scr_coord_val x, scr_coord_val y, const char* txt, control_alignment_t flags, const PIXVAL default_color, bool dirty, sint32 len  CLIP_NUM_DEF)
 {
+	PIXVAL color = default_color;
 	scr_coord_val cL, cR, cT, cB;
 
 	// TAKE CARE: Clipping area may be larger than actual screen size
@@ -4828,6 +4843,13 @@ int display_text_proportional_len_clip_rgb(scr_coord_val x, scr_coord_val y, con
 			// advance to next tab stop
 			int p = (x - x0) % tabsize;
 			x = x - p + tabsize;			
+		}
+
+		if(c == '\e') {
+			if(decoder.has_next()) {
+				utf32 c2 = decoder.next();
+				color = handle_color_sequences(c2, default_color);
+			}
 		}
 
 		// print unknown character?

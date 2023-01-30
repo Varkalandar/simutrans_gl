@@ -18,7 +18,7 @@
 #include "../simconvoi.h"
 #include "../obj/depot.h"
 #include "simwin.h"
-// #include "../simcolor.h"
+
 #include "../simdebug.h"
 #include "../display/viewport.h"
 #include "../simline.h"
@@ -360,8 +360,6 @@ void depot_frame_t::init(depot_t *dep)
 
 	end_table();
 
-	// new_component<gui_divider_t>();
-
 	/*
 	 * [VEHICLE]
 	 */
@@ -373,6 +371,7 @@ void depot_frame_t::init(depot_t *dep)
 	cont_vehicle_labels->set_spacing(scr_size(D_H_SPACE*2, 1));
 
 	cont_vehicle_labels->add_component(labels[LB_VEH_NAME],2);
+	cont_vehicle_labels->add_component(new gui_spacer_t(scr_coord(0,0), scr_size(200, 4)),2);
 	cont_vehicle_labels->add_component(labels[LB_VEH_COST]);
 	cont_vehicle_labels->add_component(labels[LB_VEH_WEIGHT]);
 	cont_vehicle_labels->add_component(labels[LB_VEH_CAPACITY]);
@@ -1360,7 +1359,7 @@ void depot_frame_t::draw(scr_coord pos, scr_size size)
 	
 	// Hajo: test info popup	
 	if(show_vehicle_info_popup) {
-		scr_coord_val height = 90;
+		scr_coord_val height = 92;
 		scr_coord popup_pos(pos.x + 0, pos.y + size.h - height - 1);
 		// display_img_stretch(gui_theme_t::windowback, scr_rect(pos + popup_pos, size.w, height), 0);
 		
@@ -1496,7 +1495,7 @@ void depot_frame_t::update_vehicle_info_text(scr_coord pos)
 		// Hajo: there is data to show
 		show_vehicle_info_popup = true;		
 		
-		labels[LB_VEH_NAME]->buf().printf( "%s", translator::translate( veh_type->get_name(), welt->get_settings().get_name_language_id() ) );
+		labels[LB_VEH_NAME]->buf().printf( "\en%s\ed", translator::translate( veh_type->get_name(), welt->get_settings().get_name_language_id() ) );
 
 		if(  veh_type->get_power() > 0  ) { // engine type
 			labels[LB_VEH_NAME]->buf().printf( " (%s)\n", translator::translate( vehicle_builder_t::engine_type_names[veh_type->get_engine_type()+1] ) );
@@ -1505,24 +1504,30 @@ void depot_frame_t::update_vehicle_info_text(scr_coord pos)
 		if(  sint64 fix_cost = welt->scale_with_month_length( veh_type->get_fixed_cost() )  ) {
 			char tmp[128];
 			money_to_string( tmp, veh_type->get_price() / 100.0, false );
-			labels[LB_VEH_COST]->buf().printf( translator::translate("Cost:\t\t%s (%.2f$/km %.2f$/m)\n"), tmp, veh_type->get_running_cost()/100.0, fix_cost/100.0 );
+			labels[LB_VEH_COST]->buf().printf("%s%s (%.2f$/km %.2f$/%s)", 
+				translator::translate("Vehicle costs:"), tmp, veh_type->get_running_cost()/100.0, 
+				fix_cost/100.0, translator::translate("per month") );
 		}
 		else {
 			char tmp[128];
 			money_to_string(  tmp, veh_type->get_price() / 100.0, false );
-			labels[LB_VEH_COST]->buf().printf( translator::translate("Cost:\t\t%s (%.2f$/km)\n"), tmp, veh_type->get_running_cost()/100.0 );
+			labels[LB_VEH_COST]->buf().printf("%s%s (%.2f$/km)", 
+				translator::translate("Vehicle costs:"), tmp, veh_type->get_running_cost()/100.0 );
 		}
 
-		if(  veh_type->get_capacity() > 0  ) { // must translate as "Capacity: %3d%s %s\n"
-			labels[LB_VEH_CAPACITY]->buf().printf( translator::translate("Capacity:\t%d%s %s\n"),
+		if(  veh_type->get_capacity() > 0  ) {
+			labels[LB_VEH_CAPACITY]->buf().printf("%s\t%d%s %s",
+			    translator::translate("Payload:"),
 				veh_type->get_capacity(),
-				translator::translate( veh_type->get_freight_type()->get_mass() ),
+				translator::translate(veh_type->get_freight_type()->get_mass()),
 				veh_type->get_freight_type()->get_catg()==0 ? translator::translate( veh_type->get_freight_type()->get_name() ) : translator::translate( veh_type->get_freight_type()->get_catg_name() )
 				);
 			labels[LB_VEH_LOADINGTIME]->buf().printf("%s\t%s", translator::translate("Loading time:"), difftick_to_string(veh_type->get_loading_time(), false));
 		}
 		else {
-			labels[LB_VEH_CAPACITY]->buf().clear();
+			labels[LB_VEH_CAPACITY]->buf().printf("%s\t%s",
+			    translator::translate("Payload:"),
+				translator::translate("n/a"));
 			labels[LB_VEH_LOADINGTIME]->buf().clear();
 		}
 
@@ -1530,10 +1535,10 @@ void depot_frame_t::update_vehicle_info_text(scr_coord pos)
 
 		if(  veh_type->get_power() > 0  ) {
 			if(  veh_type->get_gear() != 64  ){
-				labels[LB_VEH_POWER]->buf().printf( "%s\t%d kW (x%0.2f)\n", translator::translate("Power:"), veh_type->get_power(), veh_type->get_gear() / 64.0 );
+				labels[LB_VEH_POWER]->buf().printf( "%s\t%d kW (x%0.2f)\n", translator::translate("Engine power:"), veh_type->get_power(), veh_type->get_gear() / 64.0 );
 			}
 			else {
-				labels[LB_VEH_POWER]->buf().printf( translator::translate("Power:\n%d kW\n"), veh_type->get_power() );
+				labels[LB_VEH_POWER]->buf().printf("%s\t%d kW", translator::translate("Engine power:"), veh_type->get_power() );
 			}
 		}
 

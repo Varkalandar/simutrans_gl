@@ -19,6 +19,7 @@
 #include "components/gui_button.h"
 #include "components/action_listener.h"
 #include "components/gui_scrollpane.h"
+#include "components/gui_spacer.h"
 #include "components/gui_speedbar.h"
 #include "../simtypes.h"
 #include "../utils/cbuffer.h"
