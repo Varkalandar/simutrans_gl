@@ -380,6 +380,7 @@ void depot_frame_t::init(depot_t *dep)
 	cont_vehicle_labels->add_component(labels[LB_VEH_DATE]);
 	cont_vehicle_labels->add_component(labels[LB_VEH_POWER]);
 	cont_vehicle_labels->add_component(labels[LB_VEH_VALUE]);
+	cont_vehicle_labels->add_component(new gui_spacer_t(scr_coord(0,0), scr_size(200, 2)),2);
 	cont_vehicle_labels->add_component(labels[LB_VEH_AUTHOR]);
 	// add_component(cont_vehicle_labels);
 	/*

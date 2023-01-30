@@ -4665,7 +4665,8 @@ int display_calc_proportional_string_len_width(const char *text, size_t len)
 			int tabsize = 40;
 			// advance to next tab stop
 			int p = width % tabsize;
-			width = (width - p) + tabsize;		
+			width = (width - p) + tabsize;
+			continue;
 		}
 
 		
@@ -4842,7 +4843,8 @@ int display_text_proportional_len_clip_rgb(scr_coord_val x, scr_coord_val y, con
 			int tabsize = 40;
 			// advance to next tab stop
 			int p = (x - x0) % tabsize;
-			x = x - p + tabsize;			
+			x = x - p + tabsize;
+			continue; // nothing to see 
 		}
 
 		if(c == '\e') {
@@ -4850,6 +4852,7 @@ int display_text_proportional_len_clip_rgb(scr_coord_val x, scr_coord_val y, con
 				utf32 c2 = decoder.next();
 				color = handle_color_sequences(c2, default_color);
 			}
+			continue; // nothing to see 
 		}
 
 		// print unknown character?
