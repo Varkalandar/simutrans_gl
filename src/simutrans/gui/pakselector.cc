@@ -63,14 +63,6 @@ pakselector_t::pakselector_t() :
 			add_path(dummy);
 		}
 	}
-	
-	for(dir_entry_t &i : entries) {
-
-		if (i.type == LI_HEADER) {
-			i.label->set_size(scr_size(100, 40));
-			continue;
-		}
-	}
 
 	resize(scr_coord(0, 0));
 }
