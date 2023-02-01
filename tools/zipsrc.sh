@@ -5,7 +5,7 @@ packen()
 	# pack all files of the current release
 	FILELISTE=`find . -type f "(" -name "*.c" -o -name "*.h" -o -name "*.cc" -o -name "*.mm" ")"`
 	FILELISTF=`find . -type f "(" -name "*.sh" -o -name "*.mk"  -o -name "*.nut" ")"`
-	FILELISTG=`find . -type f "(" -name "*.txt" -o -name "*.bdf"  -o -name "*.fnt"  -o -name "*.mid"  -o -name "*.tab" ")"`
+	FILELISTG=`find . -type f "(" -name "*.txt" -o -name "*.bdf"  -o -name "*.ttf"  -o -name "*.mid"  -o -name "*.tab" ")"`
 	FILELISTI=`find . -type f "(" -name "*.tab" -o -name "*.dat"  -o -name "*.png" -o -name "*.svg" -o -name "*.desktop" ")"`
 	rm ../simutrans-src.zip
 	zip ../simutrans-src.zip $FILELISTE

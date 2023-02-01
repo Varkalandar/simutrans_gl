@@ -36,6 +36,7 @@ int sprachengui_t::cmp_language_button(sprachengui_t::language_button_t a, sprac
  */
 void sprachengui_t::init_font_from_lang()
 {
+	/*
 	bool reload_font = !has_character( translator::get_lang()->highest_character );
 
 	// the real fonts for the current language
@@ -66,6 +67,8 @@ void sprachengui_t::init_font_from_lang()
 		dr_chdir( env_t::user_dir );
 	}
 
+	 */
+	
 	const char * p = translator::translate("SEP_THOUSAND");
 	char c = ',';
 	if(*p != 'S') {
@@ -124,8 +127,16 @@ sprachengui_t::sprachengui_t() :
 		b->set_typ(button_t::square_state);
 		b->set_text(lang->name);
 		b->set_no_translate(true);
+		b->add_listener(this);
 
+		
+		// disabled with the move to TTF fonts
+		/*
+		
 		// check, if font exists
+		
+		
+		
 		uint16 num_loaded = false;
 		char prop_font_file_name[1024];
 		tstrncpy( prop_font_file_name, lang->translate("PROP_FONT_FILE"), lengthof(prop_font_file_name) );
@@ -161,6 +172,8 @@ sprachengui_t::sprachengui_t() :
 			b->disable();
 		}
 
+		 */
+		
 		// press button
 		int id = translator::get_language(lang->iso);
 		if(  translator::get_language() == id  ) {
