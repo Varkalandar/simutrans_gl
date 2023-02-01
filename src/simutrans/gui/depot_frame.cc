@@ -407,7 +407,7 @@ void depot_frame_t::init(depot_t *dep)
 	update_data();
 
 	reset_min_windowsize();
-	set_min_windowsize(get_min_windowsize() + scr_size(0, 12));
+	set_min_windowsize(get_min_windowsize());
 	set_windowsize(get_min_windowsize());
 	set_resizemode( diagonal_resize );
 

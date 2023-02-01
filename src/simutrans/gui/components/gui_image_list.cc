@@ -95,11 +95,10 @@ void gui_image_list_t::draw(scr_coord parent_pos)
 			// Get image data
 			scr_coord_val x,y,w,h;
 			display_get_base_image_offset( idata.image, &x, &y, &w, &h );
-
+			
 			// calculate image offsets
 			y = -y + (grid.y-h) - 6; // align to bottom mark
-			x = -x + 2;              // Add 2 pixel margin
-			//display_base_img(idata.image, xpos + placement.x, ypos + placement.y, player_nr, false, true);
+			x = -x + (grid.x-w) / 2; // align horizontally centered
 			display_base_img(idata.image, xpos + x, ypos + y, player_nr, false, true);
 
 			// If necessary, display a number:
