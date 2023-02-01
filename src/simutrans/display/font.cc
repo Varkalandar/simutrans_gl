@@ -120,10 +120,9 @@ bool font_t::load_from_freetype(const char *fname, int pixel_height)
 		// set glyph size
 		glyph.height  = face->glyph->bitmap.rows;
 		glyph.width   = face->glyph->bitmap.width;
-		glyph.advance = face->glyph->bitmap.width+1;
+		glyph.advance = face->glyph->bitmap.width+1;				
 		
-		
-		// the bitmaps are all top aligned. Bitmap top is the ascent
+		// Hajo: the bitmaps are all top aligned. Bitmap top is the ascent
 		// above the base line
 		// to find the real top position, we must take the font ascent
 		// and reduce it by the glyph ascent 
@@ -160,7 +159,9 @@ bool font_t::load_from_freetype(const char *fname, int pixel_height)
 
 	// Use only needed amount
 	glyphs.resize(num_glyphs);
-	glyphs[(uint32)' '].advance = glyphs[(uint32)'n'].advance;
+	
+	// Hajo: how to get proper space width?
+	glyphs[(uint32)' '].advance = glyphs[(uint32)'i'].advance;
 
 	FT_Done_Face( face );
 	FT_Done_FreeType( ft_library );
