@@ -201,10 +201,13 @@ buildOSX()
 	fi
 }
 
+#
+# Enable this to get language updates from translator
+#
 # fetch language files
-if [ "$#" = "0"  ]  ||  [ `expr match "$*" "-no-lang"` = "0" ]; then
-  sh tools/get_lang_files.sh
-fi
+#if [ "$#" = "0"  ]  ||  [ `expr match "$*" "-no-lang"` = "0" ]; then
+#  sh tools/get_lang_files.sh
+#fi
 
 # now built the archive for distribution
 cd simutrans
