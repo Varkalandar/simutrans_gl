@@ -4664,7 +4664,7 @@ int display_calc_proportional_string_len_width(const char *text, size_t len)
 		text = reinterpret_cast<const char *>(p);
 
 		if(iUnicode == '\t') {
-			int tabsize = 40;
+			int tabsize = 40 * LINESPACE / 11;
 			// advance to next tab stop
 			int p = width % tabsize;
 			width = (width - p) + tabsize;
@@ -4802,7 +4802,7 @@ int display_text_proportional_len_clip_rgb(scr_coord_val x, scr_coord_val y, con
 		}
 
 		if(c == '\t') {
-			int tabsize = 40;
+			int tabsize = 40  * LINESPACE / 11;
 			// advance to next tab stop
 			int p = (x - x0) % tabsize;
 			x = x - p + tabsize;
@@ -4836,7 +4836,7 @@ int display_text_proportional_len_clip_rgb(scr_coord_val x, scr_coord_val y, con
 
 		// all visible rows
 		for (int h = 0; h < glyph_height; h++) {
-			const int line = y + glyph_top + h;
+			const int line = y + h + glyph_top;
 			if(line >= cT && line < cB) {	
 
 				PIXVAL* dst = textur + screen_pos;
@@ -4846,7 +4846,7 @@ int display_text_proportional_len_clip_rgb(scr_coord_val x, scr_coord_val y, con
 					int alpha = p[h*glyph_width + gx];
 					PIXVAL new_color;
 					
-					if(alpha > 95) {
+					if(alpha > 90) {
 						// opaque
 						new_color = color;
 					} else {

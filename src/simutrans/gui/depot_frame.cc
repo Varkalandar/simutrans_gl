@@ -105,14 +105,6 @@ public:
 };
 
 
-class gui_aligned_container_zero_width_t : public gui_aligned_container_t
-{
-public:
-
-	scr_size get_min_size() const OVERRIDE { return scr_size(0, gui_aligned_container_t::get_min_size().h); }
-};
-
-
 // Labels with dynamic buffers, index into labels[]
 enum {
 	// convoi properties
@@ -363,12 +355,10 @@ void depot_frame_t::init(depot_t *dep)
 	/*
 	 * [VEHICLE]
 	 */
-	// special container with min-width == zero
-	// (prevents mouse-over-events to spoil the layout and force a large min-width)
-	cont_vehicle_labels = new gui_aligned_container_zero_width_t();
+	cont_vehicle_labels = new gui_aligned_container_t();
 	cont_vehicle_labels->set_table_layout(2,0);
 	cont_vehicle_labels->set_force_equal_columns(true);
-	cont_vehicle_labels->set_spacing(scr_size(D_H_SPACE*2, 1));
+	cont_vehicle_labels->set_spacing(scr_size(D_H_SPACE*4, 1));
 
 	cont_vehicle_labels->add_component(labels[LB_VEH_NAME],2);
 	cont_vehicle_labels->add_component(new gui_spacer_t(scr_coord(0,0), scr_size(200, 4)),2);
@@ -429,6 +419,7 @@ void depot_frame_t::init(depot_t *dep)
 	update_data();
 
 	reset_min_windowsize();
+	set_min_windowsize(get_min_windowsize() + scr_size(0, 12));
 	set_windowsize(get_min_windowsize());
 	set_resizemode( diagonal_resize );
 
@@ -1360,12 +1351,14 @@ void depot_frame_t::draw(scr_coord pos, scr_size size)
 	
 	// Hajo: test info popup	
 	if(show_vehicle_info_popup) {
-		scr_coord_val height = 92;
+		scr_coord_val height = LINESPACE * 7 + 12;
 		scr_coord popup_pos(pos.x + 0, pos.y + size.h - height - 1);
-		// display_img_stretch(gui_theme_t::windowback, scr_rect(pos + popup_pos, size.w, height), 0);
+		display_img_stretch(gui_theme_t::windowback, scr_rect(popup_pos + scr_coord(0, 1), size.w, height), 0);
 		
-		display_fillbox_wh_rgb(popup_pos.x, popup_pos.y, size.w, height, gui_theme_t::gui_color_list_background_even, false);
-		display_fillbox_wh_clip_rgb(popup_pos.x, popup_pos.y, size.w, 1, SYSCOL_TEXT_SHADOW, false);
+		// display_fillbox_wh_rgb(popup_pos.x, popup_pos.y, size.w, height, gui_theme_t::gui_color_list_background_even, false);
+		display_fillbox_wh_clip_rgb(popup_pos.x+1, popup_pos.y, size.w-2, 1, SYSCOL_TEXT_SHADOW, false);
+		
+		// cont_vehicle_labels->set_size(size);
 		cont_vehicle_labels->draw(popup_pos);
 	}
 }
@@ -1532,23 +1525,23 @@ void depot_frame_t::update_vehicle_info_text(scr_coord pos)
 			labels[LB_VEH_LOADINGTIME]->buf().clear();
 		}
 
-		labels[LB_VEH_SPEED]->buf().printf( "%s\t%d km/h\n", translator::translate("Max. speed:"), veh_type->get_topspeed() );
+		labels[LB_VEH_SPEED]->buf().printf( "%s\t%dkm/h\n", translator::translate("Max. speed:"), veh_type->get_topspeed() );
 
 		if(  veh_type->get_power() > 0  ) {
 			if(  veh_type->get_gear() != 64  ){
-				labels[LB_VEH_POWER]->buf().printf( "%s\t%d kW (x%0.2f)\n", translator::translate("Engine power:"), veh_type->get_power(), veh_type->get_gear() / 64.0 );
+				labels[LB_VEH_POWER]->buf().printf( "%s\t%dkW (x%0.2f)\n", translator::translate("Engine power:"), veh_type->get_power(), veh_type->get_gear() / 64.0 );
 			}
 			else {
-				labels[LB_VEH_POWER]->buf().printf("%s\t%d kW", translator::translate("Engine power:"), veh_type->get_power() );
+				labels[LB_VEH_POWER]->buf().printf("%s\t%dkW", translator::translate("Engine power:"), veh_type->get_power() );
 			}
 		}
 
-		// column 2
-		labels[LB_VEH_WEIGHT]->buf().printf( "%s\t%.1ft\n", translator::translate("Weight:"), veh_type->get_weight() / 1000.0 );
-		labels[LB_VEH_DATE]->buf().printf( "%s:\t%s - ", translator::translate("Available"), translator::get_short_date(veh_type->get_intro_year_month() / 12, veh_type->get_intro_year_month() % 12) );
+		// column 2s
+		labels[LB_VEH_WEIGHT]->buf().printf("%s\t%.1ft\n", translator::translate("Weight:"), veh_type->get_weight() / 1000.0);
+		labels[LB_VEH_DATE]->buf().printf("%s:\t%s", translator::translate("Available"), translator::get_short_date(veh_type->get_intro_year_month() / 12, veh_type->get_intro_year_month() % 12));
 
 		if(  veh_type->get_retire_year_month() != DEFAULT_RETIRE_DATE * 12  ) {
-			labels[LB_VEH_DATE]->buf().printf( "%s\n", translator::get_short_date(veh_type->get_retire_year_month() / 12, veh_type->get_retire_year_month() % 12) );
+			labels[LB_VEH_DATE]->buf().printf(" - %s\n", translator::get_short_date(veh_type->get_retire_year_month() / 12, veh_type->get_retire_year_month() % 12));
 		}
 
 		if(  char const* const copyright = veh_type->get_copyright()  ) {

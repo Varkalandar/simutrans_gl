@@ -29,7 +29,7 @@
 class depot_t;
 class vehicle_desc_t;
 class depot_convoi_capacity_t;
-class gui_aligned_container_zero_width_t;
+
 /**
  * Depot frame, handles all interaction with a vehicle depot.
  */
@@ -69,7 +69,7 @@ private:
 
 	vector_tpl<gui_label_buf_t*> labels;
 	gui_aligned_container_t *cont_veh_action;
-	gui_aligned_container_zero_width_t *cont_vehicle_labels;
+	gui_aligned_container_t *cont_vehicle_labels;
 
 	depot_convoi_capacity_t* cont_convoi_capacity;
 

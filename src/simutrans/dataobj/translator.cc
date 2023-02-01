@@ -747,7 +747,7 @@ const char *translator::get_short_date(uint16 year, uint16 month)
 		case env_t::DATE_FMT_US:
 		case env_t::DATE_FMT_US_NO_SEASON:
 		default:
-			sprintf(sdate, "%s %4d%s", month_, year, year_sym);
+			sprintf(sdate, "%s %d%s", month_, year, year_sym);
 			break;
 	}
 	return sdate;

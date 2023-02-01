@@ -79,7 +79,7 @@ bool font_t::load_from_freetype(const char *fname, int pixel_height)
 	const sint16 ascent = face->size->metrics.ascender/64;
 	linespace           = face->size->metrics.height/64;
 	descent             = face->size->metrics.descender/64;
-
+	
 	tstrncpy( this->fname, fname, lengthof(this->fname) );
 
 	uint32 num_glyphs = 0;
@@ -140,7 +140,7 @@ bool font_t::load_from_freetype(const char *fname, int pixel_height)
 				uint8 alpha = face->glyph->bitmap.buffer[y * face->glyph->bitmap.pitch + x];
 				// simgraph blend routines want alpha in percent
 				
-				bitmap[y * glyph.width + x] = (uint8)(pow((alpha / 255.0), 1.5) * 100);
+				bitmap[y * glyph.width + x] = (uint8)(pow((alpha / 255.0), 0.75) * 100);
 			}		
 		}
 	}

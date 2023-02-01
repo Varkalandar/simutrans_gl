@@ -121,7 +121,7 @@ void gui_label_t::draw(scr_coord offset)
 		// calculate proper text top margin
 		if(fixed_min_height)
 		{
-			// text is LINEHEIGHT, and y will be glyphs top
+			// text is LINESPACE, and y pos will be glyphs top
 			top = (size.h - LINESPACE) / 2;
 		}
 		

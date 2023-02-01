@@ -179,8 +179,8 @@ uint8 env_t::gui_player_color_dark = 1;
 uint8 env_t::gui_player_color_bright = 4;
 
 #ifndef __ANDROID__
-std::string env_t::fontname = FONT_PATH_X "prop.fnt";
-uint8 env_t::fontsize = 11;
+std::string env_t::fontname = FONT_PATH_X "LiberationSans-Regular.ttf";
+uint8 env_t::fontsize = 14;
 #else
 std::string env_t::fontname = FONT_PATH_X "Roboto-Regular.ttf";
 uint8 env_t::fontsize = 17;
