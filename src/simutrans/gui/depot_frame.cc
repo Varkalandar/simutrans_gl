@@ -295,60 +295,48 @@ void depot_frame_t::init(depot_t *dep)
 	*/
 	new_component<gui_divider_t>();
 
-	cont_veh_action = add_table(4,0);
-	{
-		// put columns 1-3 in extra container to force correct button width in 4th column
-		gui_aligned_container_t *cont_3cols = new_component_span<gui_aligned_container_t>(3,0,3);
-		cont_3cols->add_component(&lb_convoi_count);
-		cont_3cols->new_component<gui_fill_t>();
-		cont_3cols->new_component<gui_label_t>("Fahrzeuge:", SYSCOL_TEXT, gui_label_t::right);
-	}
-	bt_veh_action.set_typ(button_t::roundbox | button_t::flexible);
 	bt_veh_action.add_listener(this);
-	bt_veh_action.set_tooltip("Choose operation executed on clicking stored/new vehicles");
-	add_component(&bt_veh_action);
+	// bt_veh_action.set_tooltip("Choose operation executed on clicking stored/new vehicles");
 
-	{
-		// put columns 1-4 in extra container to force correct button width in last column
-		gui_aligned_container_t *cont_4cols = new_component_span<gui_aligned_container_t>(4,0,3);
+	cont_veh_action = add_table(5, 0);
+	cont_veh_action->add_component(&lb_convoi_count, 3);
+	cont_veh_action->new_component<gui_label_t>("Fahrzeuge:", SYSCOL_TEXT, gui_label_t::right);
+	
+	cont_veh_action->add_component(&bt_veh_action);
 
-		bt_obsolete.init(button_t::square_state, "Show obsolete");
-		bt_obsolete.pressed = show_retired_vehicles;
-		if(  welt->get_settings().get_allow_buying_obsolete_vehicles()  ) {
-			bt_obsolete.add_listener(this);
-			bt_obsolete.set_tooltip("Show also vehicles no longer in production.");
-			cont_4cols->add_component(&bt_obsolete);
-		}
-		else {
-			cont_4cols->new_component<gui_fill_t>();
-		}
-
-		cont_4cols->new_component<gui_label_t>("Filter:", SYSCOL_TEXT, gui_label_t::right);
-
-		vehicle_filter.add_listener(this);
-		cont_4cols->add_component(&vehicle_filter);
-
-		cont_4cols->new_component<gui_label_t>("Search:", SYSCOL_TEXT, gui_label_t::right);
+	bt_obsolete.init(button_t::square_state, "Show obsolete");
+	bt_obsolete.pressed = show_retired_vehicles;
+	
+	if(  welt->get_settings().get_allow_buying_obsolete_vehicles()  ) {
+		bt_obsolete.add_listener(this);
+		bt_obsolete.set_tooltip("Show also vehicles no longer in production.");
+		cont_veh_action->add_component(&bt_obsolete);
 	}
+	else {
+		cont_veh_action->new_component<gui_fill_t>();
+	}
+
+	cont_veh_action->new_component<gui_label_t>("Filter:", SYSCOL_TEXT, gui_label_t::right);
+
+	vehicle_filter.add_listener(this);
+	cont_veh_action->add_component(&vehicle_filter);
+
+	cont_veh_action->new_component<gui_label_t>("Search:", SYSCOL_TEXT, gui_label_t::right);
+
 	name_filter_input.set_text(name_filter_value, 60);
-	add_component(&name_filter_input);
+	cont_veh_action->add_component(&name_filter_input);
 	name_filter_input.add_listener(this);
 
-	{
-		// put columns 1-3 in extra container to force correct button width in 4th column
-		gui_aligned_container_t *cont_3cols = new_component_span<gui_aligned_container_t>(3,0,3);
+	bt_show_all.init(button_t::square_state, "Show all");
+	bt_show_all.add_listener(this);
+	bt_show_all.set_tooltip("Show also vehicles that do not match for current action.");
+	bt_show_all.pressed = show_all;
 
-		bt_show_all.init(button_t::square_state, "Show all");
-		bt_show_all.add_listener(this);
-		bt_show_all.set_tooltip("Show also vehicles that do not match for current action.");
-		bt_show_all.pressed = show_all;
-
-		cont_3cols->add_component(&bt_show_all);
-		cont_3cols->new_component<gui_fill_t>();
-		cont_3cols->new_component<gui_label_t>("Sort by:", SYSCOL_TEXT, gui_label_t::right);
-	}
+	cont_veh_action->add_component(&bt_show_all);
+	cont_veh_action->new_component<gui_label_t>("Sort by:", SYSCOL_TEXT, gui_label_t::right);
+	
 	sort_by.add_listener(this);
-	add_component(&sort_by);
+	cont_veh_action->add_component(&sort_by);
 
 	end_table();
 
@@ -642,8 +630,14 @@ void depot_frame_t::update_data()
 	// change green into blue for retired vehicles
 	const int month_now = welt->get_timeline_year_month();
 
-	bt_veh_action.set_text(txt_veh_action[veh_action]);
-
+	bt_veh_action.clear_elements();
+	for(int i = 0; i < 3; i++) {
+		bt_veh_action.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate(txt_veh_action[i]), SYSCOL_TEXT);
+	}
+	bt_veh_action.set_size(bt_veh_action.get_size());
+	bt_veh_action.set_selection(veh_action);
+	
+	
 	cbuffer_t &txt_convois = lb_convois.buf();
 	switch(  depot->convoi_count()  ) {
 		case 0: {
@@ -1189,12 +1183,7 @@ bool depot_frame_t::action_triggered( gui_action_creator_t *comp, value_t p)
 			depot_t::update_all_win();
 		}
 		else if(  comp == &bt_veh_action  ) {
-			if(  veh_action == va_sell  ) {
-				veh_action = va_append;
-			}
-			else {
-				veh_action++;
-			}
+			veh_action = bt_veh_action.get_selection();
 		}
 		else if(  comp == &sort_by  ) {
 			depot->selected_sort_by = sort_by.get_selection();

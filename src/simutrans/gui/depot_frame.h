@@ -90,7 +90,7 @@ private:
 
 	gui_tab_panel_t tabs;
 
-	button_t bt_veh_action;
+	gui_combobox_t bt_veh_action;
 	button_t bt_copy_convoi;
 
 	vector_tpl<gui_image_list_t::image_data_t*> convoi_pics;
