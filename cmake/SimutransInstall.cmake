@@ -30,14 +30,14 @@ install(TARGETS simutrans RUNTIME DESTINATION "${SIMUTRANS_BIN_DIR}" BUNDLE DEST
 install(DIRECTORY "${CMAKE_SOURCE_DIR}/simutrans/" DESTINATION ${SIMUTRANS_BASE_DIR} REGEX "get_pak.sh" EXCLUDE)
 
 #
-# Download language files
+# No not ... Download language files
 #
-if (MSVC)
+#if (MSVC)
 	# MSVC has no variable on the install target path at execution time, which is why we expand the directories at creation time!
-	install(CODE "execute_process(COMMAND powershell -ExecutionPolicy Bypass -File ${CMAKE_SOURCE_DIR}/tools/get_lang_files.ps1 WORKING_DIRECTORY ${SIMUTRANS_OUTPUT_DIR}/${SIMUTRANS_BASE_DIR}/..)")
-else ()
-	install(CODE "execute_process(COMMAND sh ${CMAKE_SOURCE_DIR}/tools/get_lang_files.sh WORKING_DIRECTORY ${SIMUTRANS_OUTPUT_DIR}/${SIMUTRANS_BASE_DIR}/.. )")
-endif ()
+#	install(CODE "execute_process(COMMAND powershell -ExecutionPolicy Bypass -File ${CMAKE_SOURCE_DIR}/tools/get_lang_files.ps1 WORKING_DIRECTORY ${SIMUTRANS_OUTPUT_DIR}/${SIMUTRANS_BASE_DIR}/..)")
+#else ()
+#	install(CODE "execute_process(COMMAND sh ${CMAKE_SOURCE_DIR}/tools/get_lang_files.sh WORKING_DIRECTORY ${SIMUTRANS_OUTPUT_DIR}/${SIMUTRANS_BASE_DIR}/.. )")
+#endif ()
 
 #
 # Pak installer

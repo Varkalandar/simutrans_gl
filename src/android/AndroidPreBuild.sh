@@ -2,8 +2,8 @@
 
 cd simutrans || exit 1
 
-echo "Updating translations"
-tools/get_lang_files.sh || exit 1
+# echo "Updating translations"
+# tools/get_lang_files.sh || exit 1
 
 cd simutrans
 
