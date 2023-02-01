@@ -13,15 +13,6 @@
 #include <stdio.h>
 #include <vector>
 
-
-#define GLYPH_BITMAP_HEIGHT (23u)
-#define GLYPH_BITMAP_WIDTH  (16u)
-#define GLYPH_BITMAP_BPP    (1u) // cannot be changed currently
-
-// Size in bytes of a single row
-#define GLYPH_ROW_PITCH (((GLYPH_BITMAP_WIDTH*GLYPH_BITMAP_BPP)+CHAR_BIT-1)/CHAR_BIT)
-
-
 /**
  * Terminology:
  *  - glyph:        display data of a single character
@@ -39,10 +30,12 @@ public:
 	{
 		glyph_t();
 
-		uint8 bitmap[GLYPH_ROW_PITCH * GLYPH_BITMAP_HEIGHT];
-		uint8 yoff; // = ascent - bearingY
+		uint8* bitmap;
+
+                uint8 height;
 		uint8 width;
 		uint8 advance;
+		uint8 top;
 	};
 
 public:
@@ -68,20 +61,17 @@ public:
 	/// @returns width in pixels of the glyph of a character
 	uint8 get_glyph_width(utf32 c) const;
 
+	/// @returns height in pixels of the glyph of a character
+	uint8 get_glyph_height(utf32 c) const;
+        
 	/// @returns yoffset in pixels of the glyph of a character
-	uint8 get_glyph_yoffset(uint32 c) const;
+	uint8 get_glyph_top(uint32 c) const;
 
 	/// @returns glyph data of a character
 	/// @sa font_t::glyph_t::bitmap
 	const uint8 *get_glyph_bitmap(utf32 c) const;
 
 private:
-	/// Load a BDF font
-	bool load_from_bdf(FILE *fin);
-
-	/// Load a .fnt file
-	bool load_from_fnt(FILE *fin);
-
 #ifdef USE_FREETYPE
 	/// Load a freetype font
 	bool load_from_freetype(const char *fname, int pixel_height);

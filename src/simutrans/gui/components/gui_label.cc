@@ -114,7 +114,19 @@ void gui_label_t::draw(scr_coord offset)
 	}
 
 	else if(text) {
-		scr_coord_val top = (fixed_min_height - LINESPACE) / 2;
+		
+		scr_coord_val top = 0;
+		
+		// Hajo: if there is a special height set for his label
+		// calculate proper text top margin
+		if(fixed_min_height)
+		{
+			// text is LINEHEIGHT, and y will be glyphs top
+			top = (size.h - LINESPACE) / 2;
+		}
+		
+		// bounding box for debugging
+		// display_fillbox_wh_clip_rgb(offset.x + pos.x, offset.y + pos.y, size.w, size.h, 0xFFFF, false);		
 		
 		const scr_rect area(offset+pos+scr_coord(0, top), size);
 		

@@ -3390,6 +3390,7 @@ PIXVAL display_blend_colors(PIXVAL background, PIXVAL foreground, int percent_bl
 			const PIXVAL b = (b_dest * alpha + b_src * (64 - alpha) + 32) >> 6;
 			return (r << 10) | (g << 5) | b;
 #else
+			
 		case 16:
 		{
 			const PIXVAL two = TWO_OUT_16;
@@ -3400,12 +3401,13 @@ PIXVAL display_blend_colors(PIXVAL background, PIXVAL foreground, int percent_bl
 			const PIXVAL one = ONE_OUT_16;
 			return ((((background) >> 1) & one)) + (((foreground) >> 1) & one);
 		}
+/* Hajo: this is incorrect and creates errors used with fonts
 		case 48:
 		{
 			const PIXVAL two = TWO_OUT_16;
 			return ((((background) >> 2) & two)) + (3 * ((foreground) >> 2) & two);
 		}
-
+*/
 		case 64:
 			return foreground;
 
@@ -3418,9 +3420,9 @@ PIXVAL display_blend_colors(PIXVAL background, PIXVAL foreground, int percent_bl
 			const PIXVAL r_dest = (foreground >> 11);
 			const PIXVAL g_dest = (foreground >> 5) & 0x3F;
 			const PIXVAL b_dest = (foreground & 0x1F);
-			const PIXVAL r = (r_dest * alpha + r_src * (64 - alpha) + 32) >> 6;
-			const PIXVAL g = (g_dest * alpha + g_src * (64 - alpha) + 32) >> 6;
-			const PIXVAL b = (b_dest * alpha + b_src * (64 - alpha) + 32) >> 6;
+			const PIXVAL r = (r_dest * alpha + r_src * (64 - alpha) + 31) >> 6;
+			const PIXVAL g = (g_dest * alpha + g_src * (64 - alpha) + 31) >> 6;
+			const PIXVAL b = (b_dest * alpha + b_src * (64 - alpha) + 31) >> 6;
 			return (r << 11) | (g << 5) | b;
 #endif
 	}
@@ -4717,34 +4719,6 @@ void display_calc_proportional_multiline_string_len_width(int &xw, int &yh, cons
 
 
 
-/**
- * Helper: calculates 8bit mask for clipping.
- * Calculates mask to fit pixel interval [xRL,xR) to clipping interval [cL, cR).
- */
-static unsigned char get_h_mask(const int xL, const int xR, const int cL, const int cR)
-{
-	// do not mask
-	unsigned char mask = 0xff;
-
-	// check, if there is something to display
-	if (xR <= cL || xL >= cR) return 0;
-	// 8bit masks only
-	assert(xR - xL <= 8);
-
-	// check for left border
-	if (xL < cL) {
-		// left border clipped
-		mask = 0xff >> (cL - xL);
-	}
-	// check for right border
-	if (xR > cR) {
-		// right border clipped
-		mask &= 0xff << (xR - cR);
-	}
-	return mask;
-}
-
-
 static PIXVAL handle_color_sequences(utf32 code, PIXVAL default_color)
 {
 	PIXVAL color;
@@ -4813,18 +4787,6 @@ int display_text_proportional_len_clip_rgb(scr_coord_val x, scr_coord_val y, con
 	// store the initial x (for dirty marking)
 	const scr_coord_val x0 = x;
 
-	scr_coord_val y_offset = 0; // real y for display with clipping
-	scr_coord_val glyph_height = fnt->get_linespace();
-	const scr_coord_val yy = y + fnt->get_linespace();
-
-	// calculate vertical y clipping parameters
-	if (y < cT) {
-		y_offset = cT - y;
-	}
-	if (yy > cB) {
-		glyph_height -= yy - cB;
-	}
-
 	// big loop, draw char by char
 	utf8_decoder_t decoder((utf8 const*)txt);
 	size_t iTextPos = 0; // pointer on text position
@@ -4861,32 +4823,41 @@ int display_text_proportional_len_clip_rgb(scr_coord_val x, scr_coord_val y, con
 		}
 
 		// get the data from the font
-		int glyph_width = fnt->get_glyph_width(c);
-		const uint8 glyph_yoffset = std::max(fnt->get_glyph_yoffset(c), (uint8)y_offset);
+		const int glyph_width = fnt->get_glyph_width(c);
+		const int glyph_height = fnt->get_glyph_height(c);
+		const int glyph_top = fnt->get_glyph_top(c);
+		const uint8 *p = fnt->get_glyph_bitmap(c);
 
-		// currently max character width 16 bit supported by font.h/font.cc
-		for(  int i=0;  i<2;  i++  ) {
-			const uint8 bits = std::min(8, glyph_width);
-			uint8 mask = get_h_mask(x + i*8, x + i*8 + bits, cL, cR);
-			glyph_width -= bits;
+		int screen_pos = (y + glyph_top) * disp_width + x;
 
-			const uint8 *p = fnt->get_glyph_bitmap(c) + glyph_yoffset + i*GLYPH_BITMAP_HEIGHT;
-			if(  mask!=0  ) {
-				int screen_pos = (y+glyph_yoffset) * disp_width + x + i*8;
+		// glyph x clipping
+		int g_left = max(cL - x, 0);
+		int g_right = x + glyph_width < cR ? glyph_width : cR - x;
 
-				for (int h = glyph_yoffset; h < glyph_height; h++) {
-					unsigned int dat = *p++ & mask;
-					PIXVAL* dst = textur + screen_pos;
+		// all visible rows
+		for (int h = 0; h < glyph_height; h++) {
+			const int line = y + glyph_top + h;
+			if(line >= cT && line < cB) {	
 
-					if(  dat  !=  0  ) {
-						for(  size_t dat_offset = 0 ; dat_offset < 8 ; dat_offset++  ) {
-							if(  (dat & (0x80 >> dat_offset))  ) {
-								dst[dat_offset] = color;
-							}
-						}
+				PIXVAL* dst = textur + screen_pos;
+
+				// all columns
+				for(int gx=g_left; gx<g_right; gx++) {
+					int alpha = p[h*glyph_width + gx];
+					PIXVAL new_color;
+					
+					if(alpha > 95) {
+						// opaque
+						new_color = color;
+					} else {
+						// partially transparent -> blend it
+						PIXVAL old_color = *dst;
+						new_color = display_blend_colors(old_color, color, alpha);
 					}
-					screen_pos += disp_width;
+					
+					*dst++ = new_color;
 				}
+				screen_pos += disp_width;
 			}
 		}
 
@@ -5621,7 +5592,8 @@ bool simgraph_init(scr_size window_size, sint16 full_screen)
 	textur = dr_textur_init();
 
 	// init, load, and check fonts
-	if(  !display_load_font(env_t::fontname.c_str())  &&  !display_load_font(FONT_PATH_X "prop.fnt") ) {
+	if(!display_load_font(env_t::fontname.c_str()) &&
+	   !display_load_font(FONT_PATH_X "LiberationSans-Regular.ttf") ) {
 		dr_fatal_notify("No fonts found!");
 		return false;
 	}
