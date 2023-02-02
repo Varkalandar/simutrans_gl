@@ -82,6 +82,7 @@ public:
 		for(int i=0; i<3; i++) {
 			add_component(&labels[i]);
 			add_component(&images[i]);
+			images[i].set_display_offset(scr_coord(0, -1));
 		}
 	}
 
@@ -90,14 +91,14 @@ public:
 		total_pax = pax;
 		total_mail = mail;
 		total_goods = goods;
-		updateDepotCapacityLabels();
+		update_convoi_capacity_labels();
 	}
 
-	void updateDepotCapacityLabels()
+	void update_convoi_capacity_labels()
 	{
 		labels[0].buf().printf("%s\t%d", translator::translate("Capacity:"), total_pax);
-		labels[1].buf().printf("%d", total_mail);
-		labels[2].buf().printf("%d", total_goods);
+		labels[1].buf().printf(" %d", total_mail);
+		labels[2].buf().printf(" %d", total_goods);
 		for(int i=0; i<3; i++) {
 			labels[i].update();
 		}
