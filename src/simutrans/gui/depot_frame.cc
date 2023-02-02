@@ -299,10 +299,7 @@ void depot_frame_t::init(depot_t *dep)
 	// bt_veh_action.set_tooltip("Choose operation executed on clicking stored/new vehicles");
 
 	cont_veh_action = add_table(5, 0);
-	cont_veh_action->add_component(&lb_convoi_count, 3);
-	cont_veh_action->new_component<gui_label_t>("Fahrzeuge:", SYSCOL_TEXT, gui_label_t::right);
-	
-	cont_veh_action->add_component(&bt_veh_action);
+	cont_veh_action->add_component(&lb_convoi_count, 5);
 
 	bt_obsolete.init(button_t::square_state, "Show obsolete");
 	bt_obsolete.pressed = show_retired_vehicles;
@@ -327,6 +324,7 @@ void depot_frame_t::init(depot_t *dep)
 	cont_veh_action->add_component(&name_filter_input);
 	name_filter_input.add_listener(this);
 
+	// row start
 	bt_show_all.init(button_t::square_state, "Show all");
 	bt_show_all.add_listener(this);
 	bt_show_all.set_tooltip("Show also vehicles that do not match for current action.");
@@ -337,6 +335,9 @@ void depot_frame_t::init(depot_t *dep)
 	
 	sort_by.add_listener(this);
 	cont_veh_action->add_component(&sort_by);
+
+	cont_veh_action->new_component<gui_label_t>("Fahrzeuge:", SYSCOL_TEXT, gui_label_t::right);
+	cont_veh_action->add_component(&bt_veh_action);
 
 	end_table();
 
@@ -360,7 +361,7 @@ void depot_frame_t::init(depot_t *dep)
 	cont_vehicle_labels->add_component(labels[LB_VEH_VALUE]);
 	cont_vehicle_labels->add_component(new gui_spacer_t(scr_coord(0,0), scr_size(200, 2)),2);
 	cont_vehicle_labels->add_component(labels[LB_VEH_AUTHOR]);
-	// add_component(cont_vehicle_labels);
+
 	/*
 	 * [END OF WINDOW]
 	 */
