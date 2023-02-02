@@ -90,12 +90,12 @@ public:
 		total_pax = pax;
 		total_mail = mail;
 		total_goods = goods;
-		update();
+		updateDepotCapacityLabels();
 	}
 
-	void update()
+	void updateDepotCapacityLabels()
 	{
-		labels[0].buf().printf("%s %d", translator::translate("Capacity:"), total_pax);
+		labels[0].buf().printf("%s\t%d", translator::translate("Capacity:"), total_pax);
 		labels[1].buf().printf("%d", total_mail);
 		labels[2].buf().printf("%d", total_goods);
 		for(int i=0; i<3; i++) {
@@ -248,7 +248,7 @@ void depot_frame_t::init(depot_t *dep)
 	{
 		gui_aligned_container_t* t = add_table(2, 4);
 		t->set_force_equal_columns(true);
-		t->set_spacing(scr_size(D_H_SPACE, 0));
+		t->set_spacing(scr_size(D_H_SPACE*4, 1));
 		add_component(labels[LB_CNV_COUNT]);
 		cont_convoi_capacity = new_component<depot_convoi_capacity_t>();
 		add_component(labels[LB_CNV_COST]);
@@ -969,7 +969,7 @@ void depot_frame_t::update_data()
 				// convoi way too slow
 				convoi_length_ok_sb = 0;
 				if(  max_kmh != min_kmh  &&  !use_sel_weight  ) {
-					txt_convoi_speed.printf("%s %d km/h, %d-%d km/h %s", translator::translate("Max. speed:"), empty_kmh, min_kmh, max_kmh, translator::translate("loaded") );
+					txt_convoi_speed.printf("%s\t%dkm/h, %d-%dkm/h %s", translator::translate("Max. speed:"), empty_kmh, min_kmh, max_kmh, translator::translate("loaded") );
 					if(  max_kmh != empty_kmh  || empty_kmh < 4  ) {
 						convoi_length_slower_sb = 0;
 						convoi_length_too_slow_sb = convoi_length;
@@ -980,13 +980,13 @@ void depot_frame_t::update_data()
 					}
 				}
 				else {
-					txt_convoi_speed.printf("%s %d km/h, %d km/h %s", translator::translate("Max. speed:"), empty_kmh, use_sel_weight ? sel_kmh : min_kmh, translator::translate("loaded") );
+					txt_convoi_speed.printf("%s\t%dkm/h, %dkm/h %s", translator::translate("Max. speed:"), empty_kmh, use_sel_weight ? sel_kmh : min_kmh, translator::translate("loaded") );
 					convoi_length_slower_sb = 0;
 					convoi_length_too_slow_sb = convoi_length;
 				}
 			}
 			else {
-					txt_convoi_speed.printf("%s %d km/h", translator::translate("Max. speed:"), empty_kmh );
+					txt_convoi_speed.printf("%s\t%dkm/h", translator::translate("Max. speed:"), empty_kmh );
 					convoi_length_ok_sb = convoi_length;
 					convoi_length_slower_sb = 0;
 					convoi_length_too_slow_sb = 0;
@@ -996,33 +996,35 @@ void depot_frame_t::update_data()
 				char buf[128];
 				cbuffer_t& txt_convoi_value = labels[LB_CNV_VALUE]->buf();
 				money_to_string(  buf, cnv->calc_restwert() / 100.0, false );
-				txt_convoi_value.printf("%s %8s", translator::translate("Restwert:"), buf );
+				txt_convoi_value.printf("%s\t%s", translator::translate("Restwert:"), buf );
 
 				cbuffer_t& txt_convoi_cost = labels[LB_CNV_COST]->buf();
 				if(  sint64 fix_cost = cnv->get_fixed_cost()  ) {
 					money_to_string(  buf, (double)cnv->get_purchase_cost() / 100.0, false );
-					txt_convoi_cost.printf( translator::translate("Cost: %8s (%.2f$/km %.2f$/m)\n"), buf, (double)cnv->get_running_cost()/100.0, (double)fix_cost/100.0 );
+					txt_convoi_cost.printf("%s%s (%.2f$/km %.2f$/m)", 
+						translator::translate("Vehicle costs:"), buf, (double)cnv->get_running_cost()/100.0, (double)fix_cost/100.0);
 				}
 				else {
 					money_to_string(  buf, cnv->get_purchase_cost() / 100.0, false );
-					txt_convoi_cost.printf( translator::translate("Cost: %8s (%.2f$/km)\n"), buf, (double)cnv->get_running_cost() / 100.0 );
+					txt_convoi_cost.printf("%s%s (%.2f$/km)", 
+						translator::translate("Vehicle costs:"), buf, (double)cnv->get_running_cost() / 100.0);
 				}
 			}
 
 			cbuffer_t& txt_convoi_power = labels[LB_CNV_POWER]->buf();
-			txt_convoi_power.printf( translator::translate("Power: %4d kW\n"), cnv->get_sum_power() );
+			txt_convoi_power.printf("%s\t%dkW", translator::translate("Engine power:"), cnv->get_sum_power());
 
 			cbuffer_t& txt_convoi_weight = labels[LB_CNV_WEIGHT]->buf();
 			if(  total_empty_weight != (use_sel_weight ? total_selected_weight : total_max_weight)  ) {
 				if(  total_min_weight != total_max_weight  &&  !use_sel_weight  ) {
-					txt_convoi_weight.printf("%s %.1ft, %.1f-%.1ft", translator::translate("Weight:"), total_empty_weight / 1000.0, total_min_weight / 1000.0, total_max_weight / 1000.0 );
+					txt_convoi_weight.printf("%s\t%.1ft, %.1f-%.1ft", translator::translate("Weight:"), total_empty_weight / 1000.0, total_min_weight / 1000.0, total_max_weight / 1000.0 );
 				}
 				else {
-					txt_convoi_weight.printf("%s %.1ft, %.1ft", translator::translate("Weight:"), total_empty_weight / 1000.0, (use_sel_weight ? total_selected_weight : total_max_weight) / 1000.0 );
+					txt_convoi_weight.printf("%s\t%.1ft, %.1ft", translator::translate("Weight:"), total_empty_weight / 1000.0, (use_sel_weight ? total_selected_weight : total_max_weight) / 1000.0 );
 				}
 			}
 			else {
-					txt_convoi_weight.printf("%s %.1ft", translator::translate("Weight:"), total_empty_weight / 1000.0 );
+				txt_convoi_weight.printf("%s\t%.1ft", translator::translate("Weight:"), total_empty_weight / 1000.0 );
 			}
 			sb_convoi_length.set_visible(true);
 			cont_convoi_capacity->set_totals( total_pax, total_mail, total_goods );
@@ -1482,7 +1484,7 @@ void depot_frame_t::update_vehicle_info_text(scr_coord pos)
 		labels[LB_VEH_NAME]->buf().printf( "\en%s\ed", translator::translate( veh_type->get_name(), welt->get_settings().get_name_language_id() ) );
 
 		if(  veh_type->get_power() > 0  ) { // engine type
-			labels[LB_VEH_NAME]->buf().printf( " (%s)\n", translator::translate( vehicle_builder_t::engine_type_names[veh_type->get_engine_type()+1] ) );
+			labels[LB_VEH_NAME]->buf().printf( " (%s)", translator::translate( vehicle_builder_t::engine_type_names[veh_type->get_engine_type()+1] ) );
 		}
 
 		if(  sint64 fix_cost = welt->scale_with_month_length( veh_type->get_fixed_cost() )  ) {

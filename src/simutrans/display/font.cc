@@ -50,7 +50,7 @@ font_t::font_t() :
 
 bool font_t::load_from_freetype(const char *fname, int pixel_height)
 {
-	dbg->message( "font_t::load_from_freetype", "trying to load '%s' in size %d", fname, pixel_height);
+	dbg->message("font_t::load_from_freetype", "trying to load '%s' in size %d", fname, pixel_height);
 
 	FT_Library ft_library = NULL;
 	if(  FT_Init_FreeType(&ft_library) != FT_Err_Ok  ) {
@@ -93,7 +93,7 @@ bool font_t::load_from_freetype(const char *fname, int pixel_height)
 			continue;
 		}
 
-		/* load glyph image into the slot (erase previous one) */
+		// load glyph image into the slot (erase previous one)
 		if(FT_Load_Glyph(face, idx, FT_LOAD_RENDER) != FT_Err_Ok) {
 			// glyph not there ...
 			glyphs[glyph_nr].advance = 0xFF;
@@ -110,10 +110,9 @@ bool font_t::load_from_freetype(const char *fname, int pixel_height)
 		// use only needed amount
 		num_glyphs = glyph_nr+1;
 
-		/* now render into cache
-		 * the bitmap is at slot->bitmap
-		 * the glyph base is at slot->bitmap_left, CELL_HEIGHT - slot->bitmap_top
-		 */
+		// now render into cache
+		// the bitmap is at slot->bitmap
+		// the glyph base is at slot->bitmap_left, CELL_HEIGHT - slot->bitmap_top
 		
 		glyph_t & glyph = glyphs[glyph_nr];
 		
@@ -175,26 +174,6 @@ void font_t::print_debug() const
 {
 	dbg->debug("font_t::print_debug", "Loaded font %s with %i glyphs\n", get_fname(), get_num_glyphs());
 	dbg->debug("font_t::print_debug", "height: %i, descent: %i", linespace, descent );
-
-	/*
-	for(uint8 glyph_nr = ' ';  glyph_nr<128; glyph_nr ++) {
-		char msg[128 + GLYPH_BITMAP_HEIGHT * (GLYPH_BITMAP_WIDTH+1)]; // +1 for trailing newline
-
-		char *c = msg + sprintf(msg, "glyph %c: width %i, top %i\n", glyph_nr, get_glyph_width(glyph_nr), get_glyph_yoffset(glyph_nr) );
-
-		for(  uint32 y = 0;  y < GLYPH_BITMAP_HEIGHT;  y++  ) {
-			for(  uint32 x = 0;  x < (uint32)min(GLYPH_BITMAP_WIDTH, get_glyph_width(glyph_nr));  x++  ) {
-				const uint8 data = get_glyph_bitmap(glyph_nr)[y+(x/CHAR_BIT)*GLYPH_BITMAP_HEIGHT];
-				const bool bit_set = (data & (0x80>>(x%CHAR_BIT))) != 0;
-
-				*c++ = bit_set ? '*' : ' ';
-			}
-			*c++ = '\n';
-		}
-		*c++ = 0;
-		dbg->debug("font_t::print_debug", "glyph data: %s", msg );
-	}
-	*/
 }
 
 
