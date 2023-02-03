@@ -7,8 +7,10 @@
 #include "pakinstaller.h"
 #include "../dataobj/translator.h"
 #include "../dataobj/environment.h"
+#include "../dataobj/pakset_manager.h"
 #include "../sys/simsys.h"
 #include "../pathes.h"
+#include "../descriptor/skin_desc.h"
 
 
 pakselector_t::pakselector_t() :
@@ -119,6 +121,31 @@ bool pakselector_t::check_file(const char *filename, const char *)
 }
 
 
+void pakselector_t::load_pak_logos(slist_tpl<dir_entry_t> &entries)
+{
+	// Hajo: testing only - load logos from several paks
+	
+	for(dir_entry_t &i : entries) {
+		if (i.type == LI_ENTRY) {
+
+			dbg->message("XXX", "Checking pak path %s", i.info);
+			
+			cbuffer_t name;
+			name.append(i.info);
+			name.append("/");
+			name.append("symbol.BigLogo.pak");
+			pakset_manager_t::load_pak_file(name.get_str());
+			
+			// Hajo: Now we should have a logo in this ...
+			const skin_desc_t * logo = skinverwaltung_t::biglogosymbol;
+			
+			dbg->message("XXX", "Big logo is %p", logo);
+			
+			pak_logos.append(logo);
+		}	
+	}
+}
+
 void pakselector_t::fill_list()
 {
 	cbuffer_t path;
@@ -162,6 +189,115 @@ void pakselector_t::fill_list()
 		// empty path as more than one pakset is present, user has to choose
 		env_t::pak_dir.clear();
 		env_t::pak_name.clear();
+	}
+
+	load_pak_logos(entries);
+}
+
+bool pakselector_t::infowin_event(const event_t *ev)
+{
+	// Hajo: Hack - we must intercept events until there is a way to completely
+	// remove the underlying savegame_frame_t components. 
+	if(ev->ev_class == event_class_t::EVENT_CLICK ||
+	   ev->ev_class == event_class_t::EVENT_DRAG ||
+	   ev->ev_class == event_class_t::EVENT_RELEASE)
+	{
+		// so, did we hit something?
+		
+		const scr_coord_val dw = display_get_width();
+		const scr_coord_val xspace = 280;
+		const scr_coord_val xstart = (dw % xspace) / 2;
+
+		const scr_coord_val ystart = 100;
+		const scr_coord_val yspace = 170;
+
+		const int mx = ev->mx; 
+		const int my = ev->my; 
+
+		const int index = ((my - ystart) / yspace) * (dw / xspace) + (mx - xstart) / xspace;
+
+		int counter = 0;
+		for(dir_entry_t &entry : entries) {
+			if (entry.type == LI_ENTRY) {
+				if(counter == index) {
+					item_action(entry.info);
+				}
+				
+				counter ++;
+			}
+		}
+		
+	} else {
+		savegame_frame_t::infowin_event(ev);
+	}
+	
+	return true;	
+}
+
+
+void pakselector_t::draw(scr_coord pos, scr_size size)
+{
+	savegame_frame_t::draw(pos, size);
+
+	// we want to be to-left aligned .. 	
+	win_set_pos(this, 0, 0);
+	set_windowsize(scr_size(display_get_width(), display_get_height()));	
+	
+	// Hajo: use full screen ? 
+	
+	const scr_coord_val dw = display_get_width();
+	const scr_coord_val dh = display_get_height();
+	
+	const PIXVAL background = get_system_color(160, 160, 160);
+	display_fillbox_wh_rgb(0, 0, dw, dh, background, true);
+	
+	const char * title = translator::translate("Choose a Graphics Set For Playing");
+	const scr_coord_val title_width = display_calc_proportional_string_len_width(title, strlen(title));
+	
+	display_fillbox_wh_rgb((dw - title_width) / 2 - 20, 30, title_width + 40, 30, 0xFFFF, true);
+	display_proportional_rgb((dw - title_width) / 2, 40, title, ALIGN_LEFT, 0x0000, false);
+	
+	const scr_coord_val xspace = 280;
+	const scr_coord_val xstart = (dw % xspace) / 2;
+	
+	const scr_coord_val ystart = 100;
+	const scr_coord_val yspace = 170;
+
+	scr_coord_val x = xstart;
+	scr_coord_val y = ystart;
+
+	int index = 0;
+	
+	for(dir_entry_t &entry : entries) {
+		if (entry.type == LI_ENTRY) {
+			
+			const skin_desc_t * logo = pak_logos.at(index);
+			
+			display_fillbox_wh_rgb(x-1, y-1, 258, 130, 0xFFFF, true);
+			display_base_img(logo->get_image_id(0), x, y, 0, false, true);
+			display_base_img(logo->get_image_id(1), x+128, y, 0, false, true);
+		
+			const char * pak_name = strrchr(entry.info, '/');
+			if(pak_name) {
+				pak_name ++;
+			} else {
+				pak_name = entry.info;
+			}
+
+			scr_coord_val pak_name_width = display_calc_proportional_string_len_width(pak_name, strlen(pak_name));
+			
+			display_proportional_rgb(x + (256 - pak_name_width)/2, y + 136, pak_name, ALIGN_LEFT, 0x0000, false);
+
+			x += xspace;
+
+			if(x > display_get_width() - xspace)
+			{
+				x = xstart;
+				y += yspace;
+			}
+
+			index ++;
+		}
 	}
 }
 

@@ -18,6 +18,11 @@ class pakselector_install_action_t : public action_listener_t
 
 class pakselector_t : public savegame_frame_t
 {
+private:
+        void load_pak_logos(slist_tpl<dir_entry_t> &entries);
+        
+        slist_tpl <const skin_desc_t*> pak_logos;
+        
 protected:
 	cbuffer_t      notice_buffer;
 	gui_textarea_t notice_label;
@@ -37,6 +42,13 @@ public:
 	const char *get_help_filename ( void ) const OVERRIDE { return ""; }
 	bool        has_title         ( void ) const OVERRIDE { return false; }
 	bool        has_pak           ( void ) const          { return !entries.empty(); }
+
+	/**
+	 * Events are notified to GUI components via this method.
+	 */
+	bool        infowin_event(const event_t *ev) OVERRIDE;
+        
+	void        draw(scr_coord pos, scr_size size);
 };
 
 #endif
