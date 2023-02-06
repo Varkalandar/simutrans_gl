@@ -43,8 +43,7 @@ private:
 
 	void add_section(std::string &name);
 
-protected:
-
+public:
 	/**
 	 * Entries in list can be actual file entries or
 	 * headers, that have a different look.
@@ -90,6 +89,8 @@ protected:
 		}
 	};
 
+protected:
+        
 	// Standard GUI controls in dialogue
 	gui_textinput_t  input;         //@< Filename input field
 	button_t         savebutton;    //@< Save button
@@ -113,9 +114,9 @@ protected:
 	void        set_extension( const char *ext ) { suffix = ext; }
 	void        cleanup_path ( char *path );
 	void        shorten_path ( char *dest, const char *source, const size_t max_size );
-	void        list_filled  ( void );
 
-	virtual   void fill_list ( void );
+	virtual void fill_list ( void );
+	virtual void list_filled  ( void );
 
 	// compare item to another with info and filename
 	virtual bool compare_items ( const dir_entry_t & entry, const char *info, const char *filename );
@@ -134,7 +135,6 @@ protected:
 public:
 
 	savegame_frame_t(const char *suffix, bool only_directorie, const char *path, const bool delete_enabled );
-//	savegame_frame_t(const char *suffix = NULL, bool only_directories = false, const char *path = NULL, const bool delete_enabled = true);
 	virtual ~savegame_frame_t();
 
 	bool action_triggered  ( gui_action_creator_t*, value_t ) OVERRIDE;

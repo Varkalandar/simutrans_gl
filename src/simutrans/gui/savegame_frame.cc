@@ -119,7 +119,6 @@ savegame_frame_t::savegame_frame_t(const char *suffix, bool only_directories, co
 }
 
 
-
 /**
  * Free all list items.
  */
@@ -142,7 +141,6 @@ savegame_frame_t::~savegame_frame_t()
 
 	this->paths.clear();
 }
-
 
 
 /**
@@ -197,7 +195,6 @@ void savegame_frame_t::add_section(std::string &name){
 }
 
 
-
 /**
  * Adds a path to the list of path included in the file search.
  * Several paths can be added one at a time. All added paths will
@@ -213,7 +210,6 @@ void savegame_frame_t::add_path(const char * path)
 	}
 	this->paths.append(path);
 }
-
 
 
 /**
@@ -266,7 +262,6 @@ void savegame_frame_t::fill_list( void )
 
 	}
 }
-
 
 
 /**
