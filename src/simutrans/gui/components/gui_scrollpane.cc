@@ -5,7 +5,7 @@
 
 #include "../../simdebug.h"
 
-#include "../gui_frame.h"
+// #include "../gui_frame.h"
 #include "gui_scrollpane.h"
 #include "gui_scrollbar.h"
 #include "gui_button.h"
@@ -13,6 +13,7 @@
 #include "../../dataobj/loadsave.h"
 #include "../../dataobj/environment.h"
 #include "../../display/simgraph.h"
+#include "../../display/display.h"
 #include "../../simcolor.h"
 
 
@@ -284,12 +285,22 @@ int gui_scrollpane_t::get_scroll_y() const
 scr_rect gui_scrollpane_t::get_client( void )
 {
 	scr_rect client( pos, pos+size );
+	
 	if(  b_show_scroll_x  &&  scroll_x.is_visible()  ) {
 		client.h -= D_SCROLLBAR_HEIGHT;
 	}
+	
 	if(  b_show_scroll_y  &&  scroll_y.is_visible()  ) {
 		client.w -= D_SCROLLBAR_WIDTH;
 	}
+	
+	if( b_show_border ) {
+		client.x += 1;
+		client.y += 1;
+		client.w -= 2;
+		client.h -= 2;
+	}
+	
 	return client;
 }
 
@@ -306,6 +317,15 @@ void gui_scrollpane_t::draw(scr_coord pos)
 
 	// get client area (scroll panel - scrollbars)
 	scr_rect client = get_client() + pos;
+	
+	if(b_show_border) {
+		
+		display_bevel_box(scr_rect(client.x-1, client.y - 1, client.w + 2, client.h + 2),
+					  gui_theme_t::gui_shadow_color, gui_theme_t::gui_shadow_color,
+					  gui_theme_t::gui_highlight_color, gui_theme_t::gui_highlight_color,
+		              false);
+	}
+	
 
 	PUSH_CLIP_FIT( client.x, client.y, client.w, client.h )
 		comp->draw( client.get_pos()-scr_coord(scroll_x.get_knob_offset(), scroll_y.get_knob_offset()) );

@@ -353,6 +353,7 @@ SOURCES += src/simutrans/display/font.cc
 SOURCES += src/simutrans/display/simgraph$(COLOUR_DEPTH).cc
 SOURCES += src/simutrans/display/simview.cc
 SOURCES += src/simutrans/display/viewport.cc
+SOURCES += src/simutrans/display/display.cc
 SOURCES += src/simutrans/freight_list_sorter.cc
 SOURCES += src/simutrans/ground/boden.cc
 SOURCES += src/simutrans/ground/brueckenboden.cc

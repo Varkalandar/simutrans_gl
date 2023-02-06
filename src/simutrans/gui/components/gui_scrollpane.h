@@ -26,6 +26,7 @@ private:
 	bool maximize:1;
 	bool b_can_drag:1;
 	bool b_is_dragging:1;
+	bool b_show_border:1;   // draw a bevel border around the client area?
 
 	// start of dragging
 	scr_coord origin;
@@ -55,7 +56,9 @@ public:
 
 	void set_component(gui_component_t *comp) { this->comp = comp; }
 
-	void set_allow_dragging(bool b) { b_can_drag = b;  }
+	void set_allow_dragging(bool yesno) { b_can_drag = yesno; }
+        
+        void set_show_border(bool yesno) { b_show_border = yesno; }
 
 	/**
 	* this is the maximum width a scrollbar requests as minimum size

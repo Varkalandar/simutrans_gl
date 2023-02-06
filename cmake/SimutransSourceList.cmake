@@ -68,6 +68,7 @@ target_sources(simutrans PRIVATE
 		src/simutrans/display/font.cc
 		src/simutrans/display/simview.cc
 		src/simutrans/display/viewport.cc
+		src/simutrans/display/display.cc
 		src/simutrans/freight_list_sorter.cc
 		src/simutrans/ground/boden.cc
 		src/simutrans/ground/brueckenboden.cc

@@ -12,6 +12,7 @@
 #include "../sys/simsys.h"
 #include "../pathes.h"
 #include "../descriptor/skin_desc.h"
+#include "../display/display.h"
 
 
 class pak_set_panel_t : public gui_component_t
@@ -23,7 +24,7 @@ class pak_set_panel_t : public gui_component_t
 		
 	public:
 		
-		void set_selector(pakselector_t * selector) {this->selector = selector;}
+		void set_selector(pakselector_t * selector) { this->selector = selector; }
 		
         void load_pak_logos(slist_tpl<savegame_frame_t::dir_entry_t> *entries);
 		
@@ -33,6 +34,8 @@ class pak_set_panel_t : public gui_component_t
 		scr_size get_min_scroll_size() { return size; }
 
 		bool infowin_event(const event_t *ev) OVERRIDE;
+		void draw_logo(const scr_coord_val xpos, const scr_coord_val ypos, 
+	                   const int index, const savegame_frame_t::dir_entry_t &entry);
 		void draw(scr_coord offset) OVERRIDE;
 };
 
@@ -44,7 +47,7 @@ void pak_set_panel_t::load_pak_logos(slist_tpl<savegame_frame_t::dir_entry_t> *e
 	for(savegame_frame_t::dir_entry_t &i : *entries) {
 		if (i.type == savegame_frame_t::LI_ENTRY) {
 
-			dbg->message("XXX", "Checking pak path %s", i.info);
+			// dbg->message("XXX", "Checking pak path %s", i.info);
 			
 			cbuffer_t name;
 			name.append(i.info);
@@ -55,7 +58,7 @@ void pak_set_panel_t::load_pak_logos(slist_tpl<savegame_frame_t::dir_entry_t> *e
 			// Hajo: Now we should have a logo in this ...
 			const skin_desc_t * logo = skinverwaltung_t::biglogosymbol;
 			
-			dbg->message("XXX", "Big logo is %p", logo);
+			// dbg->message("XXX", "Big logo is %p", logo);
 			
 			pak_logos.append(logo);
 		}	
@@ -73,47 +76,86 @@ void pak_set_panel_t::set_entries(slist_tpl<savegame_frame_t::dir_entry_t> * ent
 bool pak_set_panel_t::infowin_event(const event_t *ev)
 {
 	if(ev->ev_class == event_class_t::EVENT_CLICK ||
-	   ev->ev_class == event_class_t::EVENT_DRAG ||
 	   ev->ev_class == event_class_t::EVENT_RELEASE)
 	{
-		// so, did we hit something?
+		// Hajo: pass wheel event to the scrollpane,
+		// only handle "true" clicks here
 		
-		const scr_coord_val dw = display_get_width();
-		const scr_coord_val xspace = 280;
-		const scr_coord_val xstart = (dw % xspace) / 2;
+		if(ev->ev_code != MOUSE_WHEELUP && ev->ev_code != MOUSE_WHEELDOWN) {
+		
+			// so, did we hit something?
 
-		const scr_coord_val ystart = 20;
-		const scr_coord_val yspace = 170;
+			const scr_coord_val dw = display_get_width();
+			const scr_coord_val xspace = 280;
+			const scr_coord_val xstart = (dw % xspace) / 2;
 
-		const int mx = ev->mx; 
-		const int my = ev->my; 
+			const scr_coord_val ystart = 20;
+			const scr_coord_val yspace = 256 + 42;
 
-		const int index = ((my - ystart) / yspace) * (dw / xspace) + (mx - xstart) / xspace;
+			const int mx = ev->mx; 
+			const int my = ev->my; 
 
-		int counter = 0;
-		for(savegame_frame_t::dir_entry_t &entry : *entries) {
-			if (entry.type == savegame_frame_t::LI_ENTRY) {
-				if(counter == index) {
-					selector->item_action(entry.info);
+			const int index = ((my - ystart) / yspace) * (dw / xspace) + (mx - xstart) / xspace;
+
+			int counter = 0;
+			for(savegame_frame_t::dir_entry_t &entry : *entries) {
+				if (entry.type == savegame_frame_t::LI_ENTRY) {
+					if(counter == index) {
+
+						// Hajo: we must restore the logo before loading
+						skinverwaltung_t::biglogosymbol = pak_logos.at(index);
+
+						// Now we can load it ...
+						selector->item_action(entry.info);
+						return true;	
+					}
+
+					counter ++;
 				}
-				
-				counter ++;
 			}
-		}
-		
-		return true;	
+		}		
 	}
 	return false;
 }
 
 
+void pak_set_panel_t::draw_logo(const scr_coord_val xpos, const scr_coord_val ypos, 
+	                            const int index, const savegame_frame_t::dir_entry_t &entry)
+{
+	const skin_desc_t * logo = pak_logos.at(index);
+	const PIXVAL c = get_system_color(255, 255, 255);
+
+	display_bevel_box(scr_rect(xpos-1, ypos-1, 258, 258), c, c, c, c, true);
+	
+	display_base_img(logo->get_image_id(0), xpos, ypos, 0, false, true);
+	display_base_img(logo->get_image_id(1), xpos+128, ypos, 0, false, true);
+	display_base_img(logo->get_image_id(2), xpos, ypos+128, 0, false, true);
+	display_base_img(logo->get_image_id(3), xpos+128, ypos+128, 0, false, true);
+		
+	const char * pak_name = strrchr(entry.info, '/');
+	if(pak_name) {
+		pak_name ++;
+	} else {
+		pak_name = entry.info;
+	}
+
+	scr_coord_val pak_name_width = display_calc_proportional_string_len_width(pak_name, strlen(pak_name));
+	
+	display_proportional_clip_rgb(xpos + (256 - pak_name_width)/2, ypos + 256 + 8, pak_name, ALIGN_LEFT, 
+		                          gui_theme_t::gui_highlight_color, false);
+}
+
+
 void pak_set_panel_t::draw(scr_coord offset)
 {
+	const PIXVAL color = gui_theme_t::gui_color_chart_background;
+	display_fillbox_wh_clip_rgb(offset.x, offset.y, size.w, size.h, color, true);
+	
 	const scr_coord_val xspace = 280;
 	const scr_coord_val xstart = (size.w % xspace) / 2;
 	
 	const scr_coord_val ystart = 20;
-	const scr_coord_val yspace = 170;
+	const scr_coord_val yspace = 256 + 42;
 
 	scr_coord_val x = xstart;
 	scr_coord_val y = ystart;
@@ -123,26 +165,10 @@ void pak_set_panel_t::draw(scr_coord offset)
 	for(savegame_frame_t::dir_entry_t &entry : *entries) {
 		if (entry.type == savegame_frame_t::LI_ENTRY) {
 			
-			
-			const skin_desc_t * logo = pak_logos.at(index);
-			
 			const scr_coord_val xpos = offset.x + x;
 			const scr_coord_val ypos = offset.y + y;
-			
-			display_fillbox_wh_clip_rgb(xpos-1, ypos-1, 258, 130, 0xFFFF, true);
-			display_base_img(logo->get_image_id(0), xpos, ypos, 0, false, true);
-			display_base_img(logo->get_image_id(1), xpos+128, ypos, 0, false, true);
-		
-			const char * pak_name = strrchr(entry.info, '/');
-			if(pak_name) {
-				pak_name ++;
-			} else {
-				pak_name = entry.info;
-			}
 
-			scr_coord_val pak_name_width = display_calc_proportional_string_len_width(pak_name, strlen(pak_name));
-			
-			display_proportional_clip_rgb(xpos + (256 - pak_name_width)/2, ypos + 136, pak_name, ALIGN_LEFT, 0x0000, false);
+			draw_logo(xpos, ypos, index, entry);
 
 			x += xspace;
 
@@ -161,11 +187,22 @@ void pak_set_panel_t::draw(scr_coord offset)
 static pak_set_panel_t pak_set_panel;
 
 
-static void setup_pak_panel(pakselector_t * selector)
+static void setup_pak_panel(pakselector_t * selector, int logo_count)
 {
 	pak_set_panel.set_selector(selector);
-	scr_size size (display_get_width() - 64, display_get_height());
+	scr_size size (display_get_width() - 134, 0);
 
+	const scr_coord_val xspace = 280;
+	const scr_coord_val xstart = (size.w % xspace) / 2;
+	
+	const scr_coord_val ystart = 20;
+	const scr_coord_val yspace = 256 + 42;
+	
+	int pitch = (size.w-xstart*2) / xspace;
+	int rows = (logo_count + pitch - 1) / pitch;
+	
+	size.h = ystart + rows * yspace;
+	
 	pak_set_panel.set_size(size);
 }
 
@@ -185,7 +222,9 @@ pakselector_t::pakselector_t() :
 	
 	top_frame.new_component<gui_spacer_t>(scr_coord(0, 0), scr_size(40, 60));
 	
-	setup_pak_panel(this);
+	setup_pak_panel(this, entries.get_count());
+	scrolly.set_show_border(true);
+	scrolly.set_maximize(false);	
 	scrolly.set_component(&pak_set_panel);
 
 	// don't show list item labels
@@ -229,7 +268,9 @@ bool pakselector_t::item_action(const char *fullpath)
 	env_t::pak_dir = fullpath;
 	env_t::pak_dir += PATH_SEPARATOR;
 	env_t::pak_name = (str_get_filename(fullpath, true)+PATH_SEPARATOR);
-	env_t::default_settings.set_with_private_paks( false );
+
+	// env_t::default_settings.set_with_private_paks( false );
+	env_t::default_settings.set_with_private_paks( true );
 
 	return true;
 }
@@ -242,6 +283,7 @@ bool pakselector_t::del_action(const char *fullpath)
 	env_t::pak_dir += PATH_SEPARATOR;
 	env_t::pak_name = str_get_filename(fullpath, true)+PATH_SEPARATOR;
 	env_t::default_settings.set_with_private_paks( true );
+	
 	return true;
 }
 
@@ -328,6 +370,8 @@ void pakselector_t::list_filled(void)
 {
 	savegame_frame_t::list_filled();
 
+	setup_pak_panel(this, entries.get_count());
+	
 	const scr_coord_val margin = env_t::iconsize.w; // Hajo: this is also the toolbar height?
 	scr_size size (display_get_width()-margin*2, display_get_height()-margin*2);
 	
@@ -339,13 +383,20 @@ void pakselector_t::list_filled(void)
 
 void pakselector_t::draw(scr_coord pos, scr_size size)
 {
+	const PIXVAL background = get_system_color(64, 64, 64);
+	display_fillbox_wh_rgb(0, 0, display_get_width(), display_get_height(), background, true);
+	
 	savegame_frame_t::draw(pos, size);
-		
+
+	// Hajo: fake a top-left bevel border
+	display_fillbox_wh_rgb(pos.x, pos.y, size.w, 1, gui_theme_t::gui_highlight_color, true);
+	display_vline_wh_clip_rgb(pos.x, pos.y, size.h, gui_theme_t::gui_highlight_color, true);
+	
 	const char * title = translator::translate("Choose a Graphics Set For Playing");
 	const scr_coord_val title_width = display_calc_proportional_string_len_width(title, strlen(title));
 	
-	display_fillbox_wh_rgb(pos.x + (size.w - title_width) / 2 - 40, 20, title_width + 80, 50, 0xFFFF, true);
-	display_proportional_rgb(pos.x + (size.w - title_width) / 2, 40, title, ALIGN_LEFT, 0x0000, false);
+	display_fillbox_wh_rgb(pos.x + (size.w - title_width) / 2 - 40, pos.y + 14, title_width + 80, LINESPACE+25, 0xFFFF, true);
+	display_proportional_rgb(pos.x + (size.w - title_width) / 2, pos.y + LINESPACE + 14, title, ALIGN_LEFT, 0x0000, false);
 }
 
 
