@@ -97,8 +97,8 @@ public:
 	void update_convoi_capacity_labels()
 	{
 		labels[0].buf().printf("%s\t%d", translator::translate("Capacity:"), total_pax);
-		labels[1].buf().printf(" %d", total_mail);
-		labels[2].buf().printf(" %d", total_goods);
+		labels[1].buf().printf(", %d", total_mail);
+		labels[2].buf().printf(", %d", total_goods);
 		for(int i=0; i<3; i++) {
 			labels[i].update();
 		}
