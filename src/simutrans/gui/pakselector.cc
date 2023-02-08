@@ -122,13 +122,12 @@ void pak_set_panel_t::draw_logo(const scr_coord_val xpos, const scr_coord_val yp
 	                            const int index, const savegame_frame_t::dir_entry_t &entry)
 {
 	const skin_desc_t * logo = pak_logos.at(index);
-
-	// Hajo: Logos are designed for black background
-	const PIXVAL c = get_system_color(0, 0, 0);
+	const PIXVAL c = gui_theme_t::gui_highlight_color;
 	display_bevel_box(scr_rect(xpos-1, ypos-1, 258, 258), c, c, c, c, true);
 	
-	display_fillbox_wh_clip_rgb(xpos, ypos, 256, 256, 
-		                        gui_theme_t::gui_shadow_color, true);
+	// Hajo: Logos are designed for black background
+	const PIXVAL black = get_system_color(0, 0, 0);
+	display_fillbox_wh_clip_rgb(xpos, ypos, 256, 256, black, true);
 	
 	display_base_img(logo->get_image_id(0), xpos, ypos, 0, false, true);
 	display_base_img(logo->get_image_id(1), xpos+128, ypos, 0, false, true);
