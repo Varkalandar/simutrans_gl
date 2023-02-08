@@ -85,9 +85,8 @@ bool pak_set_panel_t::infowin_event(const event_t *ev)
 		
 			// so, did we hit something?
 
-			const scr_coord_val dw = display_get_width();
 			const scr_coord_val xspace = 280;
-			const scr_coord_val xstart = (dw % xspace) / 2;
+			const scr_coord_val xstart = (size.w % xspace) / 2;
 
 			const scr_coord_val ystart = 20;
 			const scr_coord_val yspace = 256 + 42;
@@ -95,7 +94,7 @@ bool pak_set_panel_t::infowin_event(const event_t *ev)
 			const int mx = ev->mx; 
 			const int my = ev->my; 
 
-			const int index = ((my - ystart) / yspace) * (dw / xspace) + (mx - xstart) / xspace;
+			const int index = ((my - ystart) / yspace) * (size.w / xspace) + (mx - xstart) / xspace;
 
 			int counter = 0;
 			for(savegame_frame_t::dir_entry_t &entry : *entries) {
@@ -123,7 +122,9 @@ void pak_set_panel_t::draw_logo(const scr_coord_val xpos, const scr_coord_val yp
 	                            const int index, const savegame_frame_t::dir_entry_t &entry)
 {
 	const skin_desc_t * logo = pak_logos.at(index);
-	const PIXVAL c = gui_theme_t::gui_highlight_color;
+
+	// Hajo: Logos are designed for black background
+	const PIXVAL c = get_system_color(0, 0, 0);
 	display_bevel_box(scr_rect(xpos-1, ypos-1, 258, 258), c, c, c, c, true);
 	
 	display_fillbox_wh_clip_rgb(xpos, ypos, 256, 256, 
