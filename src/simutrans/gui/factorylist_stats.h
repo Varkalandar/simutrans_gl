@@ -42,7 +42,8 @@ private:
 	fabrik_t *fab;
 	gui_colorbox_t indicator;
 	gui_image_t boost_electric, boost_passenger, boost_mail;
-	gui_label_buf_t label;
+	gui_label_buf_t name_label;
+	gui_label_buf_t storage_label;
 
 	void update_label();
 public:

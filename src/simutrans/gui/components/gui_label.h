@@ -55,6 +55,7 @@ public:
 		set_align( align_par );
 	}
 
+        scr_coord_val fixed_min_width = 0;
         scr_coord_val fixed_min_height = 0;
 
 	/**

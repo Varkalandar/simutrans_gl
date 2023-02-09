@@ -19,13 +19,15 @@ class gui_colorbox_t : public gui_component_t
 
 	scr_size max_size;
 public:
-	gui_colorbox_t(PIXVAL c = 0);
+        scr_coord_val fixed_min_height;
+    
+	gui_colorbox_t(PIXVAL color = 0);
 
 	void draw(scr_coord offset) OVERRIDE;
 
 	void set_color(PIXVAL c)
 	{
-		color = c;
+            color = c;
 	}
 
 	scr_size get_min_size() const OVERRIDE;
@@ -34,7 +36,7 @@ public:
 
 	void set_max_size(scr_size s)
 	{
-		max_size = s;
+            max_size = s;
 	}
 };
 

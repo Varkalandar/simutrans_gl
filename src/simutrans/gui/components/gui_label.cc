@@ -38,8 +38,8 @@ gui_label_t::gui_label_t(const char* text, PIXVAL color_, align_t align_) :
 
 scr_size gui_label_t::get_min_size() const
 {
-	return scr_size( text ? display_calc_proportional_string_len_width(text,strlen(text)) : D_BUTTON_WIDTH, 
-			max(D_LABEL_HEIGHT, fixed_min_height) );
+	const scr_coord_val dynamic_width = text ? display_calc_proportional_string_len_width(text,strlen(text)) : D_BUTTON_WIDTH;	
+	return scr_size(max(dynamic_width, fixed_min_width), max(D_LABEL_HEIGHT, fixed_min_height) );
 }
 
 scr_size gui_label_t::get_max_size() const

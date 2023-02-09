@@ -23,13 +23,26 @@ factorylist_stats_t::factorylist_stats_t(fabrik_t *fab)
 {
 	this->fab = fab;
 	// pos button
-	set_table_layout(6,1);
+	set_table_layout(7,1);
 	button_t *b = new_component<button_t>();
 	b->set_typ(button_t::posbutton_automatic);
 	b->set_targetpos3d(fab->get_pos());
+	
 	// indicator bar
+	indicator.fixed_min_height = gui_theme_t::gui_label_size.h-4;
+	indicator.set_max_size(scr_size(D_INDICATOR_WIDTH, D_INDICATOR_HEIGHT));
 	add_component(&indicator);
-	indicator.set_max_size(scr_size(D_INDICATOR_WIDTH,D_INDICATOR_HEIGHT));
+	
+	// factory name
+	name_label.fixed_min_width = 160;
+	name_label.fixed_min_height = gui_theme_t::gui_label_size.h + 8;
+	add_component(&name_label);
+
+	// factory storage info 
+	storage_label.fixed_min_width = 100;
+	storage_label.fixed_min_height = gui_theme_t::gui_label_size.h + 8;
+	add_component(&storage_label);
+
 	// boost images
 	if (fab->get_desc()->get_electric_boost() ) {
 		boost_electric.set_image(skinverwaltung_t::electricity->get_image_id(0), true);
@@ -38,6 +51,7 @@ factorylist_stats_t::factorylist_stats_t(fabrik_t *fab)
 	else {
 		new_component<gui_empty_t>();
 	}
+	
 	if (fab->get_desc()->get_pax_boost() ) {
 		boost_passenger.set_image(skinverwaltung_t::passengers->get_image_id(0), true);
 		add_component(&boost_passenger);
@@ -45,6 +59,7 @@ factorylist_stats_t::factorylist_stats_t(fabrik_t *fab)
 	else {
 		new_component<gui_empty_t>();
 	}
+	
 	if (fab->get_desc()->get_mail_boost() ) {
 		boost_mail.set_image(skinverwaltung_t::mail->get_image_id(0), true);
 		add_component(&boost_mail);
@@ -52,17 +67,21 @@ factorylist_stats_t::factorylist_stats_t(fabrik_t *fab)
 	else {
 		new_component<gui_empty_t>();
 	}
-	// factory name
-	add_component(&label);
+
 	update_label();
 }
 
 
 void factorylist_stats_t::update_label()
 {
-	cbuffer_t &buf = label.buf();
-	buf.append(fab->get_name());
-	buf.append(" (");
+	cbuffer_t &nbuf = name_label.buf();
+	nbuf.append(" ");
+	nbuf.append(fab->get_name());
+	name_label.update();
+
+	cbuffer_t &buf = storage_label.buf();
+
+	buf.append("(");
 
 	if (!fab->get_input().empty()) {
 		buf.printf( "%i+%i", fab->get_total_in(), fab->get_total_transit() );
@@ -80,16 +99,16 @@ void factorylist_stats_t::update_label()
 	}
 	buf.append(", ");
 
-	buf.append(fab->get_current_production(),0);
-	buf.append(") ");
-	label.update();
+	buf.append(fab->get_current_production(), 0);
+	buf.append(")");
+	storage_label.update();
 }
 
 
 void factorylist_stats_t::set_size(scr_size size)
 {
 	gui_aligned_container_t::set_size(size);
-	label.set_size(scr_size(get_size().w - label.get_pos().x, label.get_size().h));
+	// label.set_size(scr_size(get_size().w - label.get_pos().x, label.get_size().h));
 }
 
 
@@ -111,7 +130,7 @@ bool factorylist_stats_t::infowin_event(const event_t * ev)
 }
 
 
-void factorylist_stats_t::draw(scr_coord pos)
+void factorylist_stats_t::draw(scr_coord offset)
 {
 	update_label();
 	// boost stuff
@@ -121,7 +140,15 @@ void factorylist_stats_t::draw(scr_coord pos)
 
 	indicator.set_color( color_idx_to_rgb(fabrik_t::status_to_color[fab->get_status()]) );
 
-	gui_aligned_container_t::draw(pos);
+	scr_size size = get_size();
+	scr_coord pos = get_pos();
+
+	int odd = (pos.y / size.h) & 1;
+	int color = odd ? gui_theme_t::gui_color_list_background_odd : gui_theme_t::gui_color_list_background_even;
+
+	display_fillbox_wh_clip_rgb(offset.x + pos.x - 4, offset.y + pos.y, size.w + 200, size.h, color, true);
+
+	gui_aligned_container_t::draw(offset);
 }
 
 

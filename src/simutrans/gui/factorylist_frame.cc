@@ -78,6 +78,7 @@ factorylist_frame_t::factorylist_frame_t() :
 	}
 	end_table();
 
+	scrolly.set_show_border(true);
 	add_component(&scrolly);
 	fill_list();
 
