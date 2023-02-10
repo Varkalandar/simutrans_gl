@@ -24,7 +24,8 @@ class citylist_stats_t : public gui_aligned_container_t, public gui_scrolled_lis
 private:
 	stadt_t* city;
 
-	gui_label_buf_t label;
+	gui_label_buf_t name_label;
+	gui_label_buf_t population_label;
 	void update_label();
 public:
 	enum sort_mode_t {

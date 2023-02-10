@@ -16,13 +16,16 @@
 citylist_stats_t::citylist_stats_t(stadt_t *c)
 {
 	city = c;
-	set_table_layout(3,0);
+	set_table_layout(4, 0);
 
 	button_t *b = new_component<button_t>();
 	b->set_typ(button_t::posbutton_automatic);
 	b->set_targetpos(city->get_center());
 
-	add_component(&label);
+	name_label.fixed_min_height = gui_theme_t::gui_label_size.h + 8;
+	name_label.fixed_min_width = 160;
+	add_component(&name_label);
+	add_component(&population_label);
 	update_label();
 
 	new_component<gui_fill_t>();
@@ -31,20 +34,23 @@ citylist_stats_t::citylist_stats_t(stadt_t *c)
 
 void citylist_stats_t::update_label()
 {
-	cbuffer_t &buf = label.buf();
-	buf.printf( "%s: ", city->get_name() );
+	cbuffer_t &nbuf = name_label.buf();
+	nbuf.printf("%s", city->get_name());
+	name_label.update();
+	
+	cbuffer_t &buf = population_label.buf();	
 	buf.append( city->get_einwohner(), 0 );
 	buf.append( " (" );
 	buf.append( city->get_wachstum()/10.0, 1 );
 	buf.append( ")" );
-	label.update();
+	population_label.update();
 }
 
 
 void citylist_stats_t::set_size(scr_size size)
 {
 	gui_aligned_container_t::set_size(size);
-	label.set_size(scr_size(get_size().w - label.get_pos().x, label.get_size().h));
+	// label.set_size(scr_size(get_size().w - label.get_pos().x, label.get_size().h));
 }
 
 
