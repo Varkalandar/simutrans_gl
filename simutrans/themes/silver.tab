@@ -59,7 +59,7 @@ bottom_window_text_color = #C0C0C0
 default_window_title_color = #84939e
 
 # gui_color_text = #000000
-gui_color_text_highlight = #706000
+gui_color_text_highlight = #806000
 gui_color_text_shadow = #333333
 gui_color_text_title = #338FCC
 gui_color_text_strong = #E46A0B
@@ -83,6 +83,8 @@ gui_color_list_text_selected_focus = #FAFAFA
 gui_color_list_text_selected_nofocus = #FAFAFA
 gui_color_list_background_selected_focus = #72B2DD
 gui_color_list_background_selected_nofocus = #72B2DD
+gui_color_list_background_even = #d0d0d0
+gui_color_list_background_odd = #e8e8e8
 
 gui_color_button_text = #001020
 gui_color_button_text_disabled = #666666
@@ -115,7 +117,7 @@ cursor_overlay_color = #ff0000
 gui_color_loadingbar_progress = #76b9e6
 gui_color_loadingbar_inner = #D6ECF7
 
-# Color player brigth
+# Color player bright
 gui_player_color_dark = 1	
 gui_player_color_bright = 3
 
