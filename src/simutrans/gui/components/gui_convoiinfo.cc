@@ -8,6 +8,7 @@
  */
 
 #include "gui_convoiinfo.h"
+#include "gui_spacer.h"
 #include "../../world/simworld.h"
 #include "../../vehicle/vehicle.h"
 #include "../../simconvoi.h"
@@ -69,12 +70,15 @@ gui_convoiinfo_t::gui_convoiinfo_t(convoihandle_t cnv)
 {
 	this->cnv = cnv;
 
-	set_table_layout(2,2);
+	set_table_layout(2, 4);
 	set_alignment(ALIGN_LEFT | ALIGN_TOP);
 
+	new_component<gui_spacer_t>(scr_coord(0, 0), scr_size (1, LINESPACE/4));
+	new_component<gui_spacer_t>(scr_coord(0, 0), scr_size (1, LINESPACE/4));
 
 	add_table(1,4);
 	{
+		label_name.fixed_min_width = 140;
 		add_component(&label_name);
 
 		add_table(2,1);
@@ -105,6 +109,9 @@ gui_convoiinfo_t::gui_convoiinfo_t(convoihandle_t cnv)
 		add_component( &label_next_halt );
 	}
 	end_table();
+
+	new_component<gui_spacer_t>(scr_coord(0, 0), scr_size (1, LINESPACE/4));
+	new_component<gui_spacer_t>(scr_coord(0, 0), scr_size (1, LINESPACE/4));
 
 	update_label();
 }
@@ -194,5 +201,14 @@ void gui_convoiinfo_t::update_label()
 void gui_convoiinfo_t::draw(scr_coord offset)
 {
 	update_label();
+	
+	scr_size size = get_size();
+	scr_coord pos = get_pos();
+
+	int odd = (pos.y / size.h) & 1;
+	int color = odd ? gui_theme_t::gui_color_list_background_odd : gui_theme_t::gui_color_list_background_even;
+
+	display_fillbox_wh_clip_rgb(offset.x + pos.x - 4, offset.y + pos.y, size.w + 200, size.h, color, true);
+	
 	gui_aligned_container_t::draw(offset);
 }
