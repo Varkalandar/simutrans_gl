@@ -140,14 +140,8 @@ void factorylist_stats_t::draw(scr_coord offset)
 
 	indicator.set_color( color_idx_to_rgb(fabrik_t::status_to_color[fab->get_status()]) );
 
-	scr_size size = get_size();
-	scr_coord pos = get_pos();
-
-	int odd = (pos.y / size.h) & 1;
-	int color = odd ? gui_theme_t::gui_color_list_background_odd : gui_theme_t::gui_color_list_background_even;
-
-	display_fillbox_wh_clip_rgb(offset.x + pos.x - 4, offset.y + pos.y, size.w + 200, size.h, color, true);
-
+	draw_background(offset);
+	
 	gui_aligned_container_t::draw(offset);
 }
 

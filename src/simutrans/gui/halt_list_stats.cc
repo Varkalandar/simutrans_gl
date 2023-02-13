@@ -115,5 +115,8 @@ void halt_list_stats_t::draw(scr_coord offset)
 	label_cargo.update();
 
 	set_size(get_size());
+	
+	draw_background(offset);
+
 	gui_aligned_container_t::draw(offset);
 }

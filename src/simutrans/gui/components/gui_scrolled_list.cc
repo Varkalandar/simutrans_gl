@@ -27,6 +27,18 @@ bool  gui_scrolled_list_t::scrollitem_t::compare(const gui_component_t *aa, cons
 }
 
 
+void gui_scrolled_list_t::scrollitem_t::draw_background(const scr_coord offset) const
+{
+	scr_size size = get_size();
+	scr_coord pos = get_pos();
+
+	int odd = (pos.y / size.h) & 1;
+	int color = odd ? gui_theme_t::gui_color_list_background_odd : gui_theme_t::gui_color_list_background_even;
+
+	display_fillbox_wh_clip_rgb(offset.x + pos.x - 4, offset.y + pos.y, size.w + 200, size.h, color, true);
+}
+
+
 scr_size gui_scrolled_list_t::const_text_scrollitem_t::get_min_size() const
 {
 	if (!is_editable()) {
@@ -47,6 +59,7 @@ scr_size gui_scrolled_list_t::const_text_scrollitem_t::get_max_size() const
 		return scr_size(scr_size::inf.w, LINESPACE);
 //	}
 }
+
 
 // draws a single line of text
 void gui_scrolled_list_t::const_text_scrollitem_t::draw(scr_coord pos)

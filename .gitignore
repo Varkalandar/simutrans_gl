@@ -6,8 +6,10 @@
 /Release
 /build
 /config.*
+/configure
 /makeobj/makeobj
 /makeobj/makeobj.exe
+/themes.src/makeobj*
 *sim
 /sim.exe
 *.*~

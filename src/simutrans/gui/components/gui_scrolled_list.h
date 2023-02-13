@@ -61,6 +61,8 @@ public:
 		virtual bool is_valid() const { return true; } //  can be used to indicate invalid entries
 		virtual bool is_editable()  const { return false; }
 
+                virtual void draw_background(const scr_coord offset) const;
+                
 		/// compares using get_text
 		static bool compare(const gui_component_t *a, const gui_component_t *b );
 
