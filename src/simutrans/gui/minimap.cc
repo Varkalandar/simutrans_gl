@@ -31,6 +31,7 @@
 #include "../utils/cbuffer.h"
 #include "../display/scr_coord.h"
 #include "../display/simgraph.h"
+#include "../display/display.h"
 #include "../display/viewport.h"
 #include "../utils/simrandom.h"
 #include "../player/simplay.h"

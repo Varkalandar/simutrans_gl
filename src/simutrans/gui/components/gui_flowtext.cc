@@ -8,6 +8,7 @@
 #include "../../simcolor.h"
 #include "../../simevent.h"
 #include "../../display/simgraph.h"
+#include "../../display/display.h"
 #include "../../utils/simstring.h"
 #include "../gui_theme.h"
 

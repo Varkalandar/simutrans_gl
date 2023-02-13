@@ -27,6 +27,7 @@
 #include "../obj/depot.h"
 #include "../simfab.h"
 #include "../display/simimg.h"
+#include "../display/display.h"
 #include "../simintr.h"
 #include "../simhalt.h"
 #include "../simskin.h"

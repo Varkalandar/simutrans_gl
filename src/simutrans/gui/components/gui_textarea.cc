@@ -7,6 +7,7 @@
 
 #include "gui_textarea.h"
 #include "../../display/simgraph.h"
+#include "../../display/display.h"
 #include "../../simdebug.h"
 #include "../../simcolor.h"
 #include "../../simskin.h"
@@ -61,7 +62,7 @@ scr_size gui_textarea_t::calc_size() const
 		do {
 			next = strchr(buf, '\n');
 			const size_t len = next ? next-buf : 99999;
-			const int px_len = display_calc_proportional_string_len_width(buf, len);
+			const int px_len = display_calc_proportional_string_len_width(buf, len, 0);
 
 			if(  px_len > x_size  ) {
 				x_size = px_len;
@@ -104,11 +105,11 @@ void gui_textarea_t::draw(scr_coord offset)
 			int px_len;
 			if (  -LINESPACE <= draw_y  &&  draw_y <= display_get_height() + LINESPACE) {
 				// draw when in screen area
-				px_len = display_text_proportional_len_clip_rgb(x, draw_y, buf, ALIGN_LEFT | DT_CLIP, SYSCOL_TEXT, true, len);
+				px_len = display_text_proportional_len_clip_rgb(x, draw_y, buf, ALIGN_LEFT | DT_CLIP, SYSCOL_TEXT, true, len, 0);
 			}
 			else {
 				// track required length when out of screen area
-				px_len = display_calc_proportional_string_len_width(buf, len);
+				px_len = display_calc_proportional_string_len_width(buf, len, 0);
 			}
 			if(px_len>x_size) {
 				x_size = px_len;

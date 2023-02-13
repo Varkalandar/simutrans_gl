@@ -14,6 +14,7 @@
 #include "../world/simworld.h"
 
 #include "../display/simgraph.h"
+#include "../display/display.h"
 
 #include "../dataobj/translator.h"
 

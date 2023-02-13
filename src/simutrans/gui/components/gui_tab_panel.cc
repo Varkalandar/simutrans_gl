@@ -9,6 +9,7 @@
 #include "../../simevent.h"
 #include "../../dataobj/environment.h"
 #include "../../display/simgraph.h"
+#include "../../display/display.h"
 #include "../../simcolor.h"
 #include "../simwin.h"
 #include "../../world/simworld.h"

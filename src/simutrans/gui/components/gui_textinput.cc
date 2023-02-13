@@ -10,6 +10,7 @@
 #include "../../dataobj/translator.h"
 #include "../../utils/simstring.h"
 #include "../../sys/simsys.h"
+#include "../../display/display.h"
 
 
 gui_textinput_t::gui_textinput_t() :
@@ -579,7 +580,7 @@ void gui_textinput_t::display_with_cursor(scr_coord offset, bool cursor_active, 
 		const int y_offset = pos.y+offset.y+D_GET_CENTER_ALIGN_OFFSET(LINESPACE,size.h);
 
 		// display text (before composition)
-		display_text_proportional_len_clip_rgb(x_base_offset, y_offset, text, ALIGN_LEFT | DT_CLIP, textcol, true, head_cursor_pos);
+		display_text_proportional_len_clip_rgb(x_base_offset, y_offset, text, ALIGN_LEFT | DT_CLIP, textcol, true, head_cursor_pos, 0);
 		int x_offset = proportional_string_len_width(text, head_cursor_pos);
 
 		// IME text to display?
@@ -596,7 +597,7 @@ void gui_textinput_t::display_with_cursor(scr_coord offset, bool cursor_active, 
 			int start_offset = proportional_string_len_width(composition.get_str(), composition_target_start);
 			int highlight_width = proportional_string_len_width(composition.get_str()+composition_target_start, composition_target_length);
 			display_fillbox_wh_clip_rgb(x_base_offset+x_offset+start_offset, y_offset, highlight_width, LINESPACE, SYSCOL_EDIT_BACKGROUND_SELECTED, true);
-			display_text_proportional_len_clip_rgb(x_base_offset+x_offset+start_offset, y_offset, composition.get_str()+composition_target_start, ALIGN_LEFT|DT_CLIP, SYSCOL_EDIT_TEXT_SELECTED, false, composition_target_length);
+			display_text_proportional_len_clip_rgb(x_base_offset+x_offset+start_offset, y_offset, composition.get_str()+composition_target_start, ALIGN_LEFT|DT_CLIP, SYSCOL_EDIT_TEXT_SELECTED, false, composition_target_length, 0);
 
 			x_offset += composition_width;
 		}
@@ -612,7 +613,7 @@ void gui_textinput_t::display_with_cursor(scr_coord offset, bool cursor_active, 
 				const scr_coord_val start_offset = proportional_string_len_width(text, start_pos);
 				const scr_coord_val highlight_width = proportional_string_len_width(text+start_pos, end_pos-start_pos);
 				display_fillbox_wh_clip_rgb(x_base_offset+start_offset, y_offset, highlight_width, LINESPACE, SYSCOL_EDIT_BACKGROUND_SELECTED, true);
-				display_text_proportional_len_clip_rgb(x_base_offset+start_offset, y_offset, text+start_pos, ALIGN_LEFT|DT_CLIP, SYSCOL_EDIT_TEXT_SELECTED, false, end_pos-start_pos);
+				display_text_proportional_len_clip_rgb(x_base_offset+start_offset, y_offset, text+start_pos, ALIGN_LEFT|DT_CLIP, SYSCOL_EDIT_TEXT_SELECTED, false, end_pos-start_pos, 0);
 			}
 
 			// display blinking cursor
@@ -652,7 +653,7 @@ bool gui_hidden_textinput_t::infowin_event(const event_t *ev)
 		}
 		// acting on release causes unwanted recalculations of cursor position for long strings and (cursor_offset>0)
 		// moreover, only (click) or (release) event happened inside textinput, the other one could lie outside
-		sint16 asterix_width = display_calc_proportional_string_len_width("*",1);
+		sint16 asterix_width = display_calc_proportional_string_len_width("*", 1, 0);
 		head_cursor_pos = 0;
 		if (  text  ) {
 			head_cursor_pos = min( strlen(text), ev->cx/asterix_width );

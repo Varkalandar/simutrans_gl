@@ -13,6 +13,7 @@
 #include "../simwin.h"
 
 #include "../../display/simgraph.h"
+#include "../../display/display.h"
 #include "../../descriptor/skin_desc.h"
 #include "../../simskin.h"
 
@@ -43,7 +44,7 @@ scr_size gui_scrolled_list_t::const_text_scrollitem_t::get_min_size() const
 {
 	if (!is_editable()) {
 		const char* text = get_text();
-		return scr_size(2*D_H_SPACE + (text ? display_calc_proportional_string_len_width(text,strlen(text)) : D_BUTTON_WIDTH), LINESPACE);
+		return scr_size(2*D_H_SPACE + (text ? display_calc_proportional_string_len_width(text, strlen(text), 0) : D_BUTTON_WIDTH), LINESPACE);
 	}
 	else {
 		return scr_size(D_BUTTON_WIDTH, LINESPACE);
@@ -68,11 +69,11 @@ void gui_scrolled_list_t::const_text_scrollitem_t::draw(scr_coord pos)
 	if(selected) {
 		// selected element
 		display_fillbox_wh_clip_rgb( pos.x+D_H_SPACE/2, pos.y-1, get_size().w-D_H_SPACE, get_size().h + 1, (focused ? SYSCOL_LIST_BACKGROUND_SELECTED_F : SYSCOL_LIST_BACKGROUND_SELECTED_NF), true);
-		display_proportional_clip_rgb( pos.x+D_H_SPACE, pos.y, get_text(), ALIGN_LEFT, (focused ? SYSCOL_LIST_TEXT_SELECTED_FOCUS : SYSCOL_LIST_TEXT_SELECTED_NOFOCUS), true);
+		display_proportional_clip_rgb(pos.x+D_H_SPACE, pos.y, get_text(), ALIGN_LEFT, (focused ? SYSCOL_LIST_TEXT_SELECTED_FOCUS : SYSCOL_LIST_TEXT_SELECTED_NOFOCUS), true);
 	}
 	else {
 		// normal text
-		display_proportional_clip_rgb( pos.x+D_H_SPACE, pos.y, get_text(), ALIGN_LEFT, get_color(), true);
+		display_proportional_clip_rgb(pos.x+D_H_SPACE, pos.y, get_text(), ALIGN_LEFT, get_color(), true);
 	}
 }
 

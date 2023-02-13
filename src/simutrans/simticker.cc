@@ -7,6 +7,7 @@
 #include "dataobj/environment.h"
 #include "simticker.h"
 #include "display/simgraph.h"
+#include "display/display.h"
 #include "simcolor.h"
 #include "tpl/slist_tpl.h"
 #include "utils/simstring.h"

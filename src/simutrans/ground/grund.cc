@@ -11,6 +11,7 @@
 #include "../simskin.h"
 #include "../obj/depot.h"
 #include "../display/simgraph.h"
+#include "../display/display.h"
 #include "../display/viewport.h"
 #include "../simhalt.h"
 #include "../display/simimg.h"

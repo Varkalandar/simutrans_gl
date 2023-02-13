@@ -13,6 +13,7 @@
 #include "../../utils/simstring.h"
 #include "../../dataobj/environment.h"
 #include "../../display/simgraph.h"
+#include "../../display/display.h"
 #include "../gui_theme.h"
 
 static char tooltip[64];

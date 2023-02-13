@@ -6,6 +6,7 @@
 #include "../../simdebug.h"
 #include "gui_image_list.h"
 #include "../../display/simgraph.h"
+#include "../../display/display.h"
 #include "../../simevent.h"
 #include "../../simcolor.h"
 

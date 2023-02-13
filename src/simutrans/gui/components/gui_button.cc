@@ -11,6 +11,7 @@
 
 #include "../../simcolor.h"
 #include "../../display/simgraph.h"
+#include "../../display/display.h"
 #include "../../simevent.h"
 #include "../simwin.h"
 

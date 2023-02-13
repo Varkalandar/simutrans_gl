@@ -11,6 +11,7 @@
 #include "../sys/simsys.h"
 #include "../simversion.h"
 #include "../display/simgraph.h"
+#include "../display/display.h"
 #include "../macros.h"
 #include "../descriptor/skin_desc.h"
 #include "../dataobj/environment.h"

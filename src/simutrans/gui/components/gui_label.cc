@@ -8,6 +8,7 @@
 #include "../../dataobj/translator.h"
 #include "../../utils/simstring.h"
 #include "../simwin.h"
+#include "../../display/display.h"
 
 /*
  * just displays a text, will be auto-translated
@@ -38,7 +39,7 @@ gui_label_t::gui_label_t(const char* text, PIXVAL color_, align_t align_) :
 
 scr_size gui_label_t::get_min_size() const
 {
-	const scr_coord_val dynamic_width = text ? display_calc_proportional_string_len_width(text,strlen(text)) : D_BUTTON_WIDTH;	
+	const scr_coord_val dynamic_width = text ? display_calc_proportional_string_len_width(text, strlen(text), 0) : D_BUTTON_WIDTH;	
 	return scr_size(max(dynamic_width, fixed_min_width), max(D_LABEL_HEIGHT, fixed_min_height) );
 }
 
@@ -64,7 +65,7 @@ void gui_label_t::set_text_pointer(const char *text_par, bool autosize)
 	text = text_par;
 
 	if (autosize && text && *text != '\0') {
-		set_size( scr_size( display_calc_proportional_string_len_width(text,strlen(text)),size.h ) );
+		set_size(scr_size(display_calc_proportional_string_len_width(text, strlen(text), 0), size.h));
 	}
 }
 
@@ -98,9 +99,9 @@ void gui_label_t::draw(scr_coord offset)
 				display_proportional_clip_rgb(right.x, right.y, separator, ALIGN_LEFT, color, true);
 				if(  separator!=text  ) {
 					if (shadowed) {
-						display_text_proportional_len_clip_rgb(right.x+1, right.y+1, text, ALIGN_RIGHT | DT_CLIP, color_shadow, true, separator - text);
+						display_text_proportional_len_clip_rgb(right.x+1, right.y+1, text, ALIGN_RIGHT | DT_CLIP, color_shadow, true, separator - text, 0);
 					}
-					display_text_proportional_len_clip_rgb(right.x, right.y, text, ALIGN_RIGHT | DT_CLIP, color, true, separator-text );
+					display_text_proportional_len_clip_rgb(right.x, right.y, text, ALIGN_RIGHT | DT_CLIP, color, true, separator-text, 0);
 				}
 			}
 			else {

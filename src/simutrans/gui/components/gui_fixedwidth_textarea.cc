@@ -9,6 +9,7 @@
 #include "gui_fixedwidth_textarea.h"
 #include "../../dataobj/translator.h"
 #include "../../utils/cbuffer.h"
+#include "../../display/display.h"
 
 
 
@@ -95,7 +96,7 @@ scr_size gui_fixedwidth_textarea_t::calc_display_text(const scr_coord offset, co
 				next = strchr(buf, '\n');
 				const size_t len = next ? next - buf : 99999;
 				// we are in the image area
-				const int px_len = display_calc_proportional_string_len_width(buf, len) + reserved_area.w;
+				const int px_len = display_calc_proportional_string_len_width(buf, len, 0) + reserved_area.w;
 
 				if (px_len > x_size) {
 					x_size = px_len;
@@ -161,7 +162,7 @@ scr_size gui_fixedwidth_textarea_t::calc_display_text(const scr_coord offset, co
 
 		// start of new line or end of text
 		if(draw  &&  (line_end-line_start)!=0) {
-			display_text_proportional_len_clip_rgb( offset.x, offset.y+y, (const char *)line_start, ALIGN_LEFT | DT_CLIP, SYSCOL_TEXT, true, (size_t)(line_end - line_start) );
+			display_text_proportional_len_clip_rgb(offset.x, offset.y+y, (const char *)line_start, ALIGN_LEFT | DT_CLIP, SYSCOL_TEXT, true, (size_t)(line_end - line_start), 0);
 		}
 		y += LINESPACE;
 		// back to start of new line

@@ -10,6 +10,7 @@
 #include "../simcolor.h"
 #include "../simevent.h"
 #include "../display/simgraph.h"
+#include "../display/display.h"
 #include "../display/viewport.h"
 #include "../tool/simmenu.h"
 #include "../simskin.h"
@@ -393,7 +394,7 @@ static void win_draw_window_title(const scr_coord pos, const scr_size size,
 		text_color = env_t::bottom_window_text_color;
 	}
 	
-	int titlewidth = display_proportional_clip_rgb(pos.x + left, pos.y + top, text, ALIGN_LEFT, text_color, false);
+	int titlewidth = display_text_bold(pos.x + left, pos.y + top, text_color, text, false);
 	
 	// if the object has a world position, show the coordinates
 	flags.gotopos = (welt_pos != koord3d::invalid);
