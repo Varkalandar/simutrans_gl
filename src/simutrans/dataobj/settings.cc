@@ -12,6 +12,7 @@
 #include "../simconst.h"
 #include "../simtypes.h"
 #include "../simdebug.h"
+#include "../display/simgraph.h"
 #include "../world/simworld.h"
 #include "../builder/wegbauer.h"
 #include "../descriptor/way_desc.h"

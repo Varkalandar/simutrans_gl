@@ -78,7 +78,7 @@ convoi_filter_frame_t::convoi_filter_frame_t(player_t *player, convoi_frame_t *m
 			// special buttons
 			add_component(filter_buttons, 2);
 			for(  int i=2;  i<FILTER_BUTTONS;  i++  ) {
-				new_component<gui_margin_t>();
+				new_component<gui_margin_t>(D_H_SPACE, D_V_SPACE);
 				add_component(filter_buttons + i);
 			}
 		}
@@ -100,7 +100,7 @@ convoi_filter_frame_t::convoi_filter_frame_t(player_t *player, convoi_frame_t *m
 		}
 		if(  ware->get_catg() == 0  ) {
 			// Special freight: Each good is special
-			ware_cont.new_component<gui_margin_t>();
+			ware_cont.new_component<gui_margin_t>(D_H_SPACE, D_V_SPACE);
 			ware_item_t *item = ware_cont.new_component<ware_item_t>(this, ware);
 			item->init(button_t::square_state, translator::translate(ware->get_name()));
 			item->pressed = active_ware.is_contained(ware);
@@ -111,7 +111,7 @@ convoi_filter_frame_t::convoi_filter_frame_t(player_t *player, convoi_frame_t *m
 	for(  int i=1;  i < goods_manager_t::get_max_catg_index();  i++  ) {
 		const goods_desc_t *ware = goods_manager_t::get_info_catg(i);
 		if(  ware->get_catg() != 0  ) {
-			ware_cont.new_component<gui_margin_t>();
+			ware_cont.new_component<gui_margin_t>(D_H_SPACE, D_V_SPACE);
 			ware_item_t *item = ware_cont.new_component<ware_item_t>(this, ware);
 			item->init(button_t::square_state, translator::translate(ware->get_catg_name()));
 			item->pressed = active_ware.is_contained(ware);

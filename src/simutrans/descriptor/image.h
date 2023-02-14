@@ -7,8 +7,9 @@
 #define DESCRIPTOR_IMAGE_H
 
 
-#include "../display/simgraph.h"
+#include "../simcolor.h"
 #include "../display/simimg.h"
+#include "../display/scr_coord.h"
 #include "obj_desc.h"
 
 
@@ -78,7 +79,7 @@ public:
 
 	static image_t* create_single_pixel();
 
-	void register_image() { ::register_image(this); }
+	void register_image();
 
 private:
 	friend class image_reader_t;

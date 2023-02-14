@@ -13,6 +13,8 @@
 #define SIM_DISPLAY_H
 
 #include "scr_coord.h"
+#include "alignment.h"
+#include "../simcolor.h"
 
 
 /**
@@ -31,21 +33,21 @@ void display_bevel_box(scr_rect area,
 
 
 
-int display_text_proportional_len_clip_rgb(scr_coord_val x, scr_coord_val y, const char* txt, control_alignment_t flags, const PIXVAL color, bool dirty, sint32 len, sint32 spacing  CLIP_NUM_DEF  CLIP_NUM_DEFAULT_ZERO);
+int display_text_proportional_len_clip_rgb(scr_coord_val x, scr_coord_val y, const char* txt, control_alignment_t flags, const PIXVAL color, bool dirty, sint32 len, sint32 spacing, sint32 ifont);
 /* macro are for compatibility */
-#define display_proportional_rgb(               x, y, txt, align, color, dirty)       display_text_proportional_len_clip_rgb( x, y, txt, align,           color, dirty, -1, 0 )
-#define display_proportional_clip_rgb(          x, y, txt, align, color, dirty)       display_text_proportional_len_clip_rgb( x, y, txt, align | DT_CLIP, color, dirty, -1, 0 )
+#define display_proportional_rgb(               x, y, txt, align, color, dirty)       display_text_proportional_len_clip_rgb( x, y, txt, align,           color, dirty, -1, 0, 0 )
+#define display_proportional_clip_rgb(          x, y, txt, align, color, dirty)       display_text_proportional_len_clip_rgb( x, y, txt, align | DT_CLIP, color, dirty, -1, 0, 0 )
 
 
 /// Display a string that is abbreviated by the (language specific) ellipsis character if too wide
 /// If enough space is given, it just display the full string
-void display_proportional_ellipsis_rgb( scr_rect r, const char *text, int align, const PIXVAL color, const bool dirty, bool shadowed = false, PIXVAL shadow_color = 0 );
+void display_proportional_ellipsis_rgb(scr_rect r, const char *text, int align, const PIXVAL color, const bool dirty, bool shadowed = false, PIXVAL shadow_color = 0);
 
 
 /**
  * display text in 3d box with clipping
  */
-void display_ddd_proportional_clip(scr_coord_val xpos, scr_coord_val ypos, FLAGGED_PIXVAL ddd_farbe, FLAGGED_PIXVAL text_farbe, const char *text, int dirty  CLIP_NUM_DEF CLIP_NUM_DEFAULT_ZERO);
+void display_ddd_proportional_clip(scr_coord_val xpos, scr_coord_val ypos, FLAGGED_PIXVAL ddd_farbe, FLAGGED_PIXVAL text_farbe, const char *text, int dirty);
 
 
 int display_multiline_text_rgb(scr_coord_val x, scr_coord_val y, const char *inbuf, PIXVAL color);
@@ -53,6 +55,63 @@ int display_multiline_text_rgb(scr_coord_val x, scr_coord_val y, const char *inb
 void display_outline_proportional_rgb(scr_coord_val xpos, scr_coord_val ypos, PIXVAL text_color, PIXVAL shadow_color, const char *text, int dirty, sint32 len=-1);
 void display_shadow_proportional_rgb(scr_coord_val xpos, scr_coord_val ypos, PIXVAL text_color, PIXVAL shadow_color, const char *text, int dirty, sint32 len=-1);
 int display_text_bold(scr_coord_val xpos, scr_coord_val ypos, PIXVAL color, const char *text, int dirty, sint32 len=-1);
+int display_headline(scr_coord_val xpos, scr_coord_val ypos, PIXVAL color, const char *text, int dirty, sint32 len=-1);
+
+/**
+ * Loads the font, returns the number of characters in it
+ * @param reload if true forces reload
+ */
+bool display_load_font(const char *fname, bool reload = false);
+
+
+/* 
+ * @return true, if this is a valid character 
+ */
+bool has_character(utf32 char_code);
+
+
+scr_coord_val display_get_char_width(utf32 c);
+
+
+/**
+ * Returns the width of the widest character in a string.
+ * @param text  pointer to a string of characters to evaluate.
+ * @param len   length of text buffer to evaluate. If set to 0,
+ *              evaluate until null termination.
+ */
+scr_coord_val display_get_char_max_width(const char* text, size_t len=0);
+
+
+/**
+ * For the next logical character in the text, returns the character code
+ * as well as retrieves the char byte count and the screen pixel width
+ * CAUTION : The text pointer advances to point to the next logical character
+ */
+utf32 get_next_char_with_metrics(const char* &text, unsigned char &byte_length, unsigned char &pixel_width);
+
+/**
+ * For the previous logical character in the text, returns the character code
+ * as well as retrieves the char byte count and the screen pixel width
+ * CAUTION : The text pointer recedes to point to the previous logical character
+ */
+utf32 get_prev_char_with_metrics(const char* &text, const char *const text_start, unsigned char &byte_length, unsigned char &pixel_width);
+
+/*
+ * returns the index of the last character that would fit within the width
+ * If an ellipsis len is given, it will only return the last character up to this len if the full length cannot be fitted
+ * @returns index of next character. if text[index]==0 the whole string fits
+ */
+size_t display_fit_proportional( const char *text, scr_coord_val max_width, scr_coord_val ellipsis_width=0 );
+
+/* routines for string len (macros for compatibility with old calls) */
+#define proportional_string_width(text)          display_calc_proportional_string_len_width(text, 0x7FFF, 0)
+#define proportional_string_len_width(text, len) display_calc_proportional_string_len_width(text, len, 0)
+
+// length of a string in pixel
+int display_calc_proportional_string_len_width(const char* text, size_t len, int spacing);
+
+// box which will contain the multi (or single) line of text
+void display_calc_proportional_multiline_string_len_width( int &xw, int &yh, const char *text, size_t len );
 
 #endif /* SIM_DISPLAY_H */
 

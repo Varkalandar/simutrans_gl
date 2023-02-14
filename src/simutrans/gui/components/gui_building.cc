@@ -7,6 +7,7 @@
 #include "gui_image.h"
 #include "../../descriptor/building_desc.h"
 #include "../../tpl/vector_tpl.h"
+#include "../../display/simgraph.h"
 
 
 gui_building_t::gui_building_t(const building_desc_t* d, int r)

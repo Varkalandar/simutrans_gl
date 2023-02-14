@@ -12,8 +12,10 @@
 #include "../simtypes.h"
 #include "../sys/simsys.h"
 #include "../simmesg.h"
+#include "../display/alignment.h"
 
 #include "../utils/simrandom.h"
+
 void rdwr_win_settings(loadsave_t *file); // simwin
 
 char env_t::base_dir[PATH_MAX];

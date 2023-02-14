@@ -99,9 +99,9 @@ void gui_label_t::draw(scr_coord offset)
 				display_proportional_clip_rgb(right.x, right.y, separator, ALIGN_LEFT, color, true);
 				if(  separator!=text  ) {
 					if (shadowed) {
-						display_text_proportional_len_clip_rgb(right.x+1, right.y+1, text, ALIGN_RIGHT | DT_CLIP, color_shadow, true, separator - text, 0);
+						display_text_proportional_len_clip_rgb(right.x+1, right.y+1, text, ALIGN_RIGHT | DT_CLIP, color_shadow, true, separator - text, 0, 0);
 					}
-					display_text_proportional_len_clip_rgb(right.x, right.y, text, ALIGN_RIGHT | DT_CLIP, color, true, separator-text, 0);
+					display_text_proportional_len_clip_rgb(right.x, right.y, text, ALIGN_RIGHT | DT_CLIP, color, true, separator-text, 0, 0);
 				}
 			}
 			else {

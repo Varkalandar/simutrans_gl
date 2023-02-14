@@ -14,6 +14,7 @@
 
 #include "../sys/simsys.h"
 #include "../simdebug.h"
+#include "../display/simgraph.h"
 #include "../descriptor/image.h"
 #include "koord.h"
 #include "tabfile.h"

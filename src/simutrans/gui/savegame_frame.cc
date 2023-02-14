@@ -16,6 +16,7 @@
 #include "../utils/searchfolder.h"
 #include "../dataobj/environment.h"
 #include "../dataobj/translator.h"
+#include "../display/display.h"
 
 #define L_DEFAULT_ROWS       (12)   // Number of file entries to show as default
 #define L_SHORTENED_SIZE   (48)

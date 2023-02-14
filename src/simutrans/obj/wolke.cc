@@ -6,8 +6,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "../display/simgraph.h"
 #include "../world/simworld.h"
-#include "simobj.h"
 #include "../utils/simrandom.h"
 #include "wolke.h"
 

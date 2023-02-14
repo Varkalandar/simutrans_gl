@@ -4,7 +4,7 @@
  */
 
 #include "goods_desc.h"
-
+#include "../display/simgraph.h"
 
 static const char * catg_names[32] = {
 	"special freight",
@@ -51,4 +51,13 @@ static const char * catg_names[32] = {
 const char * goods_desc_t::get_catg_name() const
 {
 	return catg_names[catg & 31];
+}
+
+
+/**
+ * @return color for good table and waiting bars
+ */
+PIXVAL goods_desc_t::get_color() const 
+{ 
+	return color_idx_to_rgb(color); 
 }

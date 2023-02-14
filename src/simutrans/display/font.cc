@@ -177,12 +177,12 @@ void font_t::print_debug() const
 }
 
 
-bool font_t::load_from_file(const char *srcfilename)
+bool font_t::load_from_file(const char *srcfilename, int size)
 {
 	tstrncpy( fname, srcfilename, lengthof(fname) );
 
 #ifdef USE_FREETYPE
-	bool ok = load_from_freetype( fname, env_t::fontsize );
+	bool ok = load_from_freetype( fname, size );
 #endif
 
 #if MSG_LEVEL>=4

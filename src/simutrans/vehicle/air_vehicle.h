@@ -98,7 +98,7 @@ public:
 	image_id get_outline_image() const OVERRIDE {return !is_on_ground() ? image : IMG_EMPTY;}
 
 	// shadow has black color (when flying)
-	FLAGGED_PIXVAL get_outline_colour() const OVERRIDE {return !is_on_ground() ? TRANSPARENT75_FLAG | OUTLINE_FLAG | color_idx_to_rgb(COL_BLACK) : 0;}
+	FLAGGED_PIXVAL get_outline_colour() const OVERRIDE;
 
 #ifdef MULTI_THREAD
 	// this draws the "real" aircrafts (when flying)

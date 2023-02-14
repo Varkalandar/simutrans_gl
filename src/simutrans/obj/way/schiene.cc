@@ -5,6 +5,8 @@
 
 #include <stdio.h>
 
+#include "../../display/simgraph.h"
+
 #include "../../simconvoi.h"
 #include "../../world/simworld.h"
 #include "../../vehicle/vehicle.h"

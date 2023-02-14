@@ -17,6 +17,7 @@
 #include "components/gui_tab_panel.h"
 #include "../descriptor/skin_desc.h"
 #include "../dataobj/pakset_manager.h"
+#include "../display/display.h"
 
 
 /**

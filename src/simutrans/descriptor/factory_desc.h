@@ -273,7 +273,10 @@ public:
 	site_t get_placement() const { return placement; }
 	uint16 get_distribution_weight() const { return distribution_weight; }
 
-	PIXVAL get_color() const { return color_idx_to_rgb(color); }
+	/**
+	 * @return color for map display
+	 */
+	PIXVAL get_color() const;
 
 	void set_productivity(uint16 p) { productivity=p; }
 	uint16 get_productivity() const { return productivity; }

@@ -8,6 +8,7 @@
 
 
 #include "../../simtypes.h"
+#include "../../simcolor.h"
 #include "gui_component.h"
 #include "../../tpl/slist_tpl.h"
 

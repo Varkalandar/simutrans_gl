@@ -14,7 +14,7 @@
 #include "../simconvoi.h"
 #include "../simfab.h"
 #include "../simintr.h"
-#include "../display/simgraph.h"
+#include "../display/display.h"
 #include "../display/viewport.h"
 #include "../tool/simmenu.h"
 #include "../simskin.h"

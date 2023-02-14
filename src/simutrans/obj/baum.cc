@@ -7,6 +7,7 @@
 
 #include "groundobj.h"
 
+#include "../display/simgraph.h"
 #include "../ground/grund.h"
 #include "../dataobj/environment.h"
 #include "../dataobj/freelist.h"

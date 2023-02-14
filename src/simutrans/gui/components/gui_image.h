@@ -8,7 +8,8 @@
 
 
 #include "../../display/simimg.h"
-#include "../../display/simgraph.h"
+#include "../../display/alignment.h"
+#include "../../simcolor.h"
 #include "gui_component.h"
 
 

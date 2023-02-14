@@ -11,14 +11,13 @@
 
 #include "../macros.h"
 #include "../simtypes.h"
-#include "font.h"
 #include "../pathes.h"
 #include "../simconst.h"
 #include "../sys/simsys.h"
 #include "../simmem.h"
 #include "../simdebug.h"
 #include "../descriptor/image.h"
-#include "../dataobj/environment.h"
+
 #include "../utils/unicode.h"
 #include "../simticker.h"
 #include "../utils/simstring.h"
@@ -28,6 +27,7 @@
 #include "../dataobj/environment.h"
 
 #include "simgraph.h"
+#include "font.h"
 
 #include "../obj/roadsign.h" // for signal status indicator
 
@@ -74,6 +74,7 @@ static int standard_pointer = -1;
 int old_my = -1;
 #endif
 
+extern bool display_load_font(const char *fname, bool reload = false);
 
 /*
  * struct to hold the information about visible area
@@ -243,12 +244,6 @@ clipping_info_t clips;
 #endif
 
 #define CR clips CLIP_NUM_INDEX
-
-static font_t default_font;
-
-// needed for resizing gui
-int default_font_ascent = 0;
-int default_font_linespace = 0;
 
 
 #define RGBMAPSIZE (0x8000+LIGHT_COUNT+MAX_PLAYER_COUNT)
@@ -4472,34 +4467,6 @@ void display_array_wh(scr_coord_val xp, scr_coord_val yp, scr_coord_val w, scr_c
 // --------------------------------- text rendering stuff ------------------------------
 
 
-bool display_load_font(const char *fname, bool reload)
-{
-	font_t loaded_fnt;
-
-	if(  fname == NULL  ) {
-		dbg->error( "display_load_font", "NULL filename" );
-		return false;
-	}
-
-	// skip reloading if already in memory, if bdf font
-	if(  !reload  &&  default_font.is_loaded()  &&  strcmp( default_font.get_fname(), fname ) == 0  ) {
-		return true;
-	}
-
-	if(  loaded_fnt.load_from_file(fname)  ) {
-		default_font = loaded_fnt;
-		default_font_ascent    = default_font.get_ascent();
-		default_font_linespace = default_font.get_linespace();
-
-		env_t::fontname = fname;
-
-		return default_font.is_loaded();
-	}
-
-	return false;
-}
-
-
 // unicode save moving in strings
 size_t get_next_char(const char* text, size_t pos)
 {
@@ -4516,217 +4483,15 @@ sint32 get_prev_char(const char* text, sint32 pos)
 }
 
 
-scr_coord_val display_get_char_width(utf32 c)
+int display_glyph(scr_coord_val x, scr_coord_val y, utf32 c, control_alignment_t flags, PIXVAL default_color, const font_t * font  CLIP_NUM_DEF)
 {
-	return default_font.get_glyph_advance(c);
-}
-
-
-/* returns the width of this character or the default (Nr 0) character size */
-scr_coord_val display_get_char_max_width(const char* text, size_t len) {
-
-	scr_coord_val max_len=0;
-
-	for(unsigned n=0; (len && n<len) || (len==0 && *text != '\0'); n++) {
-		max_len = max(max_len,display_get_char_width(*text++));
-	}
-
-	return max_len;
-}
-
-
-/**
- * For the next logical character in the text, returns the character code
- * as well as retrieves the char byte count and the screen pixel width
- * CAUTION : The text pointer advances to point to the next logical character
- */
-utf32 get_next_char_with_metrics(const char* &text, unsigned char &byte_length, unsigned char &pixel_width)
-{
-	size_t len = 0;
-	utf32 const char_code = utf8_decoder_t::decode((utf8 const *)text, len);
-
-	if(  char_code==0  ||  char_code == '\n') {
-		// case : end of text reached -> do not advance text pointer
-		// also stop at linebreaks
-		byte_length = 0;
-		pixel_width = 0;
-		return 0;
-	}
-	else {
-		text += len;
-		byte_length = (uint8)len;
-		pixel_width = default_font.get_glyph_advance(char_code);
-	}
-	return char_code;
-}
-
-
-/* returns true, if this is a valid character */
-bool has_character(utf16 char_code)
-{
-	if(  char_code >= default_font.glyphs.size()  ) {
-		// or we crash when accessing the non-existing char ...
-		return false;
-	}
-	bool b1 = default_font.is_loaded();
-	font_t::glyph_t& gl = default_font.glyphs[char_code];
-	uint8  ad = gl.advance;
-	return b1 && ad != 0xFF;
-
-	// this return false for some reason on CJK for valid characters ?!?
-	// return default_font.is_valid_glyph(char_code);
-}
-
-
-
-/*
- * returns the index of the last character that would fit within the width
- * If an ellipsis len is given, it will only return the last character up to this len if the full length cannot be fitted
- * @returns index of next character. if text[index]==0 the whole string fits
- */
-size_t display_fit_proportional( const char *text, scr_coord_val max_width, scr_coord_val ellipsis_width )
-{
-	size_t max_idx = 0;
-
-	uint8 byte_length = 0;
-	uint8 pixel_width = 0;
-	scr_coord_val current_offset = 0;
-
-	const char *tmp_text = text;
-	while(  get_next_char_with_metrics(tmp_text, byte_length, pixel_width)  &&  max_width > (current_offset+ellipsis_width+pixel_width)  ) {
-		current_offset += pixel_width;
-		max_idx += byte_length;
-	}
-	size_t ellipsis_idx = max_idx;
-
-	// now check if the text would fit completely
-	if(  ellipsis_width  &&  pixel_width > 0  ) {
-		// only when while above failed because of exceeding length
-		current_offset += pixel_width;
-		max_idx += byte_length;
-		// check the rest ...
-		while(  get_next_char_with_metrics(tmp_text, byte_length, pixel_width)  &&  max_width > (current_offset+pixel_width)  ) {
-			current_offset += pixel_width;
-			max_idx += byte_length;
-		}
-		// if this fits, return end of string
-		if(  max_width > (current_offset+pixel_width)  ) {
-			return max_idx+byte_length;
-		}
-	}
-	return ellipsis_idx;
-}
-
-
-/**
- * For the previous logical character in the text, returns the character code
- * as well as retrieves the char byte count and the screen pixel width
- * CAUTION : The text pointer recedes to point to the previous logical character
- */
-utf32 get_prev_char_with_metrics(const char* &text, const char *const text_start, unsigned char &byte_length, unsigned char &pixel_width)
-{
-	if(  text<=text_start  ) {
-		// case : start of text reached or passed -> do not move the pointer backwards
-		byte_length = 0;
-		pixel_width = 0;
-		return 0;
-	}
-
-	utf32 char_code;
-	// determine the start of the previous logical character
-	do {
-		--text;
-	} while (  text>text_start  &&  (*text & 0xC0)==0x80  );
-
-	size_t len = 0;
-	char_code = utf8_decoder_t::decode((utf8 const *)text, len);
-	byte_length = (uint8)len;
-	pixel_width = default_font.get_glyph_advance(char_code);
-
-	return char_code;
-}
-
-
-/* proportional_string_width with a text of a given length
-* extended for universal font routines with unicode support
-*/
-int display_calc_proportional_string_len_width(const char *text, size_t len, int spacing)
-{
-	const font_t* const fnt = &default_font;
-	unsigned int width = 0;
-
-	// decode char
-	const char *const end = text + len;
-	while(  text < end  ) {
-		const utf8 *p = reinterpret_cast<const utf8 *>(text);
-		const utf32 iUnicode = utf8_decoder_t::decode(p);
-		text = reinterpret_cast<const char *>(p);
-
-		if(iUnicode == '\t') {
-			int tabsize = BASE_TAB_WIDTH * LINESPACE / 11;
-			// advance to next tab stop
-			int p = width % tabsize;
-			width = (width - p) + tabsize;
-			continue;
-		}
-
-		
-		if(  iUnicode == UNICODE_NUL ||  iUnicode == '\n') {
-			return width;
-		}
-		width += fnt->get_glyph_advance(iUnicode) + spacing;
-	}
-
-	return width;
-}
-
-
-
-/* display_calc_proportional_multiline_string_len_width
-* calculates the width and hieght of a box containing the text inside
-*/
-void display_calc_proportional_multiline_string_len_width(int &xw, int &yh, const char *text, size_t len)
-{
-	const font_t* const fnt = &default_font;
-	int width = 0;
-
-	xw = yh = 0;
-
-	// decode char
-	const char *const end = text + len;
-	while(  text < end  ) {
-		const utf8 *p = reinterpret_cast<const utf8 *>(text);
-		const utf32 iUnicode = utf8_decoder_t::decode(p);
-		text = reinterpret_cast<const char *>(p);
-
-		if(  iUnicode == '\n'  ) {
-			// new line: record max width
-			xw = max( xw, width );
-			yh += LINESPACE;
-			width = 0;
-		}
-		if(  iUnicode == UNICODE_NUL ) {
-			return;
-		}
-
-		width += fnt->get_glyph_advance(iUnicode);
-	}
-
-	xw = max( xw, width );
-	yh += LINESPACE;
-}
-
-
-int display_glyph(scr_coord_val x, scr_coord_val y, utf32 c, control_alignment_t flags, PIXVAL default_color  CLIP_NUM_DEF)
-{
-	const font_t *const fnt = &default_font;
-	PIXVAL color = default_color;
-
 	// print unknown character?
-	if(!fnt->is_valid_glyph(c)) {
+	if(!font->is_valid_glyph(c)) {
 		// nothing to see here, move on
 		return 0;
 	}
+
+	PIXVAL color = default_color;
 	
 	scr_coord_val cL, cR, cT, cB;
 
@@ -4746,17 +4511,17 @@ int display_glyph(scr_coord_val x, scr_coord_val y, utf32 c, control_alignment_t
 
 	// still something to display?
 
-	if (x >= cR || y >= cB || y + fnt->get_linespace() <= cT) {
+	if (x >= cR || y >= cB || y + font->get_linespace() <= cT) {
 		// nothing to display
 		return 0;
 	}	
 	
 
 	// get the data from the font
-	const int glyph_width = fnt->get_glyph_width(c);
-	const int glyph_height = fnt->get_glyph_height(c);
-	const int glyph_top = fnt->get_glyph_top(c);
-	const uint8 *p = fnt->get_glyph_bitmap(c);
+	const int glyph_width = font->get_glyph_width(c);
+	const int glyph_height = font->get_glyph_height(c);
+	const int glyph_top = font->get_glyph_top(c);
+	const uint8 *p = font->get_glyph_bitmap(c);
 
 	int screen_pos = (y + glyph_top) * disp_width + x;
 
@@ -4791,7 +4556,7 @@ int display_glyph(scr_coord_val x, scr_coord_val y, utf32 c, control_alignment_t
 		}
 	}
 
-	return fnt->get_glyph_advance(c);
+	return font->get_glyph_advance(c);
 }
 
 
@@ -5457,7 +5222,7 @@ bool simgraph_init(scr_size window_size, sint16 full_screen)
  */
 bool is_display_init()
 {
-	return textur != NULL  &&  default_font.is_loaded()  &&  images!=NULL;
+	return textur != NULL /* &&  default_font.is_loaded() */ &&  images!=NULL;
 }
 
 

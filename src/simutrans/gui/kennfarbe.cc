@@ -12,6 +12,7 @@
 #include "components/gui_label.h"
 #include "components/gui_image.h"
 #include "../tool/simmenu.h"
+#include "../display/display.h"
 
 /**
  * Buttons forced to be square ...

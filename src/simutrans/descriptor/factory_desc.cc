@@ -6,6 +6,7 @@
 #include "factory_desc.h"
 #include "xref_desc.h"
 #include "../network/checksum.h"
+#include "../display/simgraph.h"
 
 
 void field_class_desc_t::calc_checksum(checksum_t *chk) const
@@ -104,4 +105,9 @@ void factory_desc_t::calc_checksum(checksum_t *chk) const
 	}
 
 	get_building()->calc_checksum(chk);
+}
+
+PIXVAL factory_desc_t::get_color() const 
+{ 
+	return color_idx_to_rgb(color); 
 }

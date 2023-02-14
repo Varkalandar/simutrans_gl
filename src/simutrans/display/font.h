@@ -43,7 +43,7 @@ public:
 
 public:
 	/// @returns true on success
-	bool load_from_file(const char *fname);
+	bool load_from_file(const char *fname, int size);
 	bool is_loaded() const { return !glyphs.empty(); }
 
 	const char *get_fname() const { return fname; }

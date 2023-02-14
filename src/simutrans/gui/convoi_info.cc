@@ -250,7 +250,7 @@ void convoi_info_t::init(convoihandle_t cnv)
 	route_bar.init(&cnv_route_index, 0);
 	if( cnv->get_vehicle_count()>0  &&  dynamic_cast<rail_vehicle_t *>(cnv->front()) ) {
 		// only for trains etc.
-		route_bar.set_reservation( &next_reservation_index );
+		route_bar.set_reservation(&next_reservation_index, color_idx_to_rgb(COL_BLUE));
 	}
 	route_bar.set_height(9);
 

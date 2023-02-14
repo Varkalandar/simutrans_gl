@@ -13,7 +13,9 @@
 #include "clip_num.h"
 #include "simimg.h"
 #include "scr_coord.h"
+#include "alignment.h"
 
+class font_t;
 
 #if COLOUR_DEPTH != 0
 
@@ -30,29 +32,6 @@ extern int default_font_linespace;
 
 #define BASE_TAB_WIDTH (40)
 
-/**
-* Alignment enum to align controls against each other.
-* Vertical and horizontal alignment can be masked together
-* Unused bits are reserved for future use, set to 0.
-*/
-enum control_alignments_t {
-
-	ALIGN_NONE       = 0x00,
-
-	ALIGN_TOP        = 0x01,
-	ALIGN_CENTER_V   = 0x02,
-	ALIGN_BOTTOM     = 0x03,
-
-	ALIGN_LEFT       = 0x04,
-	ALIGN_CENTER_H   = 0x08,
-	ALIGN_RIGHT      = 0x0C,
-
-	// These flags does not belong in here but
-	// are defined here until we sorted this out.
-	// They are only used in display_text_proportional_len_clip_rgb()
-	DT_CLIP          = 0x4000
-};
-typedef uint16 control_alignment_t;
 
 struct clip_dimension {
 	scr_coord_val x, xx, w, y, yy, h;
@@ -127,12 +106,6 @@ bool is_display_init();
 void simgraph_exit();
 void simgraph_resize(scr_size new_window_size);
 
-
-/**
- * Loads the font, returns the number of characters in it
- * @param reload if true forces reload
- */
-bool display_load_font(const char *fname, bool reload = false);
 
 image_id get_image_count();
 void register_image(class image_t *);
@@ -268,57 +241,9 @@ void display_ddd_box_clip_rgb(scr_coord_val x1, scr_coord_val y1, scr_coord_val 
 size_t get_next_char(const char* text, size_t pos);
 sint32 get_prev_char(const char* text, sint32 pos);
 
-scr_coord_val display_get_char_width(utf32 c);
-
-/* returns true, if this is a valid character */
-bool has_character( utf16 char_code );
-
-/**
- * Returns the width of the widest character in a string.
- * @param text  pointer to a string of characters to evaluate.
- * @param len   length of text buffer to evaluate. If set to 0,
- *              evaluate until null termination.
- */
-scr_coord_val display_get_char_max_width(const char* text, size_t len=0);
-
-/**
- * For the next logical character in the text, returns the character code
- * as well as retrieves the char byte count and the screen pixel width
- * CAUTION : The text pointer advances to point to the next logical character
- */
-utf32 get_next_char_with_metrics(const char* &text, unsigned char &byte_length, unsigned char &pixel_width);
-
-/**
- * For the previous logical character in the text, returns the character code
- * as well as retrieves the char byte count and the screen pixel width
- * CAUTION : The text pointer recedes to point to the previous logical character
- */
-utf32 get_prev_char_with_metrics(const char* &text, const char *const text_start, unsigned char &byte_length, unsigned char &pixel_width);
-
-/*
- * returns the index of the last character that would fit within the width
- * If an ellipsis len is given, it will only return the last character up to this len if the full length cannot be fitted
- * @returns index of next character. if text[index]==0 the whole string fits
- */
-size_t display_fit_proportional( const char *text, scr_coord_val max_width, scr_coord_val ellipsis_width=0 );
-
-/* routines for string len (macros for compatibility with old calls) */
-#define proportional_string_width(text)          display_calc_proportional_string_len_width(text, 0x7FFF, 0)
-#define proportional_string_len_width(text, len) display_calc_proportional_string_len_width(text, len, 0)
-
-// length of a string in pixel
-int display_calc_proportional_string_len_width(const char* text, size_t len, int spacing);
-
-// box which will contain the multi (or single) line of text
-void display_calc_proportional_multiline_string_len_width( int &xw, int &yh, const char *text, size_t len );
-
-/*
- * len parameter added - use -1 for previous behaviour.
- * completely renovated for unicode and 10 bit width and variable height
- */
 
 // #ifdef MULTI_THREAD
-int display_glyph(scr_coord_val x, scr_coord_val y, utf32 c, control_alignment_t flags, PIXVAL default_color  CLIP_NUM_DEF  CLIP_NUM_DEFAULT_ZERO);
+int display_glyph(scr_coord_val x, scr_coord_val y, utf32 c, control_alignment_t flags, PIXVAL default_color, const font_t * font  CLIP_NUM_DEF  CLIP_NUM_DEFAULT_ZERO);
 
 
 // line drawing primitives
