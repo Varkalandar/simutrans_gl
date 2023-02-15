@@ -13,6 +13,7 @@
 #include "../world/simworld.h"
 #include "../world/simcity.h"
 #include "../simhalt.h"
+#include "../display/simgraph.h"
 #include "../descriptor/ground_desc.h"
 #include "../player/simplay.h"
 #include "../gui/minimap.h"

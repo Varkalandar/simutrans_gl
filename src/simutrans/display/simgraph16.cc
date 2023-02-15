@@ -4467,22 +4467,6 @@ void display_array_wh(scr_coord_val xp, scr_coord_val yp, scr_coord_val w, scr_c
 // --------------------------------- text rendering stuff ------------------------------
 
 
-// unicode save moving in strings
-size_t get_next_char(const char* text, size_t pos)
-{
-	return utf8_get_next_char((const utf8*)text, pos);
-}
-
-
-sint32 get_prev_char(const char* text, sint32 pos)
-{
-	if(  pos <= 0  ) {
-		return 0;
-	}
-	return utf8_get_prev_char((const utf8*)text, pos);
-}
-
-
 int display_glyph(scr_coord_val x, scr_coord_val y, utf32 c, control_alignment_t flags, PIXVAL default_color, const font_t * font  CLIP_NUM_DEF)
 {
 	// print unknown character?

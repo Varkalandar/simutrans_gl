@@ -123,6 +123,22 @@ sint32 utf8_get_prev_char(const utf8* text, sint32 pos)
 }
 
 
+// unicode save moving in strings
+size_t get_next_char(const char* text, size_t pos)
+{
+	return utf8_get_next_char((const utf8*)text, pos);
+}
+
+
+sint32 get_prev_char(const char* text, sint32 pos)
+{
+	if(  pos <= 0  ) {
+		return 0;
+	}
+	return utf8_get_prev_char((const utf8*)text, pos);
+}
+
+
 int utf16_to_utf8(utf16 c, utf8* out)
 {
 	if (c < 0x80) {

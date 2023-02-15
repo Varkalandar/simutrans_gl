@@ -96,7 +96,7 @@ scr_size gui_fixedwidth_textarea_t::calc_display_text(const scr_coord offset, co
 				next = strchr(buf, '\n');
 				const size_t len = next ? next - buf : 99999;
 				// we are in the image area
-				const int px_len = display_calc_proportional_string_len_width(buf, len, 0) + reserved_area.w;
+				const int px_len = display_calc_proportional_string_len_width(buf, len, 0, FS_NORMAL) + reserved_area.w;
 
 				if (px_len > x_size) {
 					x_size = px_len;
@@ -110,7 +110,7 @@ scr_size gui_fixedwidth_textarea_t::calc_display_text(const scr_coord offset, co
 		}
 	}
 
-	// pass 2: height caluclation and drawing (if requested)
+	// pass 2: height calculation and drawing (if requested)
 
 	// also in unicode *c==0 is end
 	while(  *p!= UNICODE_NUL  ||  p!=line_end  ) {
@@ -162,7 +162,7 @@ scr_size gui_fixedwidth_textarea_t::calc_display_text(const scr_coord offset, co
 
 		// start of new line or end of text
 		if(draw  &&  (line_end-line_start)!=0) {
-			display_text_proportional_len_clip_rgb(offset.x, offset.y+y, (const char *)line_start, ALIGN_LEFT | DT_CLIP, SYSCOL_TEXT, true, (size_t)(line_end - line_start), 0, 0);
+			display_text_proportional_len_clip_rgb(offset.x, offset.y+y, (const char *)line_start, ALIGN_LEFT | DT_CLIP, SYSCOL_TEXT, true, (size_t)(line_end - line_start), 0, FS_NORMAL);
 		}
 		y += LINESPACE;
 		// back to start of new line

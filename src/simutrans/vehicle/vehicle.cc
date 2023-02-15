@@ -23,6 +23,7 @@
 #include "../builder/vehikelbauer.h"
 #include "../obj/zeiger.h"
 #include "../utils/simstring.h"
+#include "../display/simgraph.h"
 #include "../display/display.h"
 
 #include <cmath>

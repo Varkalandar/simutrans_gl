@@ -13,6 +13,7 @@
 #include "../simware.h"
 #include "../builder/vehikelbauer.h"
 #include "../dataobj/schedule.h"
+#include "../display/simgraph.h"
 
 
 // for flying things, everywhere is good ...

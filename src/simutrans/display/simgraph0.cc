@@ -69,11 +69,6 @@ void display_mark_img_dirty(image_id, scr_coord_val, scr_coord_val)
 {
 }
 
-bool display_load_font(const char*, bool)
-{
-	return true;
-}
-
 scr_coord_val display_get_width()
 {
 	return 0;
@@ -240,72 +235,9 @@ void display_array_wh(scr_coord_val, scr_coord_val, scr_coord_val, scr_coord_val
 {
 }
 
-size_t get_next_char(const char*, size_t pos)
-{
-	return pos + 1;
-}
-
-sint32 get_prev_char(const char*, sint32 pos)
-{
-	if (pos <= 0) {
-		return 0;
-	}
-	return pos - 1;
-}
-
-scr_coord_val display_get_char_width(utf32)
+int display_glyph(scr_coord_val x, scr_coord_val y, utf32 c, control_alignment_t flags, PIXVAL default_color, const font_t * font  CLIP_NUM_DEF_NOUSE)
 {
 	return 0;
-}
-
-scr_coord_val display_get_char_max_width(const char*, size_t)
-{
-	return 0;
-}
-
-utf32 get_next_char_with_metrics(const char* &, unsigned char &, unsigned char &)
-{
-	return 0;
-}
-
-utf32 get_prev_char_with_metrics(const char* &, const char *const, unsigned char &, unsigned char &)
-{
-	return 0;
-}
-
-bool has_character( utf16 )
-{
-	return false;
-}
-
-size_t display_fit_proportional(const char *, scr_coord_val, scr_coord_val)
-{
-	return 0;
-}
-
-int display_calc_proportional_string_len_width(const char*, size_t)
-{
-	return 0;
-}
-
-
-void display_calc_proportional_multiline_string_len_width( int &xw, int &yh, const char *, size_t )
-{
-	xw = yh = 0;;
-}
-
-
-int display_text_proportional_len_clip_rgb(scr_coord_val, scr_coord_val, const char*, control_alignment_t , const PIXVAL, bool, sint32  CLIP_NUM_DEF_NOUSE)
-{
-	return 0;
-}
-
-void display_outline_proportional_rgb(scr_coord_val, scr_coord_val, PIXVAL, PIXVAL, const char *, int, sint32)
-{
-}
-
-void display_shadow_proportional_rgb(scr_coord_val, scr_coord_val, PIXVAL, PIXVAL, const char *, int, sint32)
-{
 }
 
 void display_ddd_box_rgb(scr_coord_val, scr_coord_val, scr_coord_val, scr_coord_val, PIXVAL, PIXVAL, bool)
@@ -318,11 +250,6 @@ void display_ddd_box_clip_rgb(scr_coord_val, scr_coord_val, scr_coord_val, scr_c
 
 void display_ddd_proportional_clip(scr_coord_val, scr_coord_val, FLAGGED_PIXVAL, FLAGGED_PIXVAL, const char *, int  CLIP_NUM_DEF_NOUSE)
 {
-}
-
-int display_multiline_text_rgb(scr_coord_val, scr_coord_val, const char *, PIXVAL)
-{
-	return 0;
 }
 
 void display_flush_buffer()

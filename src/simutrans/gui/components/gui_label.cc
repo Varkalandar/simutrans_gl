@@ -17,8 +17,8 @@
 static scr_coord_val separator_width = 0;
 static scr_coord_val large_money_width = 0;
 
-gui_label_t::gui_label_t(const char* text, PIXVAL color_, align_t align_) :
-	align(align_), tooltip(NULL)
+gui_label_t::gui_label_t(const char* text, PIXVAL color_, align_t align_, font_size_t size) :
+	align(align_), tooltip(NULL), font_size(size)
 {
 	separator_width = proportional_string_width( ",00$" );
 
@@ -39,7 +39,7 @@ gui_label_t::gui_label_t(const char* text, PIXVAL color_, align_t align_) :
 
 scr_size gui_label_t::get_min_size() const
 {
-	const scr_coord_val dynamic_width = text ? display_calc_proportional_string_len_width(text, strlen(text), 0) : D_BUTTON_WIDTH;	
+	const scr_coord_val dynamic_width = text ? display_calc_proportional_string_len_width(text, strlen(text), 0, font_size) : D_BUTTON_WIDTH;	
 	return scr_size(max(dynamic_width, fixed_min_width), max(D_LABEL_HEIGHT, fixed_min_height) );
 }
 
@@ -65,7 +65,7 @@ void gui_label_t::set_text_pointer(const char *text_par, bool autosize)
 	text = text_par;
 
 	if (autosize && text && *text != '\0') {
-		set_size(scr_size(display_calc_proportional_string_len_width(text, strlen(text), 0), size.h));
+		set_size(scr_size(display_calc_proportional_string_len_width(text, strlen(text), 0, font_size), size.h));
 	}
 }
 
@@ -99,9 +99,9 @@ void gui_label_t::draw(scr_coord offset)
 				display_proportional_clip_rgb(right.x, right.y, separator, ALIGN_LEFT, color, true);
 				if(  separator!=text  ) {
 					if (shadowed) {
-						display_text_proportional_len_clip_rgb(right.x+1, right.y+1, text, ALIGN_RIGHT | DT_CLIP, color_shadow, true, separator - text, 0, 0);
+						display_text_proportional_len_clip_rgb(right.x+1, right.y+1, text, ALIGN_RIGHT | DT_CLIP, color_shadow, true, separator - text, 0, font_size);
 					}
-					display_text_proportional_len_clip_rgb(right.x, right.y, text, ALIGN_RIGHT | DT_CLIP, color, true, separator-text, 0, 0);
+					display_text_proportional_len_clip_rgb(right.x, right.y, text, ALIGN_RIGHT | DT_CLIP, color, true, separator-text, 0, font_size);
 				}
 			}
 			else {
@@ -132,7 +132,7 @@ void gui_label_t::draw(scr_coord offset)
 		const scr_rect area(offset+pos+scr_coord(0, top), size);
 		
 		int a = align == left ? ALIGN_LEFT : ( align == right ? ALIGN_RIGHT : ALIGN_CENTER_H);
-		display_proportional_ellipsis_rgb( area, text,  a | DT_CLIP, color, true, shadowed, color_shadow );
+		display_proportional_ellipsis_rgb(area, text,  a | DT_CLIP, color, true, shadowed, color_shadow, font_size);
 	}
 
 	if ( tooltip  &&  getroffen(get_mouse_x()-offset.x, get_mouse_y()-offset.y) ) {

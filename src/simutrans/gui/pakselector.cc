@@ -141,7 +141,7 @@ void pak_set_panel_t::draw_logo(const scr_coord_val xpos, const scr_coord_val yp
 		pak_name = entry.info;
 	}
 
-	scr_coord_val pak_name_width = display_calc_proportional_string_len_width(pak_name, strlen(pak_name), 0);
+	scr_coord_val pak_name_width = display_calc_proportional_string_len_width(pak_name, strlen(pak_name), 0, FS_NORMAL);
 	
 	display_proportional_clip_rgb(xpos + (256 - pak_name_width)/2, ypos + 256 + 8, pak_name, ALIGN_LEFT, 
 		                          gui_theme_t::gui_highlight_color, false);
@@ -394,11 +394,12 @@ void pakselector_t::draw(scr_coord pos, scr_size size)
 	display_fillbox_wh_rgb(pos.x, pos.y, size.w, 1, gui_theme_t::gui_highlight_color, true);
 	display_vline_wh_clip_rgb(pos.x, pos.y, size.h, gui_theme_t::gui_highlight_color, true);
 	
-	const char * title = translator::translate("Choose a Graphics Set For Playing");
-	const scr_coord_val title_width = display_calc_proportional_string_len_width(title, strlen(title), 0) * 130/100;
+	const char * title = translator::translate("Please Choose a Graphics Set For Playing");
+	const scr_coord_val title_width = display_calc_proportional_string_len_width(title, strlen(title), 0, FS_HEADLINE);
 	
 	display_fillbox_wh_rgb(pos.x + (size.w - title_width) / 2 - 40, pos.y + 14, title_width + 80, LINESPACE + 32, 0xFFFF, true);
-	display_headline(pos.x + (size.w - title_width) / 2, pos.y + LINESPACE * 144/100 + 8, 0x0000, title, false);
+	display_text_proportional_len_clip_rgb(pos.x + (size.w - title_width) / 2, pos.y + LINESPACE + 16, 
+		                                   title, ALIGN_LEFT, 0x0000, false, -1, 0, FS_HEADLINE);
 }
 
 

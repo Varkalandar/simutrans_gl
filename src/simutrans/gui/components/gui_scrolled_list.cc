@@ -44,7 +44,7 @@ scr_size gui_scrolled_list_t::const_text_scrollitem_t::get_min_size() const
 {
 	if (!is_editable()) {
 		const char* text = get_text();
-		return scr_size(2*D_H_SPACE + (text ? display_calc_proportional_string_len_width(text, strlen(text), 0) : D_BUTTON_WIDTH), LINESPACE);
+		return scr_size(2*D_H_SPACE + (text ? display_calc_proportional_string_len_width(text, strlen(text), 0, FS_NORMAL) : D_BUTTON_WIDTH), LINESPACE);
 	}
 	else {
 		return scr_size(D_BUTTON_WIDTH, LINESPACE);

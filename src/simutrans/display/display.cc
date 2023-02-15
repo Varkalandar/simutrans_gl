@@ -24,9 +24,7 @@ static font_t default_font;
 static font_t headline_font;
 
 // needed for resizing gui
-int default_font_ascent = 0;
 int default_font_linespace = 0;
-
 
 
 void display_bevel_box(scr_rect area, 
@@ -62,9 +60,9 @@ static PIXVAL handle_color_sequences(utf32 code, PIXVAL default_color)
 int display_text_proportional_len_clip_rgb(scr_coord_val x, scr_coord_val y, 
 	                                       const char* txt, control_alignment_t flags, 
 	                                       const PIXVAL default_color, bool dirty, 
-	                                       sint32 len, sint32 spacing, sint32 ifont)
+	                                       sint32 len, sint32 spacing, font_size_t size)
 {
-	font_t * font = (ifont == 0) ? &default_font : &headline_font;
+	font_t * font = (size == FS_NORMAL) ? &default_font : &headline_font;
 	PIXVAL color = default_color;
 
 	if (len < 0) {
@@ -79,11 +77,11 @@ int display_text_proportional_len_clip_rgb(scr_coord_val x, scr_coord_val y,
 			break;
 
 		case ALIGN_CENTER_H:
-			x -= display_calc_proportional_string_len_width(txt, len, spacing) / 2;
+			x -= display_calc_proportional_string_len_width(txt, len, spacing, size) / 2;
 			break;
 
 		case ALIGN_RIGHT:
-			x -= display_calc_proportional_string_len_width(txt, len, spacing);
+			x -= display_calc_proportional_string_len_width(txt, len, spacing, size);
 			break;
 	}
 
@@ -137,7 +135,8 @@ int display_text_proportional_len_clip_rgb(scr_coord_val x, scr_coord_val y,
 
 /// Displays a string which is abbreviated by the (language specific) ellipsis character if too wide
 /// If enough space is given then it just displays the full string
-void display_proportional_ellipsis_rgb( scr_rect r, const char *text, int align, const PIXVAL color, const bool dirty, bool shadowed, PIXVAL shadow_color)
+void display_proportional_ellipsis_rgb(scr_rect r, const char *text, int align, const PIXVAL color, const bool dirty, 
+	                                   bool shadowed, PIXVAL shadow_color, font_size_t size)
 {
 	const scr_coord_val ellipsis_width = translator::get_lang()->ellipsis_width;
 	const scr_coord_val max_screen_width = r.w;
@@ -178,15 +177,15 @@ void display_proportional_ellipsis_rgb( scr_rect r, const char *text, int align,
 				w = (max_screen_width-max_offset_before_ellipsis-ellipsis_width)/2;
 			}
 			if (shadowed) {
-				display_text_proportional_len_clip_rgb(r.x+w+1, r.y+1, text, ALIGN_LEFT | DT_CLIP, shadow_color, dirty, max_idx_before_ellipsis, 0, 0);
+				display_text_proportional_len_clip_rgb(r.x+w+1, r.y+1, text, ALIGN_LEFT | DT_CLIP, shadow_color, dirty, max_idx_before_ellipsis, 0, size);
 			}
-			w += display_text_proportional_len_clip_rgb(r.x+w, r.y, text, ALIGN_LEFT | DT_CLIP, color, dirty, max_idx_before_ellipsis, 0, 0);
+			w += display_text_proportional_len_clip_rgb(r.x+w, r.y, text, ALIGN_LEFT | DT_CLIP, color, dirty, max_idx_before_ellipsis, 0, size);
 
 			if (shadowed) {
-				display_text_proportional_len_clip_rgb(r.x+w+1, r.y+1, translator::translate("..."), ALIGN_LEFT | DT_CLIP, shadow_color, dirty, -1, 0, 0);
+				display_text_proportional_len_clip_rgb(r.x+w+1, r.y+1, translator::translate("..."), ALIGN_LEFT | DT_CLIP, shadow_color, dirty, -1, 0, size);
 			}
 
-			display_text_proportional_len_clip_rgb(r.x+w, r.y, translator::translate("..."), ALIGN_LEFT | DT_CLIP, color, dirty, -1, 0, 0);
+			display_text_proportional_len_clip_rgb(r.x+w, r.y, translator::translate("..."), ALIGN_LEFT | DT_CLIP, color, dirty, -1, 0, size);
 			return;
 		}
 		else {
@@ -204,9 +203,9 @@ void display_proportional_ellipsis_rgb( scr_rect r, const char *text, int align,
 		default: ;
 	}
 	if (shadowed) {
-		display_text_proportional_len_clip_rgb( r.x+1, r.y+1, text, ALIGN_LEFT | DT_CLIP, shadow_color, dirty, -1, 0, 0);
+		display_text_proportional_len_clip_rgb( r.x+1, r.y+1, text, ALIGN_LEFT | DT_CLIP, shadow_color, dirty, -1, 0, size);
 	}
-	display_text_proportional_len_clip_rgb( r.x, r.y, text, ALIGN_LEFT | DT_CLIP, color, dirty, -1, 0, 0);
+	display_text_proportional_len_clip_rgb( r.x, r.y, text, ALIGN_LEFT | DT_CLIP, color, dirty, -1, 0, size);
 }
 
 
@@ -231,7 +230,7 @@ void display_ddd_proportional_clip(scr_coord_val xpos, scr_coord_val ypos, FLAGG
 	display_vline_wh_clip_rgb( xpos, ypos - vpadding, LINESPACE + vpadding * 2, lighter, dirty );
 	display_vline_wh_clip_rgb( xpos + width + 2*hpadding - 2, ypos - vpadding, LINESPACE + vpadding * 2, darker,  dirty );
 
-	display_text_proportional_len_clip_rgb( xpos+hpadding, ypos+1, text, ALIGN_LEFT | DT_CLIP, text_color, dirty, -1, 0, 0);
+	display_text_proportional_len_clip_rgb( xpos+hpadding, ypos+1, text, ALIGN_LEFT | DT_CLIP, text_color, dirty, -1, 0, FS_NORMAL);
 }
 
 
@@ -250,7 +249,7 @@ int display_multiline_text_rgb(scr_coord_val x, scr_coord_val y, const char *buf
 				x, y, buf,
 				ALIGN_LEFT | DT_CLIP, color, true,
 				next != NULL ? (int)(size_t)(next - buf) : -1,
-				0, 0);
+				0, FS_NORMAL);
 			
 			if(  px_len>max_px_len  ) {
 				max_px_len = px_len;
@@ -265,34 +264,27 @@ int display_multiline_text_rgb(scr_coord_val x, scr_coord_val y, const char *buf
 void display_outline_proportional_rgb(scr_coord_val xpos, scr_coord_val ypos, PIXVAL text_color, PIXVAL shadow_color, const char *text, int dirty, sint32 len)
 {
 	const int flags = ALIGN_LEFT | DT_CLIP;
-	display_text_proportional_len_clip_rgb(xpos - 1, ypos    , text, flags, shadow_color, dirty, len, 0, 0);
-	display_text_proportional_len_clip_rgb(xpos + 1, ypos + 2, text, flags, shadow_color, dirty, len, 0, 0);
-	display_text_proportional_len_clip_rgb(xpos, ypos + 1, text, flags, text_color, dirty, len, 0, 0);
+	display_text_proportional_len_clip_rgb(xpos - 1, ypos    , text, flags, shadow_color, dirty, len, 0, FS_NORMAL);
+	display_text_proportional_len_clip_rgb(xpos + 1, ypos + 2, text, flags, shadow_color, dirty, len, 0, FS_NORMAL);
+	display_text_proportional_len_clip_rgb(xpos, ypos + 1, text, flags, text_color, dirty, len, 0, FS_NORMAL);
 }
 
 
 void display_shadow_proportional_rgb(scr_coord_val xpos, scr_coord_val ypos, PIXVAL text_color, PIXVAL shadow_color, const char *text, int dirty, sint32 len)
 {
 	const int flags = ALIGN_LEFT | DT_CLIP;
-	display_text_proportional_len_clip_rgb(xpos + 1, ypos + 1 + (12 - LINESPACE) / 2, text, flags, shadow_color, dirty, len, 0, 0);
-	display_text_proportional_len_clip_rgb(xpos, ypos + (12 - LINESPACE) / 2, text, flags, text_color, dirty, len, 0, 0);
+	display_text_proportional_len_clip_rgb(xpos + 1, ypos + 1 + (12 - LINESPACE) / 2, text, flags, shadow_color, dirty, len, 0, FS_NORMAL);
+	display_text_proportional_len_clip_rgb(xpos, ypos + (12 - LINESPACE) / 2, text, flags, text_color, dirty, len, 0, FS_NORMAL);
 }
 
 
-int display_text_bold(scr_coord_val xpos, scr_coord_val ypos, PIXVAL color, const char *text, int dirty, sint32 len)
+int display_text_bold(scr_coord_val xpos, scr_coord_val ypos, PIXVAL color, 
+	                  const char *text, int dirty, 
+	                  sint32 len, font_size_t size)
 {
 	const int flags = ALIGN_LEFT | DT_CLIP;
-	display_text_proportional_len_clip_rgb(xpos, ypos, text, flags, color, dirty, len, 1, 0);
-	int width = display_text_proportional_len_clip_rgb(xpos+1, ypos, text, flags, color, dirty, len, 1, 0);
-	return width + 1;
-}
-
-
-int display_headline(scr_coord_val xpos, scr_coord_val ypos, PIXVAL color, const char *text, int dirty, sint32 len)
-{
-	const int flags = ALIGN_LEFT | DT_CLIP;
-	// display_text_proportional_len_clip_rgb(xpos + 1, ypos, text, flags, color, dirty, len, 1, 1);
-	int width = display_text_proportional_len_clip_rgb(xpos, ypos, text, flags, color, dirty, len, 0, 1);
+	display_text_proportional_len_clip_rgb(xpos, ypos, text, flags, color, dirty, len, 1, size);
+	int width = display_text_proportional_len_clip_rgb(xpos+1, ypos, text, flags, color, dirty, len, 1, size);
 	return width + 1;
 }
 
@@ -315,13 +307,12 @@ bool display_load_font(const char *fname, bool reload)
 	
 	if(loaded_fnt.load_from_file(fname, size)) {
 		default_font = loaded_fnt;
-		default_font_ascent    = default_font.get_ascent();
 		default_font_linespace = default_font.get_linespace();
 
 		env_t::fontname = fname;
 	}
 
-	if(headline_font.load_from_file(fname, size * 144 / 100)) {
+	if(headline_font.load_from_file(fname, size * 120 / 100)) {
 		return default_font.is_loaded() && headline_font.is_loaded();
 	}
 	
@@ -461,12 +452,16 @@ utf32 get_prev_char_with_metrics(const char* &text, const char *const text_start
 }
 
 
-/* proportional_string_width with a text of a given length
-* extended for universal font routines with unicode support
-*/
-int display_calc_proportional_string_len_width(const char *text, size_t len, int spacing)
+/**
+ * Proportional string width in pixels with a text of a given length
+ * extended for universal font routines with unicode support
+ */
+int display_calc_proportional_string_len_width(const char *text, 
+	                                           size_t len, 
+	                                           int spacing,
+	                                           font_size_t size)
 {
-	const font_t* const fnt = &default_font;
+	const font_t* const fnt = (size == FS_NORMAL) ? &default_font : &headline_font;
 	unsigned int width = 0;
 
 	// decode char

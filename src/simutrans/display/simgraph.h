@@ -8,7 +8,6 @@
 
 
 #include "../simcolor.h"
-#include "../utils/unicode.h"
 #include "../simtypes.h"
 #include "clip_num.h"
 #include "simimg.h"
@@ -19,13 +18,10 @@ class font_t;
 
 #if COLOUR_DEPTH != 0
 
-extern int default_font_ascent;
 extern int default_font_linespace;
 
-#  define LINEASCENT (default_font_ascent)
 #  define LINESPACE  (default_font_linespace)
 #else
-#  define LINEASCENT 0
 // a font height of zero could cause division by zero errors, even though it should not be used in a server
 #  define LINESPACE  1
 #endif
@@ -235,11 +231,6 @@ void display_array_wh(scr_coord_val xp, scr_coord_val yp, scr_coord_val w, scr_c
 // compound painting routines
 void display_ddd_box_rgb(scr_coord_val x1, scr_coord_val y1, scr_coord_val w, scr_coord_val h, PIXVAL tl_color, PIXVAL rd_color, bool dirty);
 void display_ddd_box_clip_rgb(scr_coord_val x1, scr_coord_val y1, scr_coord_val w, scr_coord_val h, PIXVAL tl_color, PIXVAL rd_color);
-
-
-// unicode save moving in strings
-size_t get_next_char(const char* text, size_t pos);
-sint32 get_prev_char(const char* text, sint32 pos);
 
 
 // #ifdef MULTI_THREAD

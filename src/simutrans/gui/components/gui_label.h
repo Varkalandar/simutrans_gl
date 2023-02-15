@@ -8,7 +8,7 @@
 
 
 #include "gui_component.h"
-#include "../../simcolor.h"
+#include "../../display/display.h"
 #include "../gui_theme.h"
 #include "../../simskin.h"
 #include "../../utils/cbuffer.h"
@@ -41,12 +41,13 @@ private:
 
 	const char * text; // only for direct access of non-translatable things. Do not use!
 	const char * tooltip;
-
+        font_size_t font_size;
+        
 protected:
 	using gui_component_t::init;
 
 public:
-	gui_label_t(const char* text=NULL, PIXVAL color=SYSCOL_TEXT, align_t align=left);
+	gui_label_t(const char* text=NULL, PIXVAL color=SYSCOL_TEXT, align_t align=left, font_size_t size=FS_NORMAL);
 
 	void init( const char* text_par, scr_coord pos_par, PIXVAL color_par=SYSCOL_TEXT, align_t align_par=left) {
 		set_pos  ( pos_par   );

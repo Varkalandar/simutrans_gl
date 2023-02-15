@@ -387,14 +387,14 @@ static void win_draw_window_title(const scr_coord pos, const scr_size size,
 	// Draw the gadgets and then move left and draw text.
 	const int width = display_gadget_boxes( &flags, pos.x+(REVERSE_GADGETS?0:size.w-D_GADGET_WIDTH), pos.y, lighter, darker, gadget_state, sticky, goto_pushed );
 	const int left = (REVERSE_GADGETS ? width + 4 : 4);
-	const int top = (D_TITLEBAR_HEIGHT-LINEASCENT)/2;
+	const int top = (D_TITLEBAR_HEIGHT-LINESPACE+1)/2;
 
 	if(!is_top) {
 		// not top => darker
 		text_color = env_t::bottom_window_text_color;
 	}
 	
-	int titlewidth = display_text_bold(pos.x + left, pos.y + top, text_color, text, false);
+	int titlewidth = display_text_bold(pos.x + left, pos.y + top, text_color, text, false, -1, FS_NORMAL);
 	
 	// if the object has a world position, show the coordinates
 	flags.gotopos = (welt_pos != koord3d::invalid);
