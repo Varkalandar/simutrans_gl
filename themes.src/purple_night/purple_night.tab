@@ -58,8 +58,8 @@ bottom_window_text_color = #B7B7B7
 
 default_window_title_color = #705726
 
-gui_color_text = #B7B7B7
-gui_color_text_highlight = #908010
+gui_color_text = #C0C0C0
+gui_color_text_highlight = #B09030
 gui_color_text_shadow = #000000
 gui_color_text_title = #338FCC
 gui_color_text_strong = #E46A0B
@@ -68,7 +68,7 @@ gui_color_text_strong = #E46A0B
 gui_color_empty = #868c86
 gui_color_obsolete = #2878ff
 
-gui_color_edit_text = #908010
+gui_color_edit_text = #B09030
 gui_color_edit_text_selected = #FAFAFA
 gui_color_edit_text_disabled = #666666
 gui_color_edit_background_selected = #72B2DD
@@ -78,6 +78,8 @@ gui_color_chart_background = #2e2e40
 gui_color_chart_lines_zero = #005C9E
 gui_color_chart_lines_odd = #68688e
 gui_color_chart_lines_even = #68688e
+gui_color_list_background_even = #424459
+gui_color_list_background_odd = #55576c
 
 gui_color_list_text_selected_focus = #B7B7B7
 gui_color_list_text_selected_nofocus = #908010
