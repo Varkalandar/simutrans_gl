@@ -41,7 +41,7 @@
 #include "../utils/simstring.h"
 #include "../utils/simrandom.h"
 
-#include "components/gui_divider.h"
+#include "components/gui_spacer.h"
 
 #include "sprachen.h"
 #include "climates.h"
@@ -95,44 +95,53 @@ welt_gui_t::welt_gui_t(settings_t* const sets_par) :
 	//******************************************************************
 	// Component creation
 	set_table_layout(1,0);
+	
 	// top part: preview, maps size
+	
+	new_component<gui_spacer_t>(scr_coord(0, 0), scr_size(10, LINESPACE/4));
 	new_component<gui_label_t>("1WORLD_CHOOSE", gui_theme_t::gui_color_text, gui_label_t::left, FS_HEADLINE);
-	new_component<gui_divider_t>();
+	new_component<gui_spacer_t>(scr_coord(0, 0), scr_size(10, LINESPACE/4));
 	add_table(3,1);
 	{
 		// input fields
-		add_table(2,3);
+		add_table(3, 3);
 		{
 			new_component<gui_label_t>("2WORLD_CHOOSE");
 			inp_map_number.init( abs(sets->get_map_number()), 0, 0x7FFFFFFF, 1, true );
 			inp_map_number.add_listener( this );
-			add_component( &inp_map_number );
+			inp_map_number.fixed_min_width = 180 + D_H_SPACE;
+			add_component(&inp_map_number, 2);
+
+			// new_component<gui_empty_t>(&size_label);
 
 			// Map size label
 			size_label.init();
 			size_label.buf().printf(translator::translate("Size (%d MB):"), 9999);
 			size_label.update();
-			add_component( &size_label );
+			add_component(&size_label);
 
 			// Map X size edit
 			inp_x_size.init( sets->get_size_x(), 8, 32766, sets->get_size_x()>=512 ? 128 : 64, false );
 			inp_x_size.add_listener(this);
-			add_component( &inp_x_size );
+			inp_x_size.fixed_min_width = 90;
+			add_component(&inp_x_size);
 
-			new_component<gui_empty_t>(&size_label);
 
 			// Map size Y edit
 			inp_y_size.init( sets->get_size_y(), 8, 32766, sets->get_size_y()>=512 ? 128 : 64, false );
 			inp_y_size.add_listener(this);
-			add_component( &inp_y_size );
+			inp_y_size.fixed_min_width = 90;
+			add_component(&inp_y_size);
 		}
 		end_table();
 
-		new_component<gui_fill_t>();
+		new_component<gui_spacer_t>(scr_coord(0, 0), scr_size(10, 1));
 		// Map preview (will be initialized in update_preview
 		add_component( &map_preview );
 	}
 	end_table();
+
+	new_component<gui_spacer_t>(scr_coord(0, 0), scr_size(10, LINESPACE/4));
 
 	// two buttons
 	add_table(2,0)->set_force_equal_columns(true);
@@ -151,6 +160,8 @@ welt_gui_t::welt_gui_t(settings_t* const sets_par) :
 	}
 	end_table();
 
+	new_component<gui_spacer_t>(scr_coord(0, 0), scr_size(10, LINESPACE/4));
+
 	// specify map parameters
 	add_table(2,0);
 	{
@@ -158,22 +169,25 @@ welt_gui_t::welt_gui_t(settings_t* const sets_par) :
 		new_component<gui_label_t>("5WORLD_CHOOSE");
 		inp_number_of_towns.add_listener(this);
 		inp_number_of_towns.init(abs(sets->get_city_count()), 0, 999);
+		inp_number_of_towns.fixed_min_width = 100;
 		add_component( &inp_number_of_towns );
 
 		// Town size
 		new_component<gui_label_t>("Median Citizen per town");
 		inp_town_size.add_listener(this);
-		inp_town_size.set_limits(0,999999);
+		inp_town_size.set_limits(0, 999999);
 		inp_town_size.set_increment_mode(50);
 		inp_town_size.set_value( sets->get_mean_citizen_count() );
+		inp_town_size.fixed_min_width = 100;
 		add_component( &inp_town_size );
 
 		// Intercity road length
 		new_component<gui_label_t>("Intercity road len:");
 		inp_intercity_road_len.add_listener(this);
-		inp_intercity_road_len.set_limits(0,9999);
+		inp_intercity_road_len.set_limits(0, 9999);
 		inp_intercity_road_len.set_value( env_t::intercity_road_length );
 		inp_intercity_road_len.set_increment_mode( env_t::intercity_road_length>=1000 ? 100 : 20 );
+		inp_intercity_road_len.fixed_min_width = 100;
 		add_component( &inp_intercity_road_len );
 
 		// Factories
@@ -181,13 +195,15 @@ welt_gui_t::welt_gui_t(settings_t* const sets_par) :
 		inp_other_industries.add_listener(this);
 		inp_other_industries.set_limits(0,999);
 		inp_other_industries.set_value(abs(sets->get_factory_count()) );
+		inp_other_industries.fixed_min_width = 100;
 		add_component( &inp_other_industries );
 
 		// Tourist attr.
 		new_component<gui_label_t>("Tourist attractions");
 		inp_tourist_attractions.add_listener(this);
-		inp_tourist_attractions.set_limits(0,999);
+		inp_tourist_attractions.set_limits(0, 999);
 		inp_tourist_attractions.set_value(abs(sets->get_tourist_attractions()) );
+		inp_tourist_attractions.fixed_min_width = 100;
 		add_component( &inp_tourist_attractions );
 
 		// Use timeline checkbox
@@ -201,8 +217,8 @@ welt_gui_t::welt_gui_t(settings_t* const sets_par) :
 		inp_intro_date.set_limits(game_start,game_ends);
 		inp_intro_date.set_increment_mode(10);
 		inp_intro_date.set_value(abs(sets->get_starting_year()) );
+		inp_intro_date.fixed_min_width = 100;
 		add_component( &inp_intro_date );
-
 
 		// Use beginner mode checkbox
 		use_beginner_mode.init(button_t::square_state, "Use beginner mode");
@@ -213,7 +229,7 @@ welt_gui_t::welt_gui_t(settings_t* const sets_par) :
 	}
 	end_table();
 
-	new_component<gui_divider_t>();
+	new_component<gui_spacer_t>(scr_coord(0, 0), scr_size(10, LINESPACE/4));
 
 	add_table(2,1)->set_force_equal_columns(true);
 	{
@@ -231,7 +247,7 @@ welt_gui_t::welt_gui_t(settings_t* const sets_par) :
 	}
 	end_table();
 
-	new_component<gui_divider_t>();
+	new_component<gui_spacer_t>(scr_coord(0, 0), scr_size(10, LINESPACE/4));
 
 	add_table(2,2)->set_force_equal_columns(true);
 	{

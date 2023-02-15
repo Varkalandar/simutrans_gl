@@ -63,6 +63,8 @@ private:
 	static char tooltip[256];
 
 public:
+        scr_coord_val fixed_min_width = 0;
+        
 	gui_numberinput_t();
 
 	void set_size(scr_size size) OVERRIDE;
