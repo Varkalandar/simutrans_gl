@@ -386,8 +386,8 @@ static void win_draw_window_title(const scr_coord pos, const scr_size size,
         
 	// Draw the gadgets and then move left and draw text.
 	const int width = display_gadget_boxes( &flags, pos.x+(REVERSE_GADGETS?0:size.w-D_GADGET_WIDTH), pos.y, lighter, darker, gadget_state, sticky, goto_pushed );
-	const int left = (REVERSE_GADGETS ? width + 4 : 4);
-	const int top = (D_TITLEBAR_HEIGHT-LINESPACE+1)/2;
+	const int left = (REVERSE_GADGETS ? width + 4 : 6);
+	const int top = (D_TITLEBAR_HEIGHT-LINESPACE+2)/2;
 
 	if(!is_top) {
 		// not top => darker
