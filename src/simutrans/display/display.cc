@@ -524,7 +524,15 @@ void display_calc_proportional_multiline_string_len_width(int &xw, int &yh, cons
 	xw = max( xw, width );
 	yh += LINESPACE;
 }
-	
 
 
-
+/**
+ * Get the height of the specified font in pixels,
+ * 
+ * @param size FS_NORMAL or FS_HEADLINE
+ * @return the line height for this font
+ */
+sint16 get_font_height(font_size_t size)
+{
+	return (size == FS_NORMAL) ? default_font.get_linespace() : headline_font.get_linespace();
+}

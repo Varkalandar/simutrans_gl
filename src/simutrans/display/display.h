@@ -122,5 +122,14 @@ int display_calc_proportional_string_len_width(const char* text, size_t len, int
 // box which will contain the multi (or single) line of text
 void display_calc_proportional_multiline_string_len_width( int &xw, int &yh, const char *text, size_t len );
 
+
+/**
+ * Get the height of the specified font in pixels,
+ * 
+ * @param size FS_NORMAL or FS_HEADLINE
+ * @return the line height for this font
+ */
+sint16 get_font_height(font_size_t size);
+
 #endif /* SIM_DISPLAY_H */
 
