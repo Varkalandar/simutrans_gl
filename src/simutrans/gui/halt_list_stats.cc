@@ -4,6 +4,7 @@
  */
 
 #include "halt_list_stats.h"
+#include "components/gui_spacer.h"
 #include "../simhalt.h"
 #include "../simskin.h"
 #include "../simcolor.h"
@@ -49,28 +50,36 @@ bool halt_list_stats_t::infowin_event(const event_t *ev)
 halt_list_stats_t::halt_list_stats_t(halthandle_t h)
 {
 	halt = h;
-	set_table_layout(2,2);
-	set_spacing(scr_size(D_H_SPACE, 0));
+	set_table_layout(1, 4);
+	set_spacing(scr_size(D_H_SPACE, 2));
 
-	gotopos.set_typ(button_t::posbutton_automatic);
-	gotopos.set_targetpos3d(halt->get_basis_pos3d());
-	add_component(&gotopos);
+	new_component<gui_spacer_t>(scr_coord(0, 0), scr_size(10, LINESPACE/2));
+	
 
-	add_table(2,1);
+	add_table(4, 1);
 	{
+		indicator.fixed_min_height = gui_theme_t::gui_label_size.h-4;
+		indicator.set_max_size(scr_size(D_INDICATOR_WIDTH, D_INDICATOR_HEIGHT));
+		add_component(&indicator);
+
 		add_component(&label_name);
 		label_name.buf().append(halt->get_name());
 		label_name.update();
+
+		new_component<gui_spacer_t>(scr_coord(0, 0), scr_size(0, 2));
 
 		img_types = new_component<gui_halt_type_images_t>(halt);
 	}
 	end_table();
 
-	// second row, skip posbutton
-	new_component<gui_empty_t>();
-
-	add_table(4,1);
+	// second row
+	
+	add_table(5, 1);
 	{
+		gotopos.set_typ(button_t::posbutton_automatic);
+		gotopos.set_targetpos3d(halt->get_basis_pos3d());
+		add_component(&gotopos);
+		
 		add_component(&img_enabled[0]);
 		img_enabled[0].set_image(skinverwaltung_t::passengers->get_image_id(0), true);
 		add_component(&img_enabled[1]);
@@ -78,15 +87,13 @@ halt_list_stats_t::halt_list_stats_t(halthandle_t h)
 		add_component(&img_enabled[2]);
 		img_enabled[2].set_image(skinverwaltung_t::goods->get_image_id(0), true);
 
-		img_enabled[0].set_rigid(true);
-		img_enabled[1].set_rigid(true);
-		img_enabled[2].set_rigid(true);
-
 		add_component(&label_cargo);
 		halt->get_short_freight_info( label_cargo.buf() );
 		label_cargo.update();
 	}
 	end_table();
+
+	new_component<gui_spacer_t>(scr_coord(0, 0), scr_size(10, LINESPACE/4));	
 }
 
 
@@ -108,8 +115,7 @@ void halt_list_stats_t::draw(scr_coord offset)
 
 	label_name.buf().append(halt->get_name());
 	label_name.update();
-	label_name.set_color(halt->get_status_farbe());
-	label_name.set_shadow(SYSCOL_TEXT_SHADOW, true);
+	indicator.set_color(halt->get_status_farbe());
 
 	halt->get_short_freight_info( label_cargo.buf() );
 	label_cargo.update();
