@@ -4507,11 +4507,10 @@ int display_glyph(scr_coord_val x, scr_coord_val y, utf32 c, control_alignment_t
 	const int glyph_top = font->get_glyph_top(c);
 	const uint8 *p = font->get_glyph_bitmap(c);
 
-	int screen_pos = (y + glyph_top) * disp_width + x;
-
 	// glyph x clipping
-	int g_left = max(cL - x, 0);
-	int g_right = x + glyph_width < cR ? glyph_width : cR - x;
+	const int g_left = max(cL - x, 0);
+	const int g_right = min(cR - x, glyph_width);
+	int screen_pos = (y + glyph_top) * disp_width + x + g_left;
 
 	// all visible rows
 	for (int h = 0; h < glyph_height; h++) {
@@ -4520,7 +4519,7 @@ int display_glyph(scr_coord_val x, scr_coord_val y, utf32 c, control_alignment_t
 
 			PIXVAL* dst = textur + screen_pos;
 
-			// all columns
+			// all visible columns
 			for(int gx=g_left; gx<g_right; gx++) {
 				int alpha = p[h*glyph_width + gx];
 				PIXVAL new_color;
@@ -4530,7 +4529,7 @@ int display_glyph(scr_coord_val x, scr_coord_val y, utf32 c, control_alignment_t
 					new_color = color;
 				} else {
 					// partially transparent -> blend it
-					PIXVAL old_color = *dst;
+					const PIXVAL old_color = *dst;
 					new_color = display_blend_colors(old_color, color, alpha);
 				}
 

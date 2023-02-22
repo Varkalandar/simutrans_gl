@@ -954,8 +954,8 @@ int simu_main(int argc, char** argv)
 			disp_height = res.h;
 		}
 		else {
-			disp_width  = min(704, res.w);
-			disp_height = min(560, res.h);
+			disp_width  = min(1000, res.w);
+			disp_height = min( 750, res.h);
 		}
 	}
 
