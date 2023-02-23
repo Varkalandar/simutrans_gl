@@ -130,15 +130,15 @@ bool font_t::load_from_freetype(const char *fname, int pixel_height)
 		// transform glyph to Simutrans bitmap
 		
 		glyph.bitmap = (uint8*)calloc(glyph.height * glyph.width, 1);
-		uint8 * bitmap = glyph.bitmap;
+		uint8 * const bitmap = glyph.bitmap;
 		
 		for(int y = 0; y < glyph.height; y++) {
 			for(int x = 0; x < face->glyph->bitmap.pitch; x++) {
 			
-				uint8 alpha = face->glyph->bitmap.buffer[y * face->glyph->bitmap.pitch + x];
-				// simgraph blend routines want alpha in percent
+				const uint8 alpha = face->glyph->bitmap.buffer[y * face->glyph->bitmap.pitch + x];
+				// simgraph blend routines want 5 bit alpha i.e. 0 .. 31
 				
-				bitmap[y * glyph.width + x] = (uint8)(pow((alpha / 255.0), 0.75) * 100);
+				bitmap[y * glyph.width + x] = (uint8)(pow((alpha / 255.0), 0.75) * 32);
 			}		
 		}
 	}

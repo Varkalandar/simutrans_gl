@@ -3932,7 +3932,7 @@ int display_glyph(scr_coord_val x, scr_coord_val y, utf32 c, control_alignment_t
 
 			// all visible columns
 			for(int gx=g_left; gx<g_right; gx++) {
-				int alpha = p[h*glyph_width + gx];
+				const int alpha = p[h*glyph_width + gx];
 				PIXVAL new_color;
 
 				if(alpha > 90) {
@@ -3941,7 +3941,7 @@ int display_glyph(scr_coord_val x, scr_coord_val y, utf32 c, control_alignment_t
 				} else {
 					// partially transparent -> blend it
 					const PIXVAL old_color = *dst;
-					new_color = display_blend_colors(old_color, color, alpha);
+					new_color = display_blend_colors_alpha32(old_color, color, alpha);
 				}
 
 				*dst++ = new_color;
