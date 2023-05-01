@@ -333,6 +333,8 @@ BEGIN {
 	export_types_scenario["settings::get_max_ship_convoi_length"] = "integer()"
 	export_types_scenario["settings::get_max_air_convoi_length"] = "integer()"
 	export_types_scenario["settings::get_drive_on_left"] = "bool()"
+	export_types_scenario["settings::get_way_height_clearance"] = "integer()"
+	export_types_scenario["settings::has_double_slopes"] = "bool()"
 	export_types_scenario["settings::get_pay_for_total_distance_mode"] = "integer()"
 	export_types_scenario["settings::get_underground_view_level"] = "integer()"
 	export_types_scenario["dir::is_single"] = "bool(dir)"
@@ -441,4 +443,6 @@ BEGIN {
 	export_types_scenario["command_x::build_sign_at"] = "string(player_x, coord3d, sign_desc_x)"
 	export_types_scenario["command_x::build_wayobj"] = "string(player_x, coord3d, coord3d, wayobj_desc_x)"
 	export_types_scenario["command_x::change_climate_at"] = "string(player_x, coord3d, integer)"
+	export_types_scenario["command_x::grid_lower"] = "string(player_x, coord3d)"
+	export_types_scenario["command_x::grid_raise"] = "string(player_x, coord3d)"
 }

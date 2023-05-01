@@ -119,9 +119,11 @@ size_t display_fit_proportional( const char *text, scr_coord_val max_width, scr_
  */
 int display_calc_proportional_string_len_width(const char* text, size_t len, int spacing, font_size_t size);
 
-// box which will contain the multi (or single) line of text
-void display_calc_proportional_multiline_string_len_width( int &xw, int &yh, const char *text, size_t len );
-
+/**
+ * display_calc_proportional_multiline_string_len_width
+ * calculates the width and height of a box containing the text inside
+ */
+void display_calc_proportional_multiline_string_len_width(int &xw, int &yh, const char *text);
 
 /**
  * Get the height of the specified font in pixels,

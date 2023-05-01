@@ -10,6 +10,7 @@
 #include "../../display/simgraph.h"
 #include "../../display/display.h"
 #include "../../utils/simstring.h"
+#include "../../utils/unicode.h"
 #include "../gui_theme.h"
 
 #include "gui_flowtext.h"

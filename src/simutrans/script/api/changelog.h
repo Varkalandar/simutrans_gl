@@ -9,6 +9,8 @@
  *
  * @section api-trunk Current trunk
  *
+ * - Added @ref command_x::grid_lower, @ref command_x::grid_raise
+ * - Added @ref settings::has_double_slopes, @ref settings::get_way_height_clearance
  * - Added @ref tile_x::is_crossing
  * - Added @ref world_x::generate_goods to generate passengers, mail or freight (scenario only)
  * - Added @ref change_climate_at

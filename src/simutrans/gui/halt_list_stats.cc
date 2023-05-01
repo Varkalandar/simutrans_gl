@@ -28,11 +28,13 @@
 
 static karte_ptr_t welt;
 
-
+/**
+ * Events are notified to GUI components via this method
+ */
 bool halt_list_stats_t::infowin_event(const event_t *ev)
 {
 	bool swallowed = gui_aligned_container_t::infowin_event(ev);
-	if(  !swallowed  &&  halt.is_bound()  ) {
+	if(!swallowed && halt.is_bound()) {
 
 		if(IS_LEFTRELEASE(ev)) {
 			halt->open_info_window();
@@ -101,6 +103,7 @@ const char* halt_list_stats_t::get_text() const
 {
 	return halt->get_name();
 }
+
 
 /**
  * Draw the component

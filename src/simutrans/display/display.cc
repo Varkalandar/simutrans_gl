@@ -491,36 +491,29 @@ int display_calc_proportional_string_len_width(const char *text,
 
 
 
-/* display_calc_proportional_multiline_string_len_width
-* calculates the width and hieght of a box containing the text inside
-*/
-void display_calc_proportional_multiline_string_len_width(int &xw, int &yh, const char *text, size_t len)
+/**
+ * display_calc_proportional_multiline_string_len_width
+ * calculates the width and height of a box containing the text inside
+ */
+void display_calc_proportional_multiline_string_len_width(int &xw, int &yh, const char *text)
 {
 	const font_t* const fnt = &default_font;
 	int width = 0;
 
 	xw = yh = 0;
 
-	// decode char
-	const char *const end = text + len;
-	while(  text < end  ) {
-		const utf8 *p = reinterpret_cast<const utf8 *>(text);
-		const utf32 iUnicode = utf8_decoder_t::decode(p);
-		text = reinterpret_cast<const char *>(p);
+	const utf8 *p = reinterpret_cast<const utf8 *>(text);
+	while (const utf32 iUnicode = utf8_decoder_t::decode(p)) {
 
 		if(  iUnicode == '\n'  ) {
 			// new line: record max width
 			xw = max( xw, width );
 			yh += LINESPACE;
 			width = 0;
+			continue;
 		}
-		if(  iUnicode == UNICODE_NUL ) {
-			return;
-		}
-
 		width += fnt->get_glyph_advance(iUnicode);
 	}
-
 	xw = max( xw, width );
 	yh += LINESPACE;
 }

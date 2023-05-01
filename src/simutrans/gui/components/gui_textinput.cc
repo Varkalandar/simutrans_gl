@@ -10,6 +10,7 @@
 #include "../gui_theme.h"
 #include "../../dataobj/translator.h"
 #include "../../utils/simstring.h"
+#include "../../utils/unicode.h"
 #include "../../sys/simsys.h"
 #include "../../display/display.h"
 
@@ -110,7 +111,7 @@ void gui_textinput_t::set_composition_status( char *c, int start, int length )
 
 
 /**
- * Events werden hiermit an die GUI-components gemeldet
+ * Events are notified to GUI components via this method
  */
 bool gui_textinput_t::infowin_event(const event_t *ev)
 {

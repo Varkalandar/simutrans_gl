@@ -1061,6 +1061,13 @@ void tool_setslope_t::rdwr_custom_data(memory_rw_t *packet)
 
 const char *tool_setslope_t::tool_set_slope_work( player_t *player, koord3d pos, int new_slope, bool old_slope_compatibility, bool just_check )
 {
+	if(  !ground_desc_t::double_grounds  &&  !old_slope_compatibility  ) {
+		// do not build double slopes if no graphics are available
+		if (slope_t::max_diff(new_slope) > 1) {
+			return ""; // invalid parameter
+		}
+	}
+
 	if(  !ground_desc_t::double_grounds  &&  old_slope_compatibility  ) {
 		// translate old single slope parameter to new double slope
 		if(  0 < new_slope  &&  new_slope < ALL_UP_SLOPE_SINGLE  ) {
@@ -1820,7 +1827,7 @@ const char *tool_change_city_size_t::work( player_t *, koord3d pos )
 const char *tool_set_climate_t::get_tooltip(player_t const*) const
 {
 	char temp[1024];
-	sprintf( temp, translator::translate( "Set tile climate" ), translator::translate( ground_desc_t::get_climate_name_from_bit((climate)atoi(default_param)) ) );
+	sprintf( temp, translator::translate( "Set tile climate %s" ), translator::translate( ground_desc_t::get_climate_name_from_bit((climate)atoi(default_param)) ) );
 	return tooltip_with_price( temp,  welt->get_settings().cst_alter_climate );
 }
 
@@ -3025,7 +3032,7 @@ const char *tool_build_tunnel_t::check_pos( player_t *player, koord3d pos)
 					return "";
 				}
 
-				if(  env_t::pak_height_conversion_factor != slope_t::max_diff(sl)  ) {
+				if(  welt->get_settings().get_way_height_clearance() != slope_t::max_diff(sl)  ) {
 					win_set_static_tooltip( translator::translate("The gradient does not fit a tunnel") );
 					return "";
 				}
@@ -4666,7 +4673,7 @@ bool tool_build_station_t::init( player_t * )
 {
 	sint8 rotation = -1;
 	const building_desc_t *bdsc = get_desc( rotation );
-	if(  bdsc==NULL  ) {
+	if(  bdsc==NULL  ||  bdsc->get_cursor()==NULL) {
 		return false;
 	}
 	cursor = bdsc->get_cursor()->get_image_id(0);
@@ -5465,7 +5472,7 @@ bool tool_build_depot_t::init( player_t *player )
 
 	const building_tile_desc_t *tile_desc = hausbauer_t::find_tile(default_param, 0);
 	building_desc_t const* desc = tile_desc ? tile_desc->get_desc() : NULL;
-	if (desc == NULL) {
+	if (desc == NULL  ||  desc->get_cursor()==NULL) {
 		return false;
 	}
 
@@ -7741,12 +7748,20 @@ bool tool_change_depot_t::init( player_t *player )
 					else {
 						// now check if we are allowed to buy this (we test only leading vehicle, so one can still buy hidden stuff)
 						info = new_vehicle_info.front();
-						if(  !info->is_available(welt->get_timeline_year_month())  &&  !welt->get_settings().get_allow_buying_obsolete_vehicles()  ) {
-							// only allow append/insert, if in depot do not create new obsolete vehicles
-							if(  !depot->find_oldest_newest(info, true)  ) {
-								// just fail silent
+
+						if (!info->is_available(welt->get_timeline_year_month())) {
+							if (info->is_future(welt->get_timeline_year_month())) {
+								// not allowed
 								return false;
 							}
+							else if (!welt->get_settings().get_allow_buying_obsolete_vehicles()) {
+								// only allow append/insert, if in depot do not create new obsolete vehicles
+								if(  !depot->find_oldest_newest(info, true)  ) {
+									// just fail silent
+									return false;
+								}
+							}
+							// obsolete vehicle found or buying of obsolete allowed
 						}
 
 						// append/insert into convoi; create one if needed

@@ -9,8 +9,8 @@
 #include "gui_fixedwidth_textarea.h"
 #include "../../dataobj/translator.h"
 #include "../../utils/cbuffer.h"
+#include "../../utils/unicode.h"
 #include "../../display/display.h"
-
 
 
 gui_fixedwidth_textarea_t::gui_fixedwidth_textarea_t(cbuffer_t* buf_, const sint16 width) :
@@ -21,7 +21,6 @@ gui_fixedwidth_textarea_t::gui_fixedwidth_textarea_t(cbuffer_t* buf_, const sint
 }
 
 
-
 void gui_fixedwidth_textarea_t::recalc_size()
 {
 	scr_size newsize = calc_display_text(scr_coord::invalid, false);
@@ -29,7 +28,6 @@ void gui_fixedwidth_textarea_t::recalc_size()
 		gui_component_t::set_size( newsize );
 	}
 }
-
 
 
 void gui_fixedwidth_textarea_t::set_width(const scr_coord_val width)
@@ -44,14 +42,12 @@ void gui_fixedwidth_textarea_t::set_width(const scr_coord_val width)
 }
 
 
-
 void gui_fixedwidth_textarea_t::set_reserved_area(const scr_size area)
 {
 	if(  area.w>=0  &&  area.h>=0  ) {
 		reserved_area = area;
 	}
 }
-
 
 
 scr_size gui_fixedwidth_textarea_t::get_min_size() const
@@ -66,7 +62,6 @@ scr_size gui_fixedwidth_textarea_t::get_max_size() const
 {
 	return scr_size::inf;
 }
-
 
 
 /* calculates the height of the text that flows around the world_view

@@ -21,6 +21,7 @@
 #include "../utils/unicode.h"
 #include "../simticker.h"
 #include "../utils/simstring.h"
+#include "../utils/unicode.h"
 #include "../io/raw_image.h"
 
 #include "../gui/simwin.h"
@@ -246,7 +247,7 @@ clipping_info_t clips;
 #define CR clips CLIP_NUM_INDEX
 
 
-#define RGBMAPSIZE (0x8000+LIGHT_COUNT+MAX_PLAYER_COUNT)
+#define RGBMAPSIZE (0x8000+LIGHT_COUNT+MAX_PLAYER_COUNT+1024 /* 343 transparent */)
 
 // RGB 555/565 specific functions
 
@@ -2094,6 +2095,23 @@ static void calc_base_pal_from_night_shift(const int night)
 		rgbmap_day_night[i] = get_system_color(R, G, B);
 	}
 
+	// again the same but for transparent colors
+	for (i = 0; i < 0x0400; i++) {
+		// RGB 343 input
+		int R = (i & 0x0380) >> 2;
+		int G = (i & 0x0078) << 1;
+		int B = (i & 0x0007) << 5;
+
+		// lines generate all possible colors in 343RGB code - input
+		// however the result is in 888RGB - 8bit per channel
+		R = (int)(R * RG_night_multiplier);
+		G = (int)(G * RG_night_multiplier);
+		B = (int)(B * B_night_multiplier);
+
+		PIXVAL color = get_system_color(R, G, B);
+		rgbmap_day_night[0x8000 +MAX_PLAYER_COUNT + LIGHT_COUNT + i] = color;
+	}
+
 	// player color map (and used for map display etc.)
 	for (i = 0; i < SPECIAL_COLOR_COUNT; i++) {
 		const int R = (int)(special_pal[i*3 + 0] * RG_night_multiplier);
@@ -3458,7 +3476,7 @@ void display_rezoomed_img_blend(const image_id n, scr_coord_val xp, scr_coord_va
 
 			// marking change?
 			if(  dirty  ) {
-				mark_rect_dirty_nc( xp, yp, xp + w - 1, yp + h - 1 );
+				mark_rect_dirty_wc( xp, yp, xp + w - 1, yp + h - 1 );
 			}
 			display_img_blend_wc( h, xp, yp, sp, color, pix_blend  CLIP_NUM_PAR );
 		}
@@ -3537,7 +3555,7 @@ void display_rezoomed_img_alpha(const image_id n, const image_id alpha_n, const 
 
 			// marking change?
 			if(  dirty  ) {
-				mark_rect_dirty_nc( xp, yp, xp + w - 1, yp + h - 1 );
+				mark_rect_dirty_wc( xp, yp, xp + w - 1, yp + h - 1 );
 			}
 			display_img_alpha_wc( h, xp, yp, sp, alphamap, get_alpha_mask(alpha_flags), color, alpha  CLIP_NUM_PAR );
 		}
@@ -3608,7 +3626,7 @@ void display_base_img_blend(const image_id n, scr_coord_val xp, scr_coord_val yp
 			}
 
 			if(  dirty  ) {
-				mark_rect_dirty_nc( x, y, x + w - 1, y + h - 1 );
+				mark_rect_dirty_wc( x, y, x + w - 1, y + h - 1 );
 			}
 			display_img_blend_wc( h, x, y, sp, color, pix_blend  CLIP_NUM_PAR );
 		}
@@ -3685,7 +3703,7 @@ void display_base_img_alpha(const image_id n, const image_id alpha_n, const unsi
 			}
 
 			if(  dirty  ) {
-				mark_rect_dirty_nc( x, y, x + w - 1, y + h - 1 );
+				mark_rect_dirty_wc( x, y, x + w - 1, y + h - 1 );
 			}
 			display_img_alpha_wc( h, x, y, sp, alphamap, get_alpha_mask(alpha_flags), color, alpha_recode  CLIP_NUM_PAR );
 		}
@@ -3887,11 +3905,10 @@ int display_glyph(scr_coord_val x, scr_coord_val y, utf32 c, control_alignment_t
 	}
 
 	PIXVAL color = default_color;
-	
 	scr_coord_val cL, cR, cT, cB;
 
 	// TAKE CARE: Clipping area may be larger than actual screen size
-	if(  (flags & DT_CLIP)  ) {
+	if(flags & DT_CLIP) {
 		cL = CR.clip_rect.x;
 		cR = CR.clip_rect.xx;
 		cT = CR.clip_rect.y;
@@ -3906,11 +3923,10 @@ int display_glyph(scr_coord_val x, scr_coord_val y, utf32 c, control_alignment_t
 
 	// still something to display?
 
-	if (x >= cR || y >= cB || y + font->get_linespace() <= cT) {
+	if(x >= cR || y >= cB || y + font->get_linespace() <= cT) {
 		// nothing to display
 		return 0;
 	}	
-	
 
 	// get the data from the font
 	const int glyph_width = font->get_glyph_width(c);
@@ -3924,7 +3940,7 @@ int display_glyph(scr_coord_val x, scr_coord_val y, utf32 c, control_alignment_t
 	int screen_pos = (y + glyph_top) * disp_width + x + g_left;
 
 	// all visible rows
-	for (int h = 0; h < glyph_height; h++) {
+	for(int h = 0; h < glyph_height; h++) {
 		const int line = y + h + glyph_top;
 		if(line >= cT && line < cB) {	
 

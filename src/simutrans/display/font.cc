@@ -84,10 +84,10 @@ bool font_t::load_from_freetype(const char *fname, int pixel_height)
 
 	uint32 num_glyphs = 0;
 
-	for(  uint32 glyph_nr=0;  glyph_nr<0xFFFF;  glyph_nr++  ) {
+	for(uint32 glyph_nr=0;  glyph_nr<0xFFFF;  glyph_nr++) {
 
-		uint32 idx = FT_Get_Char_Index( face, glyph_nr );
-		if(  idx==0  &&  glyph_nr!=0  ) {
+		uint32 idx = FT_Get_Char_Index(face, glyph_nr);
+		if(idx==0 && glyph_nr!=0) {
 			// glyph not there, we need to render glyph 0 instead
 			glyphs[glyph_nr].advance = 0xFF;
 			continue;
