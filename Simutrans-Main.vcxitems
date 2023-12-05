@@ -125,6 +125,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)src\simutrans\gui\components\gui_scrollbar.cc" />
     <ClCompile Include="$(MSBuildThisFileDirectory)src\simutrans\gui\components\gui_scrolled_list.cc" />
     <ClCompile Include="$(MSBuildThisFileDirectory)src\simutrans\gui\components\gui_scrollpane.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\simutrans\gui\components\gui_spacer.cc" />
     <ClCompile Include="$(MSBuildThisFileDirectory)src\simutrans\gui\components\gui_speedbar.cc" />
     <ClCompile Include="$(MSBuildThisFileDirectory)src\simutrans\gui\components\gui_tab_panel.cc" />
     <ClCompile Include="$(MSBuildThisFileDirectory)src\simutrans\gui\components\gui_textarea.cc" />

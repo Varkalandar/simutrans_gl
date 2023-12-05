@@ -47,7 +47,7 @@ size_t dr_paste(char *target, size_t max_length)
 		// ensure that max_length aligns with logical character boundaries of clipboard content
 		size_t tmp_length = 0;
 		size_t byte_count;
-		while(  tmp_length+(byte_count=utf8_get_next_char(content+tmp_length,0u))<=max_length  ) {
+		while(tmp_length + (byte_count = utf8_get_next_char((const utf8*)(content + tmp_length), 0)) <= max_length) {
 			tmp_length += byte_count;
 		}
 		max_length = tmp_length;
