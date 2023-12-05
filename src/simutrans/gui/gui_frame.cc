@@ -124,8 +124,8 @@ bool gui_frame_t::infowin_event(const event_t *ev)
 	}
 
 	if(IS_WINDOW_RESIZE(ev)) {
-		scr_coord delta (  resize_mode & horizontal_resize ? ev->mx - ev->cx : 0,
-		                   resize_mode & vertical_resize   ? ev->my - ev->cy : 0);
+		scr_coord delta (  resize_mode & horizontal_resize ? ev->mouse_pos.x - ev->click_pos.x : 0,
+		                   resize_mode & vertical_resize   ? ev->mouse_pos.y - ev->click_pos.y : 0);
 		resize(delta);
 		return true;  // don't pass to children!
 	}
@@ -163,7 +163,7 @@ void gui_frame_t::resize(const scr_coord delta)
 	set_windowsize(new_size);
 
 	// change drag start
-	change_drag_start(size_change.x, size_change.y);
+	change_drag_start(size_change);
 }
 
 

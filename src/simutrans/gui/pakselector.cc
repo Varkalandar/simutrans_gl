@@ -91,8 +91,8 @@ bool pak_set_panel_t::infowin_event(const event_t *ev)
 			const scr_coord_val ystart = 20;
 			const scr_coord_val yspace = 256 + 42;
 
-			const int mx = ev->mx; 
-			const int my = ev->my; 
+			const int mx = ev->mouse_pos.x; 
+			const int my = ev->mouse_pos.y; 
 
 			const int index = ((my - ystart) / yspace) * (size.w / xspace) + (mx - xstart) / xspace;
 
@@ -126,7 +126,7 @@ void pak_set_panel_t::draw_logo(const scr_coord_val xpos, const scr_coord_val yp
 	display_bevel_box(scr_rect(xpos-1, ypos-1, 258, 258), c, c, c, c, true);
 	
 	// Hajo: Logos are designed for black background
-	const PIXVAL black = get_system_color(0, 0, 0);
+	const PIXVAL black = get_system_color({0, 0, 0});
 	display_fillbox_wh_clip_rgb(xpos, ypos, 256, 256, black, true);
 	
 	display_base_img(logo->get_image_id(0), xpos, ypos, 0, false, true);
@@ -379,13 +379,13 @@ void pakselector_t::list_filled(void)
 	
 	set_min_windowsize(size);	
 	resize(scr_coord(0, 0));
-	win_set_pos(this, margin, margin);
+	win_set_pos(this, scr_coord(margin, margin));
 }	
 	
 
 void pakselector_t::draw(scr_coord pos, scr_size size)
 {
-	const PIXVAL background = get_system_color(64, 64, 64);
+	const PIXVAL background = get_system_color({64, 64, 64});
 	display_fillbox_wh_rgb(0, 0, display_get_width(), display_get_height(), background, true);
 	
 	savegame_frame_t::draw(pos, size);

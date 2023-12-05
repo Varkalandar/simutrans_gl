@@ -2186,7 +2186,7 @@ void karte_t::set_tool_api( tool_t *tool_in, player_t *player, bool& suspended)
 		 !(tool_in->get_id()==(TOOL_CHANGE_PLAYER|SIMPLE_TOOL)  ||  tool_in->get_id()==(TOOL_ADD_MESSAGE | GENERAL_TOOL))  &&
 		 player  &&  player->is_locked()  ) {
 		// player is currently password protected => request unlock first
-		create_win( -1, -1, new password_frame_t(player), w_info, magic_pwd_t + player->get_player_nr() );
+		create_win(new password_frame_t(player), w_info, magic_pwd_t + player->get_player_nr() );
 		return;
 	}
 	tool_in->flags |= (event_get_last_control_shift() ^ tool_t::control_invert);
@@ -5495,7 +5495,8 @@ void karte_t::remove_player(uint8 player_nr)
 			active_player_nr = HUMAN_PLAYER_NR;
 			active_player = players[HUMAN_PLAYER_NR];
 			if(  !env_t::server  ) {
-				create_win( display_get_width()/2-128, 40, new news_img("Bankrott:\n\nDu bist bankrott.\n"), w_info, magic_none);
+				const scr_coord pos{ display_get_width()/2-128, 40 };
+				create_win( pos, new news_img("Bankrott:\n\nDu bist bankrott.\n"), w_info, magic_none);
 			}
 		}
 	}
@@ -5746,7 +5747,7 @@ void karte_t::process_network_commands(sint32 *ms_difference)
 	// did we receive a new command?
 	uint32 ms = dr_time();
 	sint32 time_to_next_step = (sint32)next_step_time - (sint32)ms;
-	network_command_t *nwc = network_check_activity( this, time_to_next_step > 0 ? min( time_to_next_step, 5) : 0 );
+	network_command_t *nwc = network_check_activity(clamp(time_to_next_step, 0, 5));
 	if(  nwc==NULL  &&  !network_check_server_connection()  ) {
 		dbg->warning("karte_t::process_network_commands", "lost connection to server");
 		network_disconnect();
@@ -6341,7 +6342,13 @@ void karte_t::announce_server(server_announce_type_t status)
 		buf.printf( "&convoys=%u",   convoys().get_count());
 		buf.printf( "&stops=%u",     haltestelle_t::get_alle_haltestellen().get_count() );
 
-		network_http_post( ANNOUNCE_SERVER, ANNOUNCE_URL, buf, NULL );
+		if (network_http_post(ANNOUNCE_SERVER1, ANNOUNCE_URL, buf, NULL)) {
+			if (network_http_post(ANNOUNCE_SERVER2, ANNOUNCE_URL, buf, NULL)) {
+				if (network_http_post(ANNOUNCE_SERVER3, ANNOUNCE_URL, buf, NULL)) {
+					dbg->warning("announce_server", "All announce servers down!");
+				}
+			}
+		}
 
 		// Record time of this announce
 		server_last_announce_time = dr_time();
@@ -6360,7 +6367,7 @@ void karte_t::network_disconnect()
 	step_mode = NORMAL;
 	reset_timer();
 	clear_command_queue();
-	create_win( display_get_width()/2-128, 40, new news_img("Lost synchronisation\nwith server."), w_info, magic_none);
+	create_win({ display_get_width()/2-128, 40 }, new news_img("Lost synchronisation\nwith server."), w_info, magic_none);
 	ticker::add_msg( translator::translate("Lost synchronisation\nwith server."), koord3d::invalid, SYSCOL_TEXT );
 	last_active_player_nr = active_player_nr;
 

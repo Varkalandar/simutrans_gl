@@ -135,11 +135,9 @@ void gui_label_t::draw(scr_coord offset)
 		display_proportional_ellipsis_rgb(area, text,  a | DT_CLIP, color, true, shadowed, color_shadow, font_size);
 	}
 
-	if ( tooltip  &&  getroffen(get_mouse_x()-offset.x, get_mouse_y()-offset.y) ) {
-		const scr_coord_val by = offset.y + pos.y;
-		const scr_coord_val bh = size.h;
-
-		win_set_tooltip(get_mouse_x() + TOOLTIP_MOUSE_OFFSET_X, by + bh + TOOLTIP_MOUSE_OFFSET_Y, tooltip, this);
+	if ( tooltip  &&  getroffen(get_mouse_pos() - offset) ) {
+		const scr_coord tooltip_base_pos{ get_mouse_pos().x,  offset.y + pos.y + size.h };
+		win_set_tooltip(tooltip_base_pos + TOOLTIP_MOUSE_OFFSET, tooltip, this);
 	}
 }
 
@@ -171,6 +169,20 @@ void gui_label_buf_t::draw(scr_coord offset)
 		update();
 	}
 	gui_label_t::draw(offset);
+}
+
+
+void gui_label_buf_t::set_min_width(scr_coord_val w)
+{
+	min_width = w;
+}
+
+
+scr_size gui_label_buf_t::get_min_size() const
+{
+	scr_size min_size = gui_label_t::get_min_size();
+	min_size.w = max(min_size.w, min_width);
+	return min_size;
 }
 
 

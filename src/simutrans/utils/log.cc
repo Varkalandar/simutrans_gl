@@ -304,7 +304,7 @@ void log_t::custom_fatal(char *buffer)
 #elif defined NETTOOL
 	// no display available
 	puts( buffer );
-	abort();
+	exit(1);
 #else
 
 	env_t::verbose_debug = log_t::LEVEL_FATAL; // no more window concerning messages
@@ -319,7 +319,7 @@ void log_t::custom_fatal(char *buffer)
 		scr_coord xy( display_get_width()/2 - sel->get_windowsize().w/2, display_get_height()/2 - sel->get_windowsize().h/2 );
 		event_t ev;
 
-		create_win( xy.x, xy.y, sel, w_info, magic_none );
+		create_win( xy, sel, w_info, magic_none );
 
 		while(win_is_top(sel)) {
 			// do not move, do not close it!
@@ -329,7 +329,7 @@ void log_t::custom_fatal(char *buffer)
 			dr_flush();
 			display_poll_event(&ev);
 			// main window resized
-			check_pos_win(&ev);
+			check_pos_win(&ev,true);
 			if(ev.ev_class==EVENT_KEYBOARD) {
 				break;
 			}

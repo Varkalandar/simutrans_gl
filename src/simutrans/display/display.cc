@@ -46,7 +46,7 @@ static PIXVAL handle_color_sequences(utf32 code, PIXVAL default_color)
 	if(code == 'd') {
 		color = default_color;
 	} else {
-		color = get_system_color(255, 255, 255);
+		color = get_system_color({255, 255, 255});
 	}
 	
 	return color;

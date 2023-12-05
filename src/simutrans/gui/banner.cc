@@ -30,14 +30,6 @@
 #define L_BANNER_TEXT_INDENT ( 4 )                             // Scroll text padding (left/right)
 #define L_BANNER_HEIGHT      ( L_BANNER_ROWS * LINESPACE + 2 ) // Banner control height in pixels
 
-#ifdef _OPTIMIZED
-	#define L_DEBUG_TEXT " (optimized)"
-#elif defined DEBUG
-#	define L_DEBUG_TEXT " (debug)"
-#else
-#	define L_DEBUG_TEXT
-#endif
-
 // colors
 #define COLOR_RAMP_SIZE ( 5 ) // Number or fade colors + normal color at index 0
 
@@ -66,15 +58,7 @@ banner_t::banner_t() : gui_frame_t("")
 
 	new_component<gui_label_t>("This is Simutrans" SIM_VERSION_BUILD_STRING, SYSCOL_TEXT_TITLE, gui_label_t::left)->set_shadow(SYSCOL_TEXT_SHADOW, true);
 
-#ifdef REVISION
-	new_component<gui_label_t>("Version " VERSION_NUMBER " " VERSION_DATE " r" QUOTEME(REVISION)
-#else
-	new_component<gui_label_t>("Version " VERSION_NUMBER " " VERSION_DATE
-#endif
-#ifdef GIT_HASH
-		" hash " QUOTEME(GIT_HASH)
-#endif
-		L_DEBUG_TEXT, SYSCOL_TEXT_HIGHLIGHT, gui_label_t::left)->set_shadow(SYSCOL_TEXT_SHADOW, true);
+	new_component<gui_label_t>(get_version(), SYSCOL_TEXT_HIGHLIGHT, gui_label_t::left)->set_shadow(SYSCOL_TEXT_SHADOW, true);
 
 	add_table(5,0);
 	{
@@ -152,7 +136,7 @@ banner_t::banner_t() : gui_frame_t("")
 
 bool banner_t::infowin_event(const event_t *ev)
 {
-	if(  gui_frame_t::is_hit( ev->cx, ev->cy  )  ) {
+	if(  gui_frame_t::is_hit( ev->click_pos.x, ev->click_pos.y  )  ) {
 		gui_frame_t::infowin_event( ev );
 	}
 	return false;
@@ -174,7 +158,7 @@ bool banner_t::action_triggered( gui_action_creator_t *comp, value_t)
 	}
 	else if(  comp == &load_scenario  ) {
 		destroy_all_win(true);
-		create_win( new scenario_frame_t(), w_info, magic_load_t );
+		create_win( new scenario_frame_t(), w_info, magic_load_scenario );
 	}
 	else if(  comp == &options  ) {
 		destroy_all_win(true);

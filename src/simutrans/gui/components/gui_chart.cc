@@ -215,7 +215,7 @@ void gui_chart_t::draw(scr_coord offset)
 					if (c.suffix) {
 						strcat(tooltip, c.suffix);
 					}
-					win_set_tooltip(get_mouse_x()+TOOLTIP_MOUSE_OFFSET_X, get_mouse_y()-TOOLTIP_MOUSE_OFFSET_Y, tooltip );
+					win_set_tooltip(get_mouse_pos() + TOOLTIP_MOUSE_OFFSET, tooltip );
 				}
 
 				// draw line between two financial markers; this is only possible from the second value on
@@ -317,7 +317,7 @@ bool gui_chart_t::infowin_event(const event_t *ev)
 {
 	if(ev->button_state==1) {
 		// tooptip to show?
-		tooltipcoord = scr_coord(ev->mx,ev->my);
+		tooltipcoord = ev->mouse_pos;
 	}
 	else {
 		tooltipcoord = scr_coord::invalid;

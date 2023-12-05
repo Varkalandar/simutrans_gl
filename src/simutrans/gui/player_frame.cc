@@ -48,7 +48,7 @@ ki_kontroll_t::ki_kontroll_t() :
 
 		// activate player buttons
 		// .. not available for the two first players (first human and second public)
-		if(  i >= 2  ) {
+		if(	i >= 2	) {
 			// AI button (small square)
 			player_active[i-2].init(button_t::square_state, "");
 			player_active[i-2].add_listener(this);
@@ -82,7 +82,7 @@ ki_kontroll_t::ki_kontroll_t() :
 		add_component( player_get_finances+i );
 		add_component( player_select+i );
 
-		if(  player != NULL  ) {
+		if(	player != NULL	) {
 			player_get_finances[i].set_text( player->get_name() );
 			player_select[i].set_visible(false);
 		}
@@ -120,28 +120,28 @@ ki_kontroll_t::ki_kontroll_t() :
 bool ki_kontroll_t::action_triggered( gui_action_creator_t *comp,value_t p )
 {
 	// Free play button?
-	if(  comp == &freeplay  ) {
+	if(	comp == &freeplay	) {
 		welt->call_change_player_tool(karte_t::toggle_freeplay, 255, 0);
 		return true;
 	}
 
 	// Check the GUI list of buttons
 	for(int i=0; i<MAX_PLAYER_COUNT-1; i++) {
-		if(  i>=2  &&  comp == (player_active+i-2)  ) {
+		if(	i>=2	&&	comp == (player_active+i-2)	) {
 			// switch AI on/off
-			if(  welt->get_player(i)==NULL  ) {
+			if(	welt->get_player(i)==NULL	) {
 				// create new AI
 				welt->call_change_player_tool(karte_t::new_player, i, player_select[i].get_selection());
 
 				// if scripted ai without script -> open script selector window
 				ai_scripted_t *ai = dynamic_cast<ai_scripted_t*>(welt->get_player(i));
-				if (ai  &&  !ai->has_script()  &&  (!env_t::networkmode  ||  env_t::server)) {
+				if (ai	&&	!ai->has_script()	&&	(!env_t::networkmode	||	env_t::server)) {
 					create_win( new ai_selector_t(i), w_info, magic_finances_t + i );
 				}
 			}
 			else {
 				// If turning on again, reload script
-				if (!env_t::networkmode  &&  !welt->get_player(i)->is_active()) {
+				if (!env_t::networkmode	&&	!welt->get_player(i)->is_active()) {
 					if (ai_scripted_t *ai = dynamic_cast<ai_scripted_t*>(welt->get_player(i))) {
 						ai->reload_script();
 					}
@@ -153,12 +153,12 @@ bool ki_kontroll_t::action_triggered( gui_action_creator_t *comp,value_t p )
 		}
 
 		// Finance button pressed
-		if(  comp == (player_get_finances+i)  ) {
+		if(	comp == (player_get_finances+i)	) {
 			// get finances
 			player_get_finances[i].pressed = false;
 			// if scripted ai without script -> open script selector window
 			ai_scripted_t *ai = dynamic_cast<ai_scripted_t*>(welt->get_player(i));
-			if (ai  &&  !ai->has_script()  &&  (!env_t::networkmode  ||  env_t::server)) {
+			if (ai	&&	!ai->has_script()	&&	(!env_t::networkmode	||	env_t::server)) {
 				create_win( new ai_selector_t(i), w_info, magic_finances_t + i );
 			}
 			else {
@@ -168,14 +168,14 @@ bool ki_kontroll_t::action_triggered( gui_action_creator_t *comp,value_t p )
 		}
 
 		// Changed active player
-		if(  comp == (player_change_to+i)  ) {
+		if(	comp == (player_change_to+i)	) {
 			// make active player
 			player_t *const prevplayer = welt->get_active_player();
 			welt->switch_active_player(i,false);
 
 			// unlocked public service player can change into any company in multiplayer games
 			player_t *const player = welt->get_active_player();
-			if(  env_t::networkmode  &&  prevplayer == welt->get_public_player()  &&  !prevplayer->is_locked()  &&  player->is_locked()  ) {
+			if(	env_t::networkmode	&&	prevplayer == welt->get_public_player()	&&	!prevplayer->is_locked()	&&	player->is_locked()	) {
 				player->unlock(false, true);
 
 				// send unlock command
@@ -188,19 +188,19 @@ bool ki_kontroll_t::action_triggered( gui_action_creator_t *comp,value_t p )
 		}
 
 		// Change player name and/or password
-		if(  comp == (player_lock[i])  &&  welt->get_player(i)  ) {
+		if(	comp == (player_lock[i])	&&	welt->get_player(i)	) {
 			if (!welt->get_player(i)->is_unlock_pending()) {
 				// set password
-				create_win( -1, -1, new password_frame_t(welt->get_player(i)), w_info, magic_pwd_t + i );
+				create_win(new password_frame_t(welt->get_player(i)), w_info, magic_pwd_t + i );
 				player_lock[i]->pressed = false;
 			}
 		}
 
 		// New player assigned in an empty slot
-		if(  comp == (player_select+i)  ) {
+		if(	comp == (player_select+i)	) {
 
 			// make active player
-			if(  p.i<player_t::MAX_AI  &&  p.i>0  ) {
+			if(	p.i<player_t::MAX_AI	&&	p.i>0	) {
 				player_active[i-2].set_visible(true);
 				welt->get_settings().set_player_type(i, (uint8)p.i);
 			}
@@ -232,13 +232,13 @@ void ki_kontroll_t::update_data()
 	}
 
 	freeplay.enable();
-	if (welt->get_public_player()->is_locked() || !welt->get_settings().get_allow_player_change()  ||  !player_tools_allowed) {
+	if (welt->get_public_player()->is_locked() || !welt->get_settings().get_allow_player_change()	||	!player_tools_allowed) {
 		freeplay.disable();
 	}
 
 	for(int i=0; i<MAX_PLAYER_COUNT-1; i++) {
 
-		if(  player_t *player = welt->get_player(i)  ) {
+		if(	player_t *player = welt->get_player(i)	) {
 
 			player_select[i].set_visible(false);
 			player_get_finances[i].set_visible(true);
@@ -248,9 +248,9 @@ void ki_kontroll_t::update_data()
 			// scripted ai without script get different button without color
 			ai_scripted_t *ai = dynamic_cast<ai_scripted_t*>(player);
 
-			if (ai  &&  !ai->has_script()  &&  (!env_t::networkmode  ||  env_t::server)) {
+			if (ai	&&	!ai->has_script()	&&	(!env_t::networkmode	||	env_t::server)) {
 				player_get_finances[i].set_typ(button_t::roundbox | button_t::flexible);
-				player_get_finances[i].set_text("Load scripted AI");
+				player_get_finances[i].set_text("Load Scripted AI");
 			}
 			else {
 				player_get_finances[i].set_typ(button_t::box | button_t::flexible);
@@ -263,7 +263,7 @@ void ki_kontroll_t::update_data()
 
 			// human players cannot be deactivated
 			if (i>1) {
-				player_active[i-2].set_visible( player->get_ai_id()!=player_t::HUMAN   &&  player_tools_allowed);
+				player_active[i-2].set_visible( player->get_ai_id()!=player_t::HUMAN	 &&	player_tools_allowed);
 			}
 
 			ai_income[i]->set_visible(true);
@@ -277,7 +277,7 @@ void ki_kontroll_t::update_data()
 			player_lock[i]->set_visible(false);
 
 			if (i>1) {
-				player_active[i-2].set_visible(0 < player_select[i].get_selection()  &&  player_select[i].get_selection() < player_t::MAX_AI);
+				player_active[i-2].set_visible(0 < player_select[i].get_selection()	&&	player_select[i].get_selection() < player_t::MAX_AI);
 			}
 
 			// Create combobox list data
@@ -285,17 +285,17 @@ void ki_kontroll_t::update_data()
 			player_select[i].clear_elements();
 			player_select[i].new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate("slot empty"), SYSCOL_TEXT ) ;
 			player_select[i].new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate("Manual (Human)"), SYSCOL_TEXT ) ;
-			if(  !welt->get_public_player()->is_locked()  ||  !env_t::networkmode  ) {
+			if(	!welt->get_public_player()->is_locked()	||	!env_t::networkmode	) {
 				player_select[i].new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate("Goods AI"), SYSCOL_TEXT ) ;
 				player_select[i].new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate("Passenger AI"), SYSCOL_TEXT ) ;
 
-				if (!env_t::networkmode  ||  env_t::server) {
+				if (!env_t::networkmode	||	env_t::server) {
 					// only server can start scripted players
 					player_select[i].new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate("Scripted AI's"), SYSCOL_TEXT ) ;
 				}
 			}
 			player_select[i].set_selection(select);
-			assert(  player_t::MAX_AI==5  );
+			assert(	player_t::MAX_AI==5	);
 
 			ai_income[i]->set_visible(false);
 		}
@@ -313,7 +313,7 @@ void ki_kontroll_t::update_income()
 	for(int i=0; i<MAX_PLAYER_COUNT-1; i++) {
 		ai_income[i]->buf().clear();
 		player_t *player = welt->get_player(i);
-		if(  player != NULL  ) {
+		if(	player != NULL	) {
 			if (i != 1 && !welt->get_settings().is_freeplay() && player->get_finance()->get_history_com_year(0, ATC_NETWEALTH) < 0) {
 				ai_income[i]->set_color( MONEY_MINUS );
 				ai_income[i]->buf().append(translator::translate("Company bankrupt"));
@@ -356,10 +356,10 @@ void ki_kontroll_t::draw(scr_coord pos, scr_size size)
 
 		player_change_to[i].pressed = false;
 		if(i>=2) {
-			player_active[i-2].pressed = player !=NULL  &&  player->is_active();
+			player_active[i-2].pressed = player !=NULL	&&	player->is_active();
 		}
 
-		player_lock[i]->background_color = color_idx_to_rgb(player  &&  player->is_locked() ? (player->is_unlock_pending() ? COL_YELLOW : COL_RED) : COL_GREEN);
+		player_lock[i]->background_color = color_idx_to_rgb(player	&&	player->is_locked() ? (player->is_unlock_pending() ? COL_YELLOW : COL_RED) : COL_GREEN);
 	}
 
 	player_change_to[welt->get_active_player_nr()].pressed = true;

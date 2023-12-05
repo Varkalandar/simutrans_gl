@@ -11,21 +11,26 @@
 # assumes to be called from main dir "tools/get_lang_files.sh"
 #
 
-
 OUTPUT_DIR=simutrans/text
+TRANSLATOR_URL=https://makie.de/translator
 
 # get the translations for basis
 # The first file is longer, but only because it contains SQL error messages
 # - discard it after complete download (although parsing it would give us the archive's name):
+# first test which URL actually works
 
 # Use curl if available, else use wget
 curl -q -h > /dev/null
 if [ $? -eq 0 ]; then
-    curl -q -L -d "version=0&choice=all&submit=Export%21" https://translator.simutrans.com/script/main.php?page=wrap > /dev/null || {
+	if ![curl --head --silent --fail $TRANSLATOR_URL 2> /dev/null]; then
+		TRANSLATOR_URL=https://translator.simutrans.com
+	fi
+	echo "Using translator at $TRANSLATOR_URL"
+    curl -q -L -d "version=0&choice=all&submit=Export%21" $TRANSLATOR_URL/script/main.php?page=wrap > /dev/null || {
       echo "Error: generating file language_pack-Base+texts.zip failed (curl returned $?)" >&2;
       exit 3;
     }
-    curl -q -L https://translator.simutrans.com/data/tab/language_pack-Base+texts.zip > language_pack-Base+texts.zip || {
+    curl -q -L $TRANSLATOR_URL/data/tab/language_pack-Base+texts.zip > language_pack-Base+texts.zip || {
       echo "Error: download of file language_pack-Base+texts.zip failed (curl returned $?)" >&2
       rm -f "language_pack-Base+texts.zip"
       exit 4
@@ -33,11 +38,15 @@ if [ $? -eq 0 ]; then
 else
     wget -q --help > /dev/null
     if [ $? -eq 0 ]; then
-        wget -q --post-data "version=0&choice=all&submit=Export!"  --delete-after https://translator.simutrans.com/script/main.php?page=wrap || {
+		if ![wget -q --method=HEAD $TRANSLATOR_URL 2> /dev/null]; then
+			TRANSLATOR_URL=https://translator.simutrans.com
+		fi
+		echo "Using translator at $TRANSLATOR_URL"
+        wget -q --post-data "version=0&choice=all&submit=Export!"  --delete-after $TRANSLATOR_URL/script/main.php?page=wrap || {
           echo "Error: generating file language_pack-Base+texts.zip failed (wget returned $?)" >&2;
           exit 3;
         }
-        wget -q -N https://translator.simutrans.com/data/tab/language_pack-Base+texts.zip || {
+        wget -q -N $TRANSLATOR_URL/data/tab/language_pack-Base+texts.zip || {
           echo "Error: download of file language_pack-Base+texts.zip failed (wget returned $?)" >&2
           rm -f "language_pack-Base+texts.zip"
           exit 4
@@ -47,6 +56,7 @@ else
         exit 6
     fi
 fi
+
 unzip -otv "language_pack-Base+texts.zip" -d ${OUTPUT_DIR} || {
    echo "Error: file language_pack-Base+texts.zip seems to be defective" >&2
    rm -f "language_pack-Base+texts.zip"

@@ -147,9 +147,6 @@ name=1LIGHT_CHOOSE
 obj=unnecessary_text
 name=1suburb
 -
-obj=program_text
-name=1WORLD_CHOOSE
--
 obj=unnecessary_text
 name=2center
 -
@@ -460,9 +457,6 @@ name=Can only move from halt to halt or waypoint to waypoint.
 obj=program_text
 name=Cancel
 -
-obj=error_text
-name=Cannot built depot here!
--
 obj=program_text
 name=Capacity: %s\nLoad: %d (%d%%)
 -
@@ -676,6 +670,21 @@ name=Departed
 -
 obj=program_text
 name=Depots
+-
+obj=error_text
+name=Depots must be built on flat dead-end way tiles!
+note=Error text when building depot fails
+-
+obj=error_text
+name=Depots cannot be built on runways!
+note=Error text when building depot fails
+-
+obj=error_text
+name=Ship depots must be built on water!
+note=Error text when building depot fails
+-
+obj=program_text
+name=Depot
 -
 obj=error_text
 name=Der Besitzer erlaubt das Entfernen nicht
@@ -1603,9 +1612,6 @@ obj=program_text
 name=remove tracks
 -
 obj=program_text
-name=remove monorails
--
-obj=program_text
 name=remove powerlines
 -
 obj=message_text
@@ -2175,9 +2181,6 @@ name=%s\nopened a new railway\nbetween %s\nat (%i,%i) and\n%s at (%i,%i).
 -
 obj=ki_text
 name=Airline service by\n%s\nnow between\n%s \nand %s.\n
--
-obj=program_text
-name=factorybuilder
 --
 obj=program_text
 name=Add forest
@@ -2232,9 +2235,6 @@ name=Build maglev depot
 -
 obj=program_text
 name=cars.\nstate
--
-obj=program_text
-name=clf_chk_monorail
 -
 obj=program_text
 name=clf_chk_monorail
@@ -3070,9 +3070,6 @@ obj=program_text
 name=Walked
 --
 obj=program_text
-name=Walked
---
-obj=program_text
 name=Configure AI setttings
 --
 obj=program_text
@@ -3634,7 +3631,7 @@ name=<h1>Warning</h1><p><strong>addons for
 -
 obj=program_text
 name=Connections
-note=Tab in factory window
+note=Tab in factory window/station dialog
 -
 obj=program_text
 name=Freight
@@ -3654,10 +3651,6 @@ note=in enlarge map and new map window
 -
 obj=error_text
 name=Too far away to merge stations!
--
-obj=program_text
-name=Connections
-note=Name of connection tab in station dialog
 -
 obj=program_text
 name=Bonus Speed: %i km/h
@@ -3991,7 +3984,7 @@ note=tooltip for convoi state scheduled unloading
 -
 obj=program_text
 name=Toolbar position:
-note=display setting label
+note=display setting option
 -
 obj=program_text
 name=1th
@@ -4177,10 +4170,6 @@ name=Scroll threshold
 note=distance moved before starting map scrolling when a general tool is selected
 --
 obj=program_text
-name=Toolbar position:
-note=option in display settings
---
-obj=program_text
 name=Downloading
 note=loadingbar during http download of content
 --
@@ -4250,8 +4239,22 @@ obj=program_text
 name=Climate
 note=dialoque to build object
 --
-
-
+obj=program_text
+name=Composed by
+note=music credits
+--
+obj=program_text
+name=and arranged by
+note=music credits
+--
+obj=program_text
+name=Load Scripted AI
+note=script Ai text player list and load dialoque
+--
+obj=program_text
+name=Load script tool
+note=mouseover and dialoque title
+--
 
 #obj=help_text
 #name=Lower values mean more local sounds

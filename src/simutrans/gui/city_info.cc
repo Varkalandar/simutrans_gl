@@ -95,17 +95,18 @@ public:
 		add_pax_dest( pax_dest_new, city->get_pax_destinations_new() );
 		pax_destinations_last_change = city->get_pax_destinations_new_change();
 	}
+
 	// handle clicks into minimaps
 	bool infowin_event(const event_t *ev) OVERRIDE
 	{
-		int my = ev->my;
+		int my = ev->mouse_pos.y;
 		if(  my > minimaps_size.h  &&  minimap2_offset.y > 0  ) {
 			// Little trick to handle both maps with the same code: Just remap the y-values of the bottom map.
 			my -= minimaps_size.h + D_V_SPACE;
 		}
 
 		if(  ev->ev_class!=EVENT_KEYBOARD  &&  ev->ev_code==MOUSE_LEFTBUTTON  &&  0<=my  &&  my<minimaps_size.h  ) {
-			int mx = ev->mx;
+			int mx = ev->mouse_pos.x;
 			if(  mx > minimaps_size.w  &&  minimap2_offset.x > 0  ) {
 				// Little trick to handle both maps with the same code: Just remap the x-values of the right map.
 				mx -= minimaps_size.w + D_H_SPACE;
@@ -122,6 +123,7 @@ public:
 		}
 		return false;
 	}
+
 	// draw both minimaps
 	void draw(scr_coord offset) OVERRIDE
 	{

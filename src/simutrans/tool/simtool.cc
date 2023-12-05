@@ -128,11 +128,6 @@ char const *const NOTICE_NO_TREES = "Trees disabled!";
 char const *const NOTICE_UNSUITABLE_GROUND = "No suitable ground!";
 
 /**
- * Message returned when a depot cannot be placed.
- */
-char const *const NOTICE_DEPOT_BAD_POS = "Cannot built depot here!";
-
-/**
  * Message returned when a tool fails due to the target tile being occupied.
  */
 char const *const NOTICE_TILE_FULL = "Tile not empty.";
@@ -4960,15 +4955,65 @@ const char *tool_rotate_building_t::work( player_t *player, koord3d pos )
 }
 
 
-
-char const* tool_build_roadsign_t::get_tooltip(player_t const*) const
+tool_build_roadsign_t::tool_build_roadsign_t() :
+	two_click_tool_t(TOOL_BUILD_ROADSIGN | GENERAL_TOOL),
+	desc(NULL)
 {
-	const roadsign_desc_t * desc = roadsign_t::find_desc(default_param);
+}
+
+
+const char *tool_build_roadsign_t::get_tooltip(const player_t *) const
+{
+	const roadsign_desc_t *desc = roadsign_t::find_desc(default_param);
+
 	if(desc) {
 		return tooltip_with_price( desc->get_name(), -desc->get_price() );
 	}
+
 	return NULL;
 }
+
+
+bool tool_build_roadsign_t::init(player_t *player)
+{
+	desc = roadsign_t::find_desc(default_param);
+
+	// take default values from players settings
+	current = signal[player->get_player_nr()];
+
+	if (is_ctrl_pressed()  &&  can_use_gui()) {
+		create_win(new signal_spacing_frame_t(player, this), w_info, (ptrdiff_t)this);
+	}
+
+	return two_click_tool_t::init(player)  &&  desc!=NULL;
+}
+
+
+bool tool_build_roadsign_t::exit(player_t *player)
+{
+	destroy_win((ptrdiff_t)this);
+	return two_click_tool_t::exit(player);
+}
+
+
+void tool_build_roadsign_t::set_values(player_t *player, uint8 spacing, bool remove, bool replace)
+{
+	signal_info_t &s      = signal[player->get_player_nr()];
+	s.spacing             = spacing;
+	s.remove_intermediate = remove;
+	s.replace_other       = replace;
+	current = s;
+}
+
+
+void tool_build_roadsign_t::get_values(player_t *player, uint8 &spacing, bool &remove, bool &replace)
+{
+	const signal_info_t &s = signal[player->get_player_nr()];
+	spacing                = s.spacing;
+	remove                 = s.remove_intermediate;
+	replace                = s.replace_other;
+}
+
 
 void tool_build_roadsign_t::draw_after(scr_coord k, bool dirty) const
 {
@@ -4978,78 +5023,6 @@ void tool_build_roadsign_t::draw_after(scr_coord k, bool dirty) const
 		sprintf(level_str, "%i", signal[welt->get_active_player_nr()].spacing);
 		display_proportional_rgb( k.x+4, k.y+4, level_str, ALIGN_LEFT, color_idx_to_rgb(COL_YELLOW), true );
 	}
-}
-
-const char* tool_build_roadsign_t::check_pos_intern(player_t *player, koord3d pos)
-{
-	const char * error = "Hier kann kein\nSignal aufge-\nstellt werden!\n";
-	if (desc==NULL) {
-		// read data from string
-		desc = roadsign_t::find_desc(default_param);
-	}
-	if (desc==NULL) {
-		return error;
-	}
-	// search for starting ground
-	grund_t *gr = tool_intern_koord_to_weg_grund(player, welt, pos, desc->get_wtyp());
-	if(gr) {
-
-		signal_t *s = gr->find<signal_t>();
-		if(s  &&  s->get_desc()!=desc) {
-			// only one sign per tile
-			return error;
-		}
-
-		if(desc->is_signal_type()  &&  gr->find<roadsign_t>())  {
-			// only one sign per tile
-			return error;
-		}
-
-		// get the sign direction
-		weg_t *weg = gr->get_weg( desc->get_wtyp()!=tram_wt ? desc->get_wtyp() : track_wt);
-		ribi_t::ribi dir = weg->get_ribi_unmasked();
-
-		// no signs on runways
-		if(  weg->get_waytype() == air_wt  &&  weg->get_desc()->get_styp() == type_runway  ) {
-			return error;
-		}
-
-		// no signals on switches
-		if(  ribi_t::is_threeway(dir)  &&  desc->is_signal_type()  ) {
-			return error;
-		}
-
-		if(  desc->is_private_way()  &&  !ribi_t::is_straight(dir)  ) {
-			// only on straight tiles ...
-			return error;
-		}
-
-		const bool two_way = desc->is_single_way()  ||  desc->is_signal_type();
-
-		if(!(desc->is_traffic_light() || two_way)  ||  (two_way  &&  ribi_t::is_twoway(dir))  ||  (desc->is_traffic_light()  &&  ribi_t::is_threeway(dir))) {
-			roadsign_t* rs;
-			if(  desc->is_signal_type()  ) {
-				// if there is already a signal, we might need to inverse the direction
-				rs = gr->find<signal_t>();
-				if (rs) {
-					if(  !player_t::check_owner( rs->get_owner(), player )  ) {
-						return "Das Feld gehoert\neinem anderen Spieler\n";
-					}
-				}
-			}
-			else {
-				// if there is already a sign, we might need to inverse the direction
-				rs = gr->find<roadsign_t>();
-				if (rs) {
-					if(  !player_t::check_owner( rs->get_owner(), player )  ) {
-						return "Das Feld gehoert\neinem anderen Spieler\n";
-					}
-				}
-			}
-			error = NULL;
-		}
-	}
-	return error;
 }
 
 
@@ -5068,95 +5041,33 @@ waytype_t tool_build_roadsign_t::get_waytype() const
 }
 
 
-bool tool_build_roadsign_t::init( player_t *player)
-{
-	desc = roadsign_t::find_desc(default_param);
-	// take default values from players settings
-	current = signal[player->get_player_nr()];
-
-	if (is_ctrl_pressed()  &&  can_use_gui()) {
-		create_win(new signal_spacing_frame_t(player, this), w_info, (ptrdiff_t)this);
-	}
-	return two_click_tool_t::init(player)  &&  (desc!=NULL);
-}
-
-bool tool_build_roadsign_t::exit( player_t *player )
-{
-	destroy_win((ptrdiff_t)this);
-	return two_click_tool_t::exit(player);
-}
-
-uint8 tool_build_roadsign_t::is_valid_pos( player_t *player, const koord3d &pos, const char *&error, const koord3d &start)
-{
-	// first click
-	if (start==koord3d::invalid) {
-		error = check_pos_intern(player, pos);
-		return (error==NULL ? 3 : 0);
-	}
-	// second click
-	else {
-		error = NULL;
-		return 2;
-	}
-}
-
-
-bool tool_build_roadsign_t::calc_route( route_t &verbindung, player_t *player, const koord3d& start, const koord3d& to )
-{
-	// get a default vehicle
-	vehicle_desc_t rs_desc( desc->get_wtyp(), 500, vehicle_desc_t::diesel );
-	vehicle_t* test_vehicle = vehicle_builder_t::build(start, player, NULL, &rs_desc);
-	test_vehicle->set_flag(obj_t::not_on_map);
-	test_driver_t* test_driver = scenario_checker_t::apply(test_vehicle, player, this);
-
-	bool can_built;
-	if( start != to ) {
-		can_built = verbindung.calc_route(welt, start, to, test_driver, 0, 0);
-		// prevent building of many signals if start and to are adjacent
-		// but the step start->to is now allowed
-		if (can_built  &&  koord_distance(start, to)==1  &&  verbindung.get_count()>2) {
-			grund_t *gr, *grto = welt->lookup(to);
-			if(  welt->lookup(start)->get_neighbour(gr, desc->get_wtyp(), ribi_type(to-start) )  &&  gr==grto) {
-				can_built = false;
-			}
-		}
-	}
-	else {
-		verbindung.clear();
-		verbindung.append( start );
-		can_built = true;
-	}
-	delete test_driver;
-	return can_built;
-}
-
-void tool_build_roadsign_t::mark_tiles( player_t *player, const koord3d &start, const koord3d &ziel )
+void tool_build_roadsign_t::mark_tiles(player_t *player, const koord3d &start, const koord3d &end)
 {
 	route_t route;
-	if (!calc_route(route, player, start, ziel)) {
+	if (!calc_route(route, player, start, end)) {
 		return;
 	}
-	signal_info const& s              = current;
-	uint8       const  signal_density = 2 * s.spacing;      // measured in half tiles (straight track count as 2, diagonal as 1, since sqrt(1/2) = 1/2 ;)
-	uint8              next_signal    = signal_density + 1; // to place a sign asap
-	sint32             cost           = 0;
+
+	const bool single_ribi     = desc->is_signal_type() || desc->is_single_way() || desc->is_choose_sign();
+	const signal_info_t &s     = current;
+	const uint8 signal_density = 2 * s.spacing;      //< measured in half tiles (straight track count as 2, diagonal as 1, since sqrt(1/2) = 1/2 ;)
+	uint8  next_signal         = signal_density + 1; //< to place a sign asap
+	sint32 cost                = 0;
 	directions.clear();
+
 	// dummy roadsign to get images for preview
-	roadsign_t *dummy_rs;
-	if (desc->is_signal_type()) {
-		dummy_rs = new signal_t(player, koord3d::invalid, ribi_t::none, desc, true);
-	}
-	else {
-		dummy_rs = new roadsign_t(player, koord3d::invalid, ribi_t::none, desc, true);
-	}
+	roadsign_t *dummy_rs = desc->is_signal_type() ?
+		new signal_t(player, koord3d::invalid, ribi_t::none, desc, true) :
+		new roadsign_t(player, koord3d::invalid, ribi_t::none, desc, true);
+
 	dummy_rs->set_flag(obj_t::not_on_map);
 
-	bool single_ribi = desc->is_signal_type() || desc->is_single_way() || desc->is_choose_sign();
-	for(  uint16 i = 0;  i < route.get_count();  i++  ) {
-		grund_t* gr = welt->lookup( route.at(i) );
+	for(  route_t::index_t i = 0;  i < route.get_count();  i++  ) {
+		grund_t *gr = welt->lookup( route.at(i) );
 
 		weg_t *weg = gr->get_weg(desc->get_wtyp());
-		ribi_t::ribi ribi=weg->get_ribi_unmasked(); // set full ribi when signal is on a crossing.
+		ribi_t::ribi ribi = weg->get_ribi_unmasked(); // set full ribi when signal is on a crossing.
+
 		if(  single_ribi  ) {
 			if(i>0) {
 				// take backward direction
@@ -5179,13 +5090,13 @@ void tool_build_roadsign_t::mark_tiles( player_t *player, const koord3d &start, 
 		}
 
 		// check owner .. other signals...
-		bool straight = (i == 0)  ||  (i == route.get_count()-1)  ||  ribi_t::is_straight(ribi_type(route.at(i-1), route.at(i+1)));
+		const bool straight = (i == 0)  ||  (i == route.get_count()-1)  ||  ribi_t::is_straight(ribi_type(route.at(i-1), route.at(i+1)));
 		next_signal += straight ? 2 : 1;
+
 		if(  next_signal >= signal_density  ) {
 			// can we place signal here?
-			if (check_pos_intern(player, route.at(i))==NULL  ||
-					(s.replace_other && rs && !rs->is_deletable(player))) {
-				zeiger_t* zeiger = new zeiger_t(gr->get_pos(), player );
+			if (check_pos_intern(player, route.at(i))==NULL  || (s.replace_other && rs && !rs->is_deletable(player))) {
+				zeiger_t *zeiger = new zeiger_t(gr->get_pos(), player );
 				marked.append(zeiger);
 				zeiger->set_image( skinverwaltung_t::bauigelsymbol->get_image_id(0) );
 				gr->obj_add( zeiger );
@@ -5199,52 +5110,63 @@ void tool_build_roadsign_t::mark_tiles( player_t *player, const koord3d &start, 
 			}
 		}
 		else if (s.remove_intermediate && rs && !rs->is_deletable(player)) {
-				zeiger_t* zeiger = new zeiger_t(gr->get_pos(), player );
-				marked.append(zeiger);
-				zeiger->set_image( tool_t::general_tool[TOOL_REMOVER]->cursor );
-				gr->obj_add( zeiger );
-				directions.append(ribi_t::none /*remove sign*/);
-				cost += rs->get_desc()->get_price();
+			zeiger_t *zeiger = new zeiger_t(gr->get_pos(), player );
+			marked.append(zeiger);
+			zeiger->set_image( tool_t::general_tool[TOOL_REMOVER]->cursor );
+			gr->obj_add( zeiger );
+			directions.append(ribi_t::none /*remove sign*/);
+			cost += rs->get_desc()->get_price();
 		}
 	}
+
 	delete dummy_rs;
 	win_set_static_tooltip( tooltip_with_price_length("Building costs estimates", cost, route.get_count() ) );
 }
 
-const char *tool_build_roadsign_t::do_work( player_t *player, const koord3d &start, const koord3d &end)
+
+const char *tool_build_roadsign_t::do_work(player_t *player, const koord3d &start, const koord3d &end)
 {
 	// read data from string
 	desc = roadsign_t::find_desc(default_param);
-	// single click ->place signal
-	if( end == koord3d::invalid  ||  start == end ) {
+
+	// single click -> place signal
+	if (end == koord3d::invalid  ||  start == end) {
 		grund_t *gr = welt->lookup(start);
 		return place_sign_intern( player, gr );
 	}
+
 	// mark tiles to calculate positions of signals
 	mark_tiles(player, start, end);
+
 	// only search the marked tiles
 	uint32 j=0;
-	for(zeiger_t* const i : marked) {
+
+	for (zeiger_t *const i : marked) {
 		grund_t* const gr = welt->lookup(i->get_pos());
 		weg_t *weg = gr->get_weg(desc->get_wtyp());
 		ribi_t::ribi dir = directions[j++];
+
 		if (dir) {
 			// try to place signal
-			const char* error_text =  place_sign_intern( player, gr );
+			const char *error_text = place_sign_intern( player, gr );
+
 			if(  error_text  ) {
 				if (signal[player->get_player_nr()].replace_other) {
 					roadsign_t* rs = gr->find<signal_t>();
 					if(rs == NULL) rs = gr->find<roadsign_t>();
+
 					if(  rs != NULL  &&  rs->is_deletable(player) == NULL  ) {
 						rs->cleanup(player);
 						delete rs;
-						error_text =  place_sign_intern( player, gr );
+						error_text = place_sign_intern( player, gr );
 					}
 				}
 			}
+
 			if(  error_text  ) {
 				return error_text;
 			}
+
 			roadsign_t* rs = gr->find<signal_t>();
 			if(rs == NULL) rs = gr->find<roadsign_t>();
 			assert(rs);
@@ -5259,198 +5181,315 @@ const char *tool_build_roadsign_t::do_work( player_t *player, const koord3d &sta
 				delete rs;
 			};
 		}
+
 		weg->count_sign();
 		gr->calc_image();
 	}
+
 	cleanup();
 	directions.clear();
 	return NULL;
 }
 
-/*
- * Called by the GUI (gui/signal_spacing.*)
- */
-void tool_build_roadsign_t::set_values( player_t *player, uint8 spacing, bool remove, bool replace )
+
+uint8 tool_build_roadsign_t::is_valid_pos(player_t *player, const koord3d &pos, const char *&error, const koord3d &start)
 {
-	signal_info& s = signal[player->get_player_nr()];
-	s.spacing             = spacing;
-	s.remove_intermediate = remove;
-	s.replace_other       = replace;
-	current = s;
+	// first click
+	if (start==koord3d::invalid) {
+		error = check_pos_intern(player, pos);
+		return (error==NULL ? 3 : 0);
+	}
+	// second click
+	else {
+		error = NULL;
+		return 2;
+	}
 }
 
 
-void tool_build_roadsign_t::get_values( player_t *player, uint8 &spacing, bool &remove, bool &replace )
+const char *tool_build_roadsign_t::check_pos_intern(player_t *player, koord3d pos)
 {
-	signal_info const& s = signal[player->get_player_nr()];
-	spacing = s.spacing;
-	remove  = s.remove_intermediate;
-	replace = s.replace_other;
-}
+	static const char *error = "Hier kann kein\nSignal aufge-\nstellt werden!\n";
 
+	if (desc==NULL) {
+		// read data from string
+		desc = roadsign_t::find_desc(default_param);
+	}
 
-const char *tool_build_roadsign_t::place_sign_intern( player_t *player, grund_t* gr, const roadsign_desc_t*)
-{
-	const char *error = "Hier kann kein\nSignal aufge-\nstellt werden!\n";
+	if (desc==NULL) {
+		return error;
+	}
+
 	// search for starting ground
-	if(gr) {
-		// get the sign direction
-		weg_t *weg = gr->get_weg( desc->get_wtyp()!=tram_wt ? desc->get_wtyp() : track_wt);
-		roadsign_t *s = gr->find<signal_t>();
-		if(s==NULL) {
-			s = gr->find<roadsign_t>();
-		}
-		if(s  &&  s->get_desc()!=desc) {
-			// only one sign per tile
-			return error;
-		}
-		ribi_t::ribi dir = weg->get_ribi_unmasked();
+	const grund_t *gr = tool_intern_koord_to_weg_grund(player, welt, pos, desc->get_wtyp());
+	if(!gr) {
+		return error;
+	}
 
-		const bool two_way = desc->is_single_way() || desc->is_signal_type();
+	// do not replace roadsigns by signals and vice versa (e.g. on level crossings)
+	if ((desc->is_signal_type() && gr->find<roadsign_t>()) || (!desc->is_signal_type() && gr->find<signal_t>())) {
+		return error;
+	}
 
-		if(!(desc->is_traffic_light() || two_way)  ||  (two_way  &&  ribi_t::is_twoway(dir))  ||  (desc->is_traffic_light()  &&  ribi_t::is_threeway(dir))) {
-			roadsign_t* rs;
-			if (desc->is_signal_type()) {
-				// if there is already a signal, we might need to inverse the direction
-				rs = gr->find<signal_t>();
-				if (rs) {
-					if(  !player_t::check_owner( rs->get_owner(), player )  ) {
-						return "Das Feld gehoert\neinem anderen Spieler\n";
+	// get the sign direction
+	const weg_t *weg = gr->get_weg( desc->get_wtyp()!=tram_wt ? desc->get_wtyp() : track_wt);
+	const ribi_t::ribi way_ribi = weg->get_ribi_unmasked();
+
+	// no signs on runways
+	if(  weg->get_waytype() == air_wt  &&  weg->get_desc()->get_styp() == type_runway  ) {
+		return error;
+	}
+
+	// no signals on switches
+	if(  ribi_t::is_threeway(way_ribi)  &&  desc->is_signal_type()  ) {
+		return error;
+	}
+
+	if(  desc->is_private_way()  &&  !ribi_t::is_straight(way_ribi)  ) {
+		// only on straight tiles
+		return error;
+	}
+
+	const bool needs_two_ways   = desc->is_single_way()  ||  desc->is_signal_type();
+	const bool valid_signal_pos =
+		(!needs_two_ways  &&  !desc->is_traffic_light())  ||
+		( needs_two_ways  &&  ribi_t::is_twoway(way_ribi))  ||
+		(desc->is_traffic_light()  &&  ribi_t::is_threeway(way_ribi));
+
+	if(!valid_signal_pos) {
+		return error;
+	}
+
+	const roadsign_t *rs = desc->is_signal_type() ? gr->find<signal_t>() : gr->find<roadsign_t>();
+
+	if (rs && !player_t::check_owner(rs->get_owner(), player)) {
+		return "Das Feld gehoert\neinem anderen Spieler\n";
+	}
+
+	return NULL;
+}
+
+
+const char *tool_build_roadsign_t::place_sign_intern(player_t *player, grund_t *gr)
+{
+	static const char *error = "Hier kann kein\nSignal aufge-\nstellt werden!\n";
+
+	// search for starting ground
+	if(!gr) {
+		return error;
+	}
+
+	// get the sign direction
+	weg_t *weg = gr->get_weg( desc->get_wtyp()!=tram_wt ? desc->get_wtyp() : track_wt);
+	roadsign_t *s = gr->find<signal_t>();
+	if(s==NULL) {
+		s = gr->find<roadsign_t>();
+	}
+
+	if(s  &&  (!s->get_desc()->is_signal_type() && s->get_desc() != desc)) {
+		// can only replace signals
+		return error;
+	}
+
+	ribi_t::ribi dir   = weg->get_ribi_unmasked();
+	const bool two_way = desc->is_single_way() || desc->is_signal_type();
+	const bool valid_sign_location = !(desc->is_traffic_light() || two_way)  ||  (two_way  &&  ribi_t::is_twoway(dir))  ||  (desc->is_traffic_light()  &&  ribi_t::is_threeway(dir));
+
+	if(!valid_sign_location) {
+		return error;
+	}
+
+	roadsign_t *rs = NULL;
+
+	if (desc->is_signal_type()) {
+		// if there is already a signal, we might need to inverse the direction
+		rs = gr->find<signal_t>();
+		if (!rs) {
+			// add a new signal at position zero!
+			rs = new signal_t(player, gr->get_pos(), dir, desc);
+			DBG_MESSAGE("tool_roadsign()", "new signal, dir is %i", dir);
+			goto built_sign;
+		}
+
+		if(  !player_t::check_owner( rs->get_owner(), player )  ) {
+			return "Das Feld gehoert\neinem anderen Spieler\n";
+		}
+
+		if (rs->get_desc() == desc) {
+			// signals have three options
+			ribi_t::ribi sig_dir = rs->get_dir();
+			uint8 i = 0;
+			if (!ribi_t::is_twoway(sig_dir)) {
+				// inverse first dir
+				for (; i < 4; i++) {
+					if ((dir & ribi_t::nesw[i]) == sig_dir) {
+						i++;
+						break;
 					}
-					// signals have three options
-					ribi_t::ribi sig_dir = rs->get_dir();
-					uint8 i = 0;
-					if (!ribi_t::is_twoway(sig_dir)) {
-						// inverse first dir
-						for (; i < 4; i++) {
-							if ((dir & ribi_t::nesw[i]) == sig_dir) {
-								i++;
-								break;
-							}
-						}
-					}
-					// find the second dir ...
-					for (; i < 4; i++) {
-						if ((dir & ribi_t::nesw[i]) != 0) {
-							dir = ribi_t::nesw[i];
-						}
-					}
-					// if nothing found, we have two ways again ...
-					rs->set_dir(dir);
-				}
-				else {
-					// add a new signal at position zero!
-					rs = new signal_t(player, gr->get_pos(), dir, desc);
-					DBG_MESSAGE("tool_roadsign()", "new signal, dir is %i", dir);
-					goto built_sign;
 				}
 			}
-			else {
-				// if there is already a sign, we might need to inverse the direction
-				rs = gr->find<roadsign_t>();
-				if (rs) {
-					if(  !player_t::check_owner( rs->get_owner(), player )  ) {
-						return "Das Feld gehoert\neinem anderen Spieler\n";
-					}
-					// reverse only if single way sign
-					if (desc->is_single_way() || desc->is_choose_sign()) {
-						dir = ~rs->get_dir() & weg->get_ribi_unmasked();
-						rs->set_dir(dir);
-						DBG_MESSAGE("tool_roadsign()", "reverse ribi %i", dir);
-					}
-				}
-				else {
-					// add a new roadsign at position zero!
-					// if single way, we need to reduce the allowed ribi to one
-					if (desc->is_single_way() || desc->is_choose_sign()) {
-						for(  int i=0;  i<4;  i++  ) {
-							if ((dir & ribi_t::nesw[i]) != 0) {
-								dir = ribi_t::nesw[i];
-								break;
-							}
-						}
-					}
-					DBG_MESSAGE("tool_roadsign()", "new roadsign, dir is %i", dir);
-					rs = new roadsign_t(player, gr->get_pos(), dir, desc);
-built_sign:
-					gr->obj_add(rs);
-					rs->finish_rd(); // to make them visible
-					weg->count_sign();
-					player_t::book_construction_costs(player, -desc->get_price(), gr->get_pos().get_2d(), weg->get_waytype());
+			// find the second dir ...
+			for (; i < 4; i++) {
+				if ((dir & ribi_t::nesw[i]) != 0) {
+					dir = ribi_t::nesw[i];
 				}
 			}
-			error = NULL;
+			// if nothing found, we have two ways again ...
+			rs->set_dir(dir);
+		}
+
+		// different desc -> replace signal
+		else if (rs->is_deletable(player) == NULL) {
+			ribi_t::ribi old_dir = rs->get_dir();
+			rs->cleanup(player);
+			delete rs;
+			rs = new signal_t(player, gr->get_pos(), dir, desc);
+			rs->set_dir(old_dir);
+			goto built_sign;
 		}
 	}
-	return error;
-}
-
-
-
-// built all types of depots
-const char *tool_build_depot_t::tool_depot_aux(player_t *player, koord3d pos, const building_desc_t *desc, waytype_t wegtype)
-{
-	if(welt->is_within_limits(pos.get_2d())) {
-		grund_t *bd=NULL;
-		// special for the seven seas ...
-		if(wegtype==water_wt) {
-			bd = welt->lookup_kartenboden(pos.get_2d());
-			if(!bd->is_water()) {
-				bd = NULL;
+	else {
+		// if there is already a sign, we might need to invert the direction
+		rs = gr->find<roadsign_t>();
+		if (rs) {
+			if(  !player_t::check_owner( rs->get_owner(), player )  ) {
+				return "Das Feld gehoert\neinem anderen Spieler\n";
 			}
-		}
-		if(bd==NULL) {
-			bd = tool_intern_koord_to_weg_grund(player,welt,pos,wegtype);
-		}
-		if(!bd  ||  bd->has_two_ways()) {
-			return NOTICE_DEPOT_BAD_POS;
-		}
-
-		// no depots on runways!
-		if(desc->get_extra()==air_wt  &&  bd->get_weg(air_wt)->get_desc()->get_styp()!=type_flat) {
-			return NOTICE_DEPOT_BAD_POS;
-		}
-
-		const char *p=bd->kann_alle_obj_entfernen(player);
-		if(p) {
-			return p;
-		}
-
-		// avoid building over a stop
-		if(bd->is_halt()  ||  bd->get_depot()!=NULL) {
-			return NOTICE_DEPOT_BAD_POS;
-		}
-
-		ribi_t::ribi ribi;
-		if(bd->is_water()) {
-			// assume one orientation with water
-			ribi = ribi_t::south;
+			// reverse only if single way sign
+			if (desc->is_single_way() || desc->is_choose_sign()) {
+				dir = ~rs->get_dir() & weg->get_ribi_unmasked();
+				rs->set_dir(dir);
+				DBG_MESSAGE("tool_roadsign()", "reverse ribi %i", dir);
+			}
 		}
 		else {
-			ribi = bd->get_weg_ribi_unmasked(wegtype);
-		}
-
-		if(ribi_t::is_single(ribi)  &&  bd->get_weg_hang()==0) {
-
-			int layout = 0;
-			switch(ribi) {
-				//case ribi_t::south:layout = 0;  break;
-				case ribi_t::east:   layout = 1;    break;
-				case ribi_t::north:  layout = 2;    break;
-				case ribi_t::west:  layout = 3;    break;
+			// add a new roadsign at position zero!
+			// if single way, we need to reduce the allowed ribi to one
+			if (desc->is_single_way() || desc->is_choose_sign()) {
+				for(  int i=0;  i<4;  i++  ) {
+					if ((dir & ribi_t::nesw[i]) != 0) {
+						dir = ribi_t::nesw[i];
+						break;
+					}
+				}
 			}
-			hausbauer_t::build_station_extension_depot(player, bd->get_pos(), layout, desc );
-			player_t::book_construction_costs(player, -desc->get_price(welt), pos.get_2d(), desc->get_finance_waytype());
-			if(can_use_gui()  &&  player == welt->get_active_player()) {
-				welt->set_tool( general_tool[TOOL_QUERY], player );
-			}
-
-			return NULL;
+			DBG_MESSAGE("tool_roadsign()", "new roadsign, dir is %i", dir);
+			rs = new roadsign_t(player, gr->get_pos(), dir, desc);
+built_sign:
+			gr->obj_add(rs);
+			rs->finish_rd(); // to make them visible
+			weg->count_sign();
+			player_t::book_construction_costs(player, -desc->get_price(), gr->get_pos().get_2d(), weg->get_waytype());
 		}
-		return NOTICE_DEPOT_BAD_POS;
 	}
-	return "";
+
+
+	return NULL;
 }
+
+
+bool tool_build_roadsign_t::calc_route(route_t &route, player_t *player, const koord3d &from, const koord3d &to)
+{
+	// get a default vehicle
+	vehicle_desc_t rs_desc( desc->get_wtyp(), 500, vehicle_desc_t::diesel);
+	vehicle_t *test_vehicle = vehicle_builder_t::build(from, player, NULL, &rs_desc);
+	test_vehicle->set_flag(obj_t::not_on_map);
+	test_driver_t *test_driver = scenario_checker_t::apply(test_vehicle, player, this);
+
+	bool can_build = false;
+
+	if( from != to ) {
+		can_build = route.calc_route(welt, from, to, test_driver, 0, 0);
+
+		// prevent building of many signals if start and to are adjacent
+		// but the step start->to is now allowed
+		if (can_build  &&  koord_distance(from, to)==1  &&  route.get_count()>2) {
+			grund_t *gr, *grto = welt->lookup(to);
+			if(  welt->lookup(from)->get_neighbour(gr, desc->get_wtyp(), ribi_type(to-from) )  &&  gr==grto) {
+				can_build = false;
+			}
+		}
+	}
+	else {
+		route.clear();
+		route.append(from);
+		can_build = true;
+	}
+
+	delete test_driver;
+	return can_build;
+}
+
+
+// build all types of depots
+const char *tool_build_depot_t::tool_depot_aux(player_t *player, koord3d pos, const building_desc_t *desc, waytype_t wegtype)
+{
+	if(!welt->is_within_limits(pos.get_2d())) {
+		return "";
+	}
+
+	grund_t *bd = NULL;
+
+	// special for the Seven Seas ...
+	if (wegtype==water_wt) {
+		bd = welt->lookup_kartenboden(pos.get_2d());
+		if(!bd->is_water()) {
+			return "Ship depots must be built on water!";
+		}
+	}
+
+	if (!bd) {
+		bd = tool_intern_koord_to_weg_grund(player,welt,pos,wegtype);
+	}
+
+	if (!bd) {
+		return "Depots must be built on flat dead-end way tiles!";
+	}
+	else if (bd->has_two_ways() || bd->is_halt() || bd->get_depot()!=NULL) { // avoid building over a stop
+		return "Tile not empty.";
+	}
+
+	// no depots on runways!
+	if(desc->get_extra()==air_wt  &&  bd->get_weg(air_wt)->get_desc()->get_styp()!=type_flat) {
+		return "Depots cannot be built on runways!";
+	}
+
+	if (const char *errmsg = bd->kann_alle_obj_entfernen(player)) {
+		return errmsg;
+	}
+
+	ribi_t::ribi ribi;
+	if(bd->is_water()) {
+		// assume one orientation with water
+		ribi = ribi_t::south;
+	}
+	else {
+		ribi = bd->get_weg_ribi_unmasked(wegtype);
+	}
+
+	if(!ribi_t::is_single(ribi)  ||  bd->get_weg_hang()!=slope_t::flat) {
+		return "Depots must be built on flat dead-end way tiles!";
+	}
+
+	int layout = 0;
+
+	switch(ribi) {
+		//case ribi_t::south:layout = 0;  break;
+		case ribi_t::east:  layout = 1;    break;
+		case ribi_t::north: layout = 2;    break;
+		case ribi_t::west:  layout = 3;    break;
+	}
+
+	hausbauer_t::build_station_extension_depot(player, bd->get_pos(), layout, desc );
+	player_t::book_construction_costs(player, -desc->get_price(welt), pos.get_2d(), desc->get_finance_waytype());
+
+	if(can_use_gui()  &&  player == welt->get_active_player()) {
+		welt->set_tool( general_tool[TOOL_QUERY], player );
+	}
+
+	return NULL;
+}
+
 
 image_id tool_build_depot_t::get_icon(player_t *player) const
 {
@@ -7665,6 +7704,10 @@ bool tool_change_depot_t::init( player_t *player )
 			depot->disassemble_convoi( cnv, tool=='v' );
 			break;
 		}
+		case 'V': { // sell all convoys
+			depot->disassemble_all_convois( tool=='V' );
+			break;
+		}
 		case 'c': { // copy this convoi
 			if(  cnv.is_bound()  ) {
 				if(  convoihandle_t::is_exhausted()  ) {
@@ -8167,7 +8210,8 @@ bool tool_load_scenario_t::init(player_t*)
 		delete scn;
 	}
 
-	return true;
+	// do not call work(), it's a no-op anyway
+	return false;
 }
 
 

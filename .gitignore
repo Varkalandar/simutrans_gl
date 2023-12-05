@@ -5,6 +5,7 @@
 /Debug
 /Release
 /build
+/vcpkg*
 /config.*
 /configure
 /makeobj/makeobj
@@ -38,3 +39,4 @@ revision.h
 *.res
 /autom4te.cache
 *.exe
+.ccls-cache

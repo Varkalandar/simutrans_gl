@@ -89,7 +89,6 @@ welt_gui_t::welt_gui_t(settings_t* const sets_par) :
 	game_ends  = min( game_ends,  (way_builder_t::get_latest_way(road_wt)->get_retire_year_month()+11)/12 );
 
 	loaded_heightfield = load_heightfield = false;
-	load = start = close = scenario = quit = false;
 	sets->heightfield = "";
 
 	//******************************************************************
@@ -97,10 +96,10 @@ welt_gui_t::welt_gui_t(settings_t* const sets_par) :
 	set_table_layout(1,0);
 	
 	// top part: preview, maps size
-	
 	new_component<gui_spacer_t>(scr_coord(0, 0), scr_size(10, LINESPACE/4));
 	new_component<gui_label_t>("1WORLD_CHOOSE", gui_theme_t::gui_color_text, gui_label_t::left, FS_HEADLINE);
 	new_component<gui_spacer_t>(scr_coord(0, 0), scr_size(10, LINESPACE/4));
+
 	add_table(3,1);
 	{
 		// input fields
@@ -116,8 +115,10 @@ welt_gui_t::welt_gui_t(settings_t* const sets_par) :
 
 			// Map size label
 			size_label.init();
-			size_label.buf().printf(translator::translate("Size (%d MB):"), 9999);
+			size_label.buf().printf(translator::translate("Size (%d MB):"), 99999);
 			size_label.update();
+
+			size_label.set_min_width(size_label.get_min_size().w); // Make sure to not make the component size too small when the window is opened with a small map size that is increased afterwards
 			add_component(&size_label);
 
 			// Map X size edit
@@ -125,7 +126,6 @@ welt_gui_t::welt_gui_t(settings_t* const sets_par) :
 			inp_x_size.add_listener(this);
 			inp_x_size.fixed_min_width = 90;
 			add_component(&inp_x_size);
-
 
 			// Map size Y edit
 			inp_y_size.init( sets->get_size_y(), 8, 32766, sets->get_size_y()>=512 ? 128 : 64, false );
@@ -481,7 +481,9 @@ bool welt_gui_t::action_triggered( gui_action_creator_t *comp,value_t v)
 		sets->heightfield = "";
 		load_relief_frame_t* lrf = new load_relief_frame_t(sets);
 		create_win(lrf, w_info, magic_load_t );
-		win_set_pos(lrf, (display_get_width() - lrf->get_windowsize().w-10), env_t::iconsize.h);
+
+		const scr_coord new_pos{ (display_get_width() - lrf->get_windowsize().w-10), env_t::iconsize.h };
+		win_set_pos(lrf, new_pos);
 		knr = sets->get_map_number(); // otherwise using cancel would not show the normal generated map again
 	}
 	else if(comp==&use_intro_dates) {
@@ -504,7 +506,7 @@ bool welt_gui_t::action_triggered( gui_action_creator_t *comp,value_t v)
 			open_setting_gui.pressed = false;
 		}
 		else {
-			create_win(10, 40, new settings_frame_t(sets), w_info, magic_settings_frame_t );
+			create_win({ 10, 40 }, new settings_frame_t(sets), w_info, magic_settings_frame_t );
 			open_setting_gui.pressed = true;
 		}
 	}
@@ -516,7 +518,8 @@ bool welt_gui_t::action_triggered( gui_action_creator_t *comp,value_t v)
 		}
 		else {
 			climate_gui_t *cg = new climate_gui_t(sets);
-			create_win((display_get_width() - cg->get_windowsize().w-10), 40, cg, w_info, magic_climate );
+			const scr_coord pos{ (display_get_width() - cg->get_windowsize().w-10), 40 };
+			create_win(pos, cg, w_info, magic_climate );
 			open_climate_gui.pressed = true;
 		}
 	}
@@ -527,12 +530,12 @@ bool welt_gui_t::action_triggered( gui_action_creator_t *comp,value_t v)
 	else if(comp==&load_scenario) {
 		destroy_all_win(true);
 		welt->get_message()->clear();
-		create_win( new scenario_frame_t(), w_info, magic_load_t );
+		create_win( new scenario_frame_t(), w_info, magic_load_scenario );
 	}
 	else if(comp==&start_game) {
 		destroy_all_win(true);
 		welt->get_message()->clear();
-		create_win(200, 100, new news_img("Erzeuge neue Karte.\n", skinverwaltung_t::neueweltsymbol->get_image_id(0)), w_info, magic_none);
+		create_win({ 200, 100 }, new news_img("Erzeuge neue Karte.\n", skinverwaltung_t::neueweltsymbol->get_image_id(0)), w_info, magic_none);
 		if(loaded_heightfield) {
 			welt->load_heightfield(&env_t::default_settings);
 		}
@@ -562,18 +565,6 @@ bool welt_gui_t::action_triggered( gui_action_creator_t *comp,value_t v)
 			update_preview();
 		}
 	}
-	return true;
-}
-
-
-bool  welt_gui_t::infowin_event(const event_t *ev)
-{
-	gui_frame_t::infowin_event(ev);
-
-	if(ev->ev_class==INFOWIN  &&  ev->ev_code==WIN_CLOSE) {
-		close = true;
-	}
-
 	return true;
 }
 

@@ -1772,13 +1772,18 @@ void display_text_label(sint16 xpos, sint16 ypos, const char* text, const player
 		case 0:
 			display_ddd_proportional_clip( xpos, ypos, color_idx_to_rgb(pc), color_idx_to_rgb(COL_BLACK), text, dirty );
 			break;
-		case 1:
-			display_outline_proportional_rgb( xpos, ypos, color_idx_to_rgb(pc+3), color_idx_to_rgb(COL_BLACK), text, dirty );
+		case 1: {
+			const PIXVAL text_color = player ? color_idx_to_rgb(player->get_player_color1()+7) : SYSCOL_TEXT_HIGHLIGHT;
+			display_outline_proportional_rgb( xpos, ypos, text_color, color_idx_to_rgb(COL_BLACK), text, dirty );
 			break;
+		}
 		case 2: {
+			const PIXVAL dark   = player ? color_idx_to_rgb(player->get_player_color1()+2) : SYSCOL_TEXT_HIGHLIGHT;
+			const PIXVAL normal = player ? color_idx_to_rgb(player->get_player_color1()+4) : SYSCOL_TEXT_HIGHLIGHT;
+			const PIXVAL bright = player ? color_idx_to_rgb(player->get_player_color1()+6) : SYSCOL_TEXT_HIGHLIGHT;
 			display_outline_proportional_rgb( xpos + LINESPACE + D_H_SPACE, ypos,   color_idx_to_rgb(COL_YELLOW), color_idx_to_rgb(COL_BLACK), text, dirty );
-			display_ddd_box_clip_rgb(         xpos,                         ypos,   LINESPACE,   LINESPACE,   color_idx_to_rgb(pc-2), PLAYER_FLAG|color_idx_to_rgb(pc+2) );
-			display_fillbox_wh_rgb(           xpos+1,                       ypos+1, LINESPACE-2, LINESPACE-2, color_idx_to_rgb(pc), dirty );
+			display_ddd_box_clip_rgb(         xpos,                         ypos,   LINESPACE,   LINESPACE,   dark, PLAYER_FLAG|bright );
+			display_fillbox_wh_rgb(           xpos+1,                       ypos+1, LINESPACE-2, LINESPACE-2, normal, dirty );
 			break;
 		}
 		case 3:
@@ -1831,7 +1836,7 @@ void grund_t::display_overlay(const sint16 xpos, const sint16 ypos)
 //					display_text_label( new_xpos, new_ypos, text, fab->get_owner(), dirty );
 					// ... and status
 					fab->display_status( xpos, new_ypos );
-					win_set_tooltip( new_xpos, ypos, fab->get_name(), NULL, NULL );
+					win_set_tooltip( { new_xpos, ypos }, fab->get_name(), NULL, NULL );
 				}
 				else if(  gb->get_first_tile() == gb  ) {
 					if(  env_t::show_factory_storage_bar == 3  ||  (env_t::show_factory_storage_bar == 2  &&  fab->is_within_players_network( welt->get_active_player() ))  ) {
