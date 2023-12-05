@@ -26,7 +26,7 @@ SDL2_CONFIG      ?= pkg-config sdl2
 FREETYPE_CONFIG  ?= pkg-config freetype2
 #FREETYPE_CONFIG ?= freetype-config
 
-BACKENDS  := gdi sdl2 mixer_sdl2 posix
+BACKENDS  := gdi sdl2 mixer_sdl2 posix ogl
 OSTYPES   := amiga freebsd haiku linux mac mingw openbsd
 
 
@@ -120,6 +120,14 @@ else ifeq ($(OSTYPE),mingw)
 else
   SOURCES += src/simutrans/sys/clipboard_internal.cc
 endif
+
+ifeq ($(BACKEND),ogl)
+  SOURCES += src/simutrans/sys/simsys_gl.cc
+  SOURCES += src/simutrans/display/simgraph_gl.cc
+  SOURCES += src/simutrans/music/no_midi.cc
+  SOURCES += src/simutrans/sound/no_sound.cc
+endif
+
 
 LIBS += -lbz2 -lz -lpng
 
@@ -350,8 +358,7 @@ SOURCES += src/simutrans/descriptor/tunnel_desc.cc
 SOURCES += src/simutrans/descriptor/vehicle_desc.cc
 SOURCES += src/simutrans/descriptor/way_desc.cc
 SOURCES += src/simutrans/display/font.cc
-SOURCES += src/simutrans/display/simgraph$(COLOUR_DEPTH).cc
-#SOURCES += src/simutrans/display/simgraph0.cc
+#SOURCES += src/simutrans/display/simgraph$(COLOUR_DEPTH).cc
 SOURCES += src/simutrans/display/simview.cc
 SOURCES += src/simutrans/display/viewport.cc
 SOURCES += src/simutrans/display/display.cc
@@ -747,6 +754,7 @@ ifeq ($(OSTYPE),linux)
     endif
   endif
 endif
+
 
 BUILDDIR ?= build/$(CFG)
 PROGDIR  ?= $(BUILDDIR)

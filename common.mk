@@ -11,6 +11,7 @@ DIRS := $(sort $(dir $(OBJS)))
 DUMMY := $(shell mkdir -p $(DIRS))
 
 BUILDCONFIG_FILES := common.mk Makefile config.$(CFG)
+#BUILDCONFIG_FILES :=
 
 .PHONY: all clean
 
@@ -26,7 +27,7 @@ simutrans: $(PROGDIR)/$(PROG)
 
 $(PROGDIR)/$(PROG): $(OBJS)
 	@echo "===> LD  $@"
-	$(Q)$(HOSTCXX) $(OBJS) $(LDFLAGS) $(LIBS) -o $(PROGDIR)/$(PROG)
+	$(Q)$(HOSTCXX) --verbose $(OBJS) -lglfw -lGL $(LDFLAGS) $(LIBS) -o $(PROGDIR)/$(PROG)
 
 -include $(DEPS)
 
