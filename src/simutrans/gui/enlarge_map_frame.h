@@ -27,7 +27,7 @@ private:
 	/**
 	* Mini Map-Preview
 	*/
-	array2d_tpl<PIXVAL> map;
+	array2d_tpl<uint8_t> map;
 	gui_map_preview_t
 		map_preview;
 

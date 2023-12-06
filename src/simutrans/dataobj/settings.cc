@@ -1610,13 +1610,13 @@ void settings_t::parse_colours(tabfile_t& simuconf)
 
 	simuconf.read( contents );
 
-	env_t::default_window_title_color = contents.get_color("default_window_title_color", env_t::default_window_title_color, &env_t::default_window_title_color_rgb );
-	env_t::front_window_text_color    = contents.get_color("front_window_text_color",    env_t::front_window_text_color,    &env_t::front_window_text_color_rgb );
-	env_t::bottom_window_text_color   = contents.get_color("bottom_window_text_color",   env_t::bottom_window_text_color,   &env_t::bottom_window_text_color_rgb );
-	env_t::tooltip_color              = contents.get_color("tooltip_background_color",   env_t::tooltip_color,              &env_t::tooltip_color_rgb );
-	env_t::tooltip_textcolor          = contents.get_color("tooltip_text_color",         env_t::tooltip_textcolor,          &env_t::tooltip_textcolor_rgb );
-	env_t::cursor_overlay_color       = contents.get_color("cursor_overlay_color",       env_t::cursor_overlay_color,       &env_t::cursor_overlay_color_rgb );
-	env_t::background_color           = contents.get_color("background_color",           env_t::background_color,           &env_t::background_color_rgb );
+	contents.get_color("default_window_title_color", env_t::default_window_title_color, &env_t::default_window_title_color_rgb);
+	contents.get_color("front_window_text_color",    env_t::front_window_text_color,    &env_t::front_window_text_color_rgb);
+	contents.get_color("bottom_window_text_color",   env_t::bottom_window_text_color,   &env_t::bottom_window_text_color_rgb);
+	contents.get_color("tooltip_background_color",   env_t::tooltip_color,              &env_t::tooltip_color_rgb);
+	contents.get_color("tooltip_text_color",         env_t::tooltip_textcolor,          &env_t::tooltip_textcolor_rgb);
+	contents.get_color("cursor_overlay_color",       env_t::cursor_overlay_color,       &env_t::cursor_overlay_color_rgb);
+	contents.get_color("background_color",           env_t::background_color,           &env_t::background_color_rgb);
 
 	env_t::bottom_window_darkness = contents.get_int("env_t::bottom_window_darkness", env_t::bottom_window_darkness);
 }

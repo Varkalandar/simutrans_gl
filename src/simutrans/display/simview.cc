@@ -45,53 +45,6 @@ static const sint8 hours2night[] =
 };
 #endif
 
-#ifdef MULTI_THREAD
-#include "../utils/simthread.h"
-
-bool spawned_threads=false; // global job indicator array
-static simthread_barrier_t display_barrier_start;
-static simthread_barrier_t display_barrier_end;
-
-// to start a thread
-typedef struct{
-	main_view_t *show_routine;
-	koord   lt_cl, wh_cl; // pos/size of clipping rect for this thread
-	koord   lt, wh;       // pos/size of region to display. set larger than clipping for correct display of trees at thread seams
-	sint16  y_min;
-	sint16  y_max;
-	sint8   thread_num;
-} display_region_param_t;
-
-// now the parameters
-static display_region_param_t ka[MAX_THREADS];
-
-void *display_region_thread( void *ptr )
-{
-	display_region_param_t *view = reinterpret_cast<display_region_param_t *>(ptr);
-
-	while(true) {
-		simthread_barrier_wait( &display_barrier_start ); // wait for all to start
-		clear_all_poly_clip( view->thread_num );
-		display_set_clip_wh( view->lt_cl.x, view->lt_cl.y, view->wh_cl.x, view->wh_cl.y, view->thread_num );
-		view->show_routine->display_region( view->lt, view->wh, view->y_min, view->y_max, false, true, view->thread_num );
-		simthread_barrier_wait( &display_barrier_end ); // wait for all to finish
-	}
-}
-
-/* The following mutex is only needed for smart cursor */
-// mutex for changing settings on hiding buildings/trees
-static pthread_mutex_t hide_mutex = PTHREAD_MUTEX_INITIALIZER;
-static bool threads_req_pause = false;  // set true to pause all threads to display smartcursor region single threaded
-static uint8 num_threads_paused = 0; // number of threads in the paused state
-static pthread_cond_t hiding_cond = PTHREAD_COND_INITIALIZER;
-static pthread_cond_t waiting_cond = PTHREAD_COND_INITIALIZER;
-
-#if COLOUR_DEPTH != 0
-static bool can_multithreading = true;
-#endif
-#endif
-
-
 void main_view_t::display(bool force_dirty)
 {
 	const uint32 rs = get_random_seed();
@@ -167,7 +120,7 @@ void main_view_t::display(bool force_dirty)
 	// not very elegant, but works:
 	// fill everything with black for Underground mode ...
 	if( grund_t::underground_mode ) {
-		display_fillbox_wh_rgb(clip_rr.x, clip_rr.y, clip_rr.w, clip_rr.h, color_idx_to_rgb(COL_BLACK), force_dirty);
+		display_fillbox_wh_rgb(clip_rr.x, clip_rr.y, clip_rr.w, clip_rr.h, RGBA_BLACK, force_dirty);
 	}
 	else if( welt->is_background_dirty()  &&  outside_visible  ) {
 		// we check if background will be visible, no need to clear screen if it's not.
@@ -202,71 +155,9 @@ void main_view_t::display(bool force_dirty)
 		viewport->prepared_rect = view_rect;
 	}
 
-#ifdef MULTI_THREAD
-	if(  can_multithreading  ) {
-		if(  !spawned_threads  ) {
-			// we can do the parallel display using posix threads ...
-			pthread_t thread[MAX_THREADS];
-			/* Initialize and set thread detached attribute */
-			pthread_attr_t attr;
-			pthread_attr_init( &attr );
-			pthread_attr_setdetachstate( &attr, PTHREAD_CREATE_DETACHED );
-			// init barrier
-			simthread_barrier_init( &display_barrier_start, NULL, env_t::num_threads );
-			simthread_barrier_init( &display_barrier_end, NULL, env_t::num_threads );
-
-			for(  int t = 0;  t < env_t::num_threads - 1;  t++  ) {
-				if(  pthread_create( &thread[t], &attr, display_region_thread, (void *)&ka[t] )  ) {
-					can_multithreading = false;
-					dbg->error( "main_view_t::display()", "cannot multi-thread, error at thread #%i", t+1 );
-					return;
-				}
-			}
-			spawned_threads = true;
-			pthread_attr_destroy( &attr );
-		}
-
-		// set parameter for each thread
-		const scr_coord_val wh_x = clip_rr.w / env_t::num_threads;
-		scr_coord_val lt_x = clip_rr.x;
-		for(  int t = 0;  t < env_t::num_threads - 1;  t++  ) {
-			ka[t].show_routine = this;
-			ka[t].lt_cl = koord( lt_x, clip_rr.y );
-			ka[t].wh_cl = koord( wh_x, clip_rr.h );
-			ka[t].lt = ka[t].lt_cl - koord( IMG_SIZE/2, 0 ); // process tiles IMG_SIZE/2 outside clipping range for correct tree display at thread seams
-			ka[t].wh = ka[t].wh_cl + koord( IMG_SIZE, 0 );
-			ka[t].y_min = y_min;
-			ka[t].y_max = dpy_height + 4 * 4;
-			ka[t].thread_num = t;
-			lt_x += wh_x;
-		}
-
-		// init variables required to draw smart cursor
-		threads_req_pause = false;
-		num_threads_paused = 0;
-
-		// and start drawing
-		simthread_barrier_wait( &display_barrier_start );
-
-		// the last we can run ourselves, setting clip_wh to the screen edge instead of wh_x (in case disp_width % num_threads != 0)
-		clear_all_poly_clip( env_t::num_threads - 1 );
-		display_set_clip_wh( lt_x, clip_rr.y, clip_rr.w, clip_rr.h, env_t::num_threads - 1 );
-		display_region( koord( lt_x - IMG_SIZE / 2, clip_rr.y ), koord( clip_rr.x + clip_rr.w + IMG_SIZE, clip_rr.h ), y_min, dpy_height + 4 * 4, false, true, env_t::num_threads - 1 );
-
-		simthread_barrier_wait( &display_barrier_end );
-
-		clear_all_poly_clip( 0 );
-		display_set_clip_wh(clip_rr.x, clip_rr.y, clip_rr.w, clip_rr.h);
-	}
-	else {
-		// slow serial way of display
-		clear_all_poly_clip( 0 );
-		display_region( koord(clip_rr.x, clip_rr.y), koord(clip_rr.w, clip_rr.h), y_min, dpy_height + 4 * 4, false, false, 0 );
-	}
-#else
+    // slow serial way of display
 	clear_all_poly_clip();
 	display_region(koord(clip_rr.x, clip_rr.y), koord(clip_rr.w, clip_rr.h), y_min, dpy_height + 4 * 4, false );
-#endif
 
 	// and finally overlays (station coverage and signs)
 	bool plotted = false; // display overlays even on very large mountains
@@ -306,7 +197,8 @@ void main_view_t::display(bool force_dirty)
 		if(zeiger->get_yoff()==Z_PLAN) {
 			grund_t *gr = welt->lookup( zeiger->get_pos() );
 			if(gr && gr->is_visible()) {
-				const FLAGGED_PIXVAL transparent = TRANSPARENT25_FLAG|OUTLINE_FLAG| env_t::cursor_overlay_color;
+				rgba_t transparent = color_idx_to_rgb(env_t::cursor_overlay_color);
+				transparent.alpha = 0.5f;
 				if(  gr->get_image()==IMG_EMPTY  ) {
 					if(  gr->hat_wege()  ) {
 						display_img_blend( gr->obj_bei(0)->get_image(), background_pos.x, background_pos.y, transparent, 0, dirty );
@@ -365,11 +257,7 @@ void main_view_t::clear_prepared() const
 }
 
 
-#ifdef MULTI_THREAD
-void main_view_t::display_region( koord lt, koord wh, sint16 y_min, sint16 y_max, bool /*force_dirty*/, bool threaded, const sint8 clip_num )
-#else
 void main_view_t::display_region( koord lt, koord wh, sint16 y_min, sint16 y_max, bool /*force_dirty*/ )
-#endif
 {
 	const sint16 IMG_SIZE = get_tile_raster_width();
 
@@ -402,19 +290,6 @@ void main_view_t::display_region( koord lt, koord wh, sint16 y_min, sint16 y_max
 				if(  grund_t* const kb = welt->lookup_kartenboden(pos)  ) {
 					const sint16 yypos = ypos - tile_raster_scale_y( min( kb->get_hoehe(), hmax_ground ) * TILE_HEIGHT_STEP, IMG_SIZE );
 					if(  yypos - IMG_SIZE < lt.y + wh.y  &&  yypos + IMG_SIZE > lt.y  ) {
-#ifdef MULTI_THREAD
-						bool force_show_grid = false;
-						if(  env_t::hide_under_cursor  ) {
-							const uint32 cursor_dist = shortest_distance( pos, cursor_pos );
-							if(  cursor_dist <= env_t::cursor_hide_range + 2u  ) {  // +2 to allow for rapid diagonal movement
-								kb->set_flag( grund_t::dirty );
-								if(  cursor_dist <= env_t::cursor_hide_range  ) {
-									force_show_grid = true;
-								}
-							}
-						}
-						kb->display_if_visible( xpos, yypos, IMG_SIZE, clip_num, force_show_grid );
-#else
 						if(  env_t::hide_under_cursor  ) {
 							const bool saved_grid = grund_t::show_grid;
 							const uint32 cursor_dist = shortest_distance( pos, cursor_pos );
@@ -430,7 +305,7 @@ void main_view_t::display_region( koord lt, koord wh, sint16 y_min, sint16 y_max
 						else {
 							kb->display_if_visible( xpos, yypos, IMG_SIZE );
 						}
-#endif
+
 						plotted = true;
 
 					}
@@ -506,52 +381,6 @@ void main_view_t::display_region( koord lt, koord wh, sint16 y_min, sint16 y_max
 						const koord pos(i,j);
 						if(  env_t::hide_under_cursor  &&  needs_hiding  ) {
 							// If the corresponding setting is on, then hide trees and buildings under mouse cursor
-#ifdef MULTI_THREAD
-							if(  threaded  ) {
-								pthread_mutex_lock( &hide_mutex );
-								if(  threads_req_pause  ) {
-									// another thread is requesting we pause
-									num_threads_paused++;
-									pthread_cond_broadcast( &waiting_cond ); // signal the requesting thread that another thread has paused
-
-									// wait until no longer requested to pause
-									while(  threads_req_pause  ) {
-										pthread_cond_wait( &hiding_cond, &hide_mutex );
-									}
-
-									num_threads_paused--;
-								}
-								if(  shortest_distance( pos, cursor_pos ) <= env_t::cursor_hide_range  ) {
-									// wait until all threads are paused
-									threads_req_pause = true;
-									while(  num_threads_paused < env_t::num_threads - 1  ) {
-										pthread_cond_wait( &waiting_cond, &hide_mutex );
-									}
-
-									// proceed with drawing in the hidden area singlethreaded
-									const bool saved_hide_trees = env_t::hide_trees;
-									const uint8 saved_hide_buildings = env_t::hide_buildings;
-									env_t::hide_trees = true;
-									env_t::hide_buildings = env_t::ALL_HIDDEN_BUILDING;
-
-									plan->display_obj( xpos, yypos, IMG_SIZE, true, hmin, hmax, clip_num );
-
-									env_t::hide_trees = saved_hide_trees;
-									env_t::hide_buildings = saved_hide_buildings;
-
-									// unpause all threads
-									threads_req_pause = false;
-									pthread_cond_broadcast( &hiding_cond );
-									pthread_mutex_unlock( &hide_mutex );
-								}
-								else {
-									// not in the hidden area, draw multithreaded
-									pthread_mutex_unlock( &hide_mutex );
-									plan->display_obj( xpos, yypos, IMG_SIZE, true, hmin, hmax, clip_num );
-								}
-							}
-							else {
-#endif
 								if(  shortest_distance( pos, cursor_pos ) <= env_t::cursor_hide_range  ) {
 									const bool saved_hide_trees = env_t::hide_trees;
 									const uint8 saved_hide_buildings = env_t::hide_buildings;
@@ -566,9 +395,6 @@ void main_view_t::display_region( koord lt, koord wh, sint16 y_min, sint16 y_max
 								else {
 									plan->display_obj( xpos, yypos, IMG_SIZE, true, hmin, hmax  CLIP_NUM_PAR);
 								}
-#ifdef MULTI_THREAD
-							}
-#endif
 						}
 						else {
 							// hiding turned off, draw multithreaded
@@ -579,21 +405,12 @@ void main_view_t::display_region( koord lt, koord wh, sint16 y_min, sint16 y_max
 			}
 		}
 	}
-#ifdef MULTI_THREAD
-	// show thread as paused when finished
-	if(  threaded  ) {
-		pthread_mutex_lock( &hide_mutex );
-		num_threads_paused++;
-		pthread_cond_broadcast( &waiting_cond );
-		pthread_mutex_unlock( &hide_mutex );
-	}
-#endif
 }
 
 
 void main_view_t::display_background( scr_coord_val xp, scr_coord_val yp, scr_coord_val w, scr_coord_val h, bool dirty )
 {
 	if(  !(env_t::draw_earth_border  &&  env_t::draw_outside_tile)  ) {
-		display_fillbox_wh_rgb(xp, yp, w, h, env_t::background_color, dirty );
+		display_fillbox_wh_rgb(xp, yp, w, h, env_t::background_color_rgb, dirty );
 	}
 }

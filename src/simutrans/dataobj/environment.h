@@ -243,9 +243,9 @@ public:
 	/// customize your tooltips
 	static bool show_tooltips;
 	static rgb888_t tooltip_color_rgb;
-	static PIXVAL tooltip_color;
+	static int tooltip_color;
 	static rgb888_t tooltip_textcolor_rgb;
-	static PIXVAL tooltip_textcolor;
+	static int tooltip_textcolor;
 	static uint32 tooltip_delay;
 	static uint32 tooltip_duration;
 
@@ -256,11 +256,11 @@ public:
 	// how to highlight topped (untopped windows)
 	static bool window_frame_active;
 	static rgb888_t front_window_text_color_rgb;
-	static PIXVAL front_window_text_color;
+	static int front_window_text_color;
 	static rgb888_t bottom_window_text_color_rgb;
-	static PIXVAL bottom_window_text_color;
+	static int bottom_window_text_color;
 	static rgb888_t default_window_title_color_rgb;
-	static PIXVAL default_window_title_color;
+	static int default_window_title_color;
 	static uint8 bottom_window_darkness;
 
 	static uint8 gui_player_color_dark;
@@ -331,13 +331,13 @@ public:
 
 	/// color used for cursor overlay blending
 	static rgb888_t cursor_overlay_color_rgb;
-	static PIXVAL cursor_overlay_color;
+	static int cursor_overlay_color;
 
 	static sint8 show_money_message;
 
 	/// color used for solid background draw
 	static rgb888_t background_color_rgb;
-	static PIXVAL background_color;
+	static int background_color;
 
 	/// true if the border shut be shown as cut through the earth
 	static bool draw_earth_border;
@@ -352,7 +352,7 @@ public:
 	 * Hajo: Identified flags:
          * 1 = Show names at all
          * 2 = Show waiting bars
-         * 4, 8, 12, 16 = Show name options 
+         * 4, 8, 12, 16 = Show name options
          */
 	static sint32 show_names;
 

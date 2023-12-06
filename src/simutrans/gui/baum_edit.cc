@@ -94,7 +94,7 @@ void baum_edit_frame_t::fill_list()
 	scl.set_selection(-1);
 	for(tree_desc_t const* const i : tree_list) {
 		char const* const name = get_sortedby()==gui_sorting_item_t::BY_NAME_OBJECT ?  i->get_name() : translator::translate(i->get_name());
-		scl.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(name, SYSCOL_TEXT);
+		scl.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(name, color_idx_to_rgb(SYSCOL_TEXT));
 		if (i == desc) {
 			scl.set_selection(scl.get_count()-1);
 		}

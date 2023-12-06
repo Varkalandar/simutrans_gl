@@ -929,11 +929,7 @@ void grund_t::calc_back_image(const sint8 hgt, const slope_t::type slope_this)
 }
 
 
-#ifdef MULTI_THREAD
-void grund_t::display_boden(const sint16 xpos, const sint16 ypos, const sint16 raster_tile_width, const sint8 clip_num, const bool force_show_grid ) const
-#else
 void grund_t::display_boden(const sint16 xpos, const sint16 ypos, const sint16 raster_tile_width) const
-#endif
 {
 	static const uint16 wall_image_offset[grund_t::BACK_WALL_COUNT] = {0, 11};
 
@@ -1094,7 +1090,7 @@ void grund_t::display_boden(const sint16 xpos, const sint16 ypos, const sint16 r
 									}
 								}
 								// overlay transition climates
-								display_alpha( ground_desc_t::get_climate_tile( transition_climate, slope ), ground_desc_t::get_alpha_tile( slope, overlay_corners ), ALPHA_GREEN | ALPHA_BLUE, xpos, ypos, 0, 0, true, dirty CLIP_NUM_PAR );
+								display_alpha( ground_desc_t::get_climate_tile( transition_climate, slope ), ground_desc_t::get_alpha_tile( slope, overlay_corners ), ALPHA_GREEN | ALPHA_BLUE, xpos, ypos, 0, RGBA_BLACK, true, dirty CLIP_NUM_PAR );
 							}
 						}
 						slope_corner /= slope_t::southeast;
@@ -1102,7 +1098,7 @@ void grund_t::display_boden(const sint16 xpos, const sint16 ypos, const sint16 r
 					// finally overlay any water transition
 					if(  water_corners  ) {
 						if(  slope  ) {
-							display_alpha( ground_desc_t::get_water_tile(slope, wasser_t::stage), ground_desc_t::get_beach_tile( slope, water_corners ), ALPHA_RED, xpos, ypos, 0, 0, true, dirty|wasser_t::change_stage CLIP_NUM_PAR );
+							display_alpha( ground_desc_t::get_water_tile(slope, wasser_t::stage), ground_desc_t::get_beach_tile( slope, water_corners ), ALPHA_RED, xpos, ypos, 0, RGBA_BLACK, true, dirty|wasser_t::change_stage CLIP_NUM_PAR );
 							if(  ground_desc_t::shore  ) {
 								// additional shore image
 								image_id shore = ground_desc_t::shore->get_image(slope,snow_transition<=0);
@@ -1114,7 +1110,7 @@ void grund_t::display_boden(const sint16 xpos, const sint16 ypos, const sint16 r
 						}
 						else {
 							// animate
-							display_alpha( ground_desc_t::sea->get_image(0,wasser_t::stage), ground_desc_t::get_beach_tile( slope, water_corners ), ALPHA_RED, xpos, ypos, 0, 0, true, dirty|wasser_t::change_stage CLIP_NUM_PAR );
+							display_alpha( ground_desc_t::sea->get_image(0,wasser_t::stage), ground_desc_t::get_beach_tile( slope, water_corners ), ALPHA_RED, xpos, ypos, 0, RGBA_BLACK, true, dirty|wasser_t::change_stage CLIP_NUM_PAR );
 						}
 					}
 				}
@@ -1123,12 +1119,12 @@ void grund_t::display_boden(const sint16 xpos, const sint16 ypos, const sint16 r
 				if(  slope != 0  &&  (!weg  ||  !weg->hat_gehweg())  ) {
 					switch(  snow_transition  ) {
 						case 1: {
-							display_alpha( ground_desc_t::get_snow_tile(slope), ground_desc_t::get_alpha_tile(slope), ALPHA_GREEN | ALPHA_BLUE, xpos, ypos, 0, 0, true, dirty CLIP_NUM_PAR );
+							display_alpha( ground_desc_t::get_snow_tile(slope), ground_desc_t::get_alpha_tile(slope), ALPHA_GREEN | ALPHA_BLUE, xpos, ypos, 0, RGBA_BLACK, true, dirty CLIP_NUM_PAR );
 							break;
 						}
 						case 2: {
 							if(  slope_t::max_diff(slope) > 1  ) {
-								display_alpha( ground_desc_t::get_snow_tile(slope), ground_desc_t::get_alpha_tile(slope), ALPHA_BLUE, xpos, ypos, 0, 0, true, dirty CLIP_NUM_PAR );
+								display_alpha( ground_desc_t::get_snow_tile(slope), ground_desc_t::get_alpha_tile(slope), ALPHA_BLUE, xpos, ypos, 0, RGBA_BLACK, true, dirty CLIP_NUM_PAR );
 							}
 							break;
 						}
@@ -1137,11 +1133,7 @@ void grund_t::display_boden(const sint16 xpos, const sint16 ypos, const sint16 r
 
 				// we show additionally a grid
 				// for undergroundmode = ugm_all the grid is plotted in display_obj
-#ifdef MULTI_THREAD
-				if(  show_grid  || force_show_grid  ) {
-#else
 				if(  show_grid  ){
-#endif
 					const uint8 hang = get_grund_hang();
 					display_normal( ground_desc_t::get_border_image(hang), xpos, ypos, 0, true, dirty CLIP_NUM_PAR );
 				}
@@ -1153,7 +1145,7 @@ void grund_t::display_boden(const sint16 xpos, const sint16 ypos, const sint16 r
 				display_normal( ground_desc_t::sea->get_image(get_image(),wasser_t::stage), xpos, ypos, 0, true, dirty|wasser_t::change_stage CLIP_NUM_PAR );
 			}
 			else {
-				display_blend( ground_desc_t::sea->get_image(get_image(),wasser_t::stage), xpos, ypos, 0, TRANSPARENT50_FLAG, true, dirty|wasser_t::change_stage CLIP_NUM_PAR );
+				display_blend( ground_desc_t::sea->get_image(get_image(),wasser_t::stage), xpos, ypos, 0, rgba_t(0, 0, 0, 0.5f), true, dirty|wasser_t::change_stage CLIP_NUM_PAR );
 			}
 			return;
 		}
@@ -1248,11 +1240,7 @@ void grund_t::display_border( sint16 xpos, sint16 ypos, const sint16 raster_tile
 }
 
 
-#ifdef MULTI_THREAD
-void grund_t::display_if_visible(sint16 xpos, sint16 ypos, const sint16 raster_tile_width, const sint8 clip_num, const bool force_show_grid )
-#else
 void grund_t::display_if_visible(sint16 xpos, sint16 ypos, const sint16 raster_tile_width)
-#endif
 {
 	if(  !is_karten_boden_visible()  ) {
 		// only check for forced redraw (of marked ... )
@@ -1268,11 +1256,7 @@ void grund_t::display_if_visible(sint16 xpos, sint16 ypos, const sint16 raster_t
 	}
 
 	if(!get_flag(grund_t::draw_as_obj)) {
-#ifdef MULTI_THREAD
-		display_boden( xpos, ypos, raster_tile_width, clip_num, force_show_grid );
-#else
 		display_boden( xpos, ypos, raster_tile_width );
-#endif
 	}
 }
 
@@ -1326,11 +1310,8 @@ void grund_t::display_obj_all_quick_and_dirty(const sint16 xpos, sint16 ypos, co
 		if(  is_global  &&  get_flag( grund_t::marked )  ) {
 			const uint8 hang = get_grund_hang();
 			display_img_aux( ground_desc_t::get_marker_image( hang, true ), xpos, ypos, 0, true, dirty CLIP_NUM_PAR );
-#ifdef MULTI_THREAD
-			objlist.display_obj_quick_and_dirty( xpos, ypos, start_offset CLIP_NUM_PAR );
-#else
 			objlist.display_obj_quick_and_dirty( xpos, ypos, start_offset, is_global );
-#endif
+
 			display_img_aux( ground_desc_t::get_marker_image( hang, false ), xpos, ypos, 0, true, dirty CLIP_NUM_PAR );
 			if(  !ist_karten_boden()  ) {
 				const grund_t *gr = welt->lookup_kartenboden(pos.get_2d());
@@ -1354,11 +1335,7 @@ void grund_t::display_obj_all_quick_and_dirty(const sint16 xpos, sint16 ypos, co
 			}
 		}
 		else {
-#ifdef MULTI_THREAD
-			objlist.display_obj_quick_and_dirty( xpos, ypos, start_offset CLIP_NUM_PAR );
-#else
 			objlist.display_obj_quick_and_dirty( xpos, ypos, start_offset, is_global );
-#endif
 		}
 	}
 	else { // must be karten_boden
@@ -1631,11 +1608,8 @@ uint8 grund_t::display_obj_vh(const sint16 xpos, const sint16 ypos, const uint8 
 void grund_t::display_obj_fg(const sint16 xpos, const sint16 ypos, const bool is_global, const uint8 start_offset CLIP_NUM_DEF ) const
 {
 	const bool dirty = get_flag(grund_t::dirty);
-#ifdef MULTI_THREAD
-	objlist.display_obj_fg( xpos, ypos, start_offset CLIP_NUM_PAR );
-#else
 	objlist.display_obj_fg( xpos, ypos, start_offset, is_global );
-#endif
+
 	// display front part of markers
 	if(  is_global  &&  get_flag( grund_t::marked )  ) {
 		display_normal( ground_desc_t::get_marker_image( get_grund_hang(), false ), xpos, ypos, 0, true, dirty CLIP_NUM_PAR );
@@ -1662,36 +1636,29 @@ scr_size display_themed_label(sint16 xpos, sint16 ypos, const char* text,
                               sint32 margin_left, sint32 margin_right,
                               sint32 margin_top, sint32 margin_bottom,
                               const stretch_map_t &label,
-                              sint32 color, const player_t *player, bool dirty)
+                              rgba_t color, const player_t *player, bool dirty)
 {
 	sint16 text_width = proportional_string_width(text);
-	sint16 label_height = LINESPACE + margin_top + margin_bottom; 
+	sint16 label_height = LINESPACE + margin_top + margin_bottom;
 
-	const scr_rect area(xpos, ypos, 
-						text_width + margin_left + margin_right, 
+	const scr_rect area(xpos, ypos,
+						text_width + margin_left + margin_right,
 						label_height);
 
 	const sint16 pnr = player ? player->get_player_nr() : 1;
-	display_img_stretch(label, area, pnr);        
+	display_img_stretch(label, area, color_idx_to_rgb(pnr));
 
-	if(color >= 0) {
-		// a fixed PIXVAL
-		display_proportional_rgb(area.x+margin_left, area.y+margin_top, text, ALIGN_LEFT, color, dirty);
-	} else {
-		// a player color brightness value
-		sint16 pc = player ? player->get_player_color1()+(-color) : SYSCOL_TEXT_HIGHLIGHT;
-		display_proportional_clip_rgb(area.x+margin_left, area.y+margin_top, text, ALIGN_LEFT, color_idx_to_rgb(pc), dirty);
-	}
-	
+    display_proportional_rgb(area.x+margin_left, area.y+margin_top, text, ALIGN_LEFT, color, dirty);
+
 	return scr_size(area.w, area.h);
 }
 
 
-void display_themed_marker(sint16 xpos, sint16 ypos, const char* text, 
+void display_themed_marker(sint16 xpos, sint16 ypos, const char* text,
                                const player_t *player, bool dirty)
 {
 	const sint16 yoff = get_tile_raster_width() / 2 - 54 + get_tile_raster_width() / 4;
-	
+
 	const scr_size size =
 		display_themed_label(xpos-2, ypos+yoff, text,
 							 gui_theme_t::gui_display_marker_label_margin_left,
@@ -1713,10 +1680,10 @@ void display_themed_marker(sint16 xpos, sint16 ypos, const char* text,
 /**
  * Display a theme defined label with some text
  */
-void display_themed_text_label(sint16 xpos, sint16 ypos, const char* text, 
+void display_themed_text_label(sint16 xpos, sint16 ypos, const char* text,
                                const player_t *player, char flag, bool dirty)
 {
-	if(skinverwaltung_t::display_text_label) 
+	if(skinverwaltung_t::display_text_label)
 	{
 		switch(flag)
 		{
@@ -1729,7 +1696,7 @@ void display_themed_text_label(sint16 xpos, sint16 ypos, const char* text,
 									 gui_theme_t::display_station_label,
 									 gui_theme_t::gui_display_station_label_color,
 									 player,
-									 dirty); 
+									 dirty);
 					break;
 			case 'F':       // Hajo: a factory
 				display_themed_label(xpos, ypos, text,
@@ -1740,7 +1707,7 @@ void display_themed_text_label(sint16 xpos, sint16 ypos, const char* text,
 									 gui_theme_t::display_factory_label,
 									 gui_theme_t::gui_display_factory_label_color,
 									 player,
-									 dirty); 
+									 dirty);
 					break;
 			case 'M':       // Hajo: a marker
 			    display_themed_marker(xpos, ypos, text, player, dirty);
@@ -1770,20 +1737,22 @@ void display_text_label(sint16 xpos, sint16 ypos, const char* text, const player
 	const int style = env_t::show_names >> 2;
 	switch(style) {
 		case 0:
-			display_ddd_proportional_clip( xpos, ypos, color_idx_to_rgb(pc), color_idx_to_rgb(COL_BLACK), text, dirty );
+			display_ddd_proportional_clip( xpos, ypos, color_idx_to_rgb(pc), RGBA_BLACK, text, dirty );
 			break;
 		case 1: {
-			const PIXVAL text_color = player ? color_idx_to_rgb(player->get_player_color1()+7) : SYSCOL_TEXT_HIGHLIGHT;
-			display_outline_proportional_rgb( xpos, ypos, text_color, color_idx_to_rgb(COL_BLACK), text, dirty );
+			const rgba_t text_color = player ? color_idx_to_rgb(player->get_player_color1()+7) : color_idx_to_rgb(SYSCOL_TEXT_HIGHLIGHT);
+			display_outline_proportional_rgb( xpos, ypos, text_color, RGBA_BLACK, text, dirty );
 			break;
 		}
 		case 2: {
-			const PIXVAL dark   = player ? color_idx_to_rgb(player->get_player_color1()+2) : SYSCOL_TEXT_HIGHLIGHT;
-			const PIXVAL normal = player ? color_idx_to_rgb(player->get_player_color1()+4) : SYSCOL_TEXT_HIGHLIGHT;
-			const PIXVAL bright = player ? color_idx_to_rgb(player->get_player_color1()+6) : SYSCOL_TEXT_HIGHLIGHT;
-			display_outline_proportional_rgb( xpos + LINESPACE + D_H_SPACE, ypos,   color_idx_to_rgb(COL_YELLOW), color_idx_to_rgb(COL_BLACK), text, dirty );
+		/* todo
+			const rgba_t dark   = player ? color_idx_to_rgb(player->get_player_color1()+2) : SYSCOL_TEXT_HIGHLIGHT;
+			const rgba_t normal = player ? color_idx_to_rgb(player->get_player_color1()+4) : SYSCOL_TEXT_HIGHLIGHT;
+			const rgba_t bright = player ? color_idx_to_rgb(player->get_player_color1()+6) : SYSCOL_TEXT_HIGHLIGHT;
+			display_outline_proportional_rgb( xpos + LINESPACE + D_H_SPACE, ypos,   color_idx_to_rgb(COL_YELLOW), RGBA_BLACK, text, dirty );
 			display_ddd_box_clip_rgb(         xpos,                         ypos,   LINESPACE,   LINESPACE,   dark, PLAYER_FLAG|bright );
 			display_fillbox_wh_rgb(           xpos+1,                       ypos+1, LINESPACE-2, LINESPACE-2, normal, dirty );
+			*/
 			break;
 		}
 		case 3:
@@ -1796,9 +1765,7 @@ void display_text_label(sint16 xpos, sint16 ypos, const char* text, const player
 void grund_t::display_overlay(const sint16 xpos, const sint16 ypos)
 {
 	const bool dirty = get_flag(grund_t::dirty);
-#ifdef MULTI_THREAD
-	objlist.display_obj_overlay( xpos, ypos );
-#endif
+
 	// marker/station text
 	if(  get_flag(has_text)  &&  env_t::show_names  ) {
 		if(  env_t::show_names&1  ) {
@@ -1809,9 +1776,9 @@ void grund_t::display_overlay(const sint16 xpos, const sint16 ypos)
 
 			const player_t* owner = get_label_owner();
 			label_t *label = find<label_t>();
-			
+
             char flag = (label) ? 'M' : (is_halt()) ? 'H' : 'T';
-                        
+
 			display_text_label(new_xpos, ypos, text, owner, flag, dirty);
 		}
 
@@ -1858,8 +1825,8 @@ void grund_t::display_overlay(const sint16 xpos, const sint16 ypos)
 		if( weg_t* w = get_weg_nr( 0 ) ) {
 			if( w->has_signal() ) {
 				// display arrow here
-				PIXVAL c1 = color_idx_to_rgb( COL_GREEN+2 );
-				PIXVAL c2 = color_idx_to_rgb( COL_GREEN );
+				rgba_t c1 = color_idx_to_rgb( COL_GREEN+2 );
+				rgba_t c2 = color_idx_to_rgb( COL_GREEN );
 
 				ribi_t::ribi mask = w->get_ribi_maske();
 				if( !mask ) {
@@ -1876,8 +1843,8 @@ void grund_t::display_overlay(const sint16 xpos, const sint16 ypos)
 					w->get_ribi_unmasked(), mask, c1, c2, w->is_diagonal(), get_weg_hang() );
 			}
 			else if( w->get_ribi_maske() ) {
-				PIXVAL c1 = color_idx_to_rgb( COL_BLUE+2 );
-				PIXVAL c2 = color_idx_to_rgb( COL_BLUE );
+				rgba_t c1 = color_idx_to_rgb( COL_BLUE+2 );
+				rgba_t c2 = color_idx_to_rgb( COL_BLUE );
 				display_signal_direction_rgb( xpos, ypos + tile_raster_scale_y( w->get_yoff(), get_current_tile_raster_width() ),
 					w->get_ribi_unmasked(), w->get_ribi_maske(), c1, c2, w->is_diagonal(), get_weg_hang() );
 			}

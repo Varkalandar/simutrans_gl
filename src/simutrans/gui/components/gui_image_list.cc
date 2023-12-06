@@ -82,10 +82,10 @@ void gui_image_list_t::draw(scr_coord parent_pos)
 		if(idata.count>=0) {
 
 			// display mark
-			if(idata.lcolor!=EMPTY_IMAGE_BAR) {
+			if(idata.lcolor.alpha > 0) {
 				display_fillbox_wh_clip_rgb( xpos + 1, ypos + grid.y - 5, grid.x/2 - 1, 4, idata.lcolor, true);
 			}
-			if(idata.rcolor!=EMPTY_IMAGE_BAR) {
+			if(idata.rcolor.alpha > 0) {
 				display_fillbox_wh_clip_rgb( xpos + grid.x/2, ypos + grid.y - 5, grid.x - grid.x/2 - 1, 4, idata.rcolor, true);
 			}
 			if (sel_index-- == 0) {
@@ -95,7 +95,7 @@ void gui_image_list_t::draw(scr_coord parent_pos)
 			// Get image data
 			scr_coord_val x,y,w,h;
 			display_get_base_image_offset( idata.image, &x, &y, &w, &h );
-			
+
 			// calculate image offsets
 			y = -y + (grid.y-h) - 6; // align to bottom mark
 			x = -x + (grid.x-w) / 2; // align horizontally centered

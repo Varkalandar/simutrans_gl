@@ -13,7 +13,6 @@ gui_image_t::gui_image_t( const image_id i, const uint8 p, control_alignment_t a
 	player_nr(p),
 	remove_offset(0,0),
 	remove_enabled(remove_offset_enabled),
-	color_index(0),
 	display_offset(0,0)
 {
 	set_image(i,remove_offset_enabled);
@@ -84,7 +83,7 @@ void gui_image_t::draw( scr_coord offset ) {
 	if(  id!=IMG_EMPTY  ) {
 		// Hajo: add general offset fist
 		offset = offset + display_offset;
-		
+
 		// Then add alignment offsets
 		scr_coord_val x=0, y=0, w=0, h=0;
 		display_get_base_image_offset( id, &x, &y, &w, &h );
@@ -108,11 +107,12 @@ void gui_image_t::draw( scr_coord offset ) {
 				break;
 
 		}
-		if (color_index) {
-			display_base_img_blend(id , pos.x+offset.x+remove_offset.x, pos.y+offset.y+remove_offset.y, player_nr, color_index, false, true);
-		}
-		else {
+// todo
+//		if (color_index) {
+//			display_base_img_blend(id , pos.x+offset.x+remove_offset.x, pos.y+offset.y+remove_offset.y, player_nr, color_index, false, true);
+//		}
+//		else {
 			display_base_img( id, pos.x+offset.x+remove_offset.x, pos.y+offset.y+remove_offset.y, (sint8)player_nr, false, true );
-		}
+//		}
 	}
 }

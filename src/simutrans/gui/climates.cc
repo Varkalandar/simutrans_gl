@@ -61,7 +61,7 @@ climate_gui_t::climate_gui_t(settings_t* const sets_par) :
 		new_component<gui_label_t>( "Wind direction" );
 		wind_dir.set_focusable( false );
 		for( int i = 0; i < 4; i++ ) {
-			wind_dir.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate( wind_dir_text[i] ), SYSCOL_TEXT );
+			wind_dir.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate( wind_dir_text[i] ), color_idx_to_rgb(SYSCOL_TEXT) );
 			if ((1 << i) == sets->wind_direction) {
 				wind_dir.set_selection(i);
 			}
@@ -134,9 +134,9 @@ climate_gui_t::climate_gui_t(settings_t* const sets_par) :
 	{
 		new_component<gui_label_t>("Trees");
 		tree.set_focusable( false );
-		tree.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate( "none" ), SYSCOL_TEXT );
-		tree.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate( "random" ), SYSCOL_TEXT );
-		tree.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate( "rainfall" ), SYSCOL_TEXT );
+		tree.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate( "none" ), color_idx_to_rgb(SYSCOL_TEXT) );
+		tree.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate( "random" ), color_idx_to_rgb(SYSCOL_TEXT) );
+		tree.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate( "rainfall" ), color_idx_to_rgb(SYSCOL_TEXT) );
 		tree.set_selection( sets->get_tree_distribution() );
 		add_component( &tree );
 		tree.add_listener( this );
@@ -217,8 +217,8 @@ bool climate_gui_t::action_triggered( gui_action_creator_t *comp, value_t v)
 				sets->set_tree_distribution(settings_t::TREE_DIST_RANDOM);
 			}
 			tree.clear_elements();
-			tree.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate( "none" ), SYSCOL_TEXT );
-			tree.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate( "random" ), SYSCOL_TEXT );
+			tree.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate( "none" ), color_idx_to_rgb(SYSCOL_TEXT) );
+			tree.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate( "random" ), color_idx_to_rgb(SYSCOL_TEXT) );
 			tree.set_selection( sets->get_tree_distribution() );
 
 			// enable climate height selection
@@ -231,9 +231,9 @@ bool climate_gui_t::action_triggered( gui_action_creator_t *comp, value_t v)
 		else {
 			// enable rainfall tree generation
 			tree.clear_elements();
-			tree.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate( "none" ), SYSCOL_TEXT );
-			tree.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate( "random" ), SYSCOL_TEXT );
-			tree.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate( "rainfall" ), SYSCOL_TEXT );
+			tree.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate( "none" ), color_idx_to_rgb(SYSCOL_TEXT) );
+			tree.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate( "random" ), color_idx_to_rgb(SYSCOL_TEXT) );
+			tree.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate( "rainfall" ), color_idx_to_rgb(SYSCOL_TEXT) );
 			tree.set_selection( sets->get_tree_distribution() );
 
 			// disable climate height selection (except arctic which is used for snowline)

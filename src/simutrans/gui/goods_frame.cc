@@ -62,7 +62,7 @@ goods_frame_t::goods_frame_t() :
 		add_component(&speed);
 		speed.add_listener( this );
 
-		gui_label_buf_t *lb = new_component<gui_label_buf_t>(SYSCOL_TEXT_HIGHLIGHT);
+		gui_label_buf_t *lb = new_component<gui_label_buf_t>(color_idx_to_rgb(SYSCOL_TEXT_HIGHLIGHT));
 		lb->buf().printf(translator::translate("100 km/h = %i tiles/month"), welt->speed_to_tiles_per_month(kmh_to_speed(100)) );
 		lb->update();
 	}
@@ -83,7 +83,7 @@ goods_frame_t::goods_frame_t() :
 
 		sortedby.set_unsorted(); // do not sort
 		for (size_t i = 0; i < lengthof(sort_text); i++) {
-			sortedby.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate(sort_text[i]), SYSCOL_TEXT);
+			sortedby.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate(sort_text[i]), color_idx_to_rgb(SYSCOL_TEXT));
 		}
 		sortedby.set_selection(sortby);
 		sortedby.add_listener(this);
@@ -119,7 +119,7 @@ void goods_frame_t::build_linetype_list(bool const show_used)
 			welt->get_settings().get_use_timeline() && show_used, welt->get_settings().get_allow_buying_obsolete_vehicles());
 
 		if (!show_used || maximum_speed > 0) {
-			scheduletype.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(simline_t::get_linetype_name(linetype), SYSCOL_TEXT);
+			scheduletype.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(simline_t::get_linetype_name(linetype), color_idx_to_rgb(SYSCOL_TEXT));
 			linetype_selection_map[item_count] = linetype;
 
 			item_count+= 1;

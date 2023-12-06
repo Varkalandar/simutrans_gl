@@ -600,7 +600,7 @@ public:
 	char const* get_name() const;
 	void set_name( const char *name );
 
-	PIXVAL get_color() const { return desc->get_color(); }
+	rgba_t get_color() const { return desc->get_color(); }
 
 	player_t *get_owner() const
 	{

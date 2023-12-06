@@ -527,11 +527,7 @@ public:
 	/**
 	 * Displays the ground images (including foundations, fences and ways)
 	 */
-#ifdef MULTI_THREAD
-	void display_boden(const sint16 xpos, const sint16 ypos, const sint16 raster_tile_width, const sint8 clip_num, bool force_show_grid=false) const;
-#else
 	void display_boden(const sint16 xpos, const sint16 ypos, const sint16 raster_tile_width) const;
-#endif
 
 	/**
 	 * Displays the earth at the border
@@ -542,11 +538,7 @@ public:
 	 * Displays the tile if it's visible.
 	 * @see is_karten_boden_visible()
 	 */
-#ifdef MULTI_THREAD
-	void display_if_visible(sint16 xpos, sint16 ypos, const sint16 raster_tile_width, const sint8 clip_num, bool force_show_grid=false);
-#else
 	void display_if_visible(sint16 xpos, sint16 ypos, const sint16 raster_tile_width);
-#endif
 
 	/**
 	 * displays everything that is on a tile - the main display routine for objects on tiles

@@ -13,7 +13,9 @@
 #include "../utils/cbuffer.h"
 
 
-citylist_stats_t::citylist_stats_t(stadt_t *c)
+citylist_stats_t::citylist_stats_t(stadt_t *c) :
+    name_label(color_idx_to_rgb(gui_theme_t::gui_color_text)),
+	population_label(color_idx_to_rgb(gui_theme_t::gui_color_text))
 {
 	city = c;
 	set_table_layout(4, 0);
@@ -37,8 +39,8 @@ void citylist_stats_t::update_label()
 	cbuffer_t &nbuf = name_label.buf();
 	nbuf.printf("%s", city->get_name());
 	name_label.update();
-	
-	cbuffer_t &buf = population_label.buf();	
+
+	cbuffer_t &buf = population_label.buf();
 	buf.append( city->get_einwohner(), 0 );
 	buf.append( " (" );
 	buf.append( city->get_wachstum()/10.0, 1 );
@@ -59,7 +61,7 @@ void citylist_stats_t::draw(scr_coord offset)
 	update_label();
 
 	draw_background(offset);
-	
+
 	gui_aligned_container_t::draw(offset);
 }
 

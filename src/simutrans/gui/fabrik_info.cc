@@ -66,7 +66,7 @@ public:
 
 	void draw(scr_coord offset) OVERRIDE
 	{
-		image->set_transparent(is_active() ? 0 : TRANSPARENT50_FLAG);
+		image->set_alpha(is_active() ? 1.0f : 0.5f);
 		gui_aligned_container_t::draw(offset);
 	}
 };
@@ -79,6 +79,7 @@ fabrik_info_t::fabrik_info_t(fabrik_t* fab_, const gebaeude_t* gb) :
 	view(scr_size( max(64, get_base_tile_raster_width()), max(56, (get_base_tile_raster_width() * 7) / 8))),
 	prod(&prod_buf),
 	txt(&info_buf),
+	indicator_color(RGBA_BLACK),
 	scroll_info(&container_info)
 {
 	if (fab) {
@@ -241,9 +242,9 @@ void fabrik_info_t::draw(scr_coord pos, scr_size size)
 	update_components();
 
 	// boost stuff
-	boost_electric.set_transparent(fab->get_prodfactor_electric()>0 ? 0 : TRANSPARENT50_FLAG | OUTLINE_FLAG | SYSCOL_IMAGE_TRANSPARENCY);
-	boost_passenger.set_transparent(fab->get_prodfactor_pax()>0 ? 0 : TRANSPARENT50_FLAG | OUTLINE_FLAG | SYSCOL_IMAGE_TRANSPARENCY);
-	boost_mail.set_transparent(fab->get_prodfactor_mail()>0 ? 0 : TRANSPARENT50_FLAG | OUTLINE_FLAG | SYSCOL_IMAGE_TRANSPARENCY);
+	boost_electric.set_alpha(fab->get_prodfactor_electric()>0 ? 0 : TRANSPARENT50_FLAG | OUTLINE_FLAG | SYSCOL_IMAGE_TRANSPARENCY);
+	boost_passenger.set_alpha(fab->get_prodfactor_pax()>0 ? 0 : TRANSPARENT50_FLAG | OUTLINE_FLAG | SYSCOL_IMAGE_TRANSPARENCY);
+	boost_mail.set_alpha(fab->get_prodfactor_mail()>0 ? 0 : TRANSPARENT50_FLAG | OUTLINE_FLAG | SYSCOL_IMAGE_TRANSPARENCY);
 
 	indicator_color.set_color( color_idx_to_rgb(fabrik_t::status_to_color[fab->get_status()]) );
 

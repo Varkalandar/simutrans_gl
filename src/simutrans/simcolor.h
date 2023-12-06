@@ -6,10 +6,6 @@
 #ifndef SIMCOLOR_H
 #define SIMCOLOR_H
 
-
-#include "simtypes.h"
-
-
 #define LIGHT_COUNT         (15)
 #define SPECIAL_COLOR_COUNT (224)
 
@@ -21,10 +17,6 @@
 #define TRANSPARENT75_FLAG (0x600000)
 #define OUTLINE_FLAG       (0x080000)
 
-// pixels stored in system type (uint16)
-typedef unsigned short PIXVAL;
-// PIXVAL with above flags (eg. transparent) (uint32)
-typedef unsigned int FLAGGED_PIXVAL;
 
 // Menu colours (they don't change between day and night)
 #define MN_GREY0            229
@@ -162,12 +154,5 @@ typedef unsigned int FLAGGED_PIXVAL;
 #define SYSCOL_EMPTY                        gui_theme_t::gui_color_empty
 #define SYSCOL_IMAGE_TRANSPARENCY           gui_theme_t::gui_color_image_transparency
 #define SYSCOL_OBJECT_HIGHLIGHT             gui_theme_t::gui_color_object_highlight
-
-
-struct rgb888_t
-{
-	uint8 r, g, b;
-};
-
 
 #endif

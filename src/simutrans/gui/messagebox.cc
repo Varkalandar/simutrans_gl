@@ -14,7 +14,7 @@
 #include "../sys/simsys.h"
 
 
-news_window::news_window(const char* text, FLAGGED_PIXVAL title_color) :
+news_window::news_window(const char* text, rgba_t title_color) :
 	base_infowin_t( translator::translate("Meldung" ) ),
 	color(title_color)
 {
@@ -57,7 +57,7 @@ news_img::news_img(const char* text) :
 }
 
 
-news_img::news_img(const char* text, image_id id, FLAGGED_PIXVAL color) :
+news_img::news_img(const char* text, image_id id, rgba_t color) :
 	news_window(text, color),
 	image()
 {
@@ -81,7 +81,7 @@ void news_img::init(image_id id)
 }
 
 
-news_loc::news_loc(const char* text, koord3d k, FLAGGED_PIXVAL color) :
+news_loc::news_loc(const char* text, koord3d k, rgba_t color) :
 	news_window(text, color),
 	view(k, scr_size( max(64, get_base_tile_raster_width()), max(56, (get_base_tile_raster_width()*7)/8) ))
 {

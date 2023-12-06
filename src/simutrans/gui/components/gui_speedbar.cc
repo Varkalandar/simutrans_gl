@@ -18,7 +18,7 @@ void gui_speedbar_t::set_base(sint32 base)
 }
 
 
-void gui_speedbar_t::add_color_value(const sint32 *value, PIXVAL color)
+void gui_speedbar_t::add_color_value(const sint32 *value, rgba_t color)
 {
 	info_t  next =  { color, value, -1 };
 	values.insert(next);
@@ -72,7 +72,7 @@ void gui_routebar_t::set_base(sint32 base)
 	this->base = base != 0 ? base : 1;
 }
 
-void gui_routebar_t::set_reservation(const sint32 *value, PIXVAL color)
+void gui_routebar_t::set_reservation(const sint32 *value, rgba_t color)
 {
 	reserve_value = value;
 	reserved_color= color;
@@ -99,10 +99,10 @@ void gui_routebar_t::draw(scr_coord offset)
 	offset += pos;
 	display_fillbox_wh_clip_rgb(offset.x+h/2, offset.y+h/2-1, w, 3, color_idx_to_rgb(MN_GREY1), true);
 
-	PIXVAL col;
+	rgba_t col;
 	for (uint8 i = 0; i<5; i++) {
-		col = i % 2 ? COL_GREY4-1 : MN_GREY0;
-		display_vline_wh_clip_rgb(offset.x + h/2 + w*i/4, offset.y+i%2, h-(i%2)*2, color_idx_to_rgb(col), true);
+		col = color_idx_to_rgb(i % 2 ? COL_GREY4-1 : MN_GREY0);
+		display_vline_wh_clip_rgb(offset.x + h/2 + w*i/4, offset.y+i%2, h-(i%2)*2, col, true);
 	}
 	sint32 const to = min(*value, base) * w / base;
 	if (reserve_value  &&  *reserve_value) {

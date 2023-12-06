@@ -258,7 +258,7 @@ void gui_combobox_t::enable()
 	set_focusable(true);
 	bt_next.enable();
 	bt_prev.enable();
-	textinp.set_color(SYSCOL_EDIT_TEXT);
+	textinp.set_color(color_idx_to_rgb(SYSCOL_EDIT_TEXT));
 }
 
 void gui_combobox_t::disable()
@@ -266,7 +266,7 @@ void gui_combobox_t::disable()
 	set_focusable(false);
 	bt_next.disable();
 	bt_prev.disable();
-	textinp.set_color(SYSCOL_EDIT_TEXT_DISABLED);
+	textinp.set_color(color_idx_to_rgb(SYSCOL_EDIT_TEXT_DISABLED));
 }
 
 /**

@@ -129,19 +129,19 @@ const scr_size &tabfileobj_t::get_scr_size(const char *key, scr_size def)
 }
 
 
-PIXVAL tabfileobj_t::get_color(const char *key, PIXVAL def, rgb888_t *color_rgb)
+rgba_t tabfileobj_t::get_color(const char *key, int def, rgb888_t *color_rgb)
 {
 	const char *value = get_string(key,NULL);
 
 	if(!value) {
-		return def;
+		return color_idx_to_rgb(def);
 	}
 	else {
 		// skip spaces/tabs
 		while ( *value>0  &&  *value<=32  ) {
 			value ++;
 		}
-#ifndef MAKEOBJ
+
 		if(  *value=='#'  ) {
 			const uint32 v = strtoul( value+1, NULL, 16 ) & 0xFFFFFFul;
 			const rgb888_t col = {
@@ -154,8 +154,7 @@ PIXVAL tabfileobj_t::get_color(const char *key, PIXVAL def, rgb888_t *color_rgb)
 				*color_rgb = col;
 			}
 
-			// but the functions expect in the system colour (like RGB565)
-			return get_system_color(col);
+			return col;
 		}
 		else {
 			// this inputs also hex correct
@@ -164,13 +163,9 @@ PIXVAL tabfileobj_t::get_color(const char *key, PIXVAL def, rgb888_t *color_rgb)
 			if (color_rgb) {
 				*color_rgb = get_color_rgb(index);
 			}
-			// but the functions expect in the system colour (like RGB565)
+
 			return color_idx_to_rgb(index);
 		}
-#else
-		(void)color_rgb;
-		return (uint8)strtoul( value, NULL, 0 );
-#endif
 	}
 }
 

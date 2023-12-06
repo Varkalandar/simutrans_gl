@@ -19,13 +19,13 @@
 class news_window : public base_infowin_t
 {
 public:
-	FLAGGED_PIXVAL get_titlecolor() const OVERRIDE { return color; }
+	rgba_t get_titlecolor() const OVERRIDE { return color; }
 
 protected:
-	news_window(const char* text, FLAGGED_PIXVAL color);
+	news_window(const char* text, rgba_t color);
 
 private:
-	FLAGGED_PIXVAL color;
+	rgba_t color;
 };
 
 /**
@@ -50,7 +50,7 @@ class news_img : public news_window
 {
 public:
 	news_img(const char* text);
-	news_img(const char* text, image_id image, FLAGGED_PIXVAL color = env_t::default_window_title_color);
+	news_img(const char* text, image_id image, rgba_t color = env_t::default_window_title_color_rgb);
 
 private:
 	void init(image_id image);
@@ -64,7 +64,7 @@ private:
 class news_loc : public news_window
 {
 public:
-	news_loc(const char* text, koord3d k, FLAGGED_PIXVAL color = env_t::default_window_title_color);
+	news_loc(const char* text, koord3d k, rgba_t color = env_t::default_window_title_color_rgb);
 
 	void map_rotate90( sint16 new_ysize ) OVERRIDE;
 

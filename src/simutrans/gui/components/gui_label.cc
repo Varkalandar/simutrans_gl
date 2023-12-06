@@ -17,7 +17,7 @@
 static scr_coord_val separator_width = 0;
 static scr_coord_val large_money_width = 0;
 
-gui_label_t::gui_label_t(const char* text, PIXVAL color_, align_t align_, font_size_t size) :
+gui_label_t::gui_label_t(const char* text, rgba_t color_, align_t align_, font_size_t size) :
 	align(align_), tooltip(NULL), font_size(size)
 {
 	separator_width = proportional_string_width( ",00$" );
@@ -37,9 +37,16 @@ gui_label_t::gui_label_t(const char* text, PIXVAL color_, align_t align_, font_s
 }
 
 
+gui_label_t::gui_label_t(const char* text, uint16_t color_idx, align_t align_, font_size_t size) :
+	align(align_), tooltip(NULL), font_size(size)
+{
+    gui_label_t(text, color_idx_to_rgb(color_idx), align_, size);
+}
+
+
 scr_size gui_label_t::get_min_size() const
 {
-	const scr_coord_val dynamic_width = text ? display_calc_proportional_string_len_width(text, strlen(text), 0, font_size) : D_BUTTON_WIDTH;	
+	const scr_coord_val dynamic_width = text ? display_calc_proportional_string_len_width(text, strlen(text), 0, font_size) : D_BUTTON_WIDTH;
 	return scr_size(max(dynamic_width, fixed_min_width), max(D_LABEL_HEIGHT, fixed_min_height) );
 }
 
@@ -115,9 +122,9 @@ void gui_label_t::draw(scr_coord offset)
 	}
 
 	else if(text) {
-		
+
 		scr_coord_val top = 0;
-		
+
 		// Hajo: if there is a special height set for his label
 		// calculate proper text top margin
 		if(fixed_min_height)
@@ -125,12 +132,12 @@ void gui_label_t::draw(scr_coord offset)
 			// text is LINESPACE, and y pos will be glyphs top
 			top = (size.h - LINESPACE) / 2;
 		}
-		
+
 		// bounding box for debugging
-		// display_fillbox_wh_clip_rgb(offset.x + pos.x, offset.y + pos.y, size.w, size.h, 0xFFFF, false);		
-		
+		// display_fillbox_wh_clip_rgb(offset.x + pos.x, offset.y + pos.y, size.w, size.h, 0xFFFF, false);
+
 		const scr_rect area(offset+pos+scr_coord(0, top), size);
-		
+
 		int a = align == left ? ALIGN_LEFT : ( align == right ? ALIGN_RIGHT : ALIGN_CENTER_H);
 		display_proportional_ellipsis_rgb(area, text,  a | DT_CLIP, color, true, shadowed, color_shadow, font_size);
 	}
@@ -147,7 +154,7 @@ void gui_label_t::set_tooltip(const char * t)
 }
 
 
-void gui_label_buf_t::init(PIXVAL color_par, align_t align_par)
+void gui_label_buf_t::init(rgba_t color_par, align_t align_par)
 {
 	gui_label_t::init(NULL, get_pos(), color_par, align_par);
 	buf_changed = false;
@@ -189,5 +196,5 @@ scr_size gui_label_buf_t::get_min_size() const
 void gui_label_buf_t::append_money(double money)
 {
 	buffer_write.append_money(money);
-	set_color(money >= 0 ? MONEY_PLUS : MONEY_MINUS);
+	set_color(money >= 0 ? color_idx_to_rgb(MONEY_PLUS) : color_idx_to_rgb(MONEY_MINUS));
 }

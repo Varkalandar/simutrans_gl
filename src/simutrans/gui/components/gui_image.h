@@ -9,7 +9,7 @@
 
 #include "../../display/simimg.h"
 #include "../../display/alignment.h"
-#include "../../simcolor.h"
+#include "../../display/rgba.h"
 #include "gui_component.h"
 
 
@@ -23,7 +23,7 @@ class gui_image_t : public gui_component_t
 	uint16              player_nr;
 	scr_coord           remove_offset;   // to compensate image x/y offset and make it left/top aligned
 	bool                remove_enabled;  // enable offset compensation?
-	FLAGGED_PIXVAL      color_index;
+	float               alpha;
 	scr_coord           display_offset;  // just a fixed extra offset added for display
 
 public:
@@ -36,7 +36,7 @@ public:
 
 	void enable_offset_removal(bool remove_offsets) { set_image(id,remove_offsets); }
 
-	void set_transparent(FLAGGED_PIXVAL c) { color_index = c; }
+	void set_alpha(float a) { alpha = a; }
 
 	//// Draw the component
 	void draw( scr_coord offset ) OVERRIDE;

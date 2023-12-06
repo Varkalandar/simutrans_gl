@@ -70,10 +70,10 @@ void message_node_t::rdwr(loadsave_t *file)
 }
 
 
-FLAGGED_PIXVAL message_node_t::get_player_color(karte_t *welt) const
+rgba_t message_node_t::get_player_color(karte_t *welt) const
 {
 	// correct for player color
-	FLAGGED_PIXVAL colorval = color;
+	rgba_t colorval = color;
 	if(  color&PLAYER_FLAG  ) {
 		player_t *player = welt->get_player(color&(~PLAYER_FLAG));
 		colorval = player ? PLAYER_FLAG+color_idx_to_rgb(player->get_player_color1()+env_t::gui_player_color_dark) : color_idx_to_rgb(MN_GREY0);
@@ -156,7 +156,7 @@ void message_t::set_message_flags( sint32 t, sint32 w, sint32 a, sint32 i)
  * @param what_flags type of message
  * @param image      image associated with message (will be ignored if pos!=koord3d::invalid)
  */
-void message_t::add_message(const char *text, koord3d pos, uint16 what_flags, FLAGGED_PIXVAL color, image_id image )
+void message_t::add_message(const char *text, koord3d pos, uint16 what_flags, rgba_t color, image_id image )
 {
 DBG_MESSAGE("message_t::add_msg()","%40s (at %i,%i,%i)", text, pos.x, pos.y, pos.z );
 

@@ -15,6 +15,7 @@
 #include "scr_coord.h"
 #include "alignment.h"
 #include "../simcolor.h"
+#include "rgba.h"
 
 
 enum font_size_t
@@ -26,7 +27,7 @@ enum font_size_t
 
 /**
  * Draw a bevel box.
- * 
+ *
  * @param area The box rectangle
  * @param top Top line color
  * @param left Left line color
@@ -34,13 +35,12 @@ enum font_size_t
  * @param bottom Bottom line color
  * @param dirty If true, refresh screen area
  */
-void display_bevel_box(scr_rect area, 
-                       PIXVAL top, PIXVAL left, PIXVAL right, PIXVAL bottom,
-	               bool dirty);
+void display_bevel_box(scr_rect area,
+                       rgba_t top, rgba_t left, rgba_t right, rgba_t bottom,
+	                   bool dirty);
 
 
-
-int display_text_proportional_len_clip_rgb(scr_coord_val x, scr_coord_val y, const char* txt, control_alignment_t flags, const PIXVAL color, bool dirty, sint32 len, sint32 spacing, font_size_t size);
+int display_text_proportional_len_clip_rgb(scr_coord_val x, scr_coord_val y, const char* txt, control_alignment_t flags, rgba_t color, bool dirty, sint32 len, sint32 spacing, font_size_t size);
 /* macro are for compatibility */
 #define display_proportional_rgb(               x, y, txt, align, color, dirty)       display_text_proportional_len_clip_rgb( x, y, txt, align,           color, dirty, -1, 0, FS_NORMAL )
 #define display_proportional_clip_rgb(          x, y, txt, align, color, dirty)       display_text_proportional_len_clip_rgb( x, y, txt, align | DT_CLIP, color, dirty, -1, 0, FS_NORMAL )
@@ -48,20 +48,21 @@ int display_text_proportional_len_clip_rgb(scr_coord_val x, scr_coord_val y, con
 
 /// Display a string that is abbreviated by the (language specific) ellipsis character if too wide
 /// If enough space is given, it just display the full string
-void display_proportional_ellipsis_rgb(scr_rect r, const char *text, int align, const PIXVAL color, const bool dirty, bool shadowed = false, PIXVAL shadow_color = 0, font_size_t size = FS_NORMAL);
+void display_proportional_ellipsis_rgb(scr_rect r, const char *text, int align, rgba_t color, const bool dirty, bool shadowed = false, rgba_t shadow_color = RGBA_BLACK, font_size_t size = FS_NORMAL);
 
 
 /**
  * display text in 3d box with clipping
  */
-void display_ddd_proportional_clip(scr_coord_val xpos, scr_coord_val ypos, FLAGGED_PIXVAL ddd_farbe, FLAGGED_PIXVAL text_farbe, const char *text, int dirty);
+void display_ddd_proportional_clip(scr_coord_val xpos, scr_coord_val ypos, rgba_t ddd_color, rgba_t text_color, const char *text, int dirty);
 
 
-int display_multiline_text_rgb(scr_coord_val x, scr_coord_val y, const char *inbuf, PIXVAL color);
+int display_multiline_text_rgb(scr_coord_val x, scr_coord_val y, const char *inbuf, rgba_t color);
 
-void display_outline_proportional_rgb(scr_coord_val xpos, scr_coord_val ypos, PIXVAL text_color, PIXVAL shadow_color, const char *text, int dirty, sint32 len=-1);
-void display_shadow_proportional_rgb(scr_coord_val xpos, scr_coord_val ypos, PIXVAL text_color, PIXVAL shadow_color, const char *text, int dirty, sint32 len=-1);
-int display_text_bold(scr_coord_val xpos, scr_coord_val ypos, PIXVAL color, const char *text, int dirty, sint32 len=-1, font_size_t size=FS_NORMAL);
+void display_outline_proportional_rgb(scr_coord_val xpos, scr_coord_val ypos, rgba_t text_color, rgba_t shadow_color, const char *text, int dirty, sint32 len=-1);
+void display_shadow_proportional_rgb(scr_coord_val xpos, scr_coord_val ypos, rgba_t text_color, rgba_t shadow_color, const char *text, int dirty, sint32 len=-1);
+int display_text_bold(scr_coord_val xpos, scr_coord_val ypos, rgba_t color, const char *text, int dirty, sint32 len=-1, font_size_t size=FS_NORMAL);
+
 
 /**
  * Loads the font, returns the number of characters in it
@@ -70,8 +71,8 @@ int display_text_bold(scr_coord_val xpos, scr_coord_val ypos, PIXVAL color, cons
 bool display_load_font(const char *fname, bool reload = false);
 
 
-/* 
- * @return true, if this is a valid character 
+/*
+ * @return true, if this is a valid character
  */
 bool has_character(utf32 char_code);
 
@@ -127,7 +128,7 @@ void display_calc_proportional_multiline_string_len_width(int &xw, int &yh, cons
 
 /**
  * Get the height of the specified font in pixels,
- * 
+ *
  * @param size FS_NORMAL or FS_HEADLINE
  * @return the line height for this font
  */

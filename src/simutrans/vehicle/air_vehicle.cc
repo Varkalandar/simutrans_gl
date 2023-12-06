@@ -821,7 +821,7 @@ void air_vehicle_t::rdwr_from_convoi(loadsave_t *file)
 }
 
 
-FLAGGED_PIXVAL air_vehicle_t::get_outline_colour() const 
+rgba_t air_vehicle_t::get_outline_colour() const
 {
 	return !is_on_ground() ? TRANSPARENT75_FLAG | OUTLINE_FLAG | color_idx_to_rgb(COL_BLACK) : 0;
 }

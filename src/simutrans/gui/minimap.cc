@@ -316,7 +316,7 @@ static uint32 number_to_radius( uint32 n )
 }
 
 
-static void display_airport( const scr_coord_val xx, const scr_coord_val yy, const FLAGGED_PIXVAL color )
+static void display_airport( const scr_coord_val xx, const scr_coord_val yy, const rgba_t color )
 {
 	int x = xx + 5;
 	int y = yy - 11;
@@ -348,7 +348,7 @@ static void display_airport( const scr_coord_val xx, const scr_coord_val yy, con
 	}
 }
 
-static void display_harbor( const scr_coord_val xx, const scr_coord_val yy, const FLAGGED_PIXVAL color )
+static void display_harbor( const scr_coord_val xx, const scr_coord_val yy, const rgba_t color )
 {
 	int x = xx + 5;
 	int y = yy - 11 + 13; //to not overwrite airline symbol
@@ -382,7 +382,7 @@ static void display_harbor( const scr_coord_val xx, const scr_coord_val yy, cons
 // those will be replaced by pak images later ...!
 
 
-static void display_thick_line( scr_coord_val x1, scr_coord_val y1, scr_coord_val x2, scr_coord_val y2, PIXVAL col, bool dotting, short dot_full, short dot_empty, short thickness )
+static void display_thick_line( scr_coord_val x1, scr_coord_val y1, scr_coord_val x2, scr_coord_val y2, rgba_t col, bool dotting, short dot_full, short dot_empty, short thickness )
 {
 	double delta_x = abs( x1 - x2 );
 	double delta_y = abs( y1 - y2 );
@@ -435,7 +435,7 @@ static void display_thick_line( scr_coord_val x1, scr_coord_val y1, scr_coord_va
 }
 
 
-static void line_segment_draw( waytype_t type, scr_coord start, const uint8 start_offset, scr_coord end, const uint8 end_offset, bool start_diagonal, const PIXVAL colore )
+static void line_segment_draw( waytype_t type, scr_coord start, const uint8 start_offset, scr_coord end, const uint8 end_offset, bool start_diagonal, const rgba_t colore )
 {
 	// airplanes are different, so we must check for them first
 	if(  type ==  air_wt  ) {
@@ -579,7 +579,7 @@ bool minimap_t::change_zoom_factor(bool magnify)
 }
 
 
-PIXVAL minimap_t::calc_severity_color(sint32 amount, sint32 max_value)
+rgba_t minimap_t::calc_severity_color(sint32 amount, sint32 max_value)
 {
 	if(max_value!=0) {
 		// color array goes from light blue to red
@@ -590,7 +590,7 @@ PIXVAL minimap_t::calc_severity_color(sint32 amount, sint32 max_value)
 }
 
 
-PIXVAL minimap_t::calc_severity_color_log(sint32 amount, sint32 max_value)
+rgba_t minimap_t::calc_severity_color_log(sint32 amount, sint32 max_value)
 {
 	if(  max_value>1  ) {
 		sint32 severity;
@@ -606,7 +606,7 @@ PIXVAL minimap_t::calc_severity_color_log(sint32 amount, sint32 max_value)
 }
 
 
-void minimap_t::set_map_color_clip( sint16 x, sint16 y, PIXVAL color )
+void minimap_t::set_map_color_clip( sint16 x, sint16 y, rgba_t color )
 {
 	if(  0<=x  &&  (uint16)x < map_data->get_width()  &&  0<=y  &&  (uint16)y < map_data->get_height()  ) {
 		map_data->at( x, y ) = color;
@@ -614,7 +614,7 @@ void minimap_t::set_map_color_clip( sint16 x, sint16 y, PIXVAL color )
 }
 
 
-void minimap_t::set_map_color(koord k_, const PIXVAL color)
+void minimap_t::set_map_color(koord k_, const uint8_t color)
 {
 	// if map is in normal mode, set new color for map
 	// otherwise do nothing
@@ -663,7 +663,7 @@ void minimap_t::set_map_color(koord k_, const PIXVAL color)
  * @param hoehe height of the tile
  * @param groundwater water height
  */
-PIXVAL minimap_t::calc_height_color(const sint16 hoehe, const sint16 groundwater)
+uint8_t minimap_t::calc_height_color(const sint16 hoehe, const sint16 groundwater)
 {
 	sint16 relative_index;
 	if(  hoehe>groundwater  ) {
@@ -684,9 +684,9 @@ PIXVAL minimap_t::calc_height_color(const sint16 hoehe, const sint16 groundwater
 /**
  * Calculates the minimap color of a ground tile
  */
-PIXVAL minimap_t::calc_ground_color(const grund_t *gr)
+uint8_t minimap_t::calc_ground_color(const grund_t *gr)
 {
-	PIXVAL color = color_idx_to_rgb(COL_BLACK);
+	uint8_t color = color_idx_to_rgb(COL_BLACK);
 
 #ifdef DEBUG_ROUTES
 	/* for debug purposes only ...*/
@@ -1076,7 +1076,7 @@ void minimap_t::calc_map()
 	// actually the following line should reduce new/deletes, but does not work properly
 	if(  map_data==NULL  ||  (sint16) map_data->get_width()!=minimap_size.w  ||  (sint16) map_data->get_height()!=minimap_size.h  ) {
 		delete map_data;
-		map_data = new array2d_tpl<PIXVAL> ( minimap_size.w,minimap_size.h);
+		map_data = new array2d_tpl<uint8_t> ( minimap_size.w,minimap_size.h);
 	}
 	cur_off = new_off;
 	cur_size = new_size;
@@ -1220,7 +1220,7 @@ const fabrik_t* minimap_t::get_factory_near( const koord, bool enlarge ) const
 const fabrik_t* minimap_t::draw_factory_connections(const fabrik_t* const fab, bool supplier_link, const scr_coord pos) const
 {
 	if(fab) {
-		PIXVAL color = supplier_link ? color_idx_to_rgb(COL_RED) : color_idx_to_rgb(COL_WHITE);
+		rgba_t color = supplier_link ? color_idx_to_rgb(COL_RED) : color_idx_to_rgb(COL_WHITE);
 		scr_coord fabpos = map_to_screen_coord( fab->get_pos().get_2d() ) + pos;
 		const vector_tpl<koord>& consumer = supplier_link ? fab->get_suppliers() : fab->get_consumer();
 		for(koord lieferziel : consumer) {
@@ -1310,9 +1310,9 @@ void minimap_t::draw(scr_coord pos)
 		}
 		else if(  pax_destinations_last_change < current_pax_destinations  ) {
 			// new pax_dest in city.
-			const sparse_tpl<PIXVAL> *pax_dests = selected_city->get_pax_destinations_new();
+			const sparse_tpl<uint8_t> *pax_dests = selected_city->get_pax_destinations_new();
 			koord pos, min, max;
-			PIXVAL color;
+			uint8_t color;
 			for(  uint16 i = 0;  i < pax_dests->get_data_count();  i++  ) {
 				pax_dests->get_nonzero( i, pos, color );
 				min = koord((pos.x*world->get_size().x)/PAX_DESTINATIONS_SIZE,
@@ -1540,7 +1540,7 @@ void minimap_t::draw(scr_coord pos)
 		}
 
 		int radius = 0;
-		PIXVAL color;
+		rgba_t color;
 		int diagonal_dist = 0;
 		scr_coord temp_stop = map_to_screen_coord( station->get_basis_pos() );
 		temp_stop = temp_stop + pos;
@@ -1678,7 +1678,7 @@ void minimap_t::draw(scr_coord pos)
 	// ADD: if CRTL key is pressed, temporary show the name
 	if(  mode & MAP_TOWN  ) {
 		const weighted_vector_tpl<stadt_t*>& staedte = world->get_cities();
-		const PIXVAL col = color_idx_to_rgb(showing_schedule ? COL_BLACK : COL_WHITE);
+		const rgba_t col = color_idx_to_rgb(showing_schedule ? COL_BLACK : COL_WHITE);
 
 		for(stadt_t* const stadt : staedte ) {
 			const char * name = stadt->get_name();
@@ -1691,7 +1691,7 @@ void minimap_t::draw(scr_coord pos)
 
 	// draw city limit
 	if(  mode & MAP_CITYLIMIT  ) {
-		const PIXVAL col = color_idx_to_rgb(showing_schedule ? COL_DARK_BROWN : COL_ORANGE);
+		const rgba_t col = color_idx_to_rgb(showing_schedule ? COL_DARK_BROWN : COL_ORANGE);
 
 		// for all cities
 		for(stadt_t* const stadt :  world->get_cities()  ) {
@@ -1729,7 +1729,7 @@ void minimap_t::draw(scr_coord pos)
 				if(  max_tourist_ziele < pax  ) {
 					max_tourist_ziele = pax;
 				}
-				PIXVAL color = calc_severity_color_log(gb->get_passagier_level(), max_tourist_ziele);
+				rgba_t color = calc_severity_color_log(gb->get_passagier_level(), max_tourist_ziele);
 				int radius = max( (number_to_radius( pax*4 )*zoom_in)/zoom_out, 1 );
 				display_filled_circle_rgb( gb_pos.x, gb_pos.y, radius, color );
 				display_circle_rgb( gb_pos.x, gb_pos.y, radius, color_idx_to_rgb(COL_BLACK) );

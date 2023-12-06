@@ -9,7 +9,7 @@
 
 #include "../simtypes.h"
 #include "../display/scr_coord.h"
-#include "../simcolor.h"
+#include "../display/rgba.h"
 
 #ifndef NETTOOL
 #include <zlib.h>
@@ -192,7 +192,7 @@ void dr_flush();         // copy to screen (eventually multithreaded)
  * Transform a 24 bit RGB color into the system format.
  * @return converted color value
  */
-PIXVAL get_system_color(rgb888_t rgb);
+rgba_t get_system_color(rgb888_t rgb);
 
 void show_pointer(int yesno);
 

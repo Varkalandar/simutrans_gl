@@ -44,7 +44,7 @@ public:
 	* get color information for the window title
 	* -borders and -body background
 	*/
-	FLAGGED_PIXVAL get_titlecolor() const OVERRIDE {return env_t::default_window_title_color; }
+	rgba_t get_titlecolor() const OVERRIDE {return env_t::default_window_title_color_rgb;}
 
 	bool is_hit(int, int) OVERRIDE { return true; }
 

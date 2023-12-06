@@ -9,8 +9,8 @@
 
 #include "obj_desc.h"
 #include "building_desc.h"
-#include "skin_desc.h"
 #include "goods_desc.h"
+#include "../display/rgba.h"
 #include "../dataobj/koord.h"
 #include "../tpl/weighted_vector_tpl.h"
 
@@ -276,7 +276,7 @@ public:
 	/**
 	 * @return color for map display
 	 */
-	PIXVAL get_color() const;
+	rgba_t get_color() const;
 
 	void set_productivity(uint16 p) { productivity=p; }
 	uint16 get_productivity() const { return productivity; }

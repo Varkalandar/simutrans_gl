@@ -10,7 +10,7 @@
 #include "../simtypes.h"
 #include "../display/clip_num.h"
 #include "../display/simimg.h"
-#include "../simcolor.h"
+#include "../display/rgba.h"
 #include "../dataobj/koord3d.h"
 
 
@@ -247,7 +247,7 @@ public:
 	 * if a function returns a value here with TRANSPARENT_FLAGS set
 	 * then a transparent outline with the color from the lower 8 bit is drawn
 	 */
-	virtual FLAGGED_PIXVAL get_outline_colour() const {return 0;}
+	virtual rgba_t get_outline_colour() const {return RGBA_BLACK;}
 
 	/**
 	 * The image, that will be outlined

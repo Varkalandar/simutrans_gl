@@ -8,24 +8,24 @@
 
 
 #include "gui_component.h"
-#include "../../simcolor.h"
+#include "../../display/rgba.h"
 
 /**
  * Draws a simple colored box.
  */
 class gui_colorbox_t : public gui_component_t
 {
-	PIXVAL color;
+	rgba_t color;
 
 	scr_size max_size;
 public:
-        scr_coord_val fixed_min_height;
-    
-	gui_colorbox_t(PIXVAL color = 0);
+    scr_coord_val fixed_min_height;
+
+	gui_colorbox_t(rgba_t color);
 
 	void draw(scr_coord offset) OVERRIDE;
 
-	void set_color(PIXVAL c)
+	void set_color(rgba_t c)
 	{
             color = c;
 	}

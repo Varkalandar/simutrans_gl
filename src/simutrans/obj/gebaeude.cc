@@ -402,10 +402,10 @@ image_id gebaeude_t::get_outline_image() const
 
 
 /* gives outline colour and plots background tile if needed for transparent view */
-FLAGGED_PIXVAL gebaeude_t::get_outline_colour() const
+rgba_t gebaeude_t::get_outline_colour() const
 {
 	uint8 colours[] = { COL_BLACK, COL_YELLOW, COL_YELLOW, COL_PURPLE, COL_RED, COL_GREEN };
-	FLAGGED_PIXVAL disp_colour = 0;
+	rgba_t disp_colour = 0;
 	if(env_t::hide_buildings!=env_t::NOT_HIDE) {
 		if(is_city_building()) {
 			disp_colour = color_idx_to_rgb(colours[0]) | TRANSPARENT50_FLAG | OUTLINE_FLAG;

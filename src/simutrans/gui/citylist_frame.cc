@@ -91,7 +91,8 @@ public:
 
 citylist_frame_t::citylist_frame_t() :
 	gui_frame_t(translator::translate("City list")),
-	scrolly(gui_scrolled_list_t::windowskin, citylist_stats_t::compare)
+	scrolly(gui_scrolled_list_t::windowskin, citylist_stats_t::compare),
+	citizens(color_idx_to_rgb(gui_theme_t::gui_color_text))
 {
 	old_city_count = 0;
 	old_halt_count = 0;
@@ -116,7 +117,7 @@ citylist_frame_t::citylist_frame_t() :
 	filter_by_owner.set_tooltip( "At least one stop is connected to the town." );
 	list.add_component(&filter_by_owner);
 
-	filterowner.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("No player"), SYSCOL_TEXT);
+	filterowner.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("No player"), color_idx_to_rgb(SYSCOL_TEXT));
 	for( int i = 0; i < MAX_PLAYER_COUNT; i++ ) {
 		if( player_t *pl=welt->get_player(i) ) {
 			filterowner.new_component<playername_const_scroll_item_t>(pl);
@@ -133,7 +134,7 @@ citylist_frame_t::citylist_frame_t() :
 	list.new_component<gui_label_t>("hl_txt_sort");
 	sortedby.set_unsorted(); // do not sort
 	for (size_t i = 0; i < lengthof(sort_text); i++) {
-		sortedby.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate(sort_text[i]), SYSCOL_TEXT);
+		sortedby.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate(sort_text[i]), color_idx_to_rgb(SYSCOL_TEXT));
 	}
 	sortedby.set_selection(citylist_stats_t::sort_mode & 0x1F);
 	sortedby.add_listener(this);
@@ -162,7 +163,7 @@ citylist_frame_t::citylist_frame_t() :
 	container_year.set_table_layout(1,0);
 	container_year.add_component(&chart);
 	chart.set_dimension(12, karte_t::MAX_WORLD_COST*MAX_WORLD_HISTORY_YEARS);
-	chart.set_background(SYSCOL_CHART_BACKGROUND);
+	chart.set_background(color_idx_to_rgb(SYSCOL_CHART_BACKGROUND));
 	chart.set_min_size(scr_size(0, 8*LINESPACE));
 
 	container_year.add_table(4,3);
@@ -181,7 +182,7 @@ citylist_frame_t::citylist_frame_t() :
 	container_month.set_table_layout(1,0);
 	container_month.add_component(&mchart);
 	mchart.set_dimension(12, karte_t::MAX_WORLD_COST*MAX_WORLD_HISTORY_MONTHS);
-	mchart.set_background(SYSCOL_CHART_BACKGROUND);
+	mchart.set_background(color_idx_to_rgb(SYSCOL_CHART_BACKGROUND));
 	mchart.set_min_size(scr_size(0, 8*LINESPACE));
 
 	container_month.add_table(4,3);

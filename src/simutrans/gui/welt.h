@@ -29,7 +29,7 @@ class welt_gui_t  :
 	settings_t* sets;
 
 	/// Mini Map-Preview
-	array2d_tpl<PIXVAL> map;
+	array2d_tpl<uint8_t> map;
 	scr_size            map_size;
 
 	bool load_heightfield;

@@ -23,50 +23,50 @@
 /**
  * Colours
  */
-PIXVAL gui_theme_t::gui_color_text;
-PIXVAL gui_theme_t::gui_color_text_highlight;
-PIXVAL gui_theme_t::gui_color_text_shadow;
-PIXVAL gui_theme_t::gui_color_text_title;
-PIXVAL gui_theme_t::gui_color_text_strong;
-PIXVAL gui_theme_t::gui_color_text_minus;
-PIXVAL gui_theme_t::gui_color_text_plus;
-PIXVAL gui_theme_t::gui_color_text_unused;
-PIXVAL gui_theme_t::gui_color_edit_text;
-PIXVAL gui_theme_t::gui_color_edit_text_selected;
-PIXVAL gui_theme_t::gui_color_edit_text_disabled;
-PIXVAL gui_theme_t::gui_color_edit_background_selected;
-PIXVAL gui_theme_t::gui_color_edit_beam;
-PIXVAL gui_theme_t::gui_color_chart_background;
-PIXVAL gui_theme_t::gui_color_chart_lines_zero;
-PIXVAL gui_theme_t::gui_color_chart_lines_odd;
-PIXVAL gui_theme_t::gui_color_chart_lines_even;
-PIXVAL gui_theme_t::gui_color_list_text_selected_focus;
-PIXVAL gui_theme_t::gui_color_list_text_selected_nofocus;
-PIXVAL gui_theme_t::gui_color_list_background_even;
-PIXVAL gui_theme_t::gui_color_list_background_odd;
-PIXVAL gui_theme_t::gui_color_list_background_selected_f;
-PIXVAL gui_theme_t::gui_color_list_background_selected_nf;
-PIXVAL gui_theme_t::gui_color_button_text;
-PIXVAL gui_theme_t::gui_color_button_text_disabled;
-PIXVAL gui_theme_t::gui_color_button_text_selected;
-PIXVAL gui_theme_t::gui_color_colored_button_text;
-PIXVAL gui_theme_t::gui_color_colored_button_text_selected;
-PIXVAL gui_theme_t::gui_color_checkbox_text;
-PIXVAL gui_theme_t::gui_color_checkbox_text_disabled;
-PIXVAL gui_theme_t::gui_color_ticker_background;
-PIXVAL gui_theme_t::gui_color_ticker_divider;
-PIXVAL gui_theme_t::gui_color_statusbar_text;
-PIXVAL gui_theme_t::gui_color_statusbar_background;
-PIXVAL gui_theme_t::gui_color_statusbar_divider;
-PIXVAL gui_theme_t::gui_highlight_color;
-PIXVAL gui_theme_t::gui_shadow_color;
-PIXVAL gui_theme_t::gui_color_loadingbar_inner;
-PIXVAL gui_theme_t::gui_color_loadingbar_progress;
-PIXVAL gui_theme_t::gui_color_obsolete;
-PIXVAL gui_theme_t::gui_color_chat_window_network_transparency;
-PIXVAL gui_theme_t::gui_color_empty;
-PIXVAL gui_theme_t::gui_color_image_transparency;
-PIXVAL gui_theme_t::gui_color_object_highlight;
+uint16_t gui_theme_t::gui_color_text;
+uint16_t gui_theme_t::gui_color_text_highlight;
+uint16_t gui_theme_t::gui_color_text_shadow;
+uint16_t gui_theme_t::gui_color_text_title;
+uint16_t gui_theme_t::gui_color_text_strong;
+uint16_t gui_theme_t::gui_color_text_minus;
+uint16_t gui_theme_t::gui_color_text_plus;
+uint16_t gui_theme_t::gui_color_text_unused;
+uint16_t gui_theme_t::gui_color_edit_text;
+uint16_t gui_theme_t::gui_color_edit_text_selected;
+uint16_t gui_theme_t::gui_color_edit_text_disabled;
+uint16_t gui_theme_t::gui_color_edit_background_selected;
+uint16_t gui_theme_t::gui_color_edit_beam;
+uint16_t gui_theme_t::gui_color_chart_background;
+uint16_t gui_theme_t::gui_color_chart_lines_zero;
+uint16_t gui_theme_t::gui_color_chart_lines_odd;
+uint16_t gui_theme_t::gui_color_chart_lines_even;
+uint16_t gui_theme_t::gui_color_list_text_selected_focus;
+uint16_t gui_theme_t::gui_color_list_text_selected_nofocus;
+uint16_t gui_theme_t::gui_color_list_background_even;
+uint16_t gui_theme_t::gui_color_list_background_odd;
+uint16_t gui_theme_t::gui_color_list_background_selected_f;
+uint16_t gui_theme_t::gui_color_list_background_selected_nf;
+uint16_t gui_theme_t::gui_color_button_text;
+uint16_t gui_theme_t::gui_color_button_text_disabled;
+uint16_t gui_theme_t::gui_color_button_text_selected;
+uint16_t gui_theme_t::gui_color_colored_button_text;
+uint16_t gui_theme_t::gui_color_colored_button_text_selected;
+uint16_t gui_theme_t::gui_color_checkbox_text;
+uint16_t gui_theme_t::gui_color_checkbox_text_disabled;
+uint16_t gui_theme_t::gui_color_ticker_background;
+uint16_t gui_theme_t::gui_color_ticker_divider;
+uint16_t gui_theme_t::gui_color_statusbar_text;
+uint16_t gui_theme_t::gui_color_statusbar_background;
+uint16_t gui_theme_t::gui_color_statusbar_divider;
+uint16_t gui_theme_t::gui_highlight_color;
+uint16_t gui_theme_t::gui_shadow_color;
+uint16_t gui_theme_t::gui_color_loadingbar_inner;
+uint16_t gui_theme_t::gui_color_loadingbar_progress;
+uint16_t gui_theme_t::gui_color_obsolete;
+uint16_t gui_theme_t::gui_color_chat_window_network_transparency;
+uint16_t gui_theme_t::gui_color_empty;
+uint16_t gui_theme_t::gui_color_image_transparency;
+uint16_t gui_theme_t::gui_color_object_highlight;
 
 /**
  * Max Kielland
@@ -93,25 +93,25 @@ scr_size gui_theme_t::gui_dragger_size;
 scr_size gui_theme_t::gui_indicator_size;
 scr_coord_val gui_theme_t::gui_waitingbar_width;
 
-scr_coord_val gui_theme_t::gui_display_text_label_color;
+rgba_t gui_theme_t::gui_display_text_label_color;
 scr_coord_val gui_theme_t::gui_display_text_label_margin_left;
 scr_coord_val gui_theme_t::gui_display_text_label_margin_top;
 scr_coord_val gui_theme_t::gui_display_text_label_margin_right;
 scr_coord_val gui_theme_t::gui_display_text_label_margin_bottom;
 
-scr_coord_val gui_theme_t::gui_display_station_label_color;
+rgba_t gui_theme_t::gui_display_station_label_color;
 scr_coord_val gui_theme_t::gui_display_station_label_margin_left;
 scr_coord_val gui_theme_t::gui_display_station_label_margin_top;
 scr_coord_val gui_theme_t::gui_display_station_label_margin_right;
 scr_coord_val gui_theme_t::gui_display_station_label_margin_bottom;
 
-scr_coord_val gui_theme_t::gui_display_marker_label_color;
+rgba_t gui_theme_t::gui_display_marker_label_color;
 scr_coord_val gui_theme_t::gui_display_marker_label_margin_left;
 scr_coord_val gui_theme_t::gui_display_marker_label_margin_top;
 scr_coord_val gui_theme_t::gui_display_marker_label_margin_right;
 scr_coord_val gui_theme_t::gui_display_marker_label_margin_bottom;
 
-scr_coord_val gui_theme_t::gui_display_factory_label_color;
+rgba_t gui_theme_t::gui_display_factory_label_color;
 scr_coord_val gui_theme_t::gui_display_factory_label_margin_left;
 scr_coord_val gui_theme_t::gui_display_factory_label_margin_top;
 scr_coord_val gui_theme_t::gui_display_factory_label_margin_right;
@@ -282,13 +282,13 @@ void gui_theme_t::init_gui_defaults()
 	gui_display_factory_label_margin_bottom = 4;
 
 	// Hajo: these must be cleared before a new theme can be loaded
-	skinverwaltung_t::display_text_label = NULL;         
-	skinverwaltung_t::display_station_label = NULL;         
-	skinverwaltung_t::display_marker_label = NULL;         
-	skinverwaltung_t::display_factory_label = NULL;         
-	skinverwaltung_t::title_bar = NULL;         
-	skinverwaltung_t::title_bar_player = NULL;         
-        
+	skinverwaltung_t::display_text_label = NULL;
+	skinverwaltung_t::display_station_label = NULL;
+	skinverwaltung_t::display_marker_label = NULL;
+	skinverwaltung_t::display_factory_label = NULL;
+	skinverwaltung_t::title_bar = NULL;
+	skinverwaltung_t::title_bar_player = NULL;
+
 	gui_drop_shadows     = false;
 
 	gui_color_chat_window_network_transparency = color_idx_to_rgb(COL_WHITE);
@@ -363,7 +363,7 @@ void gui_theme_t::init_gui_from_images()
 		editfield[j%3][j/3] = skinverwaltung_t::editfield->get_image_id( j );
 		listbox[j%3][j/3] = skinverwaltung_t::listbox->get_image_id( j );
 		windowback[j%3][j/3] = skinverwaltung_t::back->get_image_id( j );
-                
+
 		// Hajo: labels are optional for themes
 		if(skinverwaltung_t::display_text_label) {
 			display_text_label[j%3][j/3] = skinverwaltung_t::display_text_label->get_image_id(j);
@@ -371,7 +371,7 @@ void gui_theme_t::init_gui_from_images()
 			display_marker_label[j%3][j/3] = skinverwaltung_t::display_marker_label->get_image_id(j);
 			display_factory_label[j%3][j/3] = skinverwaltung_t::display_factory_label->get_image_id(j);
 			gui_title_bar[j%3][j/3] = skinverwaltung_t::title_bar->get_image_id(j);
-			
+
 			if(skinverwaltung_t::title_bar_player) {
 				gui_title_bar_player[j%3][j/3] = skinverwaltung_t::title_bar_player->get_image_id(j);
 			}
@@ -467,14 +467,14 @@ void gui_theme_t::init_gui_from_images()
 static sint32 decode_combined_color(tabfileobj_t & contents, const char * key)
 {
 	const char * value = contents.get_string(key, "0");
-	
+
 	// skip spaces/tabs
 	while(*value > 0 && *value <= 32) {
 		value ++;
 	}
-	
+
 	sint32 result;
-	
+
 	if(*value == '#') {
 		// we have a rgb value
 		result = contents.get_color(key, COL_BLACK);
@@ -595,12 +595,12 @@ bool gui_theme_t::themes_init(const char *file_name, bool init_fonts, bool init_
 	gui_theme_t::gui_pos_button_size.h = (uint32)contents.get_int("gui_posbutton_height", gui_theme_t::gui_pos_button_size.h );
 
 	// display text label properties
-	
+
 	gui_theme_t::gui_display_text_label_color    = decode_combined_color(contents, "gui_display_text_label_color");
 	gui_theme_t::gui_display_station_label_color = decode_combined_color(contents, "gui_display_station_label_color");
 	gui_theme_t::gui_display_marker_label_color  = decode_combined_color(contents, "gui_display_marker_label_color");
 	gui_theme_t::gui_display_factory_label_color = decode_combined_color(contents, "gui_display_factory_label_color");
-        
+
 	vector_tpl<int> display_text_label_margins = contents.get_ints("gui_display_text_label_margins");
 
 	if(display_text_label_margins.get_count() > 3) {
@@ -609,7 +609,7 @@ bool gui_theme_t::themes_init(const char *file_name, bool init_fonts, bool init_
 		gui_theme_t::gui_display_text_label_margin_right = display_text_label_margins[2];
 		gui_theme_t::gui_display_text_label_margin_bottom = display_text_label_margins[3];
 	}
-        
+
 	vector_tpl<int> display_station_label_margins = contents.get_ints("gui_display_station_label_margins");
 
 	if(display_station_label_margins.get_count() > 3) {
@@ -618,7 +618,7 @@ bool gui_theme_t::themes_init(const char *file_name, bool init_fonts, bool init_
 		gui_theme_t::gui_display_station_label_margin_right = display_station_label_margins[2];
 		gui_theme_t::gui_display_station_label_margin_bottom = display_station_label_margins[3];
 	}
-        
+
 	vector_tpl<int> display_marker_label_margins = contents.get_ints("gui_display_marker_label_margins");
 
 	if(display_marker_label_margins.get_count() > 3) {
@@ -627,7 +627,7 @@ bool gui_theme_t::themes_init(const char *file_name, bool init_fonts, bool init_
 		gui_theme_t::gui_display_marker_label_margin_right = display_marker_label_margins[2];
 		gui_theme_t::gui_display_marker_label_margin_bottom = display_marker_label_margins[3];
 	}
-        
+
 	vector_tpl<int> display_factory_label_margins = contents.get_ints("gui_display_factory_label_margins");
 
 	if(display_factory_label_margins.get_count() > 3) {

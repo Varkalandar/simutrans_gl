@@ -9,7 +9,6 @@
 
 #include "simtypes.h"
 #include "simunits.h"
-#include "simcolor.h"
 #include "linehandle.h"
 
 #include "dataobj/route.h"
@@ -741,7 +740,7 @@ public:
 	void set_next_reservation_index(route_t::index_t n);
 
 	/* the current state of the convoi */
-	PIXVAL get_status_color() const;
+	rgba_t get_status_color() const;
 
 	// returns station tiles needed for this convoi
 	uint16 get_tile_length() const;

@@ -123,19 +123,19 @@ void vehiclelist_stats_t::draw( scr_coord offset )
 		offset.x, offset.y,
 		translator::translate( veh->get_name(), world()->get_settings().get_name_language_id() ),
 		ALIGN_LEFT|DT_CLIP,
-		veh->is_future(month) ? SYSCOL_TEXT_HIGHLIGHT : (veh->is_available(month) ? SYSCOL_TEXT : gui_theme_t::gui_color_obsolete),
+		veh->is_future(month) ? color_idx_to_rgb(SYSCOL_TEXT_HIGHLIGHT) : (veh->is_available(month) ? color_idx_to_rgb(SYSCOL_TEXT) : gui_theme_t::gui_color_obsolete),
 		false
 	);
 	if( veh->get_power() > 0 ) {
 		char str[ 256 ];
 		sprintf( str, " (%s)", translator::translate( vehicle_builder_t::engine_type_names[ veh->get_engine_type() + 1 ] ) );
-		display_proportional_rgb( offset.x+dx, offset.y, str, ALIGN_LEFT|DT_CLIP, SYSCOL_TEXT, false );
+		display_proportional_rgb( offset.x+dx, offset.y, str, ALIGN_LEFT|DT_CLIP, color_idx_to_rgb(SYSCOL_TEXT), false );
 	}
 
 	int yyy = offset.y + LINESPACE;
-	display_multiline_text_rgb( offset.x, yyy, part1, SYSCOL_TEXT );
+	display_multiline_text_rgb( offset.x, yyy, part1, color_idx_to_rgb(SYSCOL_TEXT) );
 
-	display_multiline_text_rgb( offset.x + col1_width, yyy, part2, SYSCOL_TEXT );
+	display_multiline_text_rgb( offset.x + col1_width, yyy, part2, color_idx_to_rgb(SYSCOL_TEXT) );
 }
 
 const char *vehiclelist_stats_t::get_text() const
@@ -179,7 +179,7 @@ vehiclelist_frame_t::vehiclelist_frame_t() :
 		add_component(&bt_future);
 
 		ware_filter.clear_elements();
-		ware_filter.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("All"), SYSCOL_TEXT);
+		ware_filter.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("All"), color_idx_to_rgb(SYSCOL_TEXT));
 		idx_to_ware.append(NULL);
 		for (int i = 0; i < goods_manager_t::get_count(); i++) {
 			const goods_desc_t* ware = goods_manager_t::get_info(i);
@@ -187,7 +187,7 @@ vehiclelist_frame_t::vehiclelist_frame_t() :
 				continue;
 			}
 			if (ware->get_catg() == 0) {
-				ware_filter.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate(ware->get_name()), SYSCOL_TEXT);
+				ware_filter.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate(ware->get_name()), color_idx_to_rgb(SYSCOL_TEXT));
 				idx_to_ware.append(ware);
 			}
 		}
@@ -195,7 +195,7 @@ vehiclelist_frame_t::vehiclelist_frame_t() :
 		for (int i = 1; i < goods_manager_t::get_max_catg_index(); i++) {
 			const goods_desc_t* ware = goods_manager_t::get_info_catg(i);
 			if (ware->get_catg() != 0) {
-				ware_filter.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate(ware->get_catg_name()), SYSCOL_TEXT);
+				ware_filter.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate(ware->get_catg_name()), color_idx_to_rgb(SYSCOL_TEXT));
 				idx_to_ware.append(ware);
 			}
 		}
@@ -208,7 +208,7 @@ vehiclelist_frame_t::vehiclelist_frame_t() :
 
 		sort_by.clear_elements();
 		for( int i = 0; i < vehicle_builder_t::sb_length; i++ ) {
-			sort_by.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate(vehicle_builder_t::vehicle_sort_by[i]), SYSCOL_TEXT);
+			sort_by.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate(vehicle_builder_t::vehicle_sort_by[i]), color_idx_to_rgb(SYSCOL_TEXT));
 		}
 		sort_by.set_selection( vehiclelist_stats_t::sort_mode );
 		sort_by.add_listener( this );

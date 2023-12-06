@@ -8,7 +8,7 @@
 
 
 #include "../../simtypes.h"
-#include "../../simcolor.h"
+#include "../../display/rgba.h"
 #include "gui_component.h"
 #include "../../tpl/slist_tpl.h"
 
@@ -26,7 +26,7 @@ public:
 	/**
 	 * Set background color. -1 means no background
 	 */
-	void set_background(FLAGGED_PIXVAL color);
+	void set_background(rgba_t color);
 
 	gui_chart_t();
 
@@ -60,7 +60,7 @@ public:
 	 * @param proc     conversion procedure to be applied to supplied values
 	 * @returns curve's id
 	 */
-	uint32 add_curve(PIXVAL color, const sint64 *values, int size, int offset, int elements, int type, bool show, bool show_value, int precision, convert_proc proc=NULL);
+	uint32 add_curve(rgba_t color, const sint64 *values, int size, int offset, int elements, int type, bool show, bool show_value, int precision, convert_proc proc=NULL);
 
 	void remove_curves() { curves.clear(); }
 
@@ -98,7 +98,7 @@ private:
 	 * curve struct
 	 */
 	struct curve_t {
-		PIXVAL color;
+		rgba_t color = rgba_t(0.0f, 0.0f, 0.0f, 1.0f);
 		const sint64 *values;
 		int size;
 		int offset;
@@ -122,9 +122,9 @@ private:
 	bool show_x_axis, show_y_axis;
 
 	/**
-	 * Background color, -1 for transparent background
+	 * Background color
 	 */
-	FLAGGED_PIXVAL background;
+	rgba_t background;
 
 	// TODO do something smarter here
 	scr_size min_size;

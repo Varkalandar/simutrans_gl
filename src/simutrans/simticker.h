@@ -28,7 +28,7 @@ namespace ticker
 	 * @param pos    position of the event
 	 * @param color  message color
 	 */
-	void add_msg(const char*, koord3d pos, FLAGGED_PIXVAL color);
+	void add_msg(const char*, koord3d pos, rgba_t color);
 
 	/**
 	 * Add a message in message_node_t format

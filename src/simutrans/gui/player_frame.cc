@@ -98,7 +98,7 @@ ki_kontroll_t::ki_kontroll_t() :
 		player_lock[i]->set_rigid(true);
 
 		// Income label
-		ai_income[i] = new_component<gui_label_buf_t>(MONEY_PLUS, gui_label_t::money_right);
+		ai_income[i] = new_component<gui_label_buf_t>(color_idx_to_rgb(MONEY_PLUS), gui_label_t::money_right);
 		ai_income[i]->set_rigid(true);
 	}
 
@@ -283,15 +283,15 @@ void ki_kontroll_t::update_data()
 			// Create combobox list data
 			int select = player_select[i].get_selection();
 			player_select[i].clear_elements();
-			player_select[i].new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate("slot empty"), SYSCOL_TEXT ) ;
-			player_select[i].new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate("Manual (Human)"), SYSCOL_TEXT ) ;
+			player_select[i].new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate("slot empty"), color_idx_to_rgb(SYSCOL_TEXT) ) ;
+			player_select[i].new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate("Manual (Human)"), color_idx_to_rgb(SYSCOL_TEXT) ) ;
 			if(	!welt->get_public_player()->is_locked()	||	!env_t::networkmode	) {
-				player_select[i].new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate("Goods AI"), SYSCOL_TEXT ) ;
-				player_select[i].new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate("Passenger AI"), SYSCOL_TEXT ) ;
+				player_select[i].new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate("Goods AI"), color_idx_to_rgb(SYSCOL_TEXT) ) ;
+				player_select[i].new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate("Passenger AI"), color_idx_to_rgb(SYSCOL_TEXT) ) ;
 
 				if (!env_t::networkmode	||	env_t::server) {
 					// only server can start scripted players
-					player_select[i].new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate("Scripted AI's"), SYSCOL_TEXT ) ;
+					player_select[i].new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate("Scripted AI's"), color_idx_to_rgb(SYSCOL_TEXT) ) ;
 				}
 			}
 			player_select[i].set_selection(select);
@@ -315,7 +315,7 @@ void ki_kontroll_t::update_income()
 		player_t *player = welt->get_player(i);
 		if(	player != NULL	) {
 			if (i != 1 && !welt->get_settings().is_freeplay() && player->get_finance()->get_history_com_year(0, ATC_NETWEALTH) < 0) {
-				ai_income[i]->set_color( MONEY_MINUS );
+				ai_income[i]->set_color( color_idx_to_rgb(MONEY_MINUS) );
 				ai_income[i]->buf().append(translator::translate("Company bankrupt"));
 				ai_income[i]->set_align(gui_label_t::left);
 			}
@@ -324,7 +324,7 @@ void ki_kontroll_t::update_income()
 				char str[128];
 				money_to_string(str, account );
 				ai_income[i]->buf().append(str);
-				ai_income[i]->set_color( account>=0.0 ? MONEY_PLUS : MONEY_MINUS );
+				ai_income[i]->set_color( account>=0.0 ? color_idx_to_rgb(MONEY_PLUS) : color_idx_to_rgb(MONEY_MINUS) );
 				ai_income[i]->set_align(gui_label_t::money_right);
 			}
 		}

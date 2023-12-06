@@ -21,10 +21,12 @@
 #include "../macros.h"
 #include "../simdebug.h"
 #include "../simevent.h"
+#include "../display/rgba.h"
 
 #include <GLFW/glfw3.h>
 
 static bool sigterm_received = false;
+
 
 void error_callback(int error, const char* description)
 {
@@ -50,16 +52,16 @@ bool dr_os_init(const int*)
 	// prepare for next event
 	sys_event.type = SIM_NOEVENT;
 	sys_event.code = 0;
-	
+
 	bool ok = glfwInit();
 
 	printf("GLFW init: %d", ok);
-	
-	if(ok) 
+
+	if(ok)
 	{
 		glfwSetErrorCallback(error_callback);
 	}
-	
+
 	return ok;
 }
 
@@ -98,9 +100,9 @@ unsigned short *dr_textur_init()
 }
 
 
-PIXVAL get_system_color(rgb888_t)
+rgba_t get_system_color(rgb888_t color)
 {
-	return 1;
+	return RGBA_BLACK;
 }
 
 
@@ -240,7 +242,7 @@ sint16 dr_suspend_fullscreen()
 }
 
 
-void dr_restore_fullscreen(sint16) 
+void dr_restore_fullscreen(sint16)
 {
 }
 

@@ -61,7 +61,7 @@ protected:
 	 */
 	uint8 align;
 
-	PIXVAL textcol;
+	rgba_t textcol;
 
 	// true if there were changed but no notification was sent yet
 	bool text_dirty;
@@ -127,7 +127,7 @@ public:
 	void set_alignment(uint8 _align){ align = _align;}
 
 	// to set text color
-	void set_color(PIXVAL col){ textcol = col;}
+	void set_color(rgba_t col) { textcol = col;}
 
 	scr_size get_max_size() const OVERRIDE;
 

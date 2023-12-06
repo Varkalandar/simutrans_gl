@@ -180,7 +180,7 @@ class money_frame_label_t : public gui_label_buf_t
 
 public:
 	money_frame_label_t(uint8 tt, uint8 t, uint8 lt, uint8 i, bool mon)
-	: gui_label_buf_t(lt == STANDARD ? SYSCOL_TEXT : MONEY_PLUS, lt != MONEY ? gui_label_t::right : gui_label_t::money_right)
+	: gui_label_buf_t(lt == STANDARD ? color_idx_to_rgb(SYSCOL_TEXT) : color_idx_to_rgb(MONEY_PLUS), lt != MONEY ? gui_label_t::right : gui_label_t::money_right)
 	, transport_type(tt), type(t), label_type(lt), index(i), monthly(mon)
 	{
 	}
@@ -189,7 +189,7 @@ public:
 	{
 		uint8 tt = transport_type == TT_ALL ? mf->transport_type_option : transport_type;
 		sint64 value = mf->get_statistics_value(tt, type, index, monthly ? 1 : 0);
-		PIXVAL color = value >= 0 ? (value > 0 ? MONEY_PLUS : SYSCOL_TEXT_UNUSED) : MONEY_MINUS;
+		rgba_t color = value >= 0 ? (value > 0 ? color_idx_to_rgb(MONEY_PLUS) : color_idx_to_rgb(SYSCOL_TEXT_UNUSED) : color_idx_to_rgb(MONEY_MINUS);
 
 		switch (label_type) {
 			case MONEY:
@@ -256,10 +256,10 @@ bool money_frame_t::is_chart_table_zero(int ttoption)
 
 money_frame_t::money_frame_t(player_t *player) :
 	gui_frame_t( translator::translate("Finanzen"), player),
-	maintenance_money(MONEY_PLUS, gui_label_t::money_right),
-	scenario_desc(SYSCOL_TEXT_HIGHLIGHT, gui_label_t::left),
-	scenario_completion(SYSCOL_TEXT, gui_label_t::left),
-	warn(SYSCOL_TEXT_STRONG, gui_label_t::left),
+	maintenance_money(color_idx_to_rgb(MONEY_PLUS), gui_label_t::money_right),
+	scenario_desc(color_idx_to_rgb(SYSCOL_TEXT_HIGHLIGHT), gui_label_t::left),
+	scenario_completion(color_idx_to_rgb(SYSCOL_TEXT), gui_label_t::left),
+	warn(color_idx_to_rgb(SYSCOL_TEXT_STRONG), gui_label_t::left),
 	transport_type_option(0)
 {
 	if(welt->get_player(0)!=player) {
@@ -279,7 +279,7 @@ money_frame_t::money_frame_t(player_t *player) :
 	if(player->get_player_nr()!=1  &&  welt->get_scenario()->active()) {
 
 		add_table(3,1);
-		new_component<gui_label_t>("Scenario_", SYSCOL_TEXT_HIGHLIGHT);
+		new_component<gui_label_t>("Scenario_", color_idx_to_rgb(SYSCOL_TEXT_HIGHLIGHT));
 		add_component(&scenario_desc);
 		add_component(&scenario_completion);
 		end_table();
@@ -295,7 +295,7 @@ money_frame_t::money_frame_t(player_t *player) :
 
 		for(int i=0, count=0; i<TT_MAX; ++i) {
 			if (!is_chart_table_zero(i)) {
-				transport_type_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate(transport_type_values[i]), SYSCOL_TEXT);
+				transport_type_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate(transport_type_values[i]), color_idx_to_rgb(SYSCOL_TEXT));
 				transport_types[ count++ ] = i;
 			}
 		}
@@ -336,8 +336,8 @@ money_frame_t::money_frame_t(player_t *player) :
 
 		// first row: some labels
 		current->new_component<gui_empty_t>();
-		current->new_component<gui_label_t>(i==0 ? "This Year" : "This Month", SYSCOL_TEXT_HIGHLIGHT);
-		current->new_component<gui_label_t>(i==0 ? "Last Year" : "Last Month", SYSCOL_TEXT_HIGHLIGHT);
+		current->new_component<gui_label_t>(i==0 ? "This Year" : "This Month", color_idx_to_rgb(SYSCOL_TEXT_HIGHLIGHT));
+		current->new_component<gui_label_t>(i==0 ? "Last Year" : "Last Month", color_idx_to_rgb(SYSCOL_TEXT_HIGHLIGHT));
 		current->new_component<gui_empty_t>();
 		current->new_component<gui_empty_t>();
 
@@ -376,9 +376,9 @@ money_frame_t::money_frame_t(player_t *player) :
 				else {
 					if (r >= 2  &&  r<=4  &&  c == 4) {
 						switch(r) {
-							case 2: current->new_component<gui_label_t>("This Month", SYSCOL_TEXT_HIGHLIGHT); break;
+							case 2: current->new_component<gui_label_t>("This Month", color_idx_to_rgb(SYSCOL_TEXT_HIGHLIGHT)); break;
 							case 3: current->add_component(&maintenance_money); break;
-							case 4: current->new_component<gui_label_t>("This Year", SYSCOL_TEXT_HIGHLIGHT);
+							case 4: current->new_component<gui_label_t>("This Year", color_idx_to_rgb(SYSCOL_TEXT_HIGHLIGHT));
 						}
 					}
 					else {
@@ -405,12 +405,12 @@ money_frame_t::money_frame_t(player_t *player) :
 	chart.set_min_size(scr_size(0 ,8*BUTTONSPACE));
 	chart.set_dimension(MAX_PLAYER_HISTORY_YEARS, 10000);
 	chart.set_seed(welt->get_last_year());
-	chart.set_background(SYSCOL_CHART_BACKGROUND);
+	chart.set_background(color_idx_to_rgb(SYSCOL_CHART_BACKGROUND));
 
 	mchart.set_min_size(scr_size(0,8*BUTTONSPACE));
 	mchart.set_dimension(MAX_PLAYER_HISTORY_MONTHS, 10000);
 	mchart.set_seed(0);
-	mchart.set_background(SYSCOL_CHART_BACKGROUND);
+	mchart.set_background(color_idx_to_rgb(SYSCOL_CHART_BACKGROUND));
 
 	update_labels();
 
@@ -491,17 +491,17 @@ void money_frame_t::update_labels()
 	// bankruptcy warning
 	bool visible = warn.is_visible();
 	if(player->get_finance()->get_history_com_year(0, ATC_NETWEALTH)<0) {
-		warn.set_color( MONEY_MINUS );
+		warn.set_color( color_idx_to_rgb(MONEY_MINUS) );
 		warn.buf().append( translator::translate("Company bankrupt") );
 		warn.set_visible(true);
 	}
 	else if(  player->get_finance()->get_history_com_year(0, ATC_NETWEALTH)*10 < welt->get_settings().get_starting_money(welt->get_current_month()/12)  ){
-		warn.set_color( MONEY_MINUS );
+		warn.set_color( color_idx_to_rgb(MONEY_MINUS) );
 		warn.buf().append( translator::translate("Net wealth near zero") );
 		warn.set_visible(true);
 	}
 	else if(  player->get_account_overdrawn()  ) {
-		warn.set_color( SYSCOL_TEXT_STRONG );
+		warn.set_color( color_idx_to_rgb(SYSCOL_TEXT_STRONG) );
 		warn.buf().printf(translator::translate("On loan since %i month(s)"), player->get_account_overdrawn() );
 		warn.set_visible(true);
 	}

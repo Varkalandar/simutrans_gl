@@ -41,12 +41,13 @@ karte_ptr_t button_t::welt;
 
 
 button_t::button_t() :
-	gui_component_t(true)
+	gui_component_t(true),
+	background_color(color_idx_to_rgb(COL_WHITE)),
+	text_color(color_idx_to_rgb(SYSCOL_BUTTON_TEXT))
 {
 	b_no_translate = false;
 	pressed = false;
 	translated_tooltip = tooltip = NULL;
-	background_color = color_idx_to_rgb(COL_WHITE);
 	b_enabled = true;
 
 	// By default a box button
@@ -74,11 +75,11 @@ set_text(text_par);
 void button_t::set_typ(enum type t)
 {
 	type = t;
-	text_color = SYSCOL_BUTTON_TEXT;
+	text_color = color_idx_to_rgb(SYSCOL_BUTTON_TEXT);
 	switch (type&TYPE_MASK) {
 
 		case square:
-			text_color = SYSCOL_CHECKBOX_TEXT;
+			text_color = color_idx_to_rgb(SYSCOL_CHECKBOX_TEXT);
 			if(  !strempty(translated_text)  ) {
 				set_text(translated_text);
 				set_size( scr_size( gui_theme_t::gui_checkbox_size.w + D_H_SPACE + proportional_string_width( translated_text ), max(gui_theme_t::gui_checkbox_size.h,LINESPACE)) );
@@ -112,7 +113,7 @@ void button_t::set_typ(enum type t)
 			break;
 
 		case box:
-			text_color = SYSCOL_COLORED_BUTTON_TEXT;
+			text_color = color_idx_to_rgb(SYSCOL_COLORED_BUTTON_TEXT);
 			/* FALLTHROUGH */
 		case roundbox:
 			set_size( scr_size(gui_theme_t::gui_button_size.w, max(D_BUTTON_HEIGHT,LINESPACE)) );
@@ -349,17 +350,17 @@ void button_t::draw(scr_coord offset)
 	}
 
 	const scr_rect area( offset+pos, size );
-	PIXVAL text_color = pressed ? SYSCOL_BUTTON_TEXT_SELECTED : this->text_color;
-	text_color = b_enabled ? text_color : SYSCOL_BUTTON_TEXT_DISABLED;
+	rgba_t text_color = pressed ? color_idx_to_rgb(SYSCOL_BUTTON_TEXT_SELECTED) : this->text_color;
+	text_color = b_enabled ? text_color : color_idx_to_rgb(SYSCOL_BUTTON_TEXT_DISABLED);
 
 	switch (type & TYPE_MASK) {
 
 		case box: // Colored background box
 			{
-				display_img_stretch(gui_theme_t::button_tiles[get_state_offset()], area, 0);
-				display_img_stretch_blend( gui_theme_t::button_color_tiles[b_enabled && pressed], area, background_color | TRANSPARENT75_FLAG | OUTLINE_FLAG );
+				display_img_stretch(gui_theme_t::button_tiles[get_state_offset()], area, RGBA_BLACK);
+				display_img_stretch_blend( gui_theme_t::button_color_tiles[b_enabled && pressed], area, background_color);
 				if(  text  ) {
-					text_color = pressed ? SYSCOL_COLORED_BUTTON_TEXT_SELECTED : text_color;
+					text_color = pressed ? color_idx_to_rgb(SYSCOL_COLORED_BUTTON_TEXT_SELECTED ): text_color;
 					// move the text to leave evt. space for a colored box top left or bottom right of it
 					scr_rect area_text = area - gui_theme_t::gui_color_button_text_offset_right;
 					area_text.set_pos( gui_theme_t::gui_color_button_text_offset + area.get_pos() );
@@ -373,7 +374,7 @@ void button_t::draw(scr_coord offset)
 
 		case roundbox: // button with inside text
 			{
-				display_img_stretch(gui_theme_t::round_button_tiles[get_state_offset()], area, 0);
+				display_img_stretch(gui_theme_t::round_button_tiles[get_state_offset()], area, RGBA_BLACK);
 				if(  text  ) {
 					// move the text to leave evt. space for a colored box top left or bottom right of it
 					scr_rect area_text = area - gui_theme_t::gui_button_text_offset_right;
@@ -387,8 +388,8 @@ void button_t::draw(scr_coord offset)
 			break;
 
 		case imagebox:
-			display_img_stretch(gui_theme_t::button_tiles[get_state_offset()], area, 0);
-			display_img_stretch_blend(gui_theme_t::button_color_tiles[b_enabled && pressed], area, (pressed ? text_color: background_color) | TRANSPARENT75_FLAG | OUTLINE_FLAG);
+			display_img_stretch(gui_theme_t::button_tiles[get_state_offset()], area, RGBA_BLACK);
+			display_img_stretch_blend(gui_theme_t::button_color_tiles[b_enabled && pressed], area, (pressed ? text_color: background_color));
 			display_img_aligned(img, area, ALIGN_CENTER_H | ALIGN_CENTER_V, 0, true);
 			if (win_get_focus() == this) {
 				draw_focus_rect(area);
@@ -397,7 +398,7 @@ void button_t::draw(scr_coord offset)
 
 		case sortarrow:
 			{
-				display_img_stretch(gui_theme_t::button_tiles[0], area, 0);
+				display_img_stretch(gui_theme_t::button_tiles[0], area, RGBA_BLACK);
 
 				const uint8 block_height = 2;
 				const uint8 bars_height = uint8((size.h-block_height-4)/4)*block_height*2 + block_height;
@@ -405,22 +406,22 @@ void button_t::draw(scr_coord offset)
 				area_drawing.set_pos(gui_theme_t::gui_color_button_text_offset + area.get_pos() + scr_coord(4/*left margin*/,D_GET_CENTER_ALIGN_OFFSET(bars_height,size.h)));
 
 				// draw an arrow
-				display_fillbox_wh_clip_rgb(area_drawing.x+2, area_drawing.y, 1, bars_height, SYSCOL_BUTTON_TEXT, false);
+				display_fillbox_wh_clip_rgb(area_drawing.x+2, area_drawing.y, 1, bars_height, color_idx_to_rgb(SYSCOL_BUTTON_TEXT), false);
 				if (pressed) {
 					// desc
-					display_fillbox_wh_clip_rgb(area_drawing.x+1, area_drawing.y+1, 3, 1, SYSCOL_BUTTON_TEXT, false);
-					display_fillbox_wh_clip_rgb(area_drawing.x,   area_drawing.y+2, 5, 1, SYSCOL_BUTTON_TEXT, false);
+					display_fillbox_wh_clip_rgb(area_drawing.x+1, area_drawing.y+1, 3, 1, color_idx_to_rgb(SYSCOL_BUTTON_TEXT), false);
+					display_fillbox_wh_clip_rgb(area_drawing.x,   area_drawing.y+2, 5, 1, color_idx_to_rgb(SYSCOL_BUTTON_TEXT), false);
 					for (uint8 row=0; row*4<bars_height; row++) {
-						display_fillbox_wh_clip_rgb(area_drawing.x + 6/*arrow width(5)+margin(1)*/, area_drawing.y + bars_height - block_height - row*block_height*2, block_height*(row+1), block_height, SYSCOL_BUTTON_TEXT, false);
+						display_fillbox_wh_clip_rgb(area_drawing.x + 6/*arrow width(5)+margin(1)*/, area_drawing.y + bars_height - block_height - row*block_height*2, block_height*(row+1), block_height, color_idx_to_rgb(SYSCOL_BUTTON_TEXT), false);
 					}
 					tooltip = "hl_btn_sort_desc";
 				}
 				else {
 					// asc
-					display_fillbox_wh_clip_rgb(area_drawing.x+1, area_drawing.y+bars_height-2, 3, 1, SYSCOL_BUTTON_TEXT, false);
-					display_fillbox_wh_clip_rgb(area_drawing.x,   area_drawing.y+bars_height-3, 5, 1, SYSCOL_BUTTON_TEXT, false);
+					display_fillbox_wh_clip_rgb(area_drawing.x+1, area_drawing.y+bars_height-2, 3, 1, color_idx_to_rgb(SYSCOL_BUTTON_TEXT), false);
+					display_fillbox_wh_clip_rgb(area_drawing.x,   area_drawing.y+bars_height-3, 5, 1, color_idx_to_rgb(SYSCOL_BUTTON_TEXT), false);
 					for (uint8 row=0; row*4<bars_height; row++) {
-						display_fillbox_wh_clip_rgb(area_drawing.x + 6/*arrow width(5)+margin(1)*/, area_drawing.y + row*block_height*2, block_height*(row+1), block_height, SYSCOL_BUTTON_TEXT, false);
+						display_fillbox_wh_clip_rgb(area_drawing.x + 6/*arrow width(5)+margin(1)*/, area_drawing.y + row*block_height*2, block_height*(row+1), block_height, color_idx_to_rgb(SYSCOL_BUTTON_TEXT), false);
 					}
 					tooltip = "hl_btn_sort_asc";
 				}
@@ -435,7 +436,7 @@ void button_t::draw(scr_coord offset)
 			{
 				display_img_aligned(gui_theme_t::check_button_img[ get_state_offset() ], area, ALIGN_CENTER_V, 0, true);
 				if(  text  ) {
-					text_color = b_enabled ? this->text_color : SYSCOL_CHECKBOX_TEXT_DISABLED;
+					text_color = b_enabled ? this->text_color : color_idx_to_rgb(SYSCOL_CHECKBOX_TEXT_DISABLED);
 					scr_rect area_text = area;
 					area_text.x += gui_theme_t::gui_checkbox_size.w + D_H_SPACE;
 					area_text.w -= gui_theme_t::gui_checkbox_size.w + D_H_SPACE;

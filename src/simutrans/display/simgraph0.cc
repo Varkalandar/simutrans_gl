@@ -14,7 +14,7 @@ scr_coord_val tile_raster_width = 16; // zoomed
 scr_coord_val base_tile_raster_width = 16; // original
 
 
-PIXVAL color_idx_to_rgb(PIXVAL idx)
+rgba_t color_idx_to_rgb(PIXVAL idx)
 {
 	return idx;
 }
@@ -175,27 +175,27 @@ void display_fit_img_to_width( const image_id, sint16)
 {
 }
 
-void display_img_stretch(const stretch_map_t &, scr_rect, FLAGGED_PIXVAL)
+void display_img_stretch(const stretch_map_t &, scr_rect, rgba_t)
 {
 }
 
-void display_img_stretch_blend(const stretch_map_t &, scr_rect, FLAGGED_PIXVAL)
+void display_img_stretch_blend(const stretch_map_t &, scr_rect, rgba_t)
 {
 }
 
-void display_rezoomed_img_blend(const image_id, scr_coord_val, scr_coord_val, const sint8, const FLAGGED_PIXVAL, const bool, const bool  CLIP_NUM_DEF_NOUSE)
+void display_rezoomed_img_blend(const image_id, scr_coord_val, scr_coord_val, const sint8, const rgba_t, const bool, const bool  CLIP_NUM_DEF_NOUSE)
 {
 }
 
-void display_rezoomed_img_alpha(const image_id, const image_id, const unsigned, scr_coord_val, scr_coord_val, const sint8, const FLAGGED_PIXVAL, const bool, const bool  CLIP_NUM_DEF_NOUSE)
+void display_rezoomed_img_alpha(const image_id, const image_id, const unsigned, scr_coord_val, scr_coord_val, const sint8, const rgba_t, const bool, const bool  CLIP_NUM_DEF_NOUSE)
 {
 }
 
-void display_base_img_blend(const image_id, scr_coord_val, scr_coord_val, const sint8, const FLAGGED_PIXVAL, const bool, const bool  CLIP_NUM_DEF_NOUSE)
+void display_base_img_blend(const image_id, scr_coord_val, scr_coord_val, const sint8, const rgba_t, const bool, const bool  CLIP_NUM_DEF_NOUSE)
 {
 }
 
-void display_base_img_alpha(const image_id, const image_id, const unsigned, scr_coord_val, scr_coord_val, const sint8, const FLAGGED_PIXVAL, const bool, bool  CLIP_NUM_DEF_NOUSE)
+void display_base_img_alpha(const image_id, const image_id, const unsigned, scr_coord_val, scr_coord_val, const sint8, const rgba_t, const bool, bool  CLIP_NUM_DEF_NOUSE)
 {
 }
 
@@ -207,48 +207,48 @@ display_alpha_proc display_alpha = display_base_img_alpha;
 
 signed short current_tile_raster_width = 0;
 
-PIXVAL display_blend_colors(PIXVAL, PIXVAL, int)
+rgba_t display_blend_colors(rgba_t, rgba_t, int)
 {
 	return 0;
 }
 
 
-void display_blend_wh_rgb(scr_coord_val, scr_coord_val, scr_coord_val, scr_coord_val, PIXVAL, int )
+void display_blend_wh_rgb(scr_coord_val, scr_coord_val, scr_coord_val, scr_coord_val, rgba_t, int )
 {
 }
 
 
-void display_fillbox_wh_rgb(scr_coord_val, scr_coord_val, scr_coord_val, scr_coord_val, PIXVAL, bool )
+void display_fillbox_wh_rgb(scr_coord_val, scr_coord_val, scr_coord_val, scr_coord_val, rgba_t, bool )
 {
 }
 
 
-void display_fillbox_wh_clip_rgb(scr_coord_val, scr_coord_val, scr_coord_val, scr_coord_val, PIXVAL, bool  CLIP_NUM_DEF_NOUSE)
+void display_fillbox_wh_clip_rgb(scr_coord_val, scr_coord_val, scr_coord_val, scr_coord_val, rgba_t, bool  CLIP_NUM_DEF_NOUSE)
 {
 }
 
-void display_vline_wh_clip_rgb(scr_coord_val, scr_coord_val, scr_coord_val, PIXVAL, bool  CLIP_NUM_DEF_NOUSE)
+void display_vline_wh_clip_rgb(scr_coord_val, scr_coord_val, scr_coord_val, rgba_t, bool  CLIP_NUM_DEF_NOUSE)
 {
 }
 
-void display_array_wh(scr_coord_val, scr_coord_val, scr_coord_val, scr_coord_val, const PIXVAL *)
+void display_array_wh(scr_coord_val, scr_coord_val, scr_coord_val, scr_coord_val, const rgba_t *)
 {
 }
 
-int display_glyph(scr_coord_val x, scr_coord_val y, utf32 c, control_alignment_t flags, PIXVAL default_color, const font_t * font  CLIP_NUM_DEF_NOUSE)
+int display_glyph(scr_coord_val x, scr_coord_val y, utf32 c, control_alignment_t flags, rgba_t default_color, const font_t * font  CLIP_NUM_DEF_NOUSE)
 {
 	return 0;
 }
 
-void display_ddd_box_rgb(scr_coord_val, scr_coord_val, scr_coord_val, scr_coord_val, PIXVAL, PIXVAL, bool)
+void display_ddd_box_rgb(scr_coord_val, scr_coord_val, scr_coord_val, scr_coord_val, rgba_t, rgba_t, bool)
 {
 }
 
-void display_ddd_box_clip_rgb(scr_coord_val, scr_coord_val, scr_coord_val, scr_coord_val, PIXVAL, PIXVAL)
+void display_ddd_box_clip_rgb(scr_coord_val, scr_coord_val, scr_coord_val, scr_coord_val, rgba_t, rgba_t)
 {
 }
 
-void display_ddd_proportional_clip(scr_coord_val, scr_coord_val, FLAGGED_PIXVAL, FLAGGED_PIXVAL, const char *, int  CLIP_NUM_DEF_NOUSE)
+void display_ddd_proportional_clip(scr_coord_val, scr_coord_val, rgba_t, rgba_t, const char *, int  CLIP_NUM_DEF_NOUSE)
 {
 }
 
@@ -295,31 +295,31 @@ void display_snapshot()
 {
 }
 
-void display_direct_line_rgb(const scr_coord_val, const scr_coord_val, const scr_coord_val, const scr_coord_val, const PIXVAL)
+void display_direct_line_rgb(const scr_coord_val, const scr_coord_val, const scr_coord_val, const scr_coord_val, const rgba_t)
 {
 }
 
-void display_direct_line_dotted_rgb(const scr_coord_val, const scr_coord_val, const scr_coord_val, const scr_coord_val, const scr_coord_val, const scr_coord_val, const PIXVAL)
+void display_direct_line_dotted_rgb(const scr_coord_val, const scr_coord_val, const scr_coord_val, const scr_coord_val, const scr_coord_val, const scr_coord_val, const rgba_t)
 {
 }
 
-void display_circle_rgb( scr_coord_val, scr_coord_val, int, const PIXVAL )
+void display_circle_rgb( scr_coord_val, scr_coord_val, int, const rgba_t )
 {
 }
 
-void display_filled_circle_rgb( scr_coord_val, scr_coord_val, int, const PIXVAL )
+void display_filled_circle_rgb( scr_coord_val, scr_coord_val, int, const rgba_t )
 {
 }
 
-void draw_bezier_rgb(scr_coord_val, scr_coord_val, scr_coord_val, scr_coord_val, scr_coord_val, scr_coord_val, scr_coord_val, scr_coord_val, const PIXVAL, scr_coord_val, scr_coord_val )
+void draw_bezier_rgb(scr_coord_val, scr_coord_val, scr_coord_val, scr_coord_val, scr_coord_val, scr_coord_val, scr_coord_val, scr_coord_val, const rgba_t, scr_coord_val, scr_coord_val )
 {
 }
 
-void display_right_triangle_rgb(scr_coord_val, scr_coord_val, scr_coord_val, const PIXVAL, const bool)
+void display_right_triangle_rgb(scr_coord_val, scr_coord_val, scr_coord_val, const rgba_t, const bool)
 {
 }
 
-void display_signal_direction_rgb( scr_coord_val, scr_coord_val, uint8, uint8, PIXVAL, PIXVAL, bool, uint8 )
+void display_signal_direction_rgb( scr_coord_val, scr_coord_val, uint8, uint8, rgba_t, rgba_t, bool, uint8 )
 {
 }
 
@@ -335,7 +335,7 @@ void display_img_aligned(const image_id, scr_rect, int, sint8, bool)
 {
 }
 
-void display_proportional_ellipsis_rgb(scr_rect, const char *, int, PIXVAL, bool, bool, PIXVAL)
+void display_proportional_ellipsis_rgb(scr_rect, const char *, int, rgba_t, bool, bool, rgba_t)
 {
 }
 

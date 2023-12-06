@@ -47,8 +47,8 @@ curiositylist_frame_t::curiositylist_frame_t() :
 
                 new_component<gui_label_t>("Show served by:");
 
-		filterowner.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("Anyone"), SYSCOL_TEXT);
-		filterowner.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("No one"), SYSCOL_TEXT);
+		filterowner.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("Anyone"), color_idx_to_rgb(SYSCOL_TEXT));
+		filterowner.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("No one"), color_idx_to_rgb(SYSCOL_TEXT));
 		for (int i = 0; i < MAX_PLAYER_COUNT; i++) {
 			if (player_t* pl = welt->get_player(i)) {
 				filterowner.new_component<playername_const_scroll_item_t>(pl);
@@ -68,7 +68,7 @@ curiositylist_frame_t::curiositylist_frame_t() :
 		new_component<gui_label_t>("hl_txt_sort");
 		sortedby.set_unsorted(); // do not sort
 		for (size_t i = 0; i < lengthof(sort_text); i++) {
-			sortedby.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate(sort_text[i]), SYSCOL_TEXT);
+			sortedby.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate(sort_text[i]), color_idx_to_rgb(SYSCOL_TEXT));
 		}
 		sortedby.set_selection(curiositylist_stats_t::sortby);
 		sortedby.add_listener(this);

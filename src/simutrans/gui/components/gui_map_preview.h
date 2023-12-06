@@ -23,12 +23,12 @@ class gui_map_preview_t : public gui_component_t
 {
 
 	private:
-		array2d_tpl<PIXVAL> *map_data;
+		array2d_tpl<uint8_t> *map_data;
 
 	public:
 		gui_map_preview_t();
 
-		void set_map_data(array2d_tpl<PIXVAL> *map_data_par) {
+		void set_map_data(array2d_tpl<uint8_t> *map_data_par) {
 			map_data = map_data_par;
 		}
 

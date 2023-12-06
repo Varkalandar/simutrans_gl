@@ -182,7 +182,7 @@ void server_frame_t::update_error (const char* errortext)
 }
 
 
-PIXVAL server_frame_t::update_info()
+rgba_t server_frame_t::update_info()
 {
 	map->set_gameinfo(&gi);
 
@@ -239,16 +239,16 @@ PIXVAL server_frame_t::update_info()
 	buf.printf( "%s %u\n", translator::translate("Stops"), gi.get_halt_count() );
 
 	revision.buf().printf( "%s %u", translator::translate( "Revision:" ), gi.get_game_engine_revision() );
-	revision.set_color( engine_match ? SYSCOL_TEXT : MONEY_MINUS );
+	revision.set_color( engine_match ? color_idx_to_rgb(SYSCOL_TEXT) : color_idx_to_rgb(MONEY_MINUS) );
 	revision.update();
 
 	pak_version.set_text( gi.get_pak_name() );
-	pak_version.set_color( pakset_match ? SYSCOL_TEXT : SYSCOL_OBSOLETE );
+	pak_version.set_color( pakset_match ? color_idx_to_rgb(SYSCOL_TEXT) : color_idx_to_rgb(SYSCOL_OBSOLETE) );
 
 #if MSG_LEVEL>=4
 	pakset_checksum.buf().printf("%s %s",translator::translate( "Pakset checksum:" ), gi.get_pakset_checksum().get_str(8));
 	pakset_checksum.update();
-	pakset_checksum.set_color( pakset_match ? SYSCOL_TEXT : SYSCOL_TEXT_STRONG );
+	pakset_checksum.set_color( pakset_match ? color_idx_to_rgb(SYSCOL_TEXT) : color_idx_to_rgb(SYSCOL_TEXT_STRONG) );
 #endif
 
 	date.buf().printf("%s", translator::get_date(gi.get_current_year(), gi.get_current_month()));
@@ -256,7 +256,7 @@ PIXVAL server_frame_t::update_info()
 	set_dirty();
 	resize(scr_size(0,0));
 
-	return pakset_match  &&  engine_match ? SYSCOL_TEXT : SYSCOL_OBSOLETE;
+	return pakset_match  &&  engine_match ? color_idx_to_rgb(SYSCOL_TEXT) : color_idx_to_rgb(SYSCOL_OBSOLETE);
 }
 
 
@@ -365,9 +365,9 @@ bool server_frame_t::update_serverlist ()
 
 		// Only show offline servers if the checkbox is set
 		if(  status == 1  ||  show_offline.pressed  ) {
-			PIXVAL color = status == 1 ? SYSCOL_EMPTY : MONEY_MINUS;
+			rgba_t color = status == 1 ? color_idx_to_rgb(SYSCOL_EMPTY : color_idx_to_rgb(MONEY_MINUS);
 			if(  pakset  &&  !strstart( serverpakset.get_str(), pakset )  ) {
-				color = SYSCOL_OBSOLETE;
+				color = color_idx_to_rgb(SYSCOL_OBSOLETE);
 			}
 			serverlist.new_component<server_scrollitem_t>( servername, serverdns, serverdns2, status, color );
 			dbg->message( "server_frame_t::update_serverlist", "Appended %s (%s) to list", servername.get_str(), serverdns.get_str() );
@@ -408,7 +408,7 @@ bool server_frame_t::action_triggered (gui_action_creator_t *comp, value_t p)
 				display_show_load_pointer(1);
 				const char *err = network_gameinfo( ((server_scrollitem_t*)serverlist.get_element( p.i ))->get_dns(), &gi );
 				if(  err  &&  *((server_scrollitem_t*)serverlist.get_element(p.i))->get_altdns()  ) {
-					item->set_color(MONEY_MINUS);
+					item->set_color(color_idx_to_rgb(MONEY_MINUS));
 					update_error(err);
 					err = network_gameinfo(((server_scrollitem_t*)serverlist.get_element(p.i))->get_altdns(), &gi);
 				}
@@ -416,13 +416,13 @@ bool server_frame_t::action_triggered (gui_action_creator_t *comp, value_t p)
 					item->set_color( update_info() );
 				}
 				else {
-					item->set_color( MONEY_MINUS );
+					item->set_color( color_idx_to_rgb(MONEY_MINUS) );
 					update_error( err );
 				}
 				display_show_load_pointer(0);
 			}
 			else {
-				item->set_color( MONEY_MINUS );
+				item->set_color( color_idx_to_rgb(MONEY_MINUS) );
 				update_error( "Cannot connect to offline server!" );
 			}
 		}

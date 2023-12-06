@@ -124,7 +124,7 @@ adjust_image:
 	}
 	if(  desc->len > 0  ) {
 		desc->len = 4;
-		memset(desc->data, 0, desc->len*sizeof(PIXVAL));
+		memset(desc->data, 0, desc->len*sizeof(uint16));
 	}
 	desc->x = 0;
 	desc->y = 0;
@@ -230,8 +230,8 @@ adjust_image:
 
 bool image_reader_t::image_has_valid_data(image_t *image_in) const
 {
-	PIXVAL *src = image_in->data;
-	PIXVAL *end = image_in->data + image_in->len;
+	uint16 *src = image_in->data;
+	uint16 *end = image_in->data + image_in->len;
 
 	for( int y = 0;  y < image_in->h;  ++y  ) {
 		// decode line

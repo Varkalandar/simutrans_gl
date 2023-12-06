@@ -19,7 +19,7 @@ sint16 factorylist_stats_t::sort_mode = factorylist::by_name;
 bool factorylist_stats_t::reverse = false;
 
 
-factorylist_stats_t::factorylist_stats_t(fabrik_t *fab)
+factorylist_stats_t::factorylist_stats_t(fabrik_t *fab) : indicator(RGBA_BLACK)
 {
 	this->fab = fab;
 	// pos button
@@ -27,18 +27,18 @@ factorylist_stats_t::factorylist_stats_t(fabrik_t *fab)
 	button_t *b = new_component<button_t>();
 	b->set_typ(button_t::posbutton_automatic);
 	b->set_targetpos3d(fab->get_pos());
-	
+
 	// indicator bar
 	indicator.fixed_min_height = gui_theme_t::gui_label_size.h-4;
 	indicator.set_max_size(scr_size(D_INDICATOR_WIDTH, D_INDICATOR_HEIGHT));
 	add_component(&indicator);
-	
+
 	// factory name
 	name_label.fixed_min_width = 160;
 	name_label.fixed_min_height = gui_theme_t::gui_label_size.h + 8;
 	add_component(&name_label);
 
-	// factory storage info 
+	// factory storage info
 	storage_label.fixed_min_width = 100;
 	storage_label.fixed_min_height = gui_theme_t::gui_label_size.h + 8;
 	add_component(&storage_label);
@@ -51,7 +51,7 @@ factorylist_stats_t::factorylist_stats_t(fabrik_t *fab)
 	else {
 		new_component<gui_empty_t>();
 	}
-	
+
 	if (fab->get_desc()->get_pax_boost() ) {
 		boost_passenger.set_image(skinverwaltung_t::passengers->get_image_id(0), true);
 		add_component(&boost_passenger);
@@ -59,7 +59,7 @@ factorylist_stats_t::factorylist_stats_t(fabrik_t *fab)
 	else {
 		new_component<gui_empty_t>();
 	}
-	
+
 	if (fab->get_desc()->get_mail_boost() ) {
 		boost_mail.set_image(skinverwaltung_t::mail->get_image_id(0), true);
 		add_component(&boost_mail);
@@ -134,14 +134,14 @@ void factorylist_stats_t::draw(scr_coord offset)
 {
 	update_label();
 	// boost stuff
-	boost_electric.set_transparent(fab->get_prodfactor_electric()>0 ? 0 : TRANSPARENT50_FLAG | OUTLINE_FLAG | SYSCOL_IMAGE_TRANSPARENCY);
-	boost_passenger.set_transparent(fab->get_prodfactor_pax()>0 ? 0 : TRANSPARENT50_FLAG | OUTLINE_FLAG | SYSCOL_IMAGE_TRANSPARENCY);
-	boost_mail.set_transparent(fab->get_prodfactor_mail()>0 ? 0 : TRANSPARENT50_FLAG | OUTLINE_FLAG | SYSCOL_IMAGE_TRANSPARENCY);
+	boost_electric.set_alpha(fab->get_prodfactor_electric()>0 ? 0 : TRANSPARENT50_FLAG | OUTLINE_FLAG | SYSCOL_IMAGE_TRANSPARENCY);
+	boost_passenger.set_alpha(fab->get_prodfactor_pax()>0 ? 0 : TRANSPARENT50_FLAG | OUTLINE_FLAG | SYSCOL_IMAGE_TRANSPARENCY);
+	boost_mail.set_alpha(fab->get_prodfactor_mail()>0 ? 0 : TRANSPARENT50_FLAG | OUTLINE_FLAG | SYSCOL_IMAGE_TRANSPARENCY);
 
 	indicator.set_color( color_idx_to_rgb(fabrik_t::status_to_color[fab->get_status()]) );
 
 	draw_background(offset);
-	
+
 	gui_aligned_container_t::draw(offset);
 }
 

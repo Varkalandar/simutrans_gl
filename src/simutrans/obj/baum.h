@@ -34,7 +34,7 @@ public:
 	static const uint16 SPAWN_PERIOD_LENGTH = 4;
 
 private:
-	static FLAGGED_PIXVAL outline_color;
+	static rgba_t outline_color;
 
 	/// month of birth
 	uint16 geburt;
@@ -91,7 +91,7 @@ public:
 
 	/// @copydoc obj_t::get_outline_colour
 	/// hide trees eventually with transparency
-	FLAGGED_PIXVAL get_outline_colour() const OVERRIDE;
+	rgba_t get_outline_colour() const OVERRIDE;
 
 	static void recalc_outline_color();
 

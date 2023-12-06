@@ -138,9 +138,9 @@ bool gui_scrollpane_map_t::infowin_event(event_t const* ev)
 class legend_entry_t : public gui_component_t
 {
 	gui_label_t label;
-	PIXVAL color;
+	rgba_t color;
 public:
-	legend_entry_t(const char* text, PIXVAL c) : label(text), color(c) {}
+	legend_entry_t(const char* text, rgba_t c) : label(text), color(c) {}
 
 	scr_size get_min_size() const OVERRIDE
 	{
@@ -186,8 +186,8 @@ public:
 };
 
 typedef struct {
-	PIXVAL color;
-	PIXVAL select_color;
+	rgba_t color;
+	rgba_t select_color;
 	const char *button_text;
 	const char *tooltip_text;
 	minimap_t::MAP_DISPLAY_MODE mode;
@@ -313,9 +313,9 @@ map_frame_t::map_frame_t() :
 		add_component(&b_rotate45);
 
 		// show contour
-		c_show_outlines.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate( "Show contour" ), SYSCOL_TEXT );
-		c_show_outlines.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate( "Show climates" ), SYSCOL_TEXT );
-		c_show_outlines.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate( "Show outline" ), SYSCOL_TEXT );
+		c_show_outlines.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate( "Show contour" ), color_idx_to_rgb(SYSCOL_TEXT) );
+		c_show_outlines.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate( "Show climates" ), color_idx_to_rgb(SYSCOL_TEXT) );
+		c_show_outlines.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate( "Show outline" ), color_idx_to_rgb(SYSCOL_TEXT) );
 		c_show_outlines.add_listener( this );
 		if( (env_t::default_mapmode & minimap_t::MAP_CLIMATES) != 0 ) {
 			c_show_outlines.set_selection( 1 );
@@ -345,7 +345,7 @@ map_frame_t::map_frame_t() :
 	network_filter_container.add_component( &b_overlay_networks );
 
 	// player combo for network overlay
-	viewed_player_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("All"), SYSCOL_TEXT);
+	viewed_player_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("All"), color_idx_to_rgb(SYSCOL_TEXT));
 	viewable_players[ 0 ] = -1;
 	for(  int np = 0, count = 1;  np < MAX_PLAYER_COUNT;  np++  ) {
 		if(  welt->get_player( np )  &&  welt->get_player( np )->get_finance()->has_convoi()) {
@@ -361,20 +361,20 @@ map_frame_t::map_frame_t() :
 	// freight combo for network overlay
 	{
 		viewable_freight_types.append(NULL);
-		freight_type_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate("All"), SYSCOL_TEXT) ;
+		freight_type_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate("All"), color_idx_to_rgb(SYSCOL_TEXT)) ;
 		viewable_freight_types.append(goods_manager_t::passengers);
-		freight_type_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate("Passagiere"), SYSCOL_TEXT) ;
+		freight_type_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate("Passagiere"), color_idx_to_rgb(SYSCOL_TEXT)) ;
 		viewable_freight_types.append(goods_manager_t::mail);
-		freight_type_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate("Post"), SYSCOL_TEXT) ;
+		freight_type_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate("Post"), color_idx_to_rgb(SYSCOL_TEXT)) ;
 		viewable_freight_types.append(goods_manager_t::none); // for all freight ...
-		freight_type_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate("Fracht"), SYSCOL_TEXT) ;
+		freight_type_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate("Fracht"), color_idx_to_rgb(SYSCOL_TEXT)) ;
 		for(  int i = 0;  i < goods_manager_t::get_max_catg_index();  i++  ) {
 			const goods_desc_t *freight_type = goods_manager_t::get_info_catg(i);
 			const int index = freight_type->get_catg_index();
 			if(  index == goods_manager_t::INDEX_NONE  ||  freight_type->get_catg()==0  ) {
 				continue;
 			}
-			freight_type_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate(freight_type->get_catg_name()), SYSCOL_TEXT);
+			freight_type_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate(freight_type->get_catg_name()), color_idx_to_rgb(SYSCOL_TEXT));
 			viewable_freight_types.append(freight_type);
 		}
 		for(  int i=0;  i < goods_manager_t::get_count();  i++  ) {
@@ -382,7 +382,7 @@ map_frame_t::map_frame_t() :
 			if(  ware->get_catg() == 0  &&  ware->get_index() > 2  ) {
 				// Special freight: Each good is special
 				viewable_freight_types.append(ware);
-				freight_type_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate(ware->get_name()), SYSCOL_TEXT) ;
+				freight_type_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate(ware->get_name()), color_idx_to_rgb(SYSCOL_TEXT)) ;
 			}
 		}
 	}
@@ -394,7 +394,7 @@ map_frame_t::map_frame_t() :
 
 	// mode of transport combo for network overlay
 	for (int i = 0; i < simline_t::MAX_LINE_TYPE; i++) {
-		transport_type_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(simline_t::get_linetype_name((simline_t::linetype)i), SYSCOL_TEXT);
+		transport_type_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(simline_t::get_linetype_name((simline_t::linetype)i), color_idx_to_rgb(SYSCOL_TEXT));
 	}
 	transport_type_c.set_selection(0);
 	minimap_t::get_instance()->transport_type_showed_on_map = simline_t::line;
@@ -418,7 +418,7 @@ map_frame_t::map_frame_t() :
 	// insert filter buttons in legend container
 	for (int index=0; index<MAP_MAX_BUTTONS; index++) {
 		filter_buttons[index].init( button_t::box_state | button_t::flexible, button_init[index].button_text);
-		filter_buttons[index].text_color = SYSCOL_TEXT;
+		filter_buttons[index].text_color = color_idx_to_rgb(SYSCOL_TEXT);
 		filter_buttons[index].set_tooltip( button_init[index].tooltip_text );
 		filter_buttons[index].add_listener(this);
 		filter_container.add_component(filter_buttons + index);
@@ -737,7 +737,7 @@ void map_frame_t::draw(scr_coord pos, scr_size size)
 	if(  skinverwaltung_t::compass_map  &&  env_t::compass_map_position!=0  ) {
 		const uint16 isometric_img_offset = minimap_t::get_instance()->is_isometric() ? 4 : 0;
 		display_img_aligned(skinverwaltung_t::compass_map->get_image_id( isometric_img_offset+welt->get_settings().get_rotation() ),
-							scrolly.get_client()+pos+scr_coord(4,4+D_TITLEBAR_HEIGHT)-scr_size(8,8), env_t::compass_map_position, 
+							scrolly.get_client()+pos+scr_coord(4,4+D_TITLEBAR_HEIGHT)-scr_size(8,8), env_t::compass_map_position,
 				            0, false);
 	}
 }

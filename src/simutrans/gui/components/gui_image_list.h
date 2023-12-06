@@ -11,9 +11,9 @@
 #include "gui_component.h"
 #include "../../tpl/vector_tpl.h"
 #include "../../display/simimg.h"
-#include "../../simcolor.h"
+#include "../../display/rgba.h"
 
-#define EMPTY_IMAGE_BAR (255)
+#define EMPTY_IMAGE_BAR (rgba_t(1.0f, 1.0f, 1.0f, 1.0f))
 
 /**
  * A component that represents a list of images.
@@ -33,10 +33,10 @@ public:
 		const char *text;  ///< can be NULL, used to store external data
 		image_id   image;  ///< the image
 		sint16     count;  ///< display this number as overlay
-		PIXVAL     lcolor; ///< color of left half of color bar, use EMPTY_IMAGE_BAR to display no bar
-		PIXVAL     rcolor; ///< color of right half of color bar, use EMPTY_IMAGE_BAR to display no bar
+		rgba_t     lcolor; ///< color of left half of color bar, use EMPTY_IMAGE_BAR to display no bar
+		rgba_t     rcolor; ///< color of right half of color bar, use EMPTY_IMAGE_BAR to display no bar
 
-		image_data_t(const char *text_, image_id image_, sint16 count_=0, PIXVAL lcolor_=EMPTY_IMAGE_BAR, PIXVAL rcolor_=EMPTY_IMAGE_BAR)
+		image_data_t(const char *text_, image_id image_, sint16 count_=0, rgba_t lcolor_=EMPTY_IMAGE_BAR, rgba_t rcolor_=EMPTY_IMAGE_BAR)
 		: text(text_), image(image_), count(count_), lcolor(lcolor_), rcolor(rcolor_) {}
 	};
 

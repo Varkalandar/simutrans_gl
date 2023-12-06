@@ -157,15 +157,15 @@ sint16 env_t::max_acceleration;
 uint8 env_t::num_threads;
 bool env_t::show_tooltips;
 rgb888_t env_t::tooltip_color_rgb;
-PIXVAL env_t::tooltip_color;
+int env_t::tooltip_color;
 rgb888_t env_t::tooltip_textcolor_rgb;
-PIXVAL env_t::tooltip_textcolor;
+int env_t::tooltip_textcolor;
 sint8 env_t::toolbar_max_width;
 sint8 env_t::toolbar_max_height;
 rgb888_t env_t::cursor_overlay_color_rgb;
-PIXVAL env_t::cursor_overlay_color;
+int env_t::cursor_overlay_color;
 rgb888_t env_t::background_color_rgb;
-PIXVAL env_t::background_color;
+int env_t::background_color;
 bool env_t::draw_earth_border;
 bool env_t::draw_outside_tile;
 uint8 env_t::show_vehicle_states;
@@ -189,11 +189,11 @@ uint8 env_t::fontsize = 17;
 
 
 rgb888_t env_t::front_window_text_color_rgb;
-PIXVAL env_t::front_window_text_color;
+int env_t::front_window_text_color;
 rgb888_t env_t::bottom_window_text_color_rgb;
-PIXVAL env_t::bottom_window_text_color;
+int env_t::bottom_window_text_color;
 rgb888_t env_t::default_window_title_color_rgb;
-PIXVAL env_t::default_window_title_color;
+int env_t::default_window_title_color;
 uint8 env_t::bottom_window_darkness;
 
 uint16 env_t::compass_map_position;

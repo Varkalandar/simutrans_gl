@@ -122,7 +122,7 @@ bool pakset_manager_t::load_paks_from_directory(const std::string &path, bool lo
 	step = (2<<step)-1;
 
 	if(drawing  &&  skinverwaltung_t::biglogosymbol==NULL) {
-		display_fillbox_wh_rgb( 0, 0, display_get_width(), display_get_height(), color_idx_to_rgb(COL_BLACK), true );
+		display_fillbox_wh_rgb( 0, 0, display_get_width(), display_get_height(), rgba_t(0, 0, 0), true );
 		if (!load_pak_file(path + "symbol.BigLogo.pak")) {
 			dbg->warning("pakset_manager_t::load_paks_from_directory", "File 'symbol.BigLogo.pak' cannot be read, startup logo will not be displayed!");
 		}

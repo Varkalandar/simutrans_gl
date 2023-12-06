@@ -207,7 +207,7 @@ void depot_frame_t::init(depot_t *dep)
 	line_button.add_listener(this);
 	add_component(&line_button);
 
-	new_component<gui_label_t>("Serves Line:", SYSCOL_TEXT, gui_label_t::left);
+	new_component<gui_label_t>("Serves Line:", color_idx_to_rgb(SYSCOL_TEXT), gui_label_t::left);
 	/*
 	* [SELECT ROUTE]:
 	*/
@@ -304,7 +304,7 @@ void depot_frame_t::init(depot_t *dep)
 
 	bt_obsolete.init(button_t::square_state, "Show obsolete");
 	bt_obsolete.pressed = show_retired_vehicles;
-	
+
 	if(  welt->get_settings().get_allow_buying_obsolete_vehicles()  ) {
 		bt_obsolete.add_listener(this);
 		bt_obsolete.set_tooltip("Show also vehicles no longer in production.");
@@ -314,12 +314,12 @@ void depot_frame_t::init(depot_t *dep)
 		cont_veh_action->new_component<gui_fill_t>();
 	}
 
-	cont_veh_action->new_component<gui_label_t>("Filter:", SYSCOL_TEXT, gui_label_t::right);
+	cont_veh_action->new_component<gui_label_t>("Filter:", color_idx_to_rgb(SYSCOL_TEXT), gui_label_t::right);
 
 	vehicle_filter.add_listener(this);
 	cont_veh_action->add_component(&vehicle_filter);
 
-	cont_veh_action->new_component<gui_label_t>("Search:", SYSCOL_TEXT, gui_label_t::right);
+	cont_veh_action->new_component<gui_label_t>("Search:", color_idx_to_rgb(SYSCOL_TEXT), gui_label_t::right);
 
 	name_filter_input.set_text(name_filter_value, 60);
 	cont_veh_action->add_component(&name_filter_input);
@@ -332,12 +332,12 @@ void depot_frame_t::init(depot_t *dep)
 	bt_show_all.pressed = show_all;
 
 	cont_veh_action->add_component(&bt_show_all);
-	cont_veh_action->new_component<gui_label_t>("Sort by:", SYSCOL_TEXT, gui_label_t::right);
-	
+	cont_veh_action->new_component<gui_label_t>("Sort by:", color_idx_to_rgb(SYSCOL_TEXT), gui_label_t::right);
+
 	sort_by.add_listener(this);
 	cont_veh_action->add_component(&sort_by);
 
-	cont_veh_action->new_component<gui_label_t>("Fahrzeuge:", SYSCOL_TEXT, gui_label_t::right);
+	cont_veh_action->new_component<gui_label_t>("Fahrzeuge:", color_idx_to_rgb(SYSCOL_TEXT), gui_label_t::right);
 	cont_veh_action->add_component(&bt_veh_action);
 
 	end_table();
@@ -634,12 +634,12 @@ void depot_frame_t::update_data()
 
 	bt_veh_action.clear_elements();
 	for(int i = 0; i < 3; i++) {
-		bt_veh_action.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate(txt_veh_action[i]), SYSCOL_TEXT);
+		bt_veh_action.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate(txt_veh_action[i]), color_idx_to_rgb(SYSCOL_TEXT));
 	}
 	bt_veh_action.set_size(bt_veh_action.get_size());
 	bt_veh_action.set_selection(veh_action);
-	
-	
+
+
 	cbuffer_t &txt_convois = lb_convois.buf();
 	switch(  depot->convoi_count()  ) {
 		case 0: {
@@ -674,7 +674,7 @@ void depot_frame_t::update_data()
 
 	// update convoy selector
 	convoy_selector.clear_elements();
-	convoy_selector.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( new_convoy_text, SYSCOL_TEXT ) ;
+	convoy_selector.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( new_convoy_text, color_idx_to_rgb(SYSCOL_TEXT) ) ;
 	convoy_selector.set_selection(0);
 
 	// check all matching convoys
@@ -717,10 +717,10 @@ void depot_frame_t::update_data()
 		for(  unsigned i = 0;  i < cnv->get_vehicle_count();  i++  ) {
 			if(  !cnv->get_vehicle(i)->get_desc()->is_available(month_now)  ) {
 				if(  convoi_pics[i]->lcolor == color_idx_to_rgb(COL_GREEN)  ) {
-					convoi_pics[i]->lcolor = gui_theme_t::gui_color_obsolete;
+					convoi_pics[i]->lcolor = color_idx_to_rgb(gui_theme_t::gui_color_obsolete);
 				}
 				if(  convoi_pics[i]->rcolor == color_idx_to_rgb(COL_GREEN)  ) {
-					convoi_pics[i]->rcolor = gui_theme_t::gui_color_obsolete;
+					convoi_pics[i]->rcolor = color_idx_to_rgb(gui_theme_t::gui_color_obsolete);
 				}
 			}
 		}
@@ -731,7 +731,7 @@ void depot_frame_t::update_data()
 	for(auto const& i : vehicle_map) {
 		vehicle_desc_t const* const    info = i.key;
 		gui_image_list_t::image_data_t& img  = *i.value;
-		const PIXVAL ok_color = info->is_available(month_now) ? color_idx_to_rgb(COL_GREEN) : gui_theme_t::gui_color_obsolete;
+		const rgba_t ok_color = info->is_available(month_now) ? color_idx_to_rgb(COL_GREEN) : color_idx_to_rgb(gui_theme_t::gui_color_obsolete);
 
 		img.count = 0;
 		img.lcolor = ok_color;
@@ -801,22 +801,22 @@ void depot_frame_t::update_data()
 	}
 	if(  cnv.is_bound()  &&  cnv->get_schedule()  &&  !cnv->get_schedule()->empty()  ) {
 		if(  cnv->get_line().is_bound()  ) {
-			line_selector.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( clear_schedule_text, SYSCOL_TEXT ) ;
-			line_selector.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( new_line_text, SYSCOL_TEXT ) ;
+			line_selector.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( clear_schedule_text, color_idx_to_rgb(SYSCOL_TEXT) ) ;
+			line_selector.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( new_line_text, color_idx_to_rgb(SYSCOL_TEXT) ) ;
 		}
 		else {
-			line_selector.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( unique_schedule_text, SYSCOL_TEXT ) ;
-			line_selector.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( promote_to_line_text, SYSCOL_TEXT ) ;
+			line_selector.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( unique_schedule_text, color_idx_to_rgb(SYSCOL_TEXT) ) ;
+			line_selector.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( promote_to_line_text, color_idx_to_rgb(SYSCOL_TEXT) ) ;
 		}
 	}
 	else {
-		line_selector.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( no_schedule_text, SYSCOL_TEXT ) ;
-		line_selector.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( new_line_text, SYSCOL_TEXT ) ;
+		line_selector.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( no_schedule_text, color_idx_to_rgb(SYSCOL_TEXT) ) ;
+		line_selector.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( new_line_text, color_idx_to_rgb(SYSCOL_TEXT) ) ;
 	}
 	if(  last_selected_line.is_bound()  ) {
 		line_selector.new_component<line_scrollitem_t>( last_selected_line ) ;
 	}
-	line_selector.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( line_seperator, SYSCOL_TEXT ) ;
+	line_selector.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( line_seperator, color_idx_to_rgb(SYSCOL_TEXT) ) ;
 
 	// check all matching lines
 	if(  cnv.is_bound()  ) {
@@ -840,11 +840,11 @@ void depot_frame_t::update_data()
 
 	// Update vehicle filter
 	vehicle_filter.clear_elements();
-	vehicle_filter.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("All"), SYSCOL_TEXT);
-	vehicle_filter.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("Relevant"), SYSCOL_TEXT);
+	vehicle_filter.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("All"), color_idx_to_rgb(SYSCOL_TEXT));
+	vehicle_filter.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("Relevant"), color_idx_to_rgb(SYSCOL_TEXT));
 
 	for(goods_desc_t const* const i : welt->get_goods_list()) {
-		vehicle_filter.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate(i->get_name()), SYSCOL_TEXT);
+		vehicle_filter.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate(i->get_name()), color_idx_to_rgb(SYSCOL_TEXT));
 	}
 
 	if(  depot->selected_filter > vehicle_filter.count_elements()  ) {
@@ -855,7 +855,7 @@ void depot_frame_t::update_data()
 
 	sort_by.clear_elements();
 	for(int i = 0; i < vehicle_builder_t::sb_length; i++) {
-		sort_by.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate(vehicle_builder_t::vehicle_sort_by[i]), SYSCOL_TEXT);
+		sort_by.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate(vehicle_builder_t::vehicle_sort_by[i]), color_idx_to_rgb(SYSCOL_TEXT));
 	}
 	sort_by.set_size(sort_by.get_size());
 	if(  depot->selected_sort_by > sort_by.count_elements()  ) {
@@ -1002,12 +1002,12 @@ void depot_frame_t::update_data()
 				cbuffer_t& txt_convoi_cost = labels[LB_CNV_COST]->buf();
 				if(  sint64 fix_cost = cnv->get_fixed_cost()  ) {
 					money_to_string(  buf, (double)cnv->get_purchase_cost() / 100.0, false );
-					txt_convoi_cost.printf("%s%s (%.2f$/km %.2f$/m)", 
+					txt_convoi_cost.printf("%s%s (%.2f$/km %.2f$/m)",
 						translator::translate("Vehicle costs:"), buf, (double)cnv->get_running_cost()/100.0, (double)fix_cost/100.0);
 				}
 				else {
 					money_to_string(  buf, cnv->get_purchase_cost() / 100.0, false );
-					txt_convoi_cost.printf("%s%s (%.2f$/km)", 
+					txt_convoi_cost.printf("%s%s (%.2f$/km)",
 						translator::translate("Vehicle costs:"), buf, (double)cnv->get_running_cost() / 100.0);
 				}
 			}
@@ -1040,7 +1040,7 @@ void depot_frame_t::update_data()
 			labels[i]->buf();
 		}
 		labels[LB_CNV_COUNT]->buf().append(translator::translate("Keine Einzelfahrzeuge im Depot"));
-		
+
 	}
 
 	for(uint32 i=0; i<LB_CNV_ALL; i++) {
@@ -1067,7 +1067,7 @@ sint64 depot_frame_t::calc_restwert(const vehicle_desc_t *veh_type)
 
 void depot_frame_t::image_from_storage_list(gui_image_list_t::image_data_t *image_data)
 {
-	if(  image_data->lcolor != color_idx_to_rgb(COL_RED)  &&  image_data->rcolor != color_idx_to_rgb(COL_RED)  ) {
+	if(!(image_data->lcolor == color_idx_to_rgb(COL_RED))  &&  !(image_data->rcolor == color_idx_to_rgb(COL_RED))) {
 		if(  veh_action == va_sell  ) {
 			depot->call_depot_tool('s', convoihandle_t(), image_data->text );
 		}
@@ -1342,16 +1342,16 @@ void depot_frame_t::draw(scr_coord pos, scr_size size)
 	update_vehicle_info_text(pos);
 
 	gui_frame_t::draw(pos, size);
-	
-	// Hajo: test info popup	
+
+	// Hajo: test info popup
 	if(show_vehicle_info_popup) {
 		scr_coord_val height = LINESPACE * 7 + 12;
 		scr_coord popup_pos(pos.x + 0, pos.y + size.h - height - 1);
-		display_img_stretch(gui_theme_t::windowback, scr_rect(popup_pos + scr_coord(0, 1), size.w, height), 0);
-		
+		display_img_stretch(gui_theme_t::windowback, scr_rect(popup_pos + scr_coord(0, 1), size.w, height), RGBA_BLACK);
+
 		// display_fillbox_wh_rgb(popup_pos.x, popup_pos.y, size.w, height, gui_theme_t::gui_color_list_background_even, false);
-		display_fillbox_wh_clip_rgb(popup_pos.x+1, popup_pos.y, size.w-2, 1, SYSCOL_TEXT_SHADOW, false);
-		
+		display_fillbox_wh_clip_rgb(popup_pos.x+1, popup_pos.y, size.w-2, 1, color_idx_to_rgb(SYSCOL_TEXT_SHADOW), false);
+
 		// cont_vehicle_labels->set_size(size);
 		cont_vehicle_labels->draw(popup_pos);
 	}
@@ -1481,8 +1481,8 @@ void depot_frame_t::update_vehicle_info_text(scr_coord pos)
 
 	if(  veh_type  &&  veh_type != old_veh_type) {
 		// Hajo: there is data to show
-		show_vehicle_info_popup = true;		
-		
+		show_vehicle_info_popup = true;
+
 		labels[LB_VEH_NAME]->buf().printf( "\en%s\ed", translator::translate( veh_type->get_name(), welt->get_settings().get_name_language_id() ) );
 
 		if(  veh_type->get_power() > 0  ) { // engine type
@@ -1492,14 +1492,14 @@ void depot_frame_t::update_vehicle_info_text(scr_coord pos)
 		if(  sint64 fix_cost = welt->scale_with_month_length( veh_type->get_fixed_cost() )  ) {
 			char tmp[128];
 			money_to_string( tmp, veh_type->get_price() / 100.0, false );
-			labels[LB_VEH_COST]->buf().printf("%s%s (%.2f$/km %.2f$/%s)", 
-				translator::translate("Vehicle costs:"), tmp, veh_type->get_running_cost()/100.0, 
+			labels[LB_VEH_COST]->buf().printf("%s%s (%.2f$/km %.2f$/%s)",
+				translator::translate("Vehicle costs:"), tmp, veh_type->get_running_cost()/100.0,
 				fix_cost/100.0, translator::translate("per month") );
 		}
 		else {
 			char tmp[128];
 			money_to_string(  tmp, veh_type->get_price() / 100.0, false );
-			labels[LB_VEH_COST]->buf().printf("%s%s (%.2f$/km)", 
+			labels[LB_VEH_COST]->buf().printf("%s%s (%.2f$/km)",
 				translator::translate("Vehicle costs:"), tmp, veh_type->get_running_cost()/100.0 );
 		}
 
@@ -1562,9 +1562,9 @@ void depot_frame_t::update_vehicle_info_text(scr_coord pos)
 		for(uint32 i=LB_CNV_ALL; i<LB_MAX; i++) {
 			labels[i]->buf().clear();
 		}
-		
+
 		// Hajo: it seems the labels are cleared here? Then hide the popup
-		show_vehicle_info_popup = false;		
+		show_vehicle_info_popup = false;
 	}
 
 	if (veh_type != old_veh_type) {

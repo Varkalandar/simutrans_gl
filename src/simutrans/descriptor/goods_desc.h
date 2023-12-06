@@ -8,7 +8,7 @@
 
 
 #include "obj_base_desc.h"
-#include "../simcolor.h"
+#include "../display/rgba.h"
 #include "../network/checksum.h"
 
 class checksum_t;
@@ -116,7 +116,7 @@ public:
 	/**
 	 * @return color for good table and waiting bars
 	 */
-	PIXVAL get_color() const;
+	rgba_t get_color() const;
 
 	void calc_checksum(checksum_t *chk) const
 	{

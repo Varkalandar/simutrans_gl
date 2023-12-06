@@ -18,6 +18,7 @@
 #include "../simdebug.h"
 #include "../utils/plainstring.h"
 #include "../utils/simstring.h"
+#include "../display/rgba.h"
 
 #include "loadsave.h"
 

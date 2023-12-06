@@ -3385,7 +3385,7 @@ void fabrik_t::display_status(sint16 xpos, sint16 ypos)
 
 			if (storage_capacity) {
 				const uint32 stock_quantity = (uint32)((FAB_DISPLAY_UNIT_HALF + (sint64)goods.menge * pfactor) >> (precision_bits + DEFAULT_PRODUCTION_FACTOR_BITS));
-				const PIXVAL goods_color = goods.get_typ()->get_color();
+				const rgba_t goods_color = goods.get_typ()->get_color();
 				const uint16 v = min(25, (uint16)(25 * stock_quantity / storage_capacity)) + 2;
 
 				if (currently_producing) {
@@ -3418,7 +3418,7 @@ void fabrik_t::display_status(sint16 xpos, sint16 ypos)
 
 			if (storage_capacity) {
 				const uint32 stock_quantity = (uint32)((FAB_DISPLAY_UNIT_HALF + (sint64)goods.menge * pfactor) >> (precision_bits + DEFAULT_PRODUCTION_FACTOR_BITS));
-				const PIXVAL goods_color = goods.get_typ()->get_color();
+				const rgba_t goods_color = goods.get_typ()->get_color();
 
 				const uint16 v = min(25, (uint16)(25 * stock_quantity / storage_capacity)) + 2;
 

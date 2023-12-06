@@ -11,10 +11,12 @@
 #include "../simtypes.h"
 #include "clip_num.h"
 #include "simimg.h"
+#include "rgba.h"
 #include "scr_coord.h"
 #include "alignment.h"
 
 class font_t;
+class rgba_t;
 
 #if COLOUR_DEPTH != 0
 
@@ -56,8 +58,8 @@ display_set_clip_wh(p_cr.x, p_cr.y, p_cr.w, p_cr.h); \
 /**
  *
  */
-PIXVAL color_idx_to_rgb(PIXVAL idx);
-PIXVAL color_rgb_to_idx(PIXVAL color);
+rgba_t color_idx_to_rgb(int idx);
+int color_rgb_to_idx(rgb888_t color);
 
 /*
  * Get 24bit RGB888 colour from an index of the old 8bit palette
@@ -144,14 +146,14 @@ void display_img_aux(const image_id n, scr_coord_val xp, scr_coord_val yp, const
 /**
  * draws the images with alpha, either blended or as outline
  */
-void display_rezoomed_img_blend(const image_id n, scr_coord_val xp, scr_coord_val yp, const signed char player_nr, const FLAGGED_PIXVAL color_index, const bool daynight, const bool dirty  CLIP_NUM_DEF);
+void display_rezoomed_img_blend(const image_id n, scr_coord_val xp, scr_coord_val yp, const signed char player_nr, rgba_t color_index, const bool daynight, const bool dirty  CLIP_NUM_DEF);
 #define display_img_blend( n, x, y, c, dn, d ) display_rezoomed_img_blend( (n), (x), (y), 0, (c), (dn), (d)  CLIP_NUM_DEFAULT)
 
 #define ALPHA_RED 0x1
 #define ALPHA_GREEN 0x2
 #define ALPHA_BLUE 0x4
 
-void display_rezoomed_img_alpha(const image_id n, const image_id alpha_n, const unsigned alpha_flags, scr_coord_val xp, scr_coord_val yp, const signed char player_nr, const FLAGGED_PIXVAL color_index, const bool daynight, const bool dirty  CLIP_NUM_DEF);
+void display_rezoomed_img_alpha(const image_id n, const image_id alpha_n, const unsigned alpha_flags, scr_coord_val xp, scr_coord_val yp, const signed char player_nr, rgba_t color_index, const bool daynight, const bool dirty  CLIP_NUM_DEF);
 #define display_img_alpha( n, a, f, x, y, c, dn, d ) display_rezoomed_img_alpha( (n), (a), (f), (x), (y), 0, (c), (dn), (d)  CLIP_NUM_DEFAULT)
 
 // display image with color (if there) and optional day and night change
@@ -164,19 +166,19 @@ typedef image_id stretch_map_t[3][3];
 
 // this displays a 3x3 array of images to fit the scr_rect
 // Hajo: color is a player color index here.
-void display_img_stretch( const stretch_map_t &imag, scr_rect area, FLAGGED_PIXVAL color );
+void display_img_stretch( const stretch_map_t &imag, scr_rect area, rgba_t color );
 
 // this displays a 3x3 array of images to fit the scr_rect like above, but blend the color
-void display_img_stretch_blend( const stretch_map_t &imag, scr_rect area, FLAGGED_PIXVAL color );
+void display_img_stretch_blend( const stretch_map_t &imag, scr_rect area, rgba_t color );
 
 // display unzoomed image with alpha, either blended or as outline
-void display_base_img_blend(const image_id n, scr_coord_val xp, scr_coord_val yp, const signed char player_nr, const FLAGGED_PIXVAL color_index, const bool daynight, const bool dirty  CLIP_NUM_DEF CLIP_NUM_DEFAULT_ZERO);
-void display_base_img_alpha(const image_id n, const image_id alpha_n, const unsigned alpha_flags, scr_coord_val xp, scr_coord_val yp, const sint8 player_nr, const FLAGGED_PIXVAL color_index, const bool daynight, const bool dirty  CLIP_NUM_DEF CLIP_NUM_DEFAULT_ZERO);
+void display_base_img_blend(const image_id n, scr_coord_val xp, scr_coord_val yp, const signed char player_nr, rgba_t color_index, const bool daynight, const bool dirty  CLIP_NUM_DEF CLIP_NUM_DEFAULT_ZERO);
+void display_base_img_alpha(const image_id n, const image_id alpha_n, const unsigned alpha_flags, scr_coord_val xp, scr_coord_val yp, const sint8 player_nr, rgba_t color_index, const bool daynight, const bool dirty  CLIP_NUM_DEF CLIP_NUM_DEFAULT_ZERO);
 
 // pointer to image display procedures
 typedef void (*display_image_proc)(const image_id n, scr_coord_val xp, scr_coord_val yp, const signed char player_nr, const bool daynight, const bool dirty  CLIP_NUM_DEF);
-typedef void (*display_blend_proc)(const image_id n, scr_coord_val xp, scr_coord_val yp, const signed char player_nr, const FLAGGED_PIXVAL color_index, const bool daynight, const bool dirty  CLIP_NUM_DEF);
-typedef void (*display_alpha_proc)(const image_id n, const image_id alpha_n, const unsigned alpha_flags, scr_coord_val xp, scr_coord_val yp, const signed char player_nr, const FLAGGED_PIXVAL color_index, const bool daynight, const bool dirty  CLIP_NUM_DEF);
+typedef void (*display_blend_proc)(const image_id n, scr_coord_val xp, scr_coord_val yp, const signed char player_nr, rgba_t color_index, const bool daynight, const bool dirty  CLIP_NUM_DEF);
+typedef void (*display_alpha_proc)(const image_id n, const image_id alpha_n, const unsigned alpha_flags, scr_coord_val xp, scr_coord_val yp, const signed char player_nr, rgba_t color_index, const bool daynight, const bool dirty  CLIP_NUM_DEF);
 
 // variables for storing currently used image procedure set and tile raster width
 extern display_image_proc display_normal;
@@ -208,16 +210,16 @@ inline void display_set_image_proc( bool is_global )
 }
 
 // Blends two colors
-PIXVAL display_blend_colors(PIXVAL background, PIXVAL foreground, int percent_blend);
+rgba_t display_blend_colors(rgba_t background, rgba_t foreground, float blend);
 
 // blends a rectangular region
-void display_blend_wh_rgb(scr_coord_val xp, scr_coord_val yp, scr_coord_val w, scr_coord_val h, PIXVAL color, int percent_blend );
+void display_blend_wh_rgb(scr_coord_val xp, scr_coord_val yp, scr_coord_val w, scr_coord_val h, rgba_t color);
 
-void display_fillbox_wh_rgb(scr_coord_val xp, scr_coord_val yp, scr_coord_val w, scr_coord_val h, PIXVAL color, bool dirty);
+void display_fillbox_wh_rgb(scr_coord_val xp, scr_coord_val yp, scr_coord_val w, scr_coord_val h, rgba_t color, bool dirty);
 
-void display_fillbox_wh_clip_rgb(scr_coord_val xp, scr_coord_val yp, scr_coord_val w, scr_coord_val h, PIXVAL color, bool dirty  CLIP_NUM_DEF CLIP_NUM_DEFAULT_ZERO);
+void display_fillbox_wh_clip_rgb(scr_coord_val xp, scr_coord_val yp, scr_coord_val w, scr_coord_val h, rgba_t color, bool dirty  CLIP_NUM_DEF CLIP_NUM_DEFAULT_ZERO);
 
-void display_vline_wh_clip_rgb(scr_coord_val xp, scr_coord_val yp, scr_coord_val h, PIXVAL c, bool dirty  CLIP_NUM_DEF CLIP_NUM_DEFAULT_ZERO);
+void display_vline_wh_clip_rgb(scr_coord_val xp, scr_coord_val yp, scr_coord_val h, rgba_t color, bool dirty  CLIP_NUM_DEF CLIP_NUM_DEFAULT_ZERO);
 
 void display_flush_buffer();
 
@@ -226,26 +228,26 @@ void display_set_pointer(int pointer);
 void display_show_load_pointer(int loading);
 
 
-void display_array_wh(scr_coord_val xp, scr_coord_val yp, scr_coord_val w, scr_coord_val h, const PIXVAL *arr);
+void display_array_wh(scr_coord_val xp, scr_coord_val yp, scr_coord_val w, scr_coord_val h, const uint8 *arr);
 
 // compound painting routines
-void display_ddd_box_rgb(scr_coord_val x1, scr_coord_val y1, scr_coord_val w, scr_coord_val h, PIXVAL tl_color, PIXVAL rd_color, bool dirty);
-void display_ddd_box_clip_rgb(scr_coord_val x1, scr_coord_val y1, scr_coord_val w, scr_coord_val h, PIXVAL tl_color, PIXVAL rd_color);
+void display_ddd_box_rgb(scr_coord_val x1, scr_coord_val y1, scr_coord_val w, scr_coord_val h, rgba_t tl_color, rgba_t rd_color, bool dirty);
+void display_ddd_box_clip_rgb(scr_coord_val x1, scr_coord_val y1, scr_coord_val w, scr_coord_val h, rgba_t tl_color, rgba_t rd_color);
 
 
 // #ifdef MULTI_THREAD
-int display_glyph(scr_coord_val x, scr_coord_val y, utf32 c, control_alignment_t flags, PIXVAL default_color, const font_t * font  CLIP_NUM_DEF  CLIP_NUM_DEFAULT_ZERO);
+int display_glyph(scr_coord_val x, scr_coord_val y, utf32 c, control_alignment_t flags, rgba_t default_color, const font_t * font  CLIP_NUM_DEF  CLIP_NUM_DEFAULT_ZERO);
 
 
 // line drawing primitives
-void display_direct_line_rgb(const scr_coord_val x, const scr_coord_val y, const scr_coord_val xx, const scr_coord_val yy, const PIXVAL color);
-void display_direct_line_dotted_rgb(const scr_coord_val x, const scr_coord_val y, const scr_coord_val xx, const scr_coord_val yy, const scr_coord_val draw, const scr_coord_val dontDraw, const PIXVAL color);
-void display_circle_rgb( scr_coord_val x0, scr_coord_val  y0, int radius, const PIXVAL color );
-void display_filled_circle_rgb( scr_coord_val x0, scr_coord_val  y0, int radius, const PIXVAL color );
-void draw_bezier_rgb(scr_coord_val Ax, scr_coord_val Ay, scr_coord_val Bx, scr_coord_val By, scr_coord_val ADx, scr_coord_val ADy, scr_coord_val BDx, scr_coord_val BDy, const PIXVAL colore, scr_coord_val draw, scr_coord_val dontDraw);
+void display_direct_line_rgb(const scr_coord_val x, const scr_coord_val y, const scr_coord_val xx, const scr_coord_val yy, rgba_t color);
+void display_direct_line_dotted_rgb(const scr_coord_val x, const scr_coord_val y, const scr_coord_val xx, const scr_coord_val yy, const scr_coord_val draw, const scr_coord_val dontDraw, rgba_t color);
+void display_circle_rgb( scr_coord_val x0, scr_coord_val  y0, int radius, rgba_t color );
+void display_filled_circle_rgb( scr_coord_val x0, scr_coord_val  y0, int radius, rgba_t color );
+void draw_bezier_rgb(scr_coord_val Ax, scr_coord_val Ay, scr_coord_val Bx, scr_coord_val By, scr_coord_val ADx, scr_coord_val ADy, scr_coord_val BDx, scr_coord_val BDy, rgba_t colore, scr_coord_val draw, scr_coord_val dontDraw);
 
-void display_right_triangle_rgb(scr_coord_val x, scr_coord_val y, scr_coord_val height, const PIXVAL colval, const bool dirty);
-void display_signal_direction_rgb(scr_coord_val x, scr_coord_val y, uint8 way_dir, uint8 sig_dir, PIXVAL col1, PIXVAL col1_dark, bool is_diagonal=false, uint8 slope = 0 );
+void display_right_triangle_rgb(scr_coord_val x, scr_coord_val y, scr_coord_val height, rgba_t colval, const bool dirty);
+void display_signal_direction_rgb(scr_coord_val x, scr_coord_val y, uint8 way_dir, uint8 sig_dir, rgba_t col1, rgba_t col1_dark, bool is_diagonal=false, uint8 slope = 0 );
 
 void display_set_clip_wh(scr_coord_val x, scr_coord_val y, scr_coord_val w, scr_coord_val h  CLIP_NUM_DEF CLIP_NUM_DEFAULT_ZERO, bool fit = false);
 clip_dimension display_get_clip_wh(CLIP_NUM_DEF0 CLIP_NUM_DEFAULT_ZERO);

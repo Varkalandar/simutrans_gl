@@ -16,7 +16,7 @@
 
 #include "extend_edit.h"
 
-gui_rotation_item_t::gui_rotation_item_t(uint8 r) : gui_scrolled_list_t::const_text_scrollitem_t(NULL, SYSCOL_TEXT)
+gui_rotation_item_t::gui_rotation_item_t(uint8 r) : gui_scrolled_list_t::const_text_scrollitem_t(NULL, color_idx_to_rgb(SYSCOL_TEXT))
 {
 	rotation = r;
 	switch(rotation) {
@@ -34,7 +34,7 @@ gui_rotation_item_t::gui_rotation_item_t(uint8 r) : gui_scrolled_list_t::const_t
 	}
 }
 
-gui_climates_item_t::gui_climates_item_t(uint8 c) : gui_scrolled_list_t::const_text_scrollitem_t(NULL, SYSCOL_TEXT)
+gui_climates_item_t::gui_climates_item_t(uint8 c) : gui_scrolled_list_t::const_text_scrollitem_t(NULL, color_idx_to_rgb(SYSCOL_TEXT))
 {
 	if(c<MAX_CLIMATES){
 		climate_ = 1<<c;
@@ -46,7 +46,7 @@ gui_climates_item_t::gui_climates_item_t(uint8 c) : gui_scrolled_list_t::const_t
 	}
 }
 
-gui_sorting_item_t::gui_sorting_item_t(uint8 s) : gui_scrolled_list_t::const_text_scrollitem_t(NULL, SYSCOL_TEXT)
+gui_sorting_item_t::gui_sorting_item_t(uint8 s) : gui_scrolled_list_t::const_text_scrollitem_t(NULL, color_idx_to_rgb(SYSCOL_TEXT))
 {
 	sorted_by=s;
 	switch(sorted_by) {

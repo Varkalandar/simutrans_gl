@@ -3589,11 +3589,11 @@ void convoi_t::set_next_reservation_index(route_t::index_t n)
  * the current state saved as color
  * Meanings are BLACK (ok), WHITE (no convois), YELLOW (no vehicle moved), RED (last month income minus), BLUE (at least one convoi vehicle is obsolete)
  */
-PIXVAL convoi_t::get_status_color() const
+rgba_t convoi_t::get_status_color() const
 {
 	if(state==INITIAL) {
 		// in depot/under assembly
-		return SYSCOL_TEXT_HIGHLIGHT;
+		return color_idx_to_rgb(SYSCOL_TEXT_HIGHLIGHT);
 	}
 	else if (state == WAITING_FOR_CLEARANCE_ONE_MONTH || state == CAN_START_ONE_MONTH || get_state() == NO_ROUTE) {
 		// stuck or no route
@@ -3601,17 +3601,17 @@ PIXVAL convoi_t::get_status_color() const
 	}
 	else if(financial_history[0][CONVOI_PROFIT]+financial_history[1][CONVOI_PROFIT]<0) {
 		// ok, not performing best
-		return MONEY_MINUS;
+		return color_idx_to_rgb(MONEY_MINUS);
 	}
 	else if((financial_history[0][CONVOI_OPERATIONS]|financial_history[1][CONVOI_OPERATIONS])==0) {
 		// nothing moved
-		return SYSCOL_TEXT_UNUSED;
+		return color_idx_to_rgb(SYSCOL_TEXT_UNUSED;
 	}
 	else if(has_obsolete) {
-		return SYSCOL_OBSOLETE;
+		return color_idx_to_rgb(SYSCOL_OBSOLETE);
 	}
 	// normal state
-	return SYSCOL_TEXT;
+	return color_idx_to_rgb(SYSCOL_TEXT);
 }
 
 

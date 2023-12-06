@@ -57,7 +57,7 @@ bool curiositylist_stats_t::compare(const gui_component_t *aa, const gui_compone
 
 
 
-curiositylist_stats_t::curiositylist_stats_t(gebaeude_t *att)
+curiositylist_stats_t::curiositylist_stats_t(gebaeude_t *att) : indicator(RGBA_BLACK)
 {
 	attraction = att;
 	// pos button
@@ -139,10 +139,10 @@ void curiositylist_stats_t::draw(scr_coord offset)
         int odd = (pos.y / size.h) & 1;
         int color = odd ? gui_theme_t::gui_color_list_background_odd : gui_theme_t::gui_color_list_background_even;
 
-        display_fillbox_wh_clip_rgb(offset.x + pos.x - 4, offset.y + pos.y, size.w + 200, size.h, color, true);
+        display_fillbox_wh_clip_rgb(offset.x + pos.x - 4, offset.y + pos.y, size.w + 200, size.h, color_idx_to_rgb(color), true);
 
         // is the curiosity connected? => decide on indicatorfarbe (indicator color)
-        PIXVAL indicatorfarbe;
+        rgba_t indicatorfarbe;
         bool mail=false;
         bool pax=false;
         bool all_crowded=true;

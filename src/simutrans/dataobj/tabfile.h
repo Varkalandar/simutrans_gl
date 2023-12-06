@@ -9,7 +9,7 @@
 
 #include <stdio.h>
 
-#include "../simcolor.h"
+#include "../display/rgba.h"
 #include "../tpl/stringhashtable_tpl.h"
 #include "../tpl/vector_tpl.h"
 
@@ -165,7 +165,7 @@ public:
 	 * Get a color in the system format when given a #AABBCC
 	 * and optionally set RGB888 for a chosen var with color_rgb
 	 */
-	PIXVAL get_color(const char *key, PIXVAL def, rgb888_t *color_rgb = NULL);
+	rgba_t get_color(const char *key, int def, rgb888_t *color_rgb = NULL);
 
 	/**
 	 * Get an int

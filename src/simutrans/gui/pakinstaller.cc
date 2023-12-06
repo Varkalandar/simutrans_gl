@@ -34,7 +34,7 @@ pakinstaller_t::pakinstaller_t() :
 	for (int i = 0; i < OBSOLETE_FROM; i++) {
 		if (pak_can_download(pakinfo + i)) {
 			paklist.append(pakinfo + i);
-			paks.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(pakinfo[i].name, SYSCOL_TEXT);
+			paks.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(pakinfo[i].name, color_idx_to_rgb(SYSCOL_TEXT));
 			paks.get_element(paks.get_count()-1)->selected = pak_need_update(pakinfo + i);
 		}
 	}
@@ -47,7 +47,7 @@ pakinstaller_t::pakinstaller_t() :
 	for (int i = OBSOLETE_FROM; i < PAKSET_COUNT; i++) {
 		if (pak_can_download(pakinfo + i)) {
 			paklist.append(pakinfo + i);
-			obsolete_paks.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(pakinfo[i].name, SYSCOL_TEXT_SHADOW);
+			obsolete_paks.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(pakinfo[i].name, color_idx_to_rgb(SYSCOL_TEXT)_SHADOW);
 			obsolete_paks.get_element(obsolete_paks.get_count()-1)->selected = pak_need_update(pakinfo + i);
 		}
 	}

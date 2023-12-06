@@ -220,7 +220,7 @@ convoi_frame_t::convoi_frame_t() :
 		new_component<gui_label_t>("cl_txt_sort");
 		sortedby.set_unsorted(); // do not sort
 		for(  size_t i=0;  i < lengthof(sort_text);  i++  ) {
-			sortedby.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate(sort_text[i]),SYSCOL_TEXT);
+			sortedby.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate(sort_text[i]),color_idx_to_rgb(SYSCOL_TEXT));
 		}
 		sortedby.set_selection(get_sortierung());
 		sortedby.add_listener(this);

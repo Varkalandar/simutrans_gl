@@ -34,17 +34,17 @@ void goods_stats_t::update_goodslist(vector_tpl<const goods_desc_t*>goods, int b
 		const sint32 grundwert_bonus = (sint32)wtyp->get_value()*(1000l+(bonus-100l)*wtyp->get_speed_bonus());
 		const sint32 price = (grundwert128>grundwert_bonus ? grundwert128 : grundwert_bonus);
 
-		gui_label_buf_t *lb = new_component<gui_label_buf_t>(SYSCOL_TEXT, gui_label_t::right);
+		gui_label_buf_t *lb = new_component<gui_label_buf_t>(color_idx_to_rgb(SYSCOL_TEXT), gui_label_t::right);
 		lb->buf().append_money(price/300000.0);
 		lb->update();
 
-		lb = new_component<gui_label_buf_t>(SYSCOL_TEXT, gui_label_t::right);
+		lb = new_component<gui_label_buf_t>(color_idx_to_rgb(SYSCOL_TEXT), gui_label_t::right);
 		lb->buf().printf("%d%%", wtyp->get_speed_bonus());
 		lb->update();
 
 		new_component<gui_label_t>(wtyp->get_catg_name());
 
-		lb = new_component<gui_label_buf_t>(SYSCOL_TEXT, gui_label_t::right);
+		lb = new_component<gui_label_buf_t>(color_idx_to_rgb(SYSCOL_TEXT), gui_label_t::right);
 		lb->buf().printf("%dKg", wtyp->get_weight_per_unit());
 		lb->update();
 	}

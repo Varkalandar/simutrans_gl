@@ -38,7 +38,7 @@ public:
 	scr_coord_val h;  ///< height of data[] image
 	image_id imageid; ///< set by register_image()
 	uint8 zoomable;   ///< some images may not be zoomed i.e. icons
-	PIXVAL *data;     ///< RLE encoded image data
+	uint16_t *data;     ///< RLE encoded image data
 
 	image_t(size_t len_=0) : data(NULL)
 	{
@@ -55,7 +55,7 @@ public:
 	void alloc(size_t len_)
 	{
 		delete [] data;
-		data = new PIXVAL[len_];
+		data = new uint16_t[len_];
 		len = len_;
 	}
 

@@ -129,7 +129,7 @@ line_management_gui_t::line_management_gui_t( linehandle_t line_, player_t* play
 	container_stats.set_table_layout( 1, 0 );
 
 	chart.set_dimension( 12, 10000 );
-	chart.set_background( SYSCOL_CHART_BACKGROUND );
+	chart.set_background( color_idx_to_rgb(SYSCOL_CHART_BACKGROUND) );
 	chart.set_min_size( scr_size( 0, CHART_HEIGHT ) );
 	container_stats.add_component( &chart );
 
@@ -295,7 +295,7 @@ void line_management_gui_t::draw(scr_coord pos, scr_size size)
 		lb_profit_value_text.clear();
 		lb_profit_value_text.printf( "%s %s", translator::translate("Gewinn"), profit_str );
 		lb_profit_value.set_text_pointer( lb_profit_value_text );
-		lb_profit_value.set_color( line->get_finance_history( 0, LINE_PROFIT ) >= 0 ? MONEY_PLUS : MONEY_MINUS );
+		lb_profit_value.set_color( line->get_finance_history( 0, LINE_PROFIT ) >= 0 ? color_idx_to_rgb(MONEY_PLUS) : color_idx_to_rgb(MONEY_MINUS) );
 
 		if(  line->get_schedule()->get_count() != old_halt_count  ) {
 			// update halt info

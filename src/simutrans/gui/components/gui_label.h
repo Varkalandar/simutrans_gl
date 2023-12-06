@@ -34,22 +34,23 @@ private:
 	/**
 	 * Color of the Labels
 	 */
-	PIXVAL color;
+	rgba_t color;
 
 	bool shadowed;
-	PIXVAL color_shadow;
+	rgba_t color_shadow;
 
 	const char * text; // only for direct access of non-translatable things. Do not use!
 	const char * tooltip;
-        font_size_t font_size;
-        
+    font_size_t font_size;
+
 protected:
 	using gui_component_t::init;
 
 public:
-	gui_label_t(const char* text=NULL, PIXVAL color=SYSCOL_TEXT, align_t align=left, font_size_t size=FS_NORMAL);
+	gui_label_t(const char* text, rgba_t color, align_t align=left, font_size_t size=FS_NORMAL);
+	gui_label_t(const char* text=0, uint16_t color_idx=SYSCOL_TEXT, align_t align=left, font_size_t size=FS_NORMAL);
 
-	void init( const char* text_par, scr_coord pos_par, PIXVAL color_par=SYSCOL_TEXT, align_t align_par=left) {
+	void init( const char* text_par, scr_coord pos_par, rgba_t color_par, align_t align_par=left) {
 		set_pos  ( pos_par   );
 		set_text ( text_par  );
 		set_color( color_par );
@@ -87,13 +88,13 @@ public:
 	/**
 	 * Sets the colour of the label
 	 */
-	void set_color(PIXVAL colour) { this->color = colour; }
-	virtual PIXVAL get_color() const { return color; }
+	void set_color(rgba_t color) { this->color = color; }
+	virtual rgba_t get_color() const { return color; }
 
 	/**
 	 * Toggles shadow and sets shadow color.
 	 */
-	void set_shadow(PIXVAL color_shadow, bool shadowed)
+	void set_shadow(rgba_t color_shadow, bool shadowed)
 	{
 		this->color_shadow = color_shadow;
 		this->shadowed = shadowed;
@@ -124,9 +125,9 @@ class gui_label_buf_t : public gui_label_t
 	scr_coord_val min_width = 0;
 
 public:
-	gui_label_buf_t(PIXVAL color=SYSCOL_TEXT, align_t align=left) : gui_label_t(NULL, color, align), buf_changed(true) { }
+	gui_label_buf_t(rgba_t color=RGBA_BLACK, align_t align=left) : gui_label_t(NULL, color, align), buf_changed(true) { }
 
-	void init(PIXVAL color_par=SYSCOL_TEXT, align_t align_par=left);
+	void init(rgba_t color_par, align_t align_par=left);
 
 	/**
 	 * Has to be called after access to buf() is finished.

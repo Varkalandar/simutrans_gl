@@ -26,7 +26,7 @@ struct message_node_t
 	char msg[256];
 	sint32 type;
 	koord3d pos;
-	FLAGGED_PIXVAL color;
+	rgba_t color;
 	image_id image;
 	sint32 time;
 
@@ -34,7 +34,7 @@ struct message_node_t
 
 	uint32 get_type_shifted() const; // { return 1<<(type & MESSAGE_TYPE_MASK); }
 
-	FLAGGED_PIXVAL get_player_color(karte_t*) const;
+	rgba_t get_player_color(karte_t*) const;
 
 	void open_msg_window(bool open_as_autoclose) const;
 };
@@ -62,7 +62,7 @@ public:
 		playermsg_flag              = 1 << 15
 	};
 
-	void add_message( const char *text, koord3d pos, uint16 what, FLAGGED_PIXVAL color=SYSCOL_TEXT, image_id image=IMG_EMPTY );
+	void add_message( const char *text, koord3d pos, uint16 what, rgba_t color, image_id image=IMG_EMPTY );
 
 	/* determines, which message is displayed where */
 	void get_message_flags( sint32 *t, sint32 *w, sint32 *a, sint32  *i);

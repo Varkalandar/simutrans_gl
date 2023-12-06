@@ -57,7 +57,7 @@ enlarge_map_frame_t::enlarge_map_frame_t() :
 		add_table(2,2);
 		{
 			// map seed number label
-			map_number_label.init();
+			map_number_label.init(color_idx_to_rgb(SYSCOL_TEXT));
 			map_number_label.buf().printf("%s %d", translator::translate("2WORLD_CHOOSE"), welt->get_settings().get_map_number());
 			map_number_label.update();
 			add_component(&map_number_label);
@@ -68,7 +68,7 @@ enlarge_map_frame_t::enlarge_map_frame_t() :
 			add_component( &inp_x_size );
 
 			// Map size label
-			size_label.init();
+			size_label.init(color_idx_to_rgb(SYSCOL_TEXT));
 			size_label.buf().printf(translator::translate("Size (%d MB):"), 9999);
 			size_label.update();
 			add_component( &size_label );
@@ -189,7 +189,7 @@ void enlarge_map_frame_t::update_preview()
 
 	for(  int j=0;  j<pre_y;  j++  ) {
 		for(  int i=0;  i<pre_x;  i++  ) {
-			PIXVAL color;
+			rgba_t color;
 			koord pos(i*mx,j*my);
 
 			if(  pos.x<=old_x  &&  pos.y<=old_y  ){
@@ -207,12 +207,12 @@ void enlarge_map_frame_t::update_preview()
 				const sint16 height = karte_t::perlin_hoehe(sets, pos, koord(old_x,old_y) );
 				color = minimap_t::calc_height_color(height, sets->get_groundwater());
 			}
-			map.at(i,j) = color;
+			map.at(i,j) = 0; // todo: color;
 		}
 	}
 	for(  uint j=0;  j<map.get_height();  j++  ) {
 		for(  uint i=(j<pre_y ? pre_x : 0);  i<map.get_width();   i++  ) {
-			map.at(i,j) = color_idx_to_rgb(COL_GREY1);
+			map.at(i,j) = 0; // todo: color_idx_to_rgb(COL_GREY1);
 		}
 	}
 	map_preview.set_map_data(&map);

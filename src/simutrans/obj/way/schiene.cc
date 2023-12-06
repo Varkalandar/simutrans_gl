@@ -171,7 +171,7 @@ void schiene_t::rdwr(loadsave_t *file)
 }
 
 
-FLAGGED_PIXVAL schiene_t::get_outline_colour() const
+rgba_t schiene_t::get_outline_colour() const
 {
 	if (!show_reservations || !reserved.is_bound()) {
 		return 0;

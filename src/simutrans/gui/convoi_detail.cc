@@ -49,7 +49,7 @@ public:
 		add_table(1,0);
 		{
 			// name
-			new_component<gui_label_t>( v->get_desc()->get_name(), world()->use_timeline()  &&  v->get_desc()->is_retired(month_now) ? SYSCOL_OBSOLETE : SYSCOL_TEXT);
+			new_component<gui_label_t>( v->get_desc()->get_name(), world()->use_timeline()  &&  v->get_desc()->is_retired(month_now) ? color_idx_to_rgb(SYSCOL_OBSOLETE) : color_idx_to_rgb(SYSCOL_TEXT));
 			// age
 			gui_label_buf_t* l = new_component<gui_label_buf_t>();
 			const sint32 month = v->get_purchase_time();

@@ -62,7 +62,7 @@ public:
 		virtual bool is_editable()  const { return false; }
 
                 virtual void draw_background(const scr_coord offset) const;
-                
+
 		/// compares using get_text
 		static bool compare(const gui_component_t *a, const gui_component_t *b );
 
@@ -79,7 +79,7 @@ public:
 	class const_text_scrollitem_t : public gui_label_t, public scrollitem_t
 	{
 	public:
-		const_text_scrollitem_t(char const* const t, PIXVAL const col) : gui_label_t(NULL, col) { set_text_pointer(t); }
+		const_text_scrollitem_t(char const* const t, rgba_t const col) : gui_label_t(NULL, col) { set_text_pointer(t); }
 
 		char const* get_text() const OVERRIDE { return get_text_pointer(); }
 

@@ -26,7 +26,7 @@ gui_numberinput_t::gui_numberinput_t() :
 	bt_left.add_listener(this );
 
 	textinp.set_alignment( ALIGN_RIGHT );
-	textinp.set_color( SYSCOL_EDIT_TEXT );
+	textinp.set_color( color_idx_to_rgb(SYSCOL_EDIT_TEXT) );
 	textinp.add_listener( this );
 
 	bt_right.set_typ(button_t::repeatarrowright );
@@ -86,7 +86,7 @@ void gui_numberinput_t::set_value(sint32 new_value)
 		sprintf(textbuffer, "%d", new_value);
 		textinp.set_text(textbuffer, 20);
 	}
-	textinp.set_color( value == new_value ? (b_enabled ? SYSCOL_EDIT_TEXT : SYSCOL_EDIT_TEXT_DISABLED) : color_idx_to_rgb(COL_RED) );
+	textinp.set_color( value == new_value ? (b_enabled ? color_idx_to_rgb(SYSCOL_EDIT_TEXT) : color_idx_to_rgb(SYSCOL_EDIT_TEXT_DISABLED)) : color_idx_to_rgb(COL_RED) );
 	value = new_value;
 }
 

@@ -100,7 +100,7 @@ public:
 	void mark_images_dirty() const;
 
 	image_id get_outline_image() const OVERRIDE;
-	FLAGGED_PIXVAL get_outline_colour() const OVERRIDE;
+	rgba_t get_outline_colour() const OVERRIDE;
 
 	// caches image at height 0
 	void calc_image() OVERRIDE;

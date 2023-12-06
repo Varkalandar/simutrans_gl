@@ -363,8 +363,8 @@ scr_size gui_flowtext_intern_t::output(scr_coord offset, bool doit, bool return_
 
 	int xpos            = 0;
 	int ypos            = 0;
-	PIXVAL color        = SYSCOL_TEXT;
-	PIXVAL double_color = SYSCOL_TEXT_SHADOW;
+	rgba_t color        = color_idx_to_rgb(SYSCOL_TEXT);
+	rgba_t double_color = color_idx_to_rgb(SYSCOL_TEXT_SHADOW);
 	bool double_it      = false;
 	bool link_it        = false; // true, if currently underlining for a link
 	int extra_pixel     = 0;     // extra pixel before next line
@@ -442,7 +442,7 @@ scr_size gui_flowtext_intern_t::output(scr_coord offset, bool doit, bool return_
 				break;
 
 			case ATT_A_START:
-				color = SYSCOL_TEXT_TITLE;
+				color = color_idx_to_rgb(SYSCOL_TEXT_TITLE);
 				// link == links.end() if there is an endtag </a> is missing
 				if (link!=links.end()) {
 					link->tl.x = xpos;
@@ -457,11 +457,11 @@ scr_size gui_flowtext_intern_t::output(scr_coord offset, bool doit, bool return_
 				link->br.y = ypos + LINESPACE;
 				++link;
 				link_it = false;
-				color = SYSCOL_TEXT;
+				color = color_idx_to_rgb(SYSCOL_TEXT);
 				break;
 
 			case ATT_H1_START:
-				color        = SYSCOL_TEXT_TITLE;
+				color        = color_idx_to_rgb(SYSCOL_TEXT_TITLE);
 				double_it    = true;
 				break;
 
@@ -474,36 +474,36 @@ scr_size gui_flowtext_intern_t::output(scr_coord offset, bool doit, bool return_
 				xpos = 0;
 				extra_pixel = 0;
 				ypos += LINESPACE+2;
-				color = SYSCOL_TEXT;
+				color = color_idx_to_rgb(SYSCOL_TEXT);
 				break;
 
 			case ATT_EM_START:
-				color = SYSCOL_TEXT_HIGHLIGHT;
+				color = color_idx_to_rgb(SYSCOL_TEXT_HIGHLIGHT);
 				break;
 
 			case ATT_EM_END:
-				color = SYSCOL_TEXT;
+				color = color_idx_to_rgb(SYSCOL_TEXT);
 				break;
 
 			case ATT_IT_START:
-				color     = SYSCOL_TEXT_HIGHLIGHT;
+				color     = color_idx_to_rgb(SYSCOL_TEXT_HIGHLIGHT);
 				double_it = true;
 				break;
 
 			case ATT_IT_END:
-				color     = SYSCOL_TEXT;
+				color     = color_idx_to_rgb(SYSCOL_TEXT);
 				double_it = false;
 				break;
 
 			case ATT_STRONG_START:
 				if(  !double_it  ) {
-					color = SYSCOL_TEXT_STRONG;
+					color = color_idx_to_rgb(SYSCOL_TEXT_STRONG);
 				}
 				break;
 
 			case ATT_STRONG_END:
 				if(  !double_it  ) {
-					color = SYSCOL_TEXT;
+					color = color_idx_to_rgb(SYSCOL_TEXT);
 				}
 				break;
 

@@ -66,7 +66,7 @@ void settings_general_stats_t::init(settings_t const* const sets)
 	// combobox for savegame version
 	savegame.clear_elements();
 	for(  uint32 i=0;  i<lengthof(version);  i++  ) {
-		savegame.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( version[i]+2, SYSCOL_TEXT ) ;
+		savegame.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( version[i]+2, color_idx_to_rgb(SYSCOL_TEXT) ) ;
 		if(  strcmp(version[i],env_t::savegame_version_str)==0  ) {
 			savegame.set_selection( i );
 		}
@@ -520,7 +520,7 @@ void settings_climates_stats_t::init(settings_t* const sets)
 	// combobox for climate generator
 	climate_generate.clear_elements();
 	for(  uint32 i=0;  i<lengthof(climate_generate_string);  i++  ) {
-		climate_generate.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( climate_generate_string[i], SYSCOL_TEXT ) ;
+		climate_generate.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( climate_generate_string[i], color_idx_to_rgb(SYSCOL_TEXT) ) ;
 	}
 	climate_generate.set_selection( sets->get_climate_generator() );
 	climate_generate.set_focusable( false );
@@ -556,7 +556,7 @@ void settings_climates_stats_t::init(settings_t* const sets)
 	// combobox for trees generator
 	tree_generate.clear_elements();
 	for(  uint32 i=0;  i<lengthof(tree_generate_string);  i++  ) {
-		tree_generate.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( tree_generate_string[i], SYSCOL_TEXT ) ;
+		tree_generate.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( tree_generate_string[i], color_idx_to_rgb(SYSCOL_TEXT) ) ;
 	}
 	tree_generate.set_selection( sets->get_tree_distribution() );
 	tree_generate.set_focusable( false );

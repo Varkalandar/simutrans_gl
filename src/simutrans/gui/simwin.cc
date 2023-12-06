@@ -168,7 +168,7 @@ static bool destroy_framed_win(simwin_t *win);
  */
 static int display_gadget_box(sint8 code,
 			      int const x, int const y,
-			      PIXVAL lighter, PIXVAL darker,
+			      rgba_t lighter, rgba_t darker,
 			      bool const pushed)
 {
 
@@ -207,7 +207,7 @@ static int display_gadget_box(sint8 code,
 		else if(  code == SKIN_GADGET_PINNED  ) {
 			gadget_text = "S";
 		}
-		display_proportional_rgb( x+4, y+4, gadget_text, ALIGN_LEFT, SYSCOL_TEXT, false );
+		display_proportional_rgb( x+4, y+4, gadget_text, ALIGN_LEFT, color_idx_to_rgb(SYSCOL_TEXT), false );
 	}
 
 	int side = x+REVERSE_GADGETS*D_GADGET_WIDTH-1;
@@ -222,8 +222,8 @@ static int display_gadget_box(sint8 code,
 static int display_gadget_boxes(
 	simwin_gadget_flags_t* flags,
 	int x, int y,
-	PIXVAL lighter,
-	PIXVAL darker,
+	rgba_t lighter,
+	rgba_t darker,
 	uint16 gadget_state,
 	bool sticky_pushed,
 	bool goto_pushed
@@ -316,9 +316,9 @@ static sint8 decode_gadget_boxes(simwin_gadget_flags_t const * const flags, int 
 
 
 static void win_draw_window_title(const scr_coord pos, const scr_size size,
-		const FLAGGED_PIXVAL title_color,
+		const rgba_t title_color,
 		const char * const text,
-		FLAGGED_PIXVAL text_color,
+		rgba_t text_color,
 		const koord3d welt_pos,
 		const uint16 gadget_state,
 		const bool sticky,
@@ -328,7 +328,7 @@ static void win_draw_window_title(const scr_coord pos, const scr_size size,
 		const bool is_top)
 {
 	PUSH_CLIP_FIT(pos.x, pos.y, size.w, size.h);
-	PIXVAL lighter, darker;
+	rgba_t lighter, darker;
 
 	// Hajo: use themed title bars?
 	if(skinverwaltung_t::title_bar) {
@@ -337,7 +337,7 @@ static void win_draw_window_title(const scr_coord pos, const scr_size size,
 		// Hajo: trickery - player no. is in bits 16 to 23, color is in bits 0 to 15
 		const int pn = (title_color >> 16) & 0x0F;
 		const int pc = (title_color >> 24) & 0xFF;
-		
+
 		// Hajo: calculate real shading, how?
 		lighter = get_system_color({128, 128, 128});
 		darker  = get_system_color({0, 0, 0});
@@ -353,19 +353,19 @@ static void win_draw_window_title(const scr_coord pos, const scr_size size,
 		} else {
 			// A theme without player color title bars. In this case we change
 			// the title text to player color
-			
+
 			text_color = (is_player) ? color_idx_to_rgb(pc+7) : get_system_color({255, 255, 255});
-			
-			display_img_stretch(gui_theme_t::gui_title_bar, area, 0);			
+
+			display_img_stretch(gui_theme_t::gui_title_bar, area, 0);
 		}
-		
+
 	} else {
-		
-		PIXVAL color = title_color & 0xFFFF;
+
+		rgba_t color = title_color & 0xFFFF;
 
 		if(!is_top) {
 			// not top => darker
-			FLAGGED_PIXVAL special_bits = title_color & 0xFFFF0000;
+			rgba_t special_bits = title_color & 0xFFFF0000;
 			color = display_blend_colors(title_color & 0xFFFF, color_idx_to_rgb(COL_BLACK), env_t::bottom_window_darkness);
 			color |= special_bits;
 		}
@@ -383,7 +383,7 @@ static void win_draw_window_title(const scr_coord pos, const scr_size size,
 		display_vline_wh_clip_rgb( pos.x,              pos.y, D_TITLEBAR_HEIGHT, lighter, false ); // left
 		display_vline_wh_clip_rgb( pos.x + size.w - 1, pos.y, D_TITLEBAR_HEIGHT, darker,  false ); // right
 	}
-        
+
 	// Draw the gadgets and then move left and draw text.
 	const int width = display_gadget_boxes( &flags, pos.x+(REVERSE_GADGETS?0:size.w-D_GADGET_WIDTH), pos.y, lighter, darker, gadget_state, sticky, goto_pushed );
 	const int left = (REVERSE_GADGETS ? width + 4 : 6);
@@ -393,9 +393,9 @@ static void win_draw_window_title(const scr_coord pos, const scr_size size,
 		// not top => darker
 		text_color = env_t::bottom_window_text_color;
 	}
-	
+
 	int titlewidth = display_text_bold(pos.x + left, pos.y + top, text_color, text, false, -1, FS_NORMAL);
-	
+
 	// if the object has a world position, show the coordinates
 	flags.gotopos = (welt_pos != koord3d::invalid);
 	if(flags.gotopos) {
@@ -1153,10 +1153,10 @@ void display_win(int win)
 	// minimising flag if resize allowed
 	wins[win].flags.size = (comp->get_resizemode() != 0);
 	scr_coord pos = wins[win].pos;
-	FLAGGED_PIXVAL title_color = comp->get_titlecolor();
-	FLAGGED_PIXVAL text_color = env_t::front_window_text_color;
+	rgba_t title_color = comp->get_titlecolor();
+	rgba_t text_color = env_t::front_window_text_color;
 	bool is_player = title_color & PLAYER_FLAG;
-	
+
 	bool need_dragger = comp->get_resizemode() != gui_frame_t::no_resize;
 
 	// HACK  So draw will know if gadget is needed.
@@ -1960,9 +1960,9 @@ void win_display_flush(double konto)
 	scr_coord_val const status_bar_text_y = status_bar_y + (status_bar_height - LINESPACE) / 2;
 	scr_coord_val const status_bar_icon_y = status_bar_y + (status_bar_height - 15) / 2;
 	display_set_clip_wh( 0, 0, disp_width, disp_height );
-	display_fillbox_wh_rgb(0, status_bar_y - 1, disp_width, 1, SYSCOL_STATUSBAR_DIVIDER, false);
-	display_fillbox_wh_rgb(0, env_t::menupos == MENU_BOTTOM ? status_bar_height : status_bar_y - 1, disp_width, 1, SYSCOL_STATUSBAR_DIVIDER, false);
-	display_fillbox_wh_rgb(0, status_bar_y, disp_width, status_bar_height, SYSCOL_STATUSBAR_BACKGROUND, false);
+	display_fillbox_wh_rgb(0, status_bar_y - 1, disp_width, 1, color_idx_to_rgb(SYSCOL_STATUSBAR_DIVIDER, false);
+	display_fillbox_wh_rgb(0, env_t::menupos == MENU_BOTTOM ? status_bar_height : status_bar_y - 1, disp_width, 1, color_idx_to_rgb(SYSCOL_STATUSBAR_DIVIDER, false);
+	display_fillbox_wh_rgb(0, status_bar_y, disp_width, status_bar_height, color_idx_to_rgb(SYSCOL_STATUSBAR_BACKGROUND, false);
 
 	bool tooltip_check = env_t::menupos == MENU_BOTTOM ? get_mouse_pos().y < status_bar_height : get_mouse_pos().y > status_bar_y;
 	if(  tooltip_check  ) {
@@ -2060,8 +2060,8 @@ void win_display_flush(double konto)
 		}
 	}
 #endif
-	display_proportional_rgb(20, status_bar_text_y, time, ALIGN_LEFT, SYSCOL_STATUSBAR_TEXT, true);
-	display_proportional_rgb(right_border-4, status_bar_text_y, info, ALIGN_RIGHT, SYSCOL_STATUSBAR_TEXT, true);
+	display_proportional_rgb(20, status_bar_text_y, time, ALIGN_LEFT, color_idx_to_rgb(SYSCOL_STATUSBAR_TEXT, true);
+	display_proportional_rgb(right_border-4, status_bar_text_y, info, ALIGN_RIGHT, color_idx_to_rgb(SYSCOL_STATUSBAR_TEXT, true);
 	/* Since the visual center (disp_width + ((w_left + 8) & 0xFFF0) - ((w_right + 8) & 0xFFF0)) / 2;
 	 * jumps left and right with proportional fonts, we just take the actual center
 	 */
@@ -2071,7 +2071,7 @@ void win_display_flush(double konto)
 		char buffer[256];
 		display_proportional_rgb( middle-5, status_bar_text_y, wl->get_active_player()->get_name(), ALIGN_RIGHT, PLAYER_FLAG|color_idx_to_rgb(wl->get_active_player()->get_player_color1()+env_t::gui_player_color_dark), true);
 		money_to_string(buffer, konto );
-		display_proportional_rgb( middle+5, status_bar_text_y, buffer, ALIGN_LEFT, konto >= 0.0?MONEY_PLUS:MONEY_MINUS, true);
+		display_proportional_rgb( middle+5, status_bar_text_y, buffer, ALIGN_LEFT, konto >= 0.0?color_idx_to_rgb(MONEY_PLUS):color_idx_to_rgb(MONEY_MINUS), true);
 	}
 }
 

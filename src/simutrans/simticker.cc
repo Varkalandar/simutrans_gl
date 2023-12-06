@@ -104,7 +104,7 @@ void ticker::add_msg_node(const message_node_t& msg)
 }
 
 
-void ticker::add_msg(const char* txt, koord3d pos, FLAGGED_PIXVAL color)
+void ticker::add_msg(const char* txt, koord3d pos, rgba_t color)
 {
 	node n;
 	tstrncpy(n.msg, txt, lengthof(n.msg));
@@ -164,7 +164,7 @@ void ticker::draw()
 
 	// do partial redraw
 	display_scroll_band( start_y, dx_since_last_draw, TICKER_HEIGHT );
-	display_fillbox_wh_rgb(width-dx_since_last_draw-6, start_y, dx_since_last_draw+6, TICKER_HEIGHT, SYSCOL_TICKER_BACKGROUND, true);
+	display_fillbox_wh_rgb(width-dx_since_last_draw-6, start_y, dx_since_last_draw+6, TICKER_HEIGHT, color_idx_to_rgb(SYSCOL_TICKER_BACKGROUND, true);
 
 	// ok, ready for the text
 	PUSH_CLIP( 0, start_y, width - 1, TICKER_HEIGHT );
@@ -195,7 +195,7 @@ void ticker::redraw()
 	const int width = display_get_width();
 
 	// just draw the ticker in its colour ... (to be sure ... )
-	display_fillbox_wh_rgb(0, start_y, width, TICKER_HEIGHT, SYSCOL_TICKER_BACKGROUND, true);
+	display_fillbox_wh_rgb(0, start_y, width, TICKER_HEIGHT, color_idx_to_rgb(SYSCOL_TICKER_BACKGROUND, true);
 	for(node & n : list) {
 		if (n.xpos < width) {
 			display_proportional_clip_rgb(n.xpos, start_y + TICKER_V_SPACE, n.msg, ALIGN_LEFT, n.color, true);

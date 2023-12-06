@@ -27,29 +27,25 @@ static font_t headline_font;
 int default_font_linespace = 0;
 
 
-void display_bevel_box(scr_rect area, 
-                       PIXVAL top, PIXVAL left, PIXVAL right, PIXVAL bottom,
+void display_bevel_box(scr_rect area,
+                       rgba_t top, rgba_t left, rgba_t right, rgba_t bottom,
 	                   bool dirty)
 {
 	display_vline_wh_clip_rgb(area.x, area.y, area.h, left, dirty);
 	display_vline_wh_clip_rgb(area.x+area.w-1, area.y+1, area.h-1, right, dirty);
-	
+
 	display_fillbox_wh_clip_rgb(area.x, area.y, area.w, 1, top, dirty);
 	display_fillbox_wh_clip_rgb(area.x+1, area.y+area.h-1, area.w-1, 1, bottom, dirty);
 }
 
 
-static PIXVAL handle_color_sequences(utf32 code, PIXVAL default_color)
+static rgba_t handle_color_sequences(utf32 code, rgba_t default_color)
 {
-	PIXVAL color;
-	
 	if(code == 'd') {
-		color = default_color;
+		return default_color;
 	} else {
-		color = get_system_color({255, 255, 255});
+		return RGBA_WHITE;
 	}
-	
-	return color;
 }
 
 
@@ -57,13 +53,13 @@ static PIXVAL handle_color_sequences(utf32 code, PIXVAL default_color)
  * len parameter added - use -1 for previous behaviour.
  * completely renovated for unicode and 10 bit width and variable height
  */
-int display_text_proportional_len_clip_rgb(scr_coord_val x, scr_coord_val y, 
-	                                       const char* txt, control_alignment_t flags, 
-	                                       const PIXVAL default_color, bool dirty, 
+int display_text_proportional_len_clip_rgb(scr_coord_val x, scr_coord_val y,
+	                                       const char* txt, control_alignment_t flags,
+	                                       const rgba_t default_color, bool dirty,
 	                                       sint32 len, sint32 spacing, font_size_t size)
 {
 	font_t * font = (size == FS_NORMAL) ? &default_font : &headline_font;
-	PIXVAL color = default_color;
+	rgba_t color = default_color;
 
 	if (len < 0) {
 		// don't know len yet
@@ -108,7 +104,7 @@ int display_text_proportional_len_clip_rgb(scr_coord_val x, scr_coord_val y,
 			// advance to next tab stop
 			int p = (x - x0) % tabsize;
 			x = x - p + tabsize;
-			continue; // nothing to see 
+			continue; // nothing to see
 		}
 
 		if(c == '\e') {
@@ -116,9 +112,9 @@ int display_text_proportional_len_clip_rgb(scr_coord_val x, scr_coord_val y,
 				utf32 c2 = decoder.next();
 				color = handle_color_sequences(c2, default_color);
 			}
-			continue; // nothing to see 
+			continue; // nothing to see
 		}
-		
+
 		const int gw = display_glyph(x, y, c, flags, color, font);
 		x += gw + spacing;
 	}
@@ -135,8 +131,8 @@ int display_text_proportional_len_clip_rgb(scr_coord_val x, scr_coord_val y,
 
 /// Displays a string which is abbreviated by the (language specific) ellipsis character if too wide
 /// If enough space is given then it just displays the full string
-void display_proportional_ellipsis_rgb(scr_rect r, const char *text, int align, const PIXVAL color, const bool dirty, 
-	                                   bool shadowed, PIXVAL shadow_color, font_size_t size)
+void display_proportional_ellipsis_rgb(scr_rect r, const char *text, int align, const rgba_t color, const bool dirty,
+	                                   bool shadowed, rgba_t shadow_color, font_size_t size)
 {
 	const scr_coord_val ellipsis_width = translator::get_lang()->ellipsis_width;
 	const scr_coord_val max_screen_width = r.w;
@@ -212,15 +208,15 @@ void display_proportional_ellipsis_rgb(scr_rect r, const char *text, int align, 
 /**
  * display text in 3d box with clipping
  */
-void display_ddd_proportional_clip(scr_coord_val xpos, scr_coord_val ypos, FLAGGED_PIXVAL ddd_color, FLAGGED_PIXVAL text_color, const char *text, int dirty)
+void display_ddd_proportional_clip(scr_coord_val xpos, scr_coord_val ypos, rgba_t ddd_color, rgba_t text_color, const char *text, int dirty)
 {
 	const int vpadding = LINESPACE / 7;
 	const int hpadding = LINESPACE / 4;
 
 	scr_coord_val width = proportional_string_width(text);
 
-	PIXVAL lighter = display_blend_colors(ddd_color, color_idx_to_rgb(COL_WHITE), 25);
-	PIXVAL darker  = display_blend_colors(ddd_color, color_idx_to_rgb(COL_BLACK), 25);
+	rgba_t lighter = display_blend_colors(ddd_color, RGBA_WHITE, 0.25);
+	rgba_t darker  = display_blend_colors(ddd_color, RGBA_BLACK, 0.25);
 
 	display_fillbox_wh_clip_rgb( xpos+1, ypos - vpadding + 1, width+2*hpadding-2, LINESPACE+2*vpadding-1, ddd_color, dirty );
 
@@ -237,7 +233,7 @@ void display_ddd_proportional_clip(scr_coord_val xpos, scr_coord_val ypos, FLAGG
 /**
  * Draw multiline text
  */
-int display_multiline_text_rgb(scr_coord_val x, scr_coord_val y, const char *buf, PIXVAL color)
+int display_multiline_text_rgb(scr_coord_val x, scr_coord_val y, const char *buf, rgba_t color)
 {
 	int max_px_len = 0;
 	if (buf != NULL && *buf != '\0') {
@@ -250,7 +246,7 @@ int display_multiline_text_rgb(scr_coord_val x, scr_coord_val y, const char *buf
 				ALIGN_LEFT | DT_CLIP, color, true,
 				next != NULL ? (int)(size_t)(next - buf) : -1,
 				0, FS_NORMAL);
-			
+
 			if(  px_len>max_px_len  ) {
 				max_px_len = px_len;
 			}
@@ -261,7 +257,7 @@ int display_multiline_text_rgb(scr_coord_val x, scr_coord_val y, const char *buf
 }
 
 
-void display_outline_proportional_rgb(scr_coord_val xpos, scr_coord_val ypos, PIXVAL text_color, PIXVAL shadow_color, const char *text, int dirty, sint32 len)
+void display_outline_proportional_rgb(scr_coord_val xpos, scr_coord_val ypos, rgba_t text_color, rgba_t shadow_color, const char *text, int dirty, sint32 len)
 {
 	const int flags = ALIGN_LEFT | DT_CLIP;
 	display_text_proportional_len_clip_rgb(xpos - 1, ypos    , text, flags, shadow_color, dirty, len, 0, FS_NORMAL);
@@ -270,7 +266,7 @@ void display_outline_proportional_rgb(scr_coord_val xpos, scr_coord_val ypos, PI
 }
 
 
-void display_shadow_proportional_rgb(scr_coord_val xpos, scr_coord_val ypos, PIXVAL text_color, PIXVAL shadow_color, const char *text, int dirty, sint32 len)
+void display_shadow_proportional_rgb(scr_coord_val xpos, scr_coord_val ypos, rgba_t text_color, rgba_t shadow_color, const char *text, int dirty, sint32 len)
 {
 	const int flags = ALIGN_LEFT | DT_CLIP;
 	display_text_proportional_len_clip_rgb(xpos + 1, ypos + 1 + (12 - LINESPACE) / 2, text, flags, shadow_color, dirty, len, 0, FS_NORMAL);
@@ -278,8 +274,8 @@ void display_shadow_proportional_rgb(scr_coord_val xpos, scr_coord_val ypos, PIX
 }
 
 
-int display_text_bold(scr_coord_val xpos, scr_coord_val ypos, PIXVAL color, 
-	                  const char *text, int dirty, 
+int display_text_bold(scr_coord_val xpos, scr_coord_val ypos, rgba_t color,
+	                  const char *text, int dirty,
 	                  sint32 len, font_size_t size)
 {
 	const int flags = ALIGN_LEFT | DT_CLIP;
@@ -304,7 +300,7 @@ bool display_load_font(const char *fname, bool reload)
 	}
 
 	const int size = env_t::fontsize;
-	
+
 	if(loaded_fnt.load_from_file(fname, size)) {
 		default_font = loaded_fnt;
 		default_font_linespace = default_font.get_linespace();
@@ -315,13 +311,13 @@ bool display_load_font(const char *fname, bool reload)
 	if(headline_font.load_from_file(fname, size * 120 / 100)) {
 		return default_font.is_loaded() && headline_font.is_loaded();
 	}
-	
+
 	return false;
 }
 
 
-/* 
- * @return true, if this is a valid character 
+/*
+ * @return true, if this is a valid character
  */
 bool has_character(utf32 char_code)
 {
@@ -456,8 +452,8 @@ utf32 get_prev_char_with_metrics(const char* &text, const char *const text_start
  * Proportional string width in pixels with a text of a given length
  * extended for universal font routines with unicode support
  */
-int display_calc_proportional_string_len_width(const char *text, 
-	                                           size_t len, 
+int display_calc_proportional_string_len_width(const char *text,
+	                                           size_t len,
 	                                           int spacing,
 	                                           font_size_t size)
 {
@@ -479,7 +475,7 @@ int display_calc_proportional_string_len_width(const char *text,
 			continue;
 		}
 
-		
+
 		if(  iUnicode == UNICODE_NUL ||  iUnicode == '\n') {
 			return width;
 		}
@@ -521,7 +517,7 @@ void display_calc_proportional_multiline_string_len_width(int &xw, int &yh, cons
 
 /**
  * Get the height of the specified font in pixels,
- * 
+ *
  * @param size FS_NORMAL or FS_HEADLINE
  * @return the line height for this font
  */

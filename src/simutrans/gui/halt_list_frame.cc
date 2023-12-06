@@ -139,7 +139,7 @@ halt_list_frame_t::halt_list_frame_t() :
 		new_component_span<gui_label_t>("hl_txt_sort", 1);
 		sortedby.set_unsorted(); // do not sort
 		for (size_t i = 0; i < lengthof(sort_text); i++) {
-			sortedby.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate(sort_text[i]), SYSCOL_TEXT);
+			sortedby.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate(sort_text[i]), color_idx_to_rgb(SYSCOL_TEXT));
 		}
 		sortedby.set_selection(get_sortierung());
 		sortedby.add_listener(this);
@@ -182,7 +182,7 @@ static bool passes_filter_special(haltestelle_t const& s)
 	if (!halt_list_frame_t::get_filter(halt_list_frame_t::spezial_filter)) return true;
 
 	if (halt_list_frame_t::get_filter(halt_list_frame_t::ueberfuellt_filter)) {
-		PIXVAL const color = s.get_status_farbe();
+		rgba_t const color = s.get_status_farbe();
 		if (color == color_idx_to_rgb(COL_RED) || color == color_idx_to_rgb(COL_ORANGE)) {
 			return true; // overcrowded
 		}

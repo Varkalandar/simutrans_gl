@@ -114,7 +114,7 @@ private:
 	 */
 	void init_financial_history();
 
-	PIXVAL status_color, last_status_color;
+	rgba_t status_color, last_status_color;
 	sint16 last_bar_count;
 	vector_tpl<sint16> last_bar_height; // caches the last height of the station bar for each good type drawn in display_status(). used for dirty tile management
 	uint32 capacity[3]; // passenger, mail, goods
@@ -377,7 +377,7 @@ public:
 	/**
 	 * Calculates a status color for status bars
 	 */
-	PIXVAL get_status_farbe() const { return status_color; }
+	rgba_t get_status_farbe() const { return status_color; }
 
 	/**
 	 * Draws some nice colored bars giving some status information

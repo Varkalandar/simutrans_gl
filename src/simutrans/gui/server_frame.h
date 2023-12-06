@@ -56,7 +56,7 @@ private:
 		cbuffer_t server_altdns;
 		bool status;
 	public:
-		server_scrollitem_t (const cbuffer_t& name, const cbuffer_t& dns, const cbuffer_t& altdns, bool status, PIXVAL col) :
+		server_scrollitem_t (const cbuffer_t& name, const cbuffer_t& dns, const cbuffer_t& altdns, bool status, rgba_t col) :
 			gui_scrolled_list_t::const_text_scrollitem_t( NULL, col ),
 			servername( name ), serverdns( dns ),
 			server_altdns(altdns),
@@ -80,7 +80,7 @@ private:
 	/**
 	 * Update UI fields with data from the current state of gameinfo_t gi
 	 */
-	PIXVAL update_info();
+	rgba_t update_info();
 
 	/**
 	 * Update UI fields to show connection errors

@@ -27,7 +27,7 @@
 #include <string>
 
 
-FLAGGED_PIXVAL baum_t::outline_color = 0;
+rgba_t baum_t::outline_color = 0;
 
 freelist_tpl<baum_t> baum_t::fl;
 
@@ -179,7 +179,7 @@ void baum_t::calc_image()
 
 
 
-FLAGGED_PIXVAL baum_t::get_outline_colour() const
+rgba_t baum_t::get_outline_colour() const
 {
 	return outline_color;
 }

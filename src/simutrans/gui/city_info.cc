@@ -32,11 +32,11 @@ class gui_city_minimap_t : public gui_world_component_t
 	stadt_t* city;
 	scr_size minimaps_size;        ///< size of minimaps
 	scr_coord minimap2_offset;     ///< position offset of second minimap
-	array2d_tpl<PIXVAL> pax_dest_old, pax_dest_new;
+	array2d_tpl<uint8_t> pax_dest_old, pax_dest_new;
 	uint32 pax_destinations_last_change;
 
-	void init_pax_dest( array2d_tpl<PIXVAL> &pax_dest );
-	void add_pax_dest( array2d_tpl<PIXVAL> &pax_dest, const sparse_tpl<PIXVAL>* city_pax_dest );
+	void init_pax_dest( array2d_tpl<uint8_t> &pax_dest );
+	void add_pax_dest( array2d_tpl<uint8_t> &pax_dest, const sparse_tpl<uint8_t>* city_pax_dest );
 
 public:
 	gui_city_minimap_t(stadt_t* city) : city(city),
@@ -164,7 +164,8 @@ const uint8 hist_type_color[MAX_CITY_HISTORY] =
 
 city_info_t::city_info_t(stadt_t* city) :
 	gui_frame_t( name, NULL ),
-	city(city)
+	city(city),
+	lb_size(RGBA_BLACK), lb_buildings(RGBA_BLACK), lb_border(RGBA_BLACK), lb_unemployed(RGBA_BLACK), lb_homeless(RGBA_BLACK)
 {
 	if (city) {
 		init();
@@ -184,7 +185,7 @@ void city_info_t::init()
 	add_table(2,0)->set_alignment(ALIGN_TOP);
 	{
 		add_table(1,0);
-		gui_label_buf_t *lb = new_component<gui_label_buf_t>();
+		gui_label_buf_t *lb = new_component<gui_label_buf_t>(color_idx_to_rgb(gui_theme_t::gui_color_text));
 		lb->buf().printf("%s:", translator::translate("City size") );
 		lb->update();
 
@@ -218,7 +219,7 @@ void city_info_t::init()
 	chart.set_min_size(scr_size(0 ,8*LINESPACE));
 	chart.set_dimension(MAX_CITY_HISTORY_YEARS, 10000);
 	chart.set_seed(welt->get_last_year());
-	chart.set_background(SYSCOL_CHART_BACKGROUND);
+	chart.set_background(color_idx_to_rgb(SYSCOL_CHART_BACKGROUND));
 
 	container_year.add_table(4,3)->set_force_equal_columns(true);
 	//   skip electricity
@@ -242,7 +243,7 @@ void city_info_t::init()
 	mchart.set_min_size(scr_size(0 ,8*LINESPACE));
 	mchart.set_dimension(MAX_CITY_HISTORY_MONTHS, 10000);
 	mchart.set_seed(0);
-	mchart.set_background(SYSCOL_CHART_BACKGROUND);
+	mchart.set_background(color_idx_to_rgb(SYSCOL_CHART_BACKGROUND));
 
 	container_month.add_table(4,3)->set_force_equal_columns(true);
 	for(  uint32 i = 0;  i<MAX_CITY_HISTORY-1;  i++  ) {
@@ -325,22 +326,22 @@ void city_info_t::reset_city_name()
 }
 
 
-void gui_city_minimap_t::init_pax_dest( array2d_tpl<PIXVAL> &pax_dest )
+void gui_city_minimap_t::init_pax_dest( array2d_tpl<uint8_t> &pax_dest )
 {
 	const int size_x = welt->get_size().x;
 	const int size_y = welt->get_size().y;
 	for(  sint16 y = 0;  y < minimaps_size.h;  y++  ) {
 		for(  sint16 x = 0;  x < minimaps_size.w;  x++  ) {
 			const grund_t *gr = welt->lookup_kartenboden( koord( (x * size_x) / minimaps_size.w, (y * size_y) / minimaps_size.h ) );
-			pax_dest.at(x,y) = minimap_t::calc_ground_color(gr);
+			pax_dest.at(x,y) = 0; // todo: minimap_t::calc_ground_color(gr);
 		}
 	}
 }
 
 
-void gui_city_minimap_t::add_pax_dest( array2d_tpl<PIXVAL> &pax_dest, const sparse_tpl<PIXVAL>* city_pax_dest )
+void gui_city_minimap_t::add_pax_dest( array2d_tpl<uint8_t> &pax_dest, const sparse_tpl<uint8_t>* city_pax_dest )
 {
-	PIXVAL color;
+	uint8_t color;
 	koord pos;
 	// how large the box in the world?
 	const sint16 dd_x = 1+(minimaps_size.w-1)/PAX_DESTINATIONS_SIZE;

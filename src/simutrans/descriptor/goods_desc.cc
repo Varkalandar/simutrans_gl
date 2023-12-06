@@ -57,7 +57,7 @@ const char * goods_desc_t::get_catg_name() const
 /**
  * @return color for good table and waiting bars
  */
-PIXVAL goods_desc_t::get_color() const 
-{ 
-	return color_idx_to_rgb(color); 
+rgba_t goods_desc_t::get_color() const
+{
+	return color_idx_to_rgb(color);
 }

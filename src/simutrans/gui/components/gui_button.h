@@ -9,7 +9,7 @@
 
 #include "gui_action_creator.h"
 #include "gui_component.h"
-#include "../../simcolor.h"
+#include "../../display/rgba.h"
 #include "../../dataobj/koord.h"
 #include "../../dataobj/koord3d.h"
 #include "../../display/simimg.h"
@@ -114,8 +114,8 @@ private:
 	void operator =(const button_t&); // forbidden
 
 public:
-	PIXVAL background_color;
-	PIXVAL text_color;
+	rgba_t background_color;
+	rgba_t text_color;
 
 	bool pressed;
 

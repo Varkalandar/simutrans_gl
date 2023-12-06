@@ -580,7 +580,7 @@ void planquadrat_t::display_overlay(const sint16 xpos, const sint16 ypos) const
 		if(gb) {
 			fabrik_t* fab=gb->get_fabrik();
 			if(fab) {
-				FLAGGED_PIXVAL status = color_idx_to_rgb(COL_RED);
+				rgba_t status = color_idx_to_rgb(COL_RED);
 				if(fab->get_desc()->is_electricity_producer()) {
 					status = color_idx_to_rgb(COL_LIGHT_BLUE);
 					if(fab->is_transformer_connected()) {
@@ -609,7 +609,7 @@ void planquadrat_t::display_overlay(const sint16 xpos, const sint16 ypos) const
 			image_id img = overlay_img(gr);
 
 			for(int halt_count = 0; halt_count < halt_list_count; halt_count++) {
-				const FLAGGED_PIXVAL transparent = PLAYER_FLAG | OUTLINE_FLAG | color_idx_to_rgb(halt_list[halt_count]->get_owner()->get_player_color1() + 4);
+				const rgba_t transparent = PLAYER_FLAG | OUTLINE_FLAG | color_idx_to_rgb(halt_list[halt_count]->get_owner()->get_player_color1() + 4);
 				display_img_blend( img, xpos, ypos, transparent | TRANSPARENT25_FLAG, 0, 0);
 			}
 /*
@@ -618,7 +618,7 @@ void planquadrat_t::display_overlay(const sint16 xpos, const sint16 ypos) const
 			// doesn't affect the colour displayed [since blend(col1,blend(col2,screen)) != blend(col2,blend(col1,screen))]
 			for(int player_count = 0; player_count<MAX_PLAYER_COUNT; player_count++) {
 				player_t *display_player = welt->get_player(player_count);
-				const FLAGGED_PIXVAL transparent = PLAYER_FLAG | OUTLINE_FLAG | color_idx_to_rgb(display_player->get_player_color1() * 4 + 4);
+				const rgba_t transparent = PLAYER_FLAG | OUTLINE_FLAG | color_idx_to_rgb(display_player->get_player_color1() * 4 + 4);
 				for(int halt_count = 0; halt_count < halt_list_count; halt_count++) {
 					if(halt_list[halt_count]->get_owner() == display_player) {
 						display_img_blend( img, xpos, ypos, transparent | TRANSPARENT25_FLAG, 0, 0);

@@ -52,8 +52,7 @@ private:
 	bool dirty:1;
 	bool opaque:1;
 
-	uint8 percent_transparent;
-	PIXVAL color_transparent;
+	rgba_t color_transparent;
 
 	using gui_aligned_container_t::draw;
 	using gui_aligned_container_t::set_size;
@@ -70,7 +69,7 @@ protected:
 
 	void set_owner( const player_t *player ) { owner = player; }
 
-	void set_transparent( uint8 percent, PIXVAL col ) { opaque = percent==0; percent_transparent = percent; color_transparent = col; }
+	void set_transparent(rgba_t col) { opaque = col.alpha==0; color_transparent = col; }
 
 	static karte_ptr_t welt;
 
@@ -105,7 +104,7 @@ public:
 	 * get color information for the window title
 	 * -borders and -body background
 	 */
-	virtual FLAGGED_PIXVAL get_titlecolor() const;
+	virtual rgba_t get_titlecolor() const;
 
 	/**
 	 * @return gets the window sizes

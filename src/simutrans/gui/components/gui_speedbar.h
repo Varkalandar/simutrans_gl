@@ -9,14 +9,14 @@
 
 #include "gui_component.h"
 #include "../../tpl/slist_tpl.h"
-#include "../../simcolor.h"
+#include "../../display/rgba.h"
 
 
 class gui_speedbar_t : public gui_component_t
 {
 private:
 	struct info_t {
-		PIXVAL color;
+		rgba_t color;
 		const sint32 *value;
 		sint32 last;
 	};
@@ -29,7 +29,7 @@ private:
 public:
 	gui_speedbar_t() { base = 100; vertical = false; }
 
-	void add_color_value(const sint32 *value, PIXVAL color);
+	void add_color_value(const sint32 *value, rgba_t color);
 
 	void set_base(sint32 base);
 
@@ -63,13 +63,13 @@ private:
 	const sint32 *reserve_value;
 	sint32 base;
 	uint8 state;
-	PIXVAL reserved_color;
+	rgba_t reserved_color = RGBA_BLACK;
 	scr_coord_val height;
 
 public:
-	gui_routebar_t() { base = 100; state = 0; height = 9; value = 0; reserve_value = 0; }
-	void set_reservation(const sint32 *value, PIXVAL color);
-	void set_reserved_color(PIXVAL color) { reserved_color = color; };
+	gui_routebar_t() { base = 100; state = 0; height = 9; value = 0; reserve_value = 0;}
+	void set_reservation(const sint32 *value, rgba_t color);
+	void set_reserved_color(rgba_t color) { reserved_color = color; };
 	void set_base(sint32 base);
 	void init(const sint32 *value, uint8 state);
 
