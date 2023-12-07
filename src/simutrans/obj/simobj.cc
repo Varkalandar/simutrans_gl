@@ -211,7 +211,7 @@ void obj_t::display(int xpos, int ypos  CLIP_NUM_DEF) const
 
 			if(  owner_n != PLAYER_UNOWNED  ) {
 				if(  obj_t::show_owner  ) {
-					display_blend( image, xpos, ypos, owner_n, color_idx_to_rgb(welt->get_player(owner_n)->get_player_color1()+2) | OUTLINE_FLAG | TRANSPARENT75_FLAG, 0, is_dirty  CLIP_NUM_PAR);
+					display_blend( image, xpos, ypos, owner_n, color_idx_to_rgb(welt->get_player(owner_n)->get_player_color1()+2), 0, is_dirty  CLIP_NUM_PAR);
 				}
 				else {
 					display_color( image, xpos, ypos, owner_n, true, is_dirty  CLIP_NUM_PAR);
@@ -228,18 +228,18 @@ void obj_t::display(int xpos, int ypos  CLIP_NUM_DEF) const
 		if(  outline_image != IMG_EMPTY  ) {
 			// transparency?
 			const rgba_t transparent = get_outline_colour();
-			if(  TRANSPARENT_FLAGS&transparent  ) {
+			if(transparent.alpha < 1.0) {
 				// only transparent outline
 				display_blend( get_outline_image(), xpos, start_ypos, owner_n, transparent, 0, is_dirty  CLIP_NUM_PAR);
 			}
 			else if(  obj_t::get_flag( highlight )  ) {
 				// highlight this tile
-				display_blend( get_image(), xpos, start_ypos, owner_n, color_idx_to_rgb(SYSCOL_OBJECT_HIGHLIGHT | OUTLINE_FLAG | TRANSPARENT75_FLAG, 0, is_dirty  CLIP_NUM_PAR);
+				display_blend( get_image(), xpos, start_ypos, owner_n, SYSCOL_OBJECT_HIGHLIGHT, 0, is_dirty  CLIP_NUM_PAR);
 			}
 		}
 		else if(  obj_t::get_flag( highlight )  ) {
 			// highlight this tile
-			display_blend( get_image(), xpos, start_ypos, owner_n, color_idx_to_rgb(SYSCOL_OBJECT_HIGHLIGHT | OUTLINE_FLAG | TRANSPARENT75_FLAG, 0, is_dirty  CLIP_NUM_PAR);
+			display_blend( get_image(), xpos, start_ypos, owner_n, SYSCOL_OBJECT_HIGHLIGHT, 0, is_dirty  CLIP_NUM_PAR);
 		}
 	}
 }
@@ -272,11 +272,11 @@ void obj_t::display_after(int xpos, int ypos, bool) const
 
 		if(  owner_n != PLAYER_UNOWNED  ) {
 			if(  obj_t::show_owner  ) {
-				display_blend( image, xpos, ypos, owner_n, color_idx_to_rgb(welt->get_player(owner_n)->get_player_color1()+2) | OUTLINE_FLAG | TRANSPARENT75_FLAG, 0, is_dirty  CLIP_NUM_PAR);
+				display_blend( image, xpos, ypos, owner_n, color_idx_to_rgb(welt->get_player(owner_n)->get_player_color1()+2), 0, is_dirty  CLIP_NUM_PAR);
 			}
 			else if(  obj_t::get_flag( highlight )  ) {
 				// highlight this tile
-				display_blend( image, xpos, ypos, owner_n, color_idx_to_rgb(SYSCOL_OBJECT_HIGHLIGHT | OUTLINE_FLAG | TRANSPARENT75_FLAG, 0, is_dirty  CLIP_NUM_PAR);
+				display_blend(image, xpos, ypos, owner_n, (SYSCOL_OBJECT_HIGHLIGHT), 0, is_dirty  CLIP_NUM_PAR);
 			}
 			else {
 				display_color( image, xpos, ypos, owner_n, true, is_dirty  CLIP_NUM_PAR);
@@ -284,7 +284,7 @@ void obj_t::display_after(int xpos, int ypos, bool) const
 		}
 		else if(  obj_t::get_flag( highlight )  ) {
 			// highlight this tile
-			display_blend( image, xpos, ypos, owner_n, color_idx_to_rgb(SYSCOL_OBJECT_HIGHLIGHT | OUTLINE_FLAG | TRANSPARENT75_FLAG, 0, is_dirty  CLIP_NUM_PAR);
+			display_blend( image, xpos, ypos, owner_n, (SYSCOL_OBJECT_HIGHLIGHT), 0, is_dirty  CLIP_NUM_PAR);
 		}
 		else {
 			display_normal( image, xpos, ypos, 0, true, is_dirty  CLIP_NUM_PAR);

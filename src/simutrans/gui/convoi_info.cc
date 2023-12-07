@@ -187,7 +187,7 @@ void convoi_info_t::init(convoihandle_t cnv)
 	container_stats.set_table_layout(1,0);
 
 	chart.set_dimension(12, 10000);
-	chart.set_background(color_idx_to_rgb(SYSCOL_CHART_BACKGROUND));
+	chart.set_background((SYSCOL_CHART_BACKGROUND));
 	chart.set_min_size(scr_size(0, CHART_HEIGHT));
 	container_stats.add_component(&chart);
 
@@ -338,9 +338,9 @@ void convoi_info_t::init_line_selector()
 		if (!line.is_bound()) {
 			selection = 0;
 			offset = 3;
-			line_selector.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("<individual schedule>"), color_idx_to_rgb(SYSCOL_TEXT));
-			line_selector.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("<promote to line>"), color_idx_to_rgb(SYSCOL_TEXT));
-			line_selector.new_component<gui_scrolled_list_t::const_text_scrollitem_t>("--------------------------------", color_idx_to_rgb(SYSCOL_TEXT));
+			line_selector.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("<individual schedule>"), (gui_theme_t::gui_color_text));
+			line_selector.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("<promote to line>"), (gui_theme_t::gui_color_text));
+			line_selector.new_component<gui_scrolled_list_t::const_text_scrollitem_t>("--------------------------------", (gui_theme_t::gui_color_text));
 		}
 
 		for(linehandle_t other_line : lines) {
@@ -408,7 +408,7 @@ void convoi_info_t::update_labels()
 	// only show assigned line, if there is one!
 	if(  cnv->get_line().is_bound()  ) {
 		line_label.buf().append(cnv->get_line()->get_name());
-		line_label.set_color(color_idx_to_rgb(cnv->get_line()->get_state_color()));
+		line_label.set_color(cnv->get_line()->get_state_color());
 	}
 	else {
 		line_label.buf().clear();

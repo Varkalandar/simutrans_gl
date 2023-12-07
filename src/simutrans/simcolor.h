@@ -72,15 +72,15 @@
 #define COL_GREY6           15
 
 // Way colours for the map
-#define COL_ROAD            color_idx_to_rgb(COL_GREY1)
-#define COL_RAIL            color_idx_to_rgb(185)
-#define COL_CANAL           color_idx_to_rgb(23)
-#define COL_MONORAIL        color_idx_to_rgb(COL_ORANGE)
-#define COL_RUNWAY          color_idx_to_rgb(28)
-#define COL_POWERLINE       color_idx_to_rgb(COL_LIGHT_TURQUOISE)
-#define COL_HALT            color_idx_to_rgb(COL_RED)
-#define COL_BUILDING        color_idx_to_rgb(COL_GREY3)
-#define COL_VEHICLE         color_idx_to_rgb(COL_YELLOW)
+#define COL_ROAD            get_color_rgb(COL_GREY1)
+#define COL_RAIL            get_color_rgb(185)
+#define COL_CANAL           get_color_rgb(23)
+#define COL_MONORAIL        get_color_rgb(COL_ORANGE)
+#define COL_RUNWAY          get_color_rgb(28)
+#define COL_POWERLINE       get_color_rgb(COL_LIGHT_TURQUOISE)
+#define COL_HALT            get_color_rgb(COL_RED)
+#define COL_BUILDING        get_color_rgb(COL_GREY3)
+#define COL_VEHICLE         get_color_rgb(COL_YELLOW)
 
 // used in many dialogues graphs
 #define COL_REVENUE         142
@@ -113,7 +113,7 @@
 #define COL_ARRIVED         COL_DARK_ORANGE
 #define COL_DEPARTED        COL_DARK_YELLOW
 
-#define SYSCOL_TEXT                         gui_theme_t::gui_color_text
+
 #define SYSCOL_TEXT_HIGHLIGHT               gui_theme_t::gui_color_text_highlight
 #define SYSCOL_TEXT_SHADOW                  gui_theme_t::gui_color_text_shadow
 #define SYSCOL_TEXT_TITLE                   gui_theme_t::gui_color_text_title

@@ -49,7 +49,7 @@ factorylist_frame_t::factorylist_frame_t() :
 		filter_by_owner.set_tooltip("At least one tile is connected to one stop.");
 		add_component(&filter_by_owner);
 
-		filterowner.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("No player"), color_idx_to_rgb(SYSCOL_TEXT));
+		filterowner.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("No player"), (gui_theme_t::gui_color_text));
 		for (int i = 0; i < MAX_PLAYER_COUNT; i++) {
 			if (player_t* pl = welt->get_player(i)) {
 				filterowner.new_component<playername_const_scroll_item_t>(pl);
@@ -65,7 +65,7 @@ factorylist_frame_t::factorylist_frame_t() :
 		new_component_span<gui_label_t>("hl_txt_sort", 1);
 		sortedby.set_unsorted(); // do not sort
 		for (size_t i = 0; i < lengthof(sort_text); i++) {
-			sortedby.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate(sort_text[i]), color_idx_to_rgb(SYSCOL_TEXT));
+			sortedby.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate(sort_text[i]), (gui_theme_t::gui_color_text));
 		}
 		sortedby.set_selection(factorylist_stats_t::sort_mode);
 		sortedby.add_listener(this);

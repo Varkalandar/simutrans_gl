@@ -138,7 +138,7 @@ factory_edit_frame_t::factory_edit_frame_t(player_t* player_) :
 	tbl->new_component<gui_label_t>("Rotation");
 	tbl->add_component(&cb_rotation);
 	cb_rotation.add_listener(this);
-	cb_rotation.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("random"), color_idx_to_rgb(SYSCOL_TEXT)) ;
+	cb_rotation.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("random"), (gui_theme_t::gui_color_text)) ;
 
 	tbl->new_component<gui_label_t>("Produktion");
 
@@ -202,7 +202,7 @@ void factory_edit_frame_t::fill_list()
 		rgba_t const color =
 			i->is_consumer_only() ? color_idx_to_rgb(COL_DARK_BLUE + env_t::gui_player_color_dark) :
 			i->is_producer_only() ? color_idx_to_rgb(40 + env_t::gui_player_color_dark)            :
-			color_idx_to_rgb(SYSCOL_TEXT);
+			(gui_theme_t::gui_color_text);
 		char const* const name = get_sortedby()==gui_sorting_item_t::BY_NAME_OBJECT ?  i->get_name() : translator::translate(i->get_name());
 		scl.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(name, color);
 		if (i == fac_desc) {

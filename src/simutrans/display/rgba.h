@@ -5,7 +5,16 @@
 class rgb888_t
 {
 public:
-	unsigned char r, g, b;
+	uint8_t r, g, b;
+
+    rgb888_t & operator =(const uint8_t & c)
+    {
+		r = c;
+		g = c;
+		b = c;
+		return *this;
+	}
+
 };
 
 
@@ -29,17 +38,35 @@ public:
         this->alpha = alpha;
     }
 
-    rgba_t(rgb888_t color)
+    rgba_t(rgb888_t color, float alpha=1.0f)
     {
         this->red = color.r / 255.0f;
         this->green = color.g / 255.0f;
         this->blue = color.b / 255.0f;
-        this->alpha = 1.0f;
+        this->alpha = alpha;
+    }
+
+    uint32_t asUint32()
+    {
+        return ((int)(alpha * 255) << 24) + ((int)(red * 255) << 16) + ((int)(green * 255) << 8) + ((int)(blue * 255));
+    }
+
+    void fromUint32(uint32_t c)
+    {
+        alpha = ((c >> 24) & 255) / 255.0f;
+        red = ((c >> 16) & 255) / 255.0f;
+        green = ((c >> 8) & 255) / 255.0f;
+        blue = (c & 255) / 255.0f;
     }
 
     bool operator ==(const rgba_t& c) const
     {
 		return red == c.red && green == c.green && blue == c.blue && alpha == c.alpha;
+	}
+
+    bool operator !=(const rgba_t& c) const
+    {
+		return red != c.red || green != c.green || blue != c.blue || alpha != c.alpha;
 	}
 };
 

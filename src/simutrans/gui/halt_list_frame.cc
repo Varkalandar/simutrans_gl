@@ -128,7 +128,7 @@ halt_list_frame_t::halt_list_frame_t() :
 
 	add_table(4, 2);
 	{
-		new_component<gui_label_t>("Filter:", 2);
+		new_component<gui_label_t>("Filter:", RGBA_BLACK);
 		name_filter_input.set_text(name_filter, lengthof(name_filter));
 		add_component(&name_filter_input);
 		filter_details.init(button_t::roundbox, "cl_btn_filter_settings");
@@ -139,7 +139,7 @@ halt_list_frame_t::halt_list_frame_t() :
 		new_component_span<gui_label_t>("hl_txt_sort", 1);
 		sortedby.set_unsorted(); // do not sort
 		for (size_t i = 0; i < lengthof(sort_text); i++) {
-			sortedby.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate(sort_text[i]), color_idx_to_rgb(SYSCOL_TEXT));
+			sortedby.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate(sort_text[i]), (gui_theme_t::gui_color_text));
 		}
 		sortedby.set_selection(get_sortierung());
 		sortedby.add_listener(this);

@@ -93,6 +93,8 @@ public:
 	 */
 	void set_name(const char *name) { this->name=name; }
 
+	int get_player_number() const;
+
 	/**
 	 * This returns an unique id (different from magic_reserved), if the dialogue can be saved.
 	 */

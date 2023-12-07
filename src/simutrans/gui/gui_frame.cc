@@ -90,6 +90,11 @@ void gui_frame_t::reset_min_windowsize()
 }
 
 
+int gui_frame_t::get_player_number() const
+{
+    return owner ? owner->get_player_nr() : -1;
+}
+
 /**
  * get color information for the window title
  * -borders and -body background

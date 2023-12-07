@@ -133,7 +133,7 @@ public:
 	{
 		update_label();
 		if (is_current  ||  !valid) {
-			display_fillbox_wh_clip_rgb(pos.x + offset.x, pos.y + offset.y, size.w, size.h, valid ? color_idx_to_rgb(SYSCOL_LIST_BACKGROUND_SELECTED_F) : color_idx_to_rgb(MONEY_MINUS), false);
+			display_fillbox_wh_clip_rgb(pos.x + offset.x, pos.y + offset.y, size.w, size.h, valid ? (SYSCOL_LIST_BACKGROUND_SELECTED_F) : (MONEY_MINUS), false);
 		}
 		gui_aligned_container_t::draw(offset);
 	}
@@ -141,8 +141,8 @@ public:
 	void set_active(bool yesno)
 	{
 		is_current = yesno;
-		stop.set_color(yesno ? color_idx_to_rgb(SYSCOL_TEXT_HIGHLIGHT) : color_idx_to_rgb(SYSCOL_TEXT));
-		stop_extra.set_color(yesno ? color_idx_to_rgb(SYSCOL_TEXT_HIGHLIGHT) : color_idx_to_rgb(SYSCOL_TEXT));
+		stop.set_color(yesno ? (SYSCOL_TEXT_HIGHLIGHT) : (gui_theme_t::gui_color_text));
+		stop_extra.set_color(yesno ? (SYSCOL_TEXT_HIGHLIGHT) : (gui_theme_t::gui_color_text));
 	}
 
 	bool action_triggered( gui_action_creator_t *c, value_t ) OVERRIDE
@@ -399,8 +399,8 @@ gui_schedule_t::gui_schedule_t() :
 	{
 		add_component(&cb_wait,2);
 		cb_wait.add_listener( this );
-		cb_wait.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate( "Full load" ), color_idx_to_rgb(SYSCOL_TEXT) );
-		cb_wait.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate( "Monthly departures" ), color_idx_to_rgb(SYSCOL_TEXT) );
+		cb_wait.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate( "Full load" ), (gui_theme_t::gui_color_text) );
+		cb_wait.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate( "Monthly departures" ), (gui_theme_t::gui_color_text) );
 		cb_wait.set_rigid(true);
 		new_component<gui_fill_t>();
 
@@ -424,8 +424,8 @@ gui_schedule_t::gui_schedule_t() :
 	button_row = add_table( 3, 1 );
 	button_row->set_margin( scr_size(D_MARGIN_LEFT,0), scr_size(D_MARGIN_RIGHT,0) );
 	{
-		insert_mode.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("Ins Stop"), color_idx_to_rgb(SYSCOL_TEXT));
-		insert_mode.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("Add Stop"), color_idx_to_rgb(SYSCOL_TEXT));
+		insert_mode.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("Ins Stop"), (gui_theme_t::gui_color_text));
+		insert_mode.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("Add Stop"), (gui_theme_t::gui_color_text));
 		insert_mode.set_selection( 1 );
 		insert_mode.add_listener(this);
 		add_component(&insert_mode);

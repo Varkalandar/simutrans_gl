@@ -321,10 +321,10 @@ void gui_scrollpane_t::draw(scr_coord pos)
 	if(b_show_border) {
 
 		display_bevel_box(scr_rect(client.x-1, client.y - 1, client.w + 2, client.h + 2),
-					  color_idx_to_rgb(gui_theme_t::gui_shadow_color),
-					  color_idx_to_rgb(gui_theme_t::gui_shadow_color),
-					  color_idx_to_rgb(gui_theme_t::gui_highlight_color),
-					  color_idx_to_rgb(gui_theme_t::gui_highlight_color),
+					  (gui_theme_t::gui_shadow_color),
+					  (gui_theme_t::gui_shadow_color),
+					  (gui_theme_t::gui_highlight_color),
+					  (gui_theme_t::gui_highlight_color),
 		              false);
 	}
 

@@ -112,9 +112,15 @@ rgba_t color_idx_to_rgb(int idx)
     }
 }
 
-int color_rgb_to_idx(rgb888_t color)
+
+rgba_t color_idx_to_rgba(int idx, int transparent_percent)
 {
-	return 0;
+    if(idx >= 0 && idx < SPECIAL_COLOR_COUNT) {
+        return rgba_t(special_pal[idx], 1.0f - (transparent_percent / 100.0f));
+    }
+    else {
+        return RGBA_BLACK;
+    }
 }
 
 

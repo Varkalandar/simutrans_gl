@@ -23,50 +23,50 @@
 /**
  * Colours
  */
-uint16_t gui_theme_t::gui_color_text;
-uint16_t gui_theme_t::gui_color_text_highlight;
-uint16_t gui_theme_t::gui_color_text_shadow;
-uint16_t gui_theme_t::gui_color_text_title;
-uint16_t gui_theme_t::gui_color_text_strong;
-uint16_t gui_theme_t::gui_color_text_minus;
-uint16_t gui_theme_t::gui_color_text_plus;
-uint16_t gui_theme_t::gui_color_text_unused;
-uint16_t gui_theme_t::gui_color_edit_text;
-uint16_t gui_theme_t::gui_color_edit_text_selected;
-uint16_t gui_theme_t::gui_color_edit_text_disabled;
-uint16_t gui_theme_t::gui_color_edit_background_selected;
-uint16_t gui_theme_t::gui_color_edit_beam;
-uint16_t gui_theme_t::gui_color_chart_background;
-uint16_t gui_theme_t::gui_color_chart_lines_zero;
-uint16_t gui_theme_t::gui_color_chart_lines_odd;
-uint16_t gui_theme_t::gui_color_chart_lines_even;
-uint16_t gui_theme_t::gui_color_list_text_selected_focus;
-uint16_t gui_theme_t::gui_color_list_text_selected_nofocus;
-uint16_t gui_theme_t::gui_color_list_background_even;
-uint16_t gui_theme_t::gui_color_list_background_odd;
-uint16_t gui_theme_t::gui_color_list_background_selected_f;
-uint16_t gui_theme_t::gui_color_list_background_selected_nf;
-uint16_t gui_theme_t::gui_color_button_text;
-uint16_t gui_theme_t::gui_color_button_text_disabled;
-uint16_t gui_theme_t::gui_color_button_text_selected;
-uint16_t gui_theme_t::gui_color_colored_button_text;
-uint16_t gui_theme_t::gui_color_colored_button_text_selected;
-uint16_t gui_theme_t::gui_color_checkbox_text;
-uint16_t gui_theme_t::gui_color_checkbox_text_disabled;
-uint16_t gui_theme_t::gui_color_ticker_background;
-uint16_t gui_theme_t::gui_color_ticker_divider;
-uint16_t gui_theme_t::gui_color_statusbar_text;
-uint16_t gui_theme_t::gui_color_statusbar_background;
-uint16_t gui_theme_t::gui_color_statusbar_divider;
-uint16_t gui_theme_t::gui_highlight_color;
-uint16_t gui_theme_t::gui_shadow_color;
-uint16_t gui_theme_t::gui_color_loadingbar_inner;
-uint16_t gui_theme_t::gui_color_loadingbar_progress;
-uint16_t gui_theme_t::gui_color_obsolete;
-uint16_t gui_theme_t::gui_color_chat_window_network_transparency;
-uint16_t gui_theme_t::gui_color_empty;
-uint16_t gui_theme_t::gui_color_image_transparency;
-uint16_t gui_theme_t::gui_color_object_highlight;
+rgba_t gui_theme_t::gui_color_text;
+rgba_t gui_theme_t::gui_color_text_highlight;
+rgba_t gui_theme_t::gui_color_text_shadow;
+rgba_t gui_theme_t::gui_color_text_title;
+rgba_t gui_theme_t::gui_color_text_strong;
+rgba_t gui_theme_t::gui_color_text_minus;
+rgba_t gui_theme_t::gui_color_text_plus;
+rgba_t gui_theme_t::gui_color_text_unused;
+rgba_t gui_theme_t::gui_color_edit_text;
+rgba_t gui_theme_t::gui_color_edit_text_selected;
+rgba_t gui_theme_t::gui_color_edit_text_disabled;
+rgba_t gui_theme_t::gui_color_edit_background_selected;
+rgba_t gui_theme_t::gui_color_edit_beam;
+rgba_t gui_theme_t::gui_color_chart_background;
+rgba_t gui_theme_t::gui_color_chart_lines_zero;
+rgba_t gui_theme_t::gui_color_chart_lines_odd;
+rgba_t gui_theme_t::gui_color_chart_lines_even;
+rgba_t gui_theme_t::gui_color_list_text_selected_focus;
+rgba_t gui_theme_t::gui_color_list_text_selected_nofocus;
+rgba_t gui_theme_t::gui_color_list_background_even;
+rgba_t gui_theme_t::gui_color_list_background_odd;
+rgba_t gui_theme_t::gui_color_list_background_selected_f;
+rgba_t gui_theme_t::gui_color_list_background_selected_nf;
+rgba_t gui_theme_t::gui_color_button_text;
+rgba_t gui_theme_t::gui_color_button_text_disabled;
+rgba_t gui_theme_t::gui_color_button_text_selected;
+rgba_t gui_theme_t::gui_color_colored_button_text;
+rgba_t gui_theme_t::gui_color_colored_button_text_selected;
+rgba_t gui_theme_t::gui_color_checkbox_text;
+rgba_t gui_theme_t::gui_color_checkbox_text_disabled;
+rgba_t gui_theme_t::gui_color_ticker_background;
+rgba_t gui_theme_t::gui_color_ticker_divider;
+rgba_t gui_theme_t::gui_color_statusbar_text;
+rgba_t gui_theme_t::gui_color_statusbar_background;
+rgba_t gui_theme_t::gui_color_statusbar_divider;
+rgba_t gui_theme_t::gui_highlight_color;
+rgba_t gui_theme_t::gui_shadow_color;
+rgba_t gui_theme_t::gui_color_loadingbar_inner;
+rgba_t gui_theme_t::gui_color_loadingbar_progress;
+rgba_t gui_theme_t::gui_color_obsolete;
+rgba_t gui_theme_t::gui_color_chat_window_network_transparency;
+rgba_t gui_theme_t::gui_color_empty;
+rgba_t gui_theme_t::gui_color_image_transparency;
+rgba_t gui_theme_t::gui_color_object_highlight;
 
 /**
  * Max Kielland
@@ -257,25 +257,25 @@ void gui_theme_t::init_gui_defaults()
 	gui_waitingbar_width = 4;
 	gui_divider_size.h   = D_V_SPACE*2;
 
-	gui_display_text_label_color = 0;
+	gui_display_text_label_color = RGBA_BLACK;
 	gui_display_text_label_margin_left = 6;
 	gui_display_text_label_margin_top = 4;
 	gui_display_text_label_margin_right = 6;
 	gui_display_text_label_margin_bottom = 4;
 
-	gui_display_station_label_color = 0;
+	gui_display_station_label_color = RGBA_BLACK;
 	gui_display_station_label_margin_left = 6;
 	gui_display_station_label_margin_top = 4;
 	gui_display_station_label_margin_right = 6;
 	gui_display_station_label_margin_bottom = 4;
 
-	gui_display_marker_label_color = 0;
+	gui_display_marker_label_color = RGBA_BLACK;
 	gui_display_marker_label_margin_left = 6;
 	gui_display_marker_label_margin_top = 4;
 	gui_display_marker_label_margin_right = 6;
 	gui_display_marker_label_margin_bottom = 4;
 
-	gui_display_factory_label_color = 0;
+	gui_display_factory_label_color = RGBA_BLACK;
 	gui_display_factory_label_margin_left = 6;
 	gui_display_factory_label_margin_top = 4;
 	gui_display_factory_label_margin_right = 6;
@@ -464,7 +464,7 @@ void gui_theme_t::init_gui_from_images()
  * @param key The key to lookup color settings
  * @return The decoded color
  */
-static sint32 decode_combined_color(tabfileobj_t & contents, const char * key)
+static rgba_t decode_combined_color(tabfileobj_t & contents, const char * key)
 {
 	const char * value = contents.get_string(key, "0");
 
@@ -473,17 +473,15 @@ static sint32 decode_combined_color(tabfileobj_t & contents, const char * key)
 		value ++;
 	}
 
-	sint32 result;
-
 	if(*value == '#') {
 		// we have a rgb value
-		result = contents.get_color(key, COL_BLACK);
+		return contents.get_color(key, RGBA_BLACK);
 	} else {
 		// this must be a player color brightness
-		result = -contents.get_int(key, 3);
+		// todo
+		// result = -contents.get_int(key, 3);
+		return RGBA_BLACK;
 	}
-
-	return result;
 }
 
 
@@ -654,50 +652,50 @@ bool gui_theme_t::themes_init(const char *file_name, bool init_fonts, bool init_
 	env_t::iconsize.h = env_t::iconsize.w = contents.get_int("icon_width",env_t::iconsize.w );
 
 	// maybe not the best place, rather use simwin for the static defines?
-	gui_theme_t::gui_color_text                         = (PIXVAL)contents.get_color("gui_color_text", SYSCOL_TEXT);
-	gui_theme_t::gui_color_text_highlight               = (PIXVAL)contents.get_color("gui_color_text_highlight", SYSCOL_TEXT_HIGHLIGHT);
-	gui_theme_t::gui_color_text_shadow                  = (PIXVAL)contents.get_color("gui_color_text_shadow", SYSCOL_TEXT_SHADOW);
-	gui_theme_t::gui_color_text_title                   = (PIXVAL)contents.get_color("gui_color_text_title", SYSCOL_TEXT_TITLE);
-	gui_theme_t::gui_color_text_strong                  = (PIXVAL)contents.get_color("gui_color_text_strong", SYSCOL_TEXT_STRONG);
-	gui_theme_t::gui_color_text_minus                   = (PIXVAL)contents.get_color("gui_color_text_minus", MONEY_MINUS);
-	gui_theme_t::gui_color_text_plus                    = (PIXVAL)contents.get_color("gui_color_text_plus", MONEY_PLUS);
-	gui_theme_t::gui_color_text_unused                  = (PIXVAL)contents.get_color("gui_color_text_unused", SYSCOL_TEXT_UNUSED);
-	gui_theme_t::gui_color_edit_text                    = (PIXVAL)contents.get_color("gui_color_edit_text", SYSCOL_EDIT_TEXT);
-	gui_theme_t::gui_color_edit_text_selected           = (PIXVAL)contents.get_color("gui_color_edit_text_selected", SYSCOL_EDIT_TEXT_SELECTED);
-	gui_theme_t::gui_color_edit_text_disabled           = (PIXVAL)contents.get_color("gui_color_edit_text_disabled", SYSCOL_EDIT_TEXT_DISABLED);
-	gui_theme_t::gui_color_edit_background_selected     = (PIXVAL)contents.get_color("gui_color_edit_background_selected", SYSCOL_EDIT_BACKGROUND_SELECTED);
-	gui_theme_t::gui_color_edit_beam                    = (PIXVAL)contents.get_color("gui_color_edit_beam", SYSCOL_CURSOR_BEAM);
-	gui_theme_t::gui_color_chart_background             = (PIXVAL)contents.get_color("gui_color_chart_background", SYSCOL_CHART_BACKGROUND);
-	gui_theme_t::gui_color_chart_lines_zero             = (PIXVAL)contents.get_color("gui_color_chart_lines_zero", SYSCOL_CHART_LINES_ZERO);
-	gui_theme_t::gui_color_chart_lines_odd              = (PIXVAL)contents.get_color("gui_color_chart_lines_odd", SYSCOL_CHART_LINES_ODD);
-	gui_theme_t::gui_color_chart_lines_even             = (PIXVAL)contents.get_color("gui_color_chart_lines_even", SYSCOL_CHART_LINES_EVEN);
-	gui_theme_t::gui_color_list_text_selected_focus     = (PIXVAL)contents.get_color("gui_color_list_text_selected_focus", SYSCOL_LIST_TEXT_SELECTED_FOCUS);
-	gui_theme_t::gui_color_list_text_selected_nofocus   = (PIXVAL)contents.get_color("gui_color_list_text_selected_nofocus", SYSCOL_LIST_TEXT_SELECTED_NOFOCUS);
-	gui_theme_t::gui_color_list_background_selected_f   = (PIXVAL)contents.get_color("gui_color_list_background_selected_focus", SYSCOL_LIST_BACKGROUND_SELECTED_F);
-	gui_theme_t::gui_color_list_background_selected_nf  = (PIXVAL)contents.get_color("gui_color_list_background_selected_nofocus", SYSCOL_LIST_BACKGROUND_SELECTED_NF);
-	gui_theme_t::gui_color_list_background_even         = (PIXVAL)contents.get_color("gui_color_list_background_even", gui_color_list_background_even);
-	gui_theme_t::gui_color_list_background_odd          = (PIXVAL)contents.get_color("gui_color_list_background_odd", gui_color_list_background_odd);
-	gui_theme_t::gui_color_button_text                  = (PIXVAL)contents.get_color("gui_color_button_text", SYSCOL_BUTTON_TEXT);
-	gui_theme_t::gui_color_button_text_disabled         = (PIXVAL)contents.get_color("gui_color_button_text_disabled", SYSCOL_BUTTON_TEXT_DISABLED);
-	gui_theme_t::gui_color_button_text_selected         = (PIXVAL)contents.get_color("gui_color_button_text_selected", SYSCOL_BUTTON_TEXT_SELECTED);
-	gui_theme_t::gui_color_colored_button_text          = (PIXVAL)contents.get_color("gui_color_colored_button_text", SYSCOL_COLORED_BUTTON_TEXT);
-	gui_theme_t::gui_color_colored_button_text_selected = (PIXVAL)contents.get_color("gui_color_colored_button_text_selected", SYSCOL_COLORED_BUTTON_TEXT_SELECTED);
-	gui_theme_t::gui_color_checkbox_text                = (PIXVAL)contents.get_color("gui_color_checkbox_text", SYSCOL_CHECKBOX_TEXT);
-	gui_theme_t::gui_color_checkbox_text_disabled       = (PIXVAL)contents.get_color("gui_color_checkbox_text_disabled", SYSCOL_CHECKBOX_TEXT_DISABLED);
-	gui_theme_t::gui_color_ticker_background            = (PIXVAL)contents.get_color("gui_color_ticker_background", SYSCOL_TICKER_BACKGROUND);
-	gui_theme_t::gui_color_ticker_divider               = (PIXVAL)contents.get_color("gui_color_ticker_divider", SYSCOL_TICKER_DIVIDER);
-	gui_theme_t::gui_color_statusbar_text               = (PIXVAL)contents.get_color("gui_color_statusbar_text", SYSCOL_STATUSBAR_TEXT);
-	gui_theme_t::gui_color_statusbar_background         = (PIXVAL)contents.get_color("gui_color_statusbar_background", SYSCOL_STATUSBAR_BACKGROUND);
-	gui_theme_t::gui_color_statusbar_divider            = (PIXVAL)contents.get_color("gui_color_statusbar_divider", SYSCOL_STATUSBAR_DIVIDER);
-	gui_theme_t::gui_highlight_color                    = (PIXVAL)contents.get_color("gui_highlight_color", SYSCOL_HIGHLIGHT);
-	gui_theme_t::gui_shadow_color                       = (PIXVAL)contents.get_color("gui_shadow_color", SYSCOL_SHADOW);
-	gui_theme_t::gui_color_loadingbar_inner             = (PIXVAL)contents.get_color("gui_color_loadingbar_inner", SYSCOL_LOADINGBAR_INNER);
-	gui_theme_t::gui_color_loadingbar_progress          = (PIXVAL)contents.get_color("gui_color_loadingbar_progress", SYSCOL_LOADINGBAR_PROGRESS);
-	gui_theme_t::gui_color_obsolete                     = (PIXVAL)contents.get_color("gui_color_obsolete", SYSCOL_OBSOLETE);
-	gui_theme_t::gui_color_empty                        = (PIXVAL)contents.get_color("gui_color_empty", SYSCOL_EMPTY);
-	gui_theme_t::gui_color_chat_window_network_transparency = (PIXVAL)contents.get_color("gui_color_chat_window_network_transparency", gui_color_chat_window_network_transparency);
-	gui_theme_t::gui_color_image_transparency           = (PIXVAL)contents.get_color("gui_color_image_transparency", SYSCOL_IMAGE_TRANSPARENCY);
-gui_theme_t::gui_color_object_highlight                 = (PIXVAL)contents.get_color("gui_color_object_highlight", SYSCOL_OBJECT_HIGHLIGHT);
+	gui_theme_t::gui_color_text                         = contents.get_color("gui_color_text", gui_theme_t::gui_color_text);
+	gui_theme_t::gui_color_text_highlight               = contents.get_color("gui_color_text_highlight", SYSCOL_TEXT_HIGHLIGHT);
+	gui_theme_t::gui_color_text_shadow                  = contents.get_color("gui_color_text_shadow", SYSCOL_TEXT_SHADOW);
+	gui_theme_t::gui_color_text_title                   = contents.get_color("gui_color_text_title", SYSCOL_TEXT_TITLE);
+	gui_theme_t::gui_color_text_strong                  = contents.get_color("gui_color_text_strong", SYSCOL_TEXT_STRONG);
+	gui_theme_t::gui_color_text_minus                   = contents.get_color("gui_color_text_minus", MONEY_MINUS);
+	gui_theme_t::gui_color_text_plus                    = contents.get_color("gui_color_text_plus", MONEY_PLUS);
+	gui_theme_t::gui_color_text_unused                  = contents.get_color("gui_color_text_unused", SYSCOL_TEXT_UNUSED);
+	gui_theme_t::gui_color_edit_text                    = contents.get_color("gui_color_edit_text", SYSCOL_EDIT_TEXT);
+	gui_theme_t::gui_color_edit_text_selected           = contents.get_color("gui_color_edit_text_selected", SYSCOL_EDIT_TEXT_SELECTED);
+	gui_theme_t::gui_color_edit_text_disabled           = contents.get_color("gui_color_edit_text_disabled", SYSCOL_EDIT_TEXT_DISABLED);
+	gui_theme_t::gui_color_edit_background_selected     = contents.get_color("gui_color_edit_background_selected", SYSCOL_EDIT_BACKGROUND_SELECTED);
+	gui_theme_t::gui_color_edit_beam                    = contents.get_color("gui_color_edit_beam", SYSCOL_CURSOR_BEAM);
+	gui_theme_t::gui_color_chart_background             = contents.get_color("gui_color_chart_background", SYSCOL_CHART_BACKGROUND);
+	gui_theme_t::gui_color_chart_lines_zero             = contents.get_color("gui_color_chart_lines_zero", SYSCOL_CHART_LINES_ZERO);
+	gui_theme_t::gui_color_chart_lines_odd              = contents.get_color("gui_color_chart_lines_odd", SYSCOL_CHART_LINES_ODD);
+	gui_theme_t::gui_color_chart_lines_even             = contents.get_color("gui_color_chart_lines_even", SYSCOL_CHART_LINES_EVEN);
+	gui_theme_t::gui_color_list_text_selected_focus     = contents.get_color("gui_color_list_text_selected_focus", SYSCOL_LIST_TEXT_SELECTED_FOCUS);
+	gui_theme_t::gui_color_list_text_selected_nofocus   = contents.get_color("gui_color_list_text_selected_nofocus", SYSCOL_LIST_TEXT_SELECTED_NOFOCUS);
+	gui_theme_t::gui_color_list_background_selected_f   = contents.get_color("gui_color_list_background_selected_focus", SYSCOL_LIST_BACKGROUND_SELECTED_F);
+	gui_theme_t::gui_color_list_background_selected_nf  = contents.get_color("gui_color_list_background_selected_nofocus", SYSCOL_LIST_BACKGROUND_SELECTED_NF);
+	gui_theme_t::gui_color_list_background_even         = contents.get_color("gui_color_list_background_even", gui_color_list_background_even);
+	gui_theme_t::gui_color_list_background_odd          = contents.get_color("gui_color_list_background_odd", gui_color_list_background_odd);
+	gui_theme_t::gui_color_button_text                  = contents.get_color("gui_color_button_text", SYSCOL_BUTTON_TEXT);
+	gui_theme_t::gui_color_button_text_disabled         = contents.get_color("gui_color_button_text_disabled", SYSCOL_BUTTON_TEXT_DISABLED);
+	gui_theme_t::gui_color_button_text_selected         = contents.get_color("gui_color_button_text_selected", SYSCOL_BUTTON_TEXT_SELECTED);
+	gui_theme_t::gui_color_colored_button_text          = contents.get_color("gui_color_colored_button_text", SYSCOL_COLORED_BUTTON_TEXT);
+	gui_theme_t::gui_color_colored_button_text_selected = contents.get_color("gui_color_colored_button_text_selected", SYSCOL_COLORED_BUTTON_TEXT_SELECTED);
+	gui_theme_t::gui_color_checkbox_text                = contents.get_color("gui_color_checkbox_text", SYSCOL_CHECKBOX_TEXT);
+	gui_theme_t::gui_color_checkbox_text_disabled       = contents.get_color("gui_color_checkbox_text_disabled", SYSCOL_CHECKBOX_TEXT_DISABLED);
+	gui_theme_t::gui_color_ticker_background            = contents.get_color("gui_color_ticker_background", SYSCOL_TICKER_BACKGROUND);
+	gui_theme_t::gui_color_ticker_divider               = contents.get_color("gui_color_ticker_divider", SYSCOL_TICKER_DIVIDER);
+	gui_theme_t::gui_color_statusbar_text               = contents.get_color("gui_color_statusbar_text", SYSCOL_STATUSBAR_TEXT);
+	gui_theme_t::gui_color_statusbar_background         = contents.get_color("gui_color_statusbar_background", SYSCOL_STATUSBAR_BACKGROUND);
+	gui_theme_t::gui_color_statusbar_divider            = contents.get_color("gui_color_statusbar_divider", SYSCOL_STATUSBAR_DIVIDER);
+	gui_theme_t::gui_highlight_color                    = contents.get_color("gui_highlight_color", SYSCOL_HIGHLIGHT);
+	gui_theme_t::gui_shadow_color                       = contents.get_color("gui_shadow_color", SYSCOL_SHADOW);
+	gui_theme_t::gui_color_loadingbar_inner             = contents.get_color("gui_color_loadingbar_inner", SYSCOL_LOADINGBAR_INNER);
+	gui_theme_t::gui_color_loadingbar_progress          = contents.get_color("gui_color_loadingbar_progress", SYSCOL_LOADINGBAR_PROGRESS);
+	gui_theme_t::gui_color_obsolete                     = contents.get_color("gui_color_obsolete", SYSCOL_OBSOLETE);
+	gui_theme_t::gui_color_empty                        = contents.get_color("gui_color_empty", SYSCOL_EMPTY);
+	gui_theme_t::gui_color_chat_window_network_transparency = contents.get_color("gui_color_chat_window_network_transparency", gui_color_chat_window_network_transparency);
+	gui_theme_t::gui_color_image_transparency           = contents.get_color("gui_color_image_transparency", SYSCOL_IMAGE_TRANSPARENCY);
+    gui_theme_t::gui_color_object_highlight             = contents.get_color("gui_color_object_highlight", SYSCOL_OBJECT_HIGHLIGHT);
 
 	gui_theme_t::gui_waitingbar_width = (uint32)contents.get_int("gui_waitingbar_width", gui_theme_t::gui_waitingbar_width);
 
@@ -719,12 +717,12 @@ gui_theme_t::gui_color_object_highlight                 = (PIXVAL)contents.get_c
 	env_t::gui_player_color_bright =   contents.get_int("gui_player_color_bright",   env_t::gui_player_color_bright );
 	env_t::gui_player_color_dark =     contents.get_int("gui_player_color_dark",     env_t::gui_player_color_dark );
 
-	env_t::default_window_title_color = contents.get_color("default_window_title_color", env_t::default_window_title_color,  &env_t::default_window_title_color_rgb );
-	env_t::front_window_text_color =    contents.get_color("front_window_text_color",    env_t::front_window_text_color,  &env_t::front_window_text_color_rgb );
-	env_t::bottom_window_text_color =   contents.get_color("bottom_window_text_color",   env_t::bottom_window_text_color, &env_t::bottom_window_text_color_rgb );
-	env_t::cursor_overlay_color =       contents.get_color("cursor_overlay_color",       env_t::cursor_overlay_color,     &env_t::cursor_overlay_color_rgb );
-	env_t::tooltip_color =              contents.get_color("tooltip_background_color",   env_t::tooltip_color,            &env_t::tooltip_color_rgb );
-	env_t::tooltip_textcolor =          contents.get_color("tooltip_text_color",         env_t::tooltip_textcolor,        &env_t::tooltip_textcolor_rgb );
+	contents.get_color("default_window_title_color", RGBA_BLACK, &env_t::default_window_title_color_rgb );
+	contents.get_color("front_window_text_color",    RGBA_BLACK, &env_t::front_window_text_color_rgb );
+	contents.get_color("bottom_window_text_color",   RGBA_BLACK, &env_t::bottom_window_text_color_rgb );
+	contents.get_color("cursor_overlay_color",       RGBA_BLACK, &env_t::cursor_overlay_color_rgb );
+	contents.get_color("tooltip_background_color",   RGBA_BLACK, &env_t::tooltip_color_rgb );
+	contents.get_color("tooltip_text_color",         RGBA_BLACK, &env_t::tooltip_textcolor_rgb );
 
 	env_t::show_tooltips =        contents.get_int("show_tooltips",              env_t::show_tooltips );
 	env_t::tooltip_delay =        contents.get_int("tooltip_delay",              env_t::tooltip_delay );

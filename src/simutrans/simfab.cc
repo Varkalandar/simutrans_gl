@@ -3385,7 +3385,7 @@ void fabrik_t::display_status(sint16 xpos, sint16 ypos)
 
 			if (storage_capacity) {
 				const uint32 stock_quantity = (uint32)((FAB_DISPLAY_UNIT_HALF + (sint64)goods.menge * pfactor) >> (precision_bits + DEFAULT_PRODUCTION_FACTOR_BITS));
-				const rgba_t goods_color = goods.get_typ()->get_color();
+				rgba_t goods_color = goods.get_typ()->get_color();
 				const uint16 v = min(25, (uint16)(25 * stock_quantity / storage_capacity)) + 2;
 
 				if (currently_producing) {
@@ -3394,7 +3394,8 @@ void fabrik_t::display_status(sint16 xpos, sint16 ypos)
 					display_fillbox_wh_clip_rgb(xpos + D_WAITINGBAR_WIDTH - 1, ypos - v - 1, 1, v, color_idx_to_rgb(COL_GREY1), true);
 				}
 				else {
-					display_blend_wh_rgb(xpos + 1, ypos - v - 1, D_WAITINGBAR_WIDTH - 2, v, goods_color, 60);
+                    goods_color.alpha = 0.4f;
+					display_blend_wh_rgb(xpos + 1, ypos - v - 1, D_WAITINGBAR_WIDTH - 2, v, goods_color);
 					mark_rect_dirty_wc(xpos + 1, ypos - v - 1, xpos + D_WAITINGBAR_WIDTH - 1, ypos - 1);
 				}
 			}
@@ -3418,7 +3419,7 @@ void fabrik_t::display_status(sint16 xpos, sint16 ypos)
 
 			if (storage_capacity) {
 				const uint32 stock_quantity = (uint32)((FAB_DISPLAY_UNIT_HALF + (sint64)goods.menge * pfactor) >> (precision_bits + DEFAULT_PRODUCTION_FACTOR_BITS));
-				const rgba_t goods_color = goods.get_typ()->get_color();
+				rgba_t goods_color = goods.get_typ()->get_color();
 
 				const uint16 v = min(25, (uint16)(25 * stock_quantity / storage_capacity)) + 2;
 
@@ -3429,7 +3430,8 @@ void fabrik_t::display_status(sint16 xpos, sint16 ypos)
 					display_fillbox_wh_clip_rgb(xpos + D_WAITINGBAR_WIDTH - 1, ypos - v - 1, 1, v, color_idx_to_rgb(COL_GREY1), true);
 				}
 				else {
-					display_blend_wh_rgb(xpos + 1, ypos - v - 1, D_WAITINGBAR_WIDTH - 2, v, goods_color, 60);
+                    goods_color.alpha = 0.5f;
+					display_blend_wh_rgb(xpos + 1, ypos - v - 1, D_WAITINGBAR_WIDTH - 2, v, goods_color);
 					mark_rect_dirty_wc(xpos + 1, ypos - v - 1, xpos + D_WAITINGBAR_WIDTH - 1, ypos - 1);
 				}
 			}

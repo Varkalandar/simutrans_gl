@@ -129,12 +129,12 @@ const scr_size &tabfileobj_t::get_scr_size(const char *key, scr_size def)
 }
 
 
-rgba_t tabfileobj_t::get_color(const char *key, int def, rgb888_t *color_rgb)
+rgba_t tabfileobj_t::get_color(const char *key, rgba_t def, rgb888_t *color_rgb)
 {
 	const char *value = get_string(key,NULL);
 
 	if(!value) {
-		return color_idx_to_rgb(def);
+		return def;
 	}
 	else {
 		// skip spaces/tabs

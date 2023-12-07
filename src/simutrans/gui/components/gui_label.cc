@@ -37,13 +37,6 @@ gui_label_t::gui_label_t(const char* text, rgba_t color_, align_t align_, font_s
 }
 
 
-gui_label_t::gui_label_t(const char* text, uint16_t color_idx, align_t align_, font_size_t size) :
-	align(align_), tooltip(NULL), font_size(size)
-{
-    gui_label_t(text, color_idx_to_rgb(color_idx), align_, size);
-}
-
-
 scr_size gui_label_t::get_min_size() const
 {
 	const scr_coord_val dynamic_width = text ? display_calc_proportional_string_len_width(text, strlen(text), 0, font_size) : D_BUTTON_WIDTH;
@@ -196,5 +189,5 @@ scr_size gui_label_buf_t::get_min_size() const
 void gui_label_buf_t::append_money(double money)
 {
 	buffer_write.append_money(money);
-	set_color(money >= 0 ? color_idx_to_rgb(MONEY_PLUS) : color_idx_to_rgb(MONEY_MINUS));
+	set_color(money >= 0 ? (MONEY_PLUS) : (MONEY_MINUS));
 }

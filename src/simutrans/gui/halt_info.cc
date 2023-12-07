@@ -405,7 +405,7 @@ void halt_info_t::init(halthandle_t halt)
 
 	chart.set_min_size(scr_size(0, CHART_HEIGHT));
 	chart.set_dimension(12, 10000);
-	chart.set_background(color_idx_to_rgb(SYSCOL_CHART_BACKGROUND));
+	chart.set_background((SYSCOL_CHART_BACKGROUND));
 	container_chart.add_component(&chart);
 
 	container_chart.add_table(4,2);
@@ -621,7 +621,7 @@ void gui_halt_detail_t::update_connections( halthandle_t halt )
 			new_component<gui_line_button_t>(line);
 
 			// Line labels with color of player
-			gui_label_buf_t *lb = new_component<gui_label_buf_t>(PLAYER_FLAG | color_idx_to_rgb(line->get_owner()->get_player_color1()+env_t::gui_player_color_dark) );
+			gui_label_buf_t *lb = new_component<gui_label_buf_t>(color_idx_to_rgb(line->get_owner()->get_player_color1()+env_t::gui_player_color_dark));
 			lb->buf().append( line->get_name() );
 			lb->update();
 		}
@@ -641,7 +641,7 @@ void gui_halt_detail_t::update_connections( halthandle_t halt )
 			new_component<gui_convoi_button_t>(cnv);
 
 			// Line labels with color of player
-			gui_label_buf_t *lb = new_component<gui_label_buf_t>(PLAYER_FLAG | color_idx_to_rgb(cnv->get_owner()->get_player_color1()+env_t::gui_player_color_dark) );
+			gui_label_buf_t *lb = new_component<gui_label_buf_t>(color_idx_to_rgb(cnv->get_owner()->get_player_color1()+env_t::gui_player_color_dark));
 			lb->buf().append( cnv->get_name() );
 			lb->update();
 		}
@@ -873,7 +873,7 @@ void gui_departure_board_t::update_departures(halthandle_t halt)
 
 		for(dest_info_t hi : destinations ) {
 			if(  freight_list_sorter_t::by_via_sum != env_t::default_sortmode  ||  !exclude.is_contained( hi.halt )  ) {
-				gui_label_buf_t *lb = new_component<gui_label_buf_t>(color_idx_to_rgb(SYSCOL_TEXT), gui_label_t::right);
+				gui_label_buf_t *lb = new_component<gui_label_buf_t>((gui_theme_t::gui_color_text), gui_label_t::right);
 				if( hi.delta_ticks == 0 ) {
 					lb->buf().append( translator::translate( "now" ) );
 				}
@@ -899,7 +899,7 @@ void gui_departure_board_t::update_departures(halthandle_t halt)
 
 		for(dest_info_t hi : origins ) {
 			if(  freight_list_sorter_t::by_via_sum != env_t::default_sortmode  ||  !exclude.is_contained( hi.halt )  ) {
-				gui_label_buf_t *lb = new_component<gui_label_buf_t>(color_idx_to_rgb(SYSCOL_TEXT), gui_label_t::right);
+				gui_label_buf_t *lb = new_component<gui_label_buf_t>((gui_theme_t::gui_color_text), gui_label_t::right);
 				if( hi.delta_ticks == 0 ) {
 					lb->buf().append( translator::translate( "now" ) );
 				}

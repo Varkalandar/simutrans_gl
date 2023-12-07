@@ -10,6 +10,7 @@
 #include "simtypes.h"
 #include "simunits.h"
 #include "linehandle.h"
+#include "display/rgba.h"
 
 #include "dataobj/route.h"
 #include "vehicle/overtaker.h"

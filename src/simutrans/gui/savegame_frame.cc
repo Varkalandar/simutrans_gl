@@ -187,7 +187,7 @@ void savegame_frame_t::add_section(std::string &name){
 
 	sprintf(label_text,"%s %s", prefix_label , shortened_path);
 
-	gui_label_t* l = new gui_label_t(NULL, color_idx_to_rgb(SYSCOL_TEXT_HIGHLIGHT));
+	gui_label_t* l = new gui_label_t(NULL, (SYSCOL_TEXT_HIGHLIGHT));
 	l->set_text_pointer(label_text);
 	l->set_tooltip(path_expanded);
 

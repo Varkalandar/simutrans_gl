@@ -47,10 +47,9 @@ protected:
 	using gui_component_t::init;
 
 public:
-	gui_label_t(const char* text, rgba_t color, align_t align=left, font_size_t size=FS_NORMAL);
-	gui_label_t(const char* text=0, uint16_t color_idx=SYSCOL_TEXT, align_t align=left, font_size_t size=FS_NORMAL);
+	gui_label_t(const char* text=0, rgba_t color=RGBA_BLACK, align_t align=left, font_size_t size=FS_NORMAL);
 
-	void init( const char* text_par, scr_coord pos_par, rgba_t color_par, align_t align_par=left) {
+	void init(const char* text_par, scr_coord pos_par, rgba_t color_par=RGBA_BLACK, align_t align_par=left) {
 		set_pos  ( pos_par   );
 		set_text ( text_par  );
 		set_color( color_par );

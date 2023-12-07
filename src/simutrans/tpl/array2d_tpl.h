@@ -59,15 +59,16 @@ public:
 
 	void init( T value )
 	{
-		if(sizeof(T)==1) {
-			memset( data, value, w*h );
-		}
-		else {
+// todo: buggy with rgb888_t ??
+//		if(sizeof(T)==1) {
+//			memset( data, value, w*h );
+//		}
+//		else {
 			unsigned i=(w*h);
 			while(  i>0  ) {
 				data[--i] = value;
 			}
-		}
+//		}
 	}
 
 	// all informations in the array are lost

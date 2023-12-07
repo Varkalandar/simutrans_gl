@@ -134,9 +134,9 @@ void factorylist_stats_t::draw(scr_coord offset)
 {
 	update_label();
 	// boost stuff
-	boost_electric.set_alpha(fab->get_prodfactor_electric()>0 ? 0 : TRANSPARENT50_FLAG | OUTLINE_FLAG | SYSCOL_IMAGE_TRANSPARENCY);
-	boost_passenger.set_alpha(fab->get_prodfactor_pax()>0 ? 0 : TRANSPARENT50_FLAG | OUTLINE_FLAG | SYSCOL_IMAGE_TRANSPARENCY);
-	boost_mail.set_alpha(fab->get_prodfactor_mail()>0 ? 0 : TRANSPARENT50_FLAG | OUTLINE_FLAG | SYSCOL_IMAGE_TRANSPARENCY);
+	boost_electric.set_alpha(fab->get_prodfactor_electric() > 0 ? 1.0f : 0.5f);
+	boost_passenger.set_alpha(fab->get_prodfactor_pax() > 0 ? 1.0f : 0.5f);
+	boost_mail.set_alpha(fab->get_prodfactor_mail() > 0 ? 1.0f : 0.5f);
 
 	indicator.set_color( color_idx_to_rgb(fabrik_t::status_to_color[fab->get_status()]) );
 

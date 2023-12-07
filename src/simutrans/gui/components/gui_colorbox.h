@@ -21,7 +21,7 @@ class gui_colorbox_t : public gui_component_t
 public:
     scr_coord_val fixed_min_height;
 
-	gui_colorbox_t(rgba_t color);
+	gui_colorbox_t(rgba_t color=RGBA_BLACK);
 
 	void draw(scr_coord offset) OVERRIDE;
 

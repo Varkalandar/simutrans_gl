@@ -59,7 +59,8 @@ display_set_clip_wh(p_cr.x, p_cr.y, p_cr.w, p_cr.h); \
  *
  */
 rgba_t color_idx_to_rgb(int idx);
-int color_rgb_to_idx(rgb888_t color);
+
+rgba_t color_idx_to_rgba(int idx, int transparent_percent);
 
 /*
  * Get 24bit RGB888 colour from an index of the old 8bit palette
@@ -228,7 +229,7 @@ void display_set_pointer(int pointer);
 void display_show_load_pointer(int loading);
 
 
-void display_array_wh(scr_coord_val xp, scr_coord_val yp, scr_coord_val w, scr_coord_val h, const uint8 *arr);
+void display_array_wh(scr_coord_val xp, scr_coord_val yp, scr_coord_val w, scr_coord_val h, const rgb888_t *arr);
 
 // compound painting routines
 void display_ddd_box_rgb(scr_coord_val x1, scr_coord_val y1, scr_coord_val w, scr_coord_val h, rgba_t tl_color, rgba_t rd_color, bool dirty);

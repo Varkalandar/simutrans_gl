@@ -1616,7 +1616,7 @@ void convoi_t::ziel_erreicht()
 
 		akt_speed = 0;
 		buf.printf( translator::translate("%s has entered a depot."), get_name() );
-		welt->get_message()->add_message(buf, v->get_pos(),message_t::warnings, PLAYER_FLAG|get_owner()->get_player_nr(), IMG_EMPTY);
+		welt->get_message()->add_message(buf, v->get_pos(),message_t::warnings, color_idx_to_rgb(get_owner()->get_player_nr()), IMG_EMPTY);
 
 		betrete_depot(dp);
 	}
@@ -3593,7 +3593,7 @@ rgba_t convoi_t::get_status_color() const
 {
 	if(state==INITIAL) {
 		// in depot/under assembly
-		return color_idx_to_rgb(SYSCOL_TEXT_HIGHLIGHT);
+		return (SYSCOL_TEXT_HIGHLIGHT);
 	}
 	else if (state == WAITING_FOR_CLEARANCE_ONE_MONTH || state == CAN_START_ONE_MONTH || get_state() == NO_ROUTE) {
 		// stuck or no route
@@ -3601,17 +3601,17 @@ rgba_t convoi_t::get_status_color() const
 	}
 	else if(financial_history[0][CONVOI_PROFIT]+financial_history[1][CONVOI_PROFIT]<0) {
 		// ok, not performing best
-		return color_idx_to_rgb(MONEY_MINUS);
+		return (MONEY_MINUS);
 	}
 	else if((financial_history[0][CONVOI_OPERATIONS]|financial_history[1][CONVOI_OPERATIONS])==0) {
 		// nothing moved
-		return color_idx_to_rgb(SYSCOL_TEXT_UNUSED;
+		return (SYSCOL_TEXT_UNUSED);
 	}
 	else if(has_obsolete) {
-		return color_idx_to_rgb(SYSCOL_OBSOLETE);
+		return (SYSCOL_OBSOLETE);
 	}
 	// normal state
-	return color_idx_to_rgb(SYSCOL_TEXT);
+	return (gui_theme_t::gui_color_text);
 }
 
 

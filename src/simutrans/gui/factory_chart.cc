@@ -160,7 +160,7 @@ void factory_chart_t::set_factory(const fabrik_t *_factory)
 		// GUI components for goods input/output statistics
 		goods_chart.set_min_size(scr_size(D_DEFAULT_WIDTH - D_MARGIN_LEFT - D_MARGIN_RIGHT, CHART_HEIGHT));
 		goods_chart.set_dimension(12, 10000);
-		goods_chart.set_background(color_idx_to_rgb(SYSCOL_CHART_BACKGROUND));
+		goods_chart.set_background((SYSCOL_CHART_BACKGROUND));
 
 		uint32 count = 0;
 
@@ -223,7 +223,7 @@ void factory_chart_t::set_factory(const fabrik_t *_factory)
 	// GUI components for other production-related statistics
 	prod_chart.set_min_size( scr_size( D_DEFAULT_WIDTH-D_MARGIN_LEFT-D_MARGIN_RIGHT, CHART_HEIGHT ) );
 	prod_chart.set_dimension(12, 10000);
-	prod_chart.set_background(color_idx_to_rgb(SYSCOL_CHART_BACKGROUND));
+	prod_chart.set_background((SYSCOL_CHART_BACKGROUND));
 
 	for(  int row = 0, cell = 0; row<6; row++) {
 		for(  int col = 0; col<4; col++, cell++) {

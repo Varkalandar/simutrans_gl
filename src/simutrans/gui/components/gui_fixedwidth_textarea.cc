@@ -157,7 +157,7 @@ scr_size gui_fixedwidth_textarea_t::calc_display_text(const scr_coord offset, co
 
 		// start of new line or end of text
 		if(draw  &&  (line_end-line_start)!=0) {
-			display_text_proportional_len_clip_rgb(offset.x, offset.y+y, (const char *)line_start, ALIGN_LEFT | DT_CLIP, color_idx_to_rgb(SYSCOL_TEXT), true, (size_t)(line_end - line_start), 0, FS_NORMAL);
+			display_text_proportional_len_clip_rgb(offset.x, offset.y+y, (const char *)line_start, ALIGN_LEFT | DT_CLIP, (gui_theme_t::gui_color_text), true, (size_t)(line_end - line_start), 0, FS_NORMAL);
 		}
 		y += LINESPACE;
 		// back to start of new line

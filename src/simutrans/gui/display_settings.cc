@@ -171,7 +171,7 @@ void gui_settings_t::draw(scr_coord offset)
 	// fps_label
 	uint32 target_fps = world()->is_fast_forward() ? env_t::ff_fps : env_t::fps;
 	uint32 loops = world()->get_realFPS();
-	rgba_t color = color_idx_to_rgb(SYSCOL_TEXT_HIGHLIGHT);
+	rgba_t color = (SYSCOL_TEXT_HIGHLIGHT);
 	if(  loops < (target_fps*16*3)/4  ) {
 		color = color_idx_to_rgb(( loops <= target_fps*16/2 ) ? COL_RED : COL_YELLOW);
 	}
@@ -186,7 +186,7 @@ void gui_settings_t::draw(scr_coord offset)
 
 	//simloops_label
 	loops = world()->get_simloops();
-	color = color_idx_to_rgb(SYSCOL_TEXT_HIGHLIGHT);
+	color = (SYSCOL_TEXT_HIGHLIGHT);
 	if(  loops <= 30  ) {
 		color = color_idx_to_rgb((loops<=20) ? COL_RED : COL_YELLOW);
 	}
@@ -293,7 +293,7 @@ map_settings_t::map_settings_t()
 	sint32 current_tick = world()->get_ticks();
 	for( env_t::show_month = 0; env_t::show_month<8; env_t::show_month++ ) {
 		tstrncpy( time_str[env_t::show_month], tick_to_string( current_tick ), 64 );
-		time_setting.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( time_str[env_t::show_month], color_idx_to_rgb(SYSCOL_TEXT) );
+		time_setting.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( time_str[env_t::show_month], (gui_theme_t::gui_color_text) );
 	}
 	env_t::show_month = old_show_month;
 	time_setting.set_selection( old_show_month );
@@ -345,9 +345,9 @@ transparency_settings_t::transparency_settings_t()
 
 	// Hide buildings
 	hide_buildings.set_focusable( false );
-	hide_buildings.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate( "no buildings hidden" ), color_idx_to_rgb(SYSCOL_TEXT) );
-	hide_buildings.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate( "hide city building" ), color_idx_to_rgb(SYSCOL_TEXT) );
-	hide_buildings.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate( "hide all building" ), color_idx_to_rgb(SYSCOL_TEXT) );
+	hide_buildings.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate( "no buildings hidden" ), (gui_theme_t::gui_color_text) );
+	hide_buildings.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate( "hide city building" ), (gui_theme_t::gui_color_text) );
+	hide_buildings.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate( "hide all building" ), (gui_theme_t::gui_color_text) );
 	hide_buildings.set_selection( env_t::hide_buildings );
 	add_component( &hide_buildings, 2 );
 	hide_buildings.add_listener( this );
@@ -364,10 +364,10 @@ transparency_settings_t::transparency_settings_t()
 
 	new_component<gui_label_t>( "Industry overlay" )->set_tooltip( translator::translate( "Display bars above factory to show the status" ) );
 	factory_tooltip.set_focusable( false );
-	factory_tooltip.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate( "Do not show" ), color_idx_to_rgb(SYSCOL_TEXT) );
-	factory_tooltip.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate( "On mouseover" ), color_idx_to_rgb(SYSCOL_TEXT) );
-	factory_tooltip.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate( "Served by me" ), color_idx_to_rgb(SYSCOL_TEXT) );
-	factory_tooltip.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate( "Show always" ), color_idx_to_rgb(SYSCOL_TEXT) );
+	factory_tooltip.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate( "Do not show" ), (gui_theme_t::gui_color_text) );
+	factory_tooltip.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate( "On mouseover" ), (gui_theme_t::gui_color_text) );
+	factory_tooltip.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate( "Served by me" ), (gui_theme_t::gui_color_text) );
+	factory_tooltip.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate( "Show always" ), (gui_theme_t::gui_color_text) );
 	factory_tooltip.set_selection( env_t::show_factory_storage_bar );
 	add_component( &factory_tooltip );
 	factory_tooltip.add_listener( this );
@@ -457,10 +457,10 @@ traffic_settings_t::traffic_settings_t()
 
 	// Convoy tooltip
 	convoy_tooltip.set_focusable(false);
-	convoy_tooltip.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("convoi error tooltips"), color_idx_to_rgb(SYSCOL_TEXT));
-	convoy_tooltip.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("convoi mouseover tooltips"), color_idx_to_rgb(SYSCOL_TEXT));
-	convoy_tooltip.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("line name mouseover tooltips"), color_idx_to_rgb(SYSCOL_TEXT));
-	convoy_tooltip.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("all convoi tooltips"), color_idx_to_rgb(SYSCOL_TEXT));
+	convoy_tooltip.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("convoi error tooltips"), (gui_theme_t::gui_color_text));
+	convoy_tooltip.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("convoi mouseover tooltips"), (gui_theme_t::gui_color_text));
+	convoy_tooltip.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("line name mouseover tooltips"), (gui_theme_t::gui_color_text));
+	convoy_tooltip.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("all convoi tooltips"), (gui_theme_t::gui_color_text));
 	convoy_tooltip.set_selection(env_t::show_vehicle_states);
 	add_component(&convoy_tooltip, 2);
 	convoy_tooltip.add_listener(this);
@@ -469,9 +469,9 @@ traffic_settings_t::traffic_settings_t()
 	new_component<gui_label_t>("Convoi following mode");
 
 	follow_mode.set_focusable(false);
-	follow_mode.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("None"), color_idx_to_rgb(SYSCOL_TEXT));
-	follow_mode.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("underground mode"), color_idx_to_rgb(SYSCOL_TEXT));
-	follow_mode.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("sliced underground mode"), color_idx_to_rgb(SYSCOL_TEXT));
+	follow_mode.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("None"), (gui_theme_t::gui_color_text));
+	follow_mode.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("underground mode"), (gui_theme_t::gui_color_text));
+	follow_mode.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("sliced underground mode"), (gui_theme_t::gui_color_text));
 	follow_mode.set_selection(env_t::follow_convoi_underground);
 	add_component(&follow_mode);
 	follow_mode.add_listener(this);
@@ -482,9 +482,9 @@ traffic_settings_t::traffic_settings_t()
 
 	// convoi booking message options
 	money_booking.set_focusable( false );
-	money_booking.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("Show all revenue messages"), color_idx_to_rgb(SYSCOL_TEXT) );
-	money_booking.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("Show only player's revenue"), color_idx_to_rgb(SYSCOL_TEXT) );
-	money_booking.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("Show no revenue messages"), color_idx_to_rgb(SYSCOL_TEXT) );
+	money_booking.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("Show all revenue messages"), (gui_theme_t::gui_color_text) );
+	money_booking.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("Show only player's revenue"), (gui_theme_t::gui_color_text) );
+	money_booking.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("Show no revenue messages"), (gui_theme_t::gui_color_text) );
 	money_booking.set_selection( env_t::show_money_message );
 	add_component(&money_booking, 2);
 	money_booking.add_listener(this);

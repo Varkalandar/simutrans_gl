@@ -1733,15 +1733,27 @@ void display_themed_text_label(sint16 xpos, sint16 ypos, const char* text,
  */
 void display_text_label(sint16 xpos, sint16 ypos, const char* text, const player_t *player, char flag, bool dirty)
 {
-	const sint16 pc = player ? player->get_player_color1()+4 : SYSCOL_TEXT_HIGHLIGHT;
 	const int style = env_t::show_names >> 2;
 	switch(style) {
 		case 0:
-			display_ddd_proportional_clip( xpos, ypos, color_idx_to_rgb(pc), RGBA_BLACK, text, dirty );
+            if(player)
+            {
+                display_ddd_proportional_clip( xpos, ypos, color_idx_to_rgb(player->get_player_color1()+4), RGBA_BLACK, text, dirty );
+            }
+            else
+            {
+                display_ddd_proportional_clip( xpos, ypos, SYSCOL_TEXT_HIGHLIGHT, RGBA_BLACK, text, dirty );
+            }
 			break;
 		case 1: {
-			const rgba_t text_color = player ? color_idx_to_rgb(player->get_player_color1()+7) : color_idx_to_rgb(SYSCOL_TEXT_HIGHLIGHT);
-			display_outline_proportional_rgb( xpos, ypos, text_color, RGBA_BLACK, text, dirty );
+            if(player)
+            {
+                display_outline_proportional_rgb( xpos, ypos, color_idx_to_rgb(player->get_player_color1()+7), RGBA_BLACK, text, dirty );
+            }
+            else
+            {
+                display_ddd_proportional_clip( xpos, ypos, SYSCOL_TEXT_HIGHLIGHT, RGBA_BLACK, text, dirty );
+            }
 			break;
 		}
 		case 2: {

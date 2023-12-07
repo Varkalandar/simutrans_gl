@@ -137,29 +137,29 @@ void gui_chart_t::draw(scr_coord offset)
 	}
 
 	// draw zero line
-	display_direct_line_rgb(offset.x+1, offset.y+(scr_coord_val)baseline, offset.x+chart_size.w-2, offset.y+(scr_coord_val)baseline, color_idx_to_rgb(SYSCOL_CHART_LINES_ZERO));
+	display_direct_line_rgb(offset.x+1, offset.y+(scr_coord_val)baseline, offset.x+chart_size.w-2, offset.y+(scr_coord_val)baseline, (SYSCOL_CHART_LINES_ZERO));
 
 	if (show_y_axis) {
 
 		// draw zero number only, if it will not disturb any other printed values!
 		if ((baseline > 18) && (baseline < chart_size.h -18)) {
-			display_proportional_clip_rgb(offset.x - 4, offset.y+(scr_coord_val)baseline-3, "0", ALIGN_RIGHT, color_idx_to_rgb(SYSCOL_TEXT_HIGHLIGHT), true);
+			display_proportional_clip_rgb(offset.x - 4, offset.y+(scr_coord_val)baseline-3, "0", ALIGN_RIGHT, (SYSCOL_TEXT_HIGHLIGHT), true);
 		}
 
 		// display min/max money values
-		display_proportional_clip_rgb(offset.x - 4, offset.y-5, cmax, ALIGN_RIGHT, color_idx_to_rgb(SYSCOL_TEXT_HIGHLIGHT), true);
-		display_proportional_clip_rgb(offset.x - 4, offset.y+chart_size.h-5, cmin, ALIGN_RIGHT, color_idx_to_rgb(SYSCOL_TEXT_HIGHLIGHT), true);
+		display_proportional_clip_rgb(offset.x - 4, offset.y-5, cmax, ALIGN_RIGHT, (SYSCOL_TEXT_HIGHLIGHT), true);
+		display_proportional_clip_rgb(offset.x - 4, offset.y+chart_size.h-5, cmin, ALIGN_RIGHT, (SYSCOL_TEXT_HIGHLIGHT), true);
 	}
 
 	// draw chart frame
-	display_ddd_box_clip_rgb(offset.x, offset.y, chart_size.w, chart_size.h, color_idx_to_rgb(SYSCOL_SHADOW), color_idx_to_rgb(SYSCOL_HIGHLIGHT));
+	display_ddd_box_clip_rgb(offset.x, offset.y, chart_size.w, chart_size.h, (SYSCOL_SHADOW), (SYSCOL_HIGHLIGHT));
 
 	// draw chart lines
 	scr_coord_val x_last = 0;  // remember last digit position to avoid overwriting by next label
 	for(  int i = 0;  i < x_elements;  i++  ) {
 		const int j = env_t::left_to_right_graphs ? x_elements - 1 - i : i;
 		const scr_coord_val x0 = tmpx + factor * (chart_size.w / (x_elements - 1) ) * j;
-		const rgba_t line_color = (i%2) ? color_idx_to_rgb(SYSCOL_CHART_LINES_ODD) : color_idx_to_rgb(SYSCOL_CHART_LINES_EVEN);
+		const rgba_t line_color = (i%2) ? (SYSCOL_CHART_LINES_ODD) : (SYSCOL_CHART_LINES_EVEN);
 		if(  show_x_axis  ) {
 			// display x-axis
 			sprintf( digit, "%i", abs(seed - j) );

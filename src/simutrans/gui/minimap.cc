@@ -3,6 +3,7 @@
  * (see LICENSE.txt)
  */
 
+#include "minimap.h"
 #include "../simevent.h"
 #include "../simcolor.h"
 #include "../simconvoi.h"
@@ -17,7 +18,6 @@
 #include "../world/simcity.h"
 #include "fabrik_info.h"
 #include "simwin.h"
-#include "minimap.h"
 
 #include "../dataobj/translator.h"
 #include "../dataobj/settings.h"
@@ -579,18 +579,19 @@ bool minimap_t::change_zoom_factor(bool magnify)
 }
 
 
-rgba_t minimap_t::calc_severity_color(sint32 amount, sint32 max_value)
+rgb888_t minimap_t::calc_severity_color(sint32 amount, sint32 max_value)
 {
 	if(max_value!=0) {
 		// color array goes from light blue to red
 		const sint32 severity = ((sint64)amount * MAX_SEVERITY_COLORS) / ((sint64)max_value + 1);
-		return color_idx_to_rgb( minimap_t::severity_color[ clamp( severity, 0, MAX_SEVERITY_COLORS-1 ) ]);
+		return get_color_rgb(minimap_t::severity_color[clamp( severity, 0, MAX_SEVERITY_COLORS-1)]);
 	}
-	return color_idx_to_rgb( minimap_t::severity_color[0]);
+
+	return get_color_rgb(minimap_t::severity_color[0]);
 }
 
 
-rgba_t minimap_t::calc_severity_color_log(sint32 amount, sint32 max_value)
+rgb888_t minimap_t::calc_severity_color_log(sint32 amount, sint32 max_value)
 {
 	if(  max_value>1  ) {
 		sint32 severity;
@@ -600,13 +601,15 @@ rgba_t minimap_t::calc_severity_color_log(sint32 amount, sint32 max_value)
 		else {
 			severity = (uint32)( log( (double)amount*(double)(1<<MAX_SEVERITY_COLORS)/(double)max_value) + 0.5 );
 		}
-		return color_idx_to_rgb( minimap_t::severity_color[ clamp( severity, 0, MAX_SEVERITY_COLORS-1 ) ]);
+
+		return get_color_rgb(minimap_t::severity_color[clamp( severity, 0, MAX_SEVERITY_COLORS-1 )]);
 	}
-	return color_idx_to_rgb( minimap_t::severity_color[0]);
+
+	return get_color_rgb(minimap_t::severity_color[0]);
 }
 
 
-void minimap_t::set_map_color_clip( sint16 x, sint16 y, rgba_t color )
+void minimap_t::set_map_color_clip( sint16 x, sint16 y, rgb888_t color )
 {
 	if(  0<=x  &&  (uint16)x < map_data->get_width()  &&  0<=y  &&  (uint16)y < map_data->get_height()  ) {
 		map_data->at( x, y ) = color;
@@ -614,7 +617,7 @@ void minimap_t::set_map_color_clip( sint16 x, sint16 y, rgba_t color )
 }
 
 
-void minimap_t::set_map_color(koord k_, const uint8_t color)
+void minimap_t::set_map_color(koord k_, const rgb888_t color)
 {
 	// if map is in normal mode, set new color for map
 	// otherwise do nothing
@@ -663,7 +666,7 @@ void minimap_t::set_map_color(koord k_, const uint8_t color)
  * @param hoehe height of the tile
  * @param groundwater water height
  */
-uint8_t minimap_t::calc_height_color(const sint16 hoehe, const sint16 groundwater)
+rgb888_t minimap_t::calc_height_color(const sint16 hoehe, const sint16 groundwater)
 {
 	sint16 relative_index;
 	if(  hoehe>groundwater  ) {
@@ -677,16 +680,17 @@ uint8_t minimap_t::calc_height_color(const sint16 hoehe, const sint16 groundwate
 	else {
 		relative_index = hoehe-groundwater;
 	}
-	return color_idx_to_rgb(map_type_color[clamp( relative_index+MAX_MAP_TYPE_WATER-1, 0, MAX_MAP_TYPE_WATER+MAX_MAP_TYPE_LAND-1 )]);
+
+	return get_color_rgb(map_type_color[clamp(relative_index+MAX_MAP_TYPE_WATER-1, 0, MAX_MAP_TYPE_WATER+MAX_MAP_TYPE_LAND-1)]);
 }
 
 
 /**
  * Calculates the minimap color of a ground tile
  */
-uint8_t minimap_t::calc_ground_color(const grund_t *gr)
+rgb888_t minimap_t::calc_ground_color(const grund_t *gr)
 {
-	uint8_t color = color_idx_to_rgb(COL_BLACK);
+	rgb888_t color = get_color_rgb(COL_BLACK);
 
 #ifdef DEBUG_ROUTES
 	/* for debug purposes only ...*/
@@ -701,10 +705,10 @@ uint8_t minimap_t::calc_ground_color(const grund_t *gr)
 	else {
 		switch(gr->get_typ()) {
 			case grund_t::brueckenboden:
-				color = color_idx_to_rgb(MN_GREY3);
+				color = get_color_rgb(MN_GREY3);
 				break;
 			case grund_t::tunnelboden:
-				color = color_idx_to_rgb(COL_BROWN);
+				color = get_color_rgb(COL_BROWN);
 				break;
 			case grund_t::monorailboden:
 				color = COL_MONORAIL;
@@ -715,7 +719,7 @@ uint8_t minimap_t::calc_ground_color(const grund_t *gr)
 					gebaeude_t *gb = gr->find<gebaeude_t>();
 					fabrik_t *fab = gb ? gb->get_fabrik() : NULL;
 					if(fab==NULL) {
-						color = color_idx_to_rgb(COL_GREY3);
+						color = get_color_rgb(COL_GREY3);
 					}
 					else {
 						color = fab->get_color();
@@ -730,7 +734,7 @@ uint8_t minimap_t::calc_ground_color(const grund_t *gr)
 					if(fab==NULL) {
 						sint16 height = corner_sw(gr->get_grund_hang());
 						if( mode&MAP_HIDE_CONTOUR ) {
-							color = color_idx_to_rgb(map_type_color[1]); // second deep water color
+							color = get_color_rgb(map_type_color[1]); // second deep water color
 						}
 						else {
 							color = calc_height_color( world->lookup_hgt( gr->get_pos().get_2d() ) + height, world->get_water_hgt( gr->get_pos().get_2d() ) );
@@ -753,7 +757,8 @@ uint8_t minimap_t::calc_ground_color(const grund_t *gr)
 						case air_wt: color = COL_RUNWAY; break;
 						case monorail_wt:
 						default: // all other ways light red ...
-							color = color_idx_to_rgb(135); break;
+							color = get_color_rgb(135);
+							break;
 					}
 				}
 				else {
@@ -763,11 +768,11 @@ uint8_t minimap_t::calc_ground_color(const grund_t *gr)
 					}
 					else {
 						if( mode&MAP_HIDE_CONTOUR ) {
-							color = color_idx_to_rgb(map_type_color[MAX_MAP_TYPE_WATER+2]); // lowest land color
+							color = get_color_rgb(map_type_color[MAX_MAP_TYPE_WATER+2]); // lowest land color
 						}
 						else if( mode&MAP_CLIMATES ) {
 							static uint8 climate_color[ 8 ] = { 0, COL_YELLOW, COL_LIGHT_GREEN, COL_GREEN, COL_DARK_GREEN, COL_DARK_YELLOW, COL_BROWN, COL_GREY4 };
-							color = color_idx_to_rgb( climate_color[ world->get_climate(gr->get_pos().get_2d()) ] );
+							color = get_color_rgb(climate_color[world->get_climate(gr->get_pos().get_2d())]);
 						}
 						else {
 							sint16 height = corner_sw(gr->get_grund_hang());
@@ -869,15 +874,15 @@ bool minimap_t::calc_map_pixel(const grund_t *gr)
 				const schiene_t* sch = (const schiene_t*)(gr->get_weg(track_wt));
 				// show signals
 				if (sch->has_sign() || sch->has_signal()) {
-					set_map_color(k, color_idx_to_rgb(COL_YELLOW));
+					set_map_color(k, get_color_rgb(COL_YELLOW));
 					return true;
 				}
 				else if (sch->is_electrified()) {
-					set_map_color(k, color_idx_to_rgb(COL_RED));
+					set_map_color(k, get_color_rgb(COL_RED));
 					return true;
 				}
 				else {
-					set_map_color(k, color_idx_to_rgb(COL_WHITE));
+					set_map_color(k, get_color_rgb(COL_WHITE));
 					return true;
 				}
 
@@ -904,7 +909,7 @@ bool minimap_t::calc_map_pixel(const grund_t *gr)
 
 		case MAP_FOREST:
 			if (gr->get_top() > 1 && gr->obj_bei(gr->get_top() - 1)->get_typ() == obj_t::baum) {
-				set_map_color(k, color_idx_to_rgb(COL_GREEN));
+				set_map_color(k, get_color_rgb(COL_GREEN));
 				return true;
 			}
 			break;
@@ -912,16 +917,16 @@ bool minimap_t::calc_map_pixel(const grund_t *gr)
 	case MAP_OWNER:
 		// show ownership
 		if (gr->is_halt()) {
-			set_map_color(k, color_idx_to_rgb(gr->get_halt()->get_owner()->get_player_color1() + 3));
+			set_map_color(k, get_color_rgb(gr->get_halt()->get_owner()->get_player_color1() + 3));
 			return true;
 		}
 		else if (weg_t* weg = gr->get_weg_nr(0)) {
-			set_map_color(k, weg->get_owner() == NULL ? color_idx_to_rgb(COL_ORANGE) : color_idx_to_rgb(weg->get_owner()->get_player_color1() + 3));
+			set_map_color(k, weg->get_owner() == NULL ? get_color_rgb(COL_ORANGE) : get_color_rgb(weg->get_owner()->get_player_color1() + 3));
 			return true;
 		}
 		if (gebaeude_t* gb = gr->find<gebaeude_t>()) {
 			if (gb->get_owner() != NULL) {
-				set_map_color(k, color_idx_to_rgb(gb->get_owner()->get_player_color1() + 3));
+				set_map_color(k, get_color_rgb(gb->get_owner()->get_player_color1() + 3));
 				return true;
 			}
 		}
@@ -976,7 +981,7 @@ void minimap_t::calc_map_pixel(const koord k)
 			for (int i = 0; i < plan->get_haltlist_count(); i++) {
 				halthandle_t halt = plan->get_haltlist()[i];
 				if (halt->get_pax_enabled() && !halt->get_pax_connections().empty()) {
-					set_map_color(k, color_idx_to_rgb(halt->get_owner()->get_player_color1() + 3));
+					set_map_color(k, get_color_rgb(halt->get_owner()->get_player_color1() + 3));
 					return;
 				}
 			}
@@ -988,7 +993,7 @@ void minimap_t::calc_map_pixel(const koord k)
 			for (int i = 0; i < plan->get_haltlist_count(); i++) {
 				halthandle_t halt = plan->get_haltlist()[i];
 				if (halt->get_mail_enabled() && !halt->get_mail_connections().empty()) {
-					set_map_color(k, color_idx_to_rgb(halt->get_owner()->get_player_color1() + 3));
+					set_map_color(k, get_color_rgb(halt->get_owner()->get_player_color1() + 3));
 					return;
 				}
 			}
@@ -1010,7 +1015,7 @@ void minimap_t::calc_map_pixel(const koord k)
 			set_map_color(k, calc_ground_color(last_tunnel));
 		}
 		else {
-			set_map_color(k, color_idx_to_rgb(COL_BLACK));
+			set_map_color(k, get_color_rgb(COL_BLACK));
 		}
 	}
 	else if(grund_t::underground_mode == grund_t::ugm_level) {
@@ -1028,7 +1033,7 @@ void minimap_t::calc_map_pixel(const koord k)
 			set_map_color(k, calc_ground_color(gr));
 		}
 		else {
-			set_map_color(k, color_idx_to_rgb(COL_BLACK));
+			set_map_color(k, get_color_rgb(COL_BLACK));
 		}
 	}
 	else {
@@ -1076,7 +1081,7 @@ void minimap_t::calc_map()
 	// actually the following line should reduce new/deletes, but does not work properly
 	if(  map_data==NULL  ||  (sint16) map_data->get_width()!=minimap_size.w  ||  (sint16) map_data->get_height()!=minimap_size.h  ) {
 		delete map_data;
-		map_data = new array2d_tpl<uint8_t> ( minimap_size.w,minimap_size.h);
+		map_data = new array2d_tpl<rgb888_t> ( minimap_size.w,minimap_size.h);
 	}
 	cur_off = new_off;
 	cur_size = new_size;
@@ -1097,7 +1102,7 @@ void minimap_t::calc_map()
 	else {
 		// always the whole map ...
 		if(isometric) {
-			map_data->init( color_idx_to_rgb(COL_BLACK) );
+			map_data->init(get_color_rgb(COL_BLACK));
 		}
 		koord k;
 		for(  k.y=0;  k.y < world->get_size().y;  k.y++  ) {
@@ -1310,9 +1315,9 @@ void minimap_t::draw(scr_coord pos)
 		}
 		else if(  pax_destinations_last_change < current_pax_destinations  ) {
 			// new pax_dest in city.
-			const sparse_tpl<uint8_t> *pax_dests = selected_city->get_pax_destinations_new();
+			const sparse_tpl<rgb888_t> *pax_dests = selected_city->get_pax_destinations_new();
 			koord pos, min, max;
-			uint8_t color;
+			rgb888_t color;
 			for(  uint16 i = 0;  i < pax_dests->get_data_count();  i++  ) {
 				pax_dests->get_nonzero( i, pos, color );
 				min = koord((pos.x*world->get_size().x)/PAX_DESTINATIONS_SIZE,
@@ -1452,29 +1457,29 @@ void minimap_t::draw(scr_coord pos)
 			// top and bottom part
 			const int toplines = min( p4.y, p2.y );
 			for( scr_coord_val y = 0;  y < toplines;  y++  ) {
-				display_blend_wh_rgb( pos.x+p1.x-2*y, pos.y+y, 4*y+4, 1, color_idx_to_rgb(COL_WHITE), 75 );
-				display_blend_wh_rgb( pos.x+p3.x-2*y, pos.y+p3.y-y-1, 4*y+4, 1, color_idx_to_rgb(COL_WHITE), 75 );
+				display_blend_wh_rgb( pos.x+p1.x-2*y, pos.y+y, 4*y+4, 1, color_idx_to_rgba(COL_WHITE, 75));
+				display_blend_wh_rgb( pos.x+p3.x-2*y, pos.y+p3.y-y-1, 4*y+4, 1, color_idx_to_rgba(COL_WHITE, 75));
 			}
 			// center area
 			if(  p1.x < p3.x  ) {
 				for( scr_coord_val y = toplines;  y < p3.y-toplines;  y++  ) {
-					display_blend_wh_rgb( pos.x+(y-toplines)*2, pos.y+y, 4*toplines+4, 1, color_idx_to_rgb(COL_WHITE), 75 );
+					display_blend_wh_rgb( pos.x+(y-toplines)*2, pos.y+y, 4*toplines+4, 1, color_idx_to_rgba(COL_WHITE, 75));
 				}
 			}
 			else {
 				for( scr_coord_val y = toplines;  y < p3.y-toplines;  y++  ) {
-					display_blend_wh_rgb( pos.x+(y-toplines)*2, pos.y+p3.y-y-1, 4*toplines+4, 1, color_idx_to_rgb(COL_WHITE), 75 );
+					display_blend_wh_rgb( pos.x+(y-toplines)*2, pos.y+p3.y-y-1, 4*toplines+4, 1, color_idx_to_rgba(COL_WHITE, 75));
 				}
 			}
 		}
 		else {
 			// easier with rectangular maps ...
-			display_blend_wh_rgb( cur_off.x+pos.x, cur_off.y+pos.y, map_data->get_width(), map_data->get_height(), color_idx_to_rgb(COL_WHITE), 75 );
+			display_blend_wh_rgb(cur_off.x+pos.x, cur_off.y+pos.y, map_data->get_width(), map_data->get_height(), color_idx_to_rgba(COL_WHITE, 75));
 		}
 
 		scr_coord k1,k2;
 		// DISPLAY STATIONS AND AIRPORTS: moved here so station spots are not overwritten by lines drawn
-		for(line_segment_t seg : schedule_cache  ) {
+		for(line_segment_t seg : schedule_cache) {
 
 			uint8 color = seg.colorcount;
 			if(  (event_get_last_control_shift() ^ tool_t::control_invert)==2  ||  current_cnv.is_bound()  ) {

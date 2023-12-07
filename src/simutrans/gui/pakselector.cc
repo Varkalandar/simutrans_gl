@@ -397,11 +397,11 @@ void pakselector_t::draw(scr_coord pos, scr_size size)
 	const char * title = translator::translate("Please Choose a Graphics Set For Playing");
 	const scr_coord_val title_width = display_calc_proportional_string_len_width(title, strlen(title), 0, FS_HEADLINE);
 
-	display_fillbox_wh_rgb(pos.x + (size.w - title_width) / 2 - 40, pos.y + 14, title_width + 80, 46, 0xFFFF, true);
+	display_fillbox_wh_rgb(pos.x + (size.w - title_width) / 2 - 40, pos.y + 14, title_width + 80, 46, RGBA_WHITE, true);
 
 	const scr_coord_val fh = get_font_height(FS_HEADLINE);
 	display_text_proportional_len_clip_rgb(pos.x + (size.w - title_width) / 2, pos.y + 14 + (46 - fh) / 2,
-		                                   title, ALIGN_LEFT, 0x0000, false, -1, 0, FS_HEADLINE);
+		                                   title, ALIGN_LEFT, RGBA_BLACK, false, -1, 0, FS_HEADLINE);
 }
 
 

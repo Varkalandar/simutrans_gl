@@ -165,7 +165,7 @@ public:
 	 * Get a color in the system format when given a #AABBCC
 	 * and optionally set RGB888 for a chosen var with color_rgb
 	 */
-	rgba_t get_color(const char *key, int def, rgb888_t *color_rgb = NULL);
+	rgba_t get_color(const char *key, rgba_t def, rgb888_t *color_rgb = NULL);
 
 	/**
 	 * Get an int

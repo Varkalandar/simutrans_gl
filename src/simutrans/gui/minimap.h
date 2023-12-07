@@ -76,9 +76,9 @@ private:
 	static minimap_t *single_instance;
 
 	/// the terrain map
-	array2d_tpl<uint8_t> *map_data;
+	array2d_tpl<rgb888_t> *map_data;
 
-	void set_map_color_clip(sint16 x, sint16 y, uint8_t color);
+	void set_map_color_clip(sint16 x, sint16 y, rgb888_t color);
 
 	/// all stuff connected with schedule display
 	class line_segment_t
@@ -160,7 +160,7 @@ private:
 	bool is_matching_freight_catg(const minivec_tpl<uint8> &goods_catg_index);
 
 	/// nonstatic, if we have someday many maps ...
-	void set_map_color(koord k, uint8_t color);
+	void set_map_color(koord k, rgb888_t color);
 
 public:
 	scr_coord map_to_screen_coord(const koord &k) const;
@@ -179,21 +179,21 @@ public:
 	/**
 	 * returns a color based on an amount (high amount/scale -> color shifts from green to red)
 	 */
-	static rgba_t calc_severity_color(sint32 amount, sint32 scale);
+	static rgb888_t calc_severity_color(sint32 amount, sint32 scale);
 
 	/**
 	 * returns a color based on an amount (high amount/scale -> color shifts from green to red)
 	 * but using log scale
 	 */
-	static rgba_t calc_severity_color_log(sint32 amount, sint32 scale);
+	static rgb888_t calc_severity_color_log(sint32 amount, sint32 scale);
 
 	/**
 	 * returns a color based on the current height
 	 */
-	static rgba_t calc_height_color(const sint16 height, const sint16 groundwater);
+	static rgb888_t calc_height_color(const sint16 height, const sint16 groundwater);
 
 	/// needed for town passenger map
-	static rgba_t calc_ground_color (const grund_t *gr);
+	static rgb888_t calc_ground_color (const grund_t *gr);
 
 	/// we are single instance ...
 	static minimap_t *get_instance();

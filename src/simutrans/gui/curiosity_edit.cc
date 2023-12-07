@@ -187,7 +187,7 @@ void curiosity_edit_frame_t::fill_list()
 		switch (i->get_type()) {
 			case building_desc_t::attraction_city: color = color_idx_to_rgb(COL_DARK_BLUE+env_t::gui_player_color_dark); break;
 			case building_desc_t::attraction_land: color = color_idx_to_rgb(40 + env_t::gui_player_color_dark);          break;
-			default:                               color = color_idx_to_rgb(SYSCOL_TEXT);                                                  break;
+			default:                               color = (gui_theme_t::gui_color_text);                                                  break;
 		}
 		char const* const name = get_sortedby()==gui_sorting_item_t::BY_NAME_OBJECT ?  i->get_name() : translator::translate(i->get_name());
 		scl.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(name, color);

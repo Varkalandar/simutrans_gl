@@ -57,7 +57,7 @@ enlarge_map_frame_t::enlarge_map_frame_t() :
 		add_table(2,2);
 		{
 			// map seed number label
-			map_number_label.init(color_idx_to_rgb(SYSCOL_TEXT));
+			map_number_label.init((gui_theme_t::gui_color_text));
 			map_number_label.buf().printf("%s %d", translator::translate("2WORLD_CHOOSE"), welt->get_settings().get_map_number());
 			map_number_label.update();
 			add_component(&map_number_label);
@@ -68,7 +68,7 @@ enlarge_map_frame_t::enlarge_map_frame_t() :
 			add_component( &inp_x_size );
 
 			// Map size label
-			size_label.init(color_idx_to_rgb(SYSCOL_TEXT));
+			size_label.init((gui_theme_t::gui_color_text));
 			size_label.buf().printf(translator::translate("Size (%d MB):"), 9999);
 			size_label.update();
 			add_component( &size_label );

@@ -94,7 +94,7 @@ welt_gui_t::welt_gui_t(settings_t* const sets_par) :
 	//******************************************************************
 	// Component creation
 	set_table_layout(1,0);
-	
+
 	// top part: preview, maps size
 	new_component<gui_spacer_t>(scr_coord(0, 0), scr_size(10, LINESPACE/4));
 	new_component<gui_label_t>("1WORLD_CHOOSE", gui_theme_t::gui_color_text, gui_label_t::left, FS_HEADLINE);
@@ -114,7 +114,7 @@ welt_gui_t::welt_gui_t(settings_t* const sets_par) :
 			// new_component<gui_empty_t>(&size_label);
 
 			// Map size label
-			size_label.init();
+			size_label.init(RGBA_BLACK);
 			size_label.buf().printf(translator::translate("Size (%d MB):"), 99999);
 			size_label.update();
 

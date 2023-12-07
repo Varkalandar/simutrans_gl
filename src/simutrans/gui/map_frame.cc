@@ -195,28 +195,28 @@ typedef struct {
 
 
 map_button_t button_init[MAP_MAX_BUTTONS] = {
-	{ COL_LIGHT_GREEN,  COL_DARK_GREEN,  "Towns", "Overlay town names", minimap_t::MAP_TOWN },
-	{ COL_LIGHT_GREEN,  COL_DARK_GREEN,  "CityLimit", "Overlay city limits", minimap_t::MAP_CITYLIMIT },
-	{ COL_WHITE,        COL_GREY5,       "Buildings", "Show level of city buildings", minimap_t::MAP_LEVEL },
-	{ COL_LIGHT_GREEN,  COL_DARK_GREEN,  "PaxDest", "Overlay passenger destinations when a town window is open", minimap_t::MAP_PAX_DEST },
-	{ COL_LIGHT_GREEN,  COL_DARK_GREEN,  "Tourists", "Highlite tourist attraction", minimap_t::MAP_TOURIST },
-	{ COL_LIGHT_GREEN,  COL_DARK_GREEN,  "Factories", "Highlite factories", minimap_t::MAP_FACTORIES },
-	{ COL_LIGHT_YELLOW, COL_DARK_YELLOW, "Passagiere", "Show passenger coverage/passenger network", minimap_t::MAP_PASSENGER },
-	{ COL_LIGHT_YELLOW, COL_DARK_YELLOW, "Post", "Show mail service coverage/mail network", minimap_t::MAP_MAIL },
-	{ COL_LIGHT_YELLOW, COL_DARK_YELLOW, "Fracht", "Show transported freight/freight network", minimap_t::MAP_FREIGHT },
-	{ COL_LIGHT_PURPLE, COL_DARK_PURPLE, "Status", "Show capacity and if halt is overcrowded", minimap_t::MAP_STATUS },
-	{ COL_LIGHT_PURPLE, COL_DARK_PURPLE, "hl_btn_sort_waiting", "Show how many people/much is waiting at halts", minimap_t::MAP_WAITING },
-	{ COL_LIGHT_PURPLE, COL_DARK_PURPLE, "Queueing", "Show the change of waiting at halts", minimap_t::MAP_WAITCHANGE },
-	{ COL_LIGHT_PURPLE, COL_DARK_PURPLE, "Service", "Show how many convoi reach a station", minimap_t::MAP_SERVICE },
-	{ COL_LIGHT_PURPLE, COL_DARK_PURPLE, "Transfers", "Sum of departure/arrivals at halts", minimap_t::MAP_TRANSFER },
-	{ COL_LIGHT_PURPLE, COL_DARK_PURPLE, "Origin", "Show initial passenger departure", minimap_t::MAP_ORIGIN },
-	{ COL_WHITE,        COL_GREY5,       "Traffic", "Show usage of network", minimap_t::MAP_TRAFFIC },
-	{ COL_WHITE,        COL_GREY5,       "Speedlimit", "Show speedlimit of ways", minimap_t::MAX_SPEEDLIMIT },
-	{ COL_WHITE,        COL_GREY5,       "Tracks", "Highlight railroad tracks", minimap_t::MAP_TRACKS },
-	{ COL_LIGHT_GREEN,  COL_DARK_GREEN,  "Depots", "Highlite depots", minimap_t::MAP_DEPOT },
-	{ COL_WHITE,        COL_GREY5,       "Powerlines", "Highlite electrical transmission lines", minimap_t::MAP_POWERLINES },
-	{ COL_WHITE,        COL_GREY5,       "Forest", "Highlite forests", minimap_t::MAP_FOREST },
-	{ COL_WHITE,        COL_GREY5,       "Ownership", "Show the owenership of infrastructure", minimap_t::MAP_OWNER }
+	{ color_idx_to_rgb(COL_LIGHT_GREEN),  color_idx_to_rgb(COL_DARK_GREEN),  "Towns", "Overlay town names", minimap_t::MAP_TOWN },
+	{ color_idx_to_rgb(COL_LIGHT_GREEN),  color_idx_to_rgb(COL_DARK_GREEN),  "CityLimit", "Overlay city limits", minimap_t::MAP_CITYLIMIT },
+	{ RGBA_WHITE,        color_idx_to_rgb(COL_GREY5),       "Buildings", "Show level of city buildings", minimap_t::MAP_LEVEL },
+	{ color_idx_to_rgb(COL_LIGHT_GREEN),  color_idx_to_rgb(COL_DARK_GREEN),  "PaxDest", "Overlay passenger destinations when a town window is open", minimap_t::MAP_PAX_DEST },
+	{ color_idx_to_rgb(COL_LIGHT_GREEN),  color_idx_to_rgb(COL_DARK_GREEN),  "Tourists", "Highlite tourist attraction", minimap_t::MAP_TOURIST },
+	{ color_idx_to_rgb(COL_LIGHT_GREEN),  color_idx_to_rgb(COL_DARK_GREEN),  "Factories", "Highlite factories", minimap_t::MAP_FACTORIES },
+	{ color_idx_to_rgb(COL_LIGHT_YELLOW), color_idx_to_rgb(COL_DARK_YELLOW), "Passagiere", "Show passenger coverage/passenger network", minimap_t::MAP_PASSENGER },
+	{ color_idx_to_rgb(COL_LIGHT_YELLOW), color_idx_to_rgb(COL_DARK_YELLOW), "Post", "Show mail service coverage/mail network", minimap_t::MAP_MAIL },
+	{ color_idx_to_rgb(COL_LIGHT_YELLOW), color_idx_to_rgb(COL_DARK_YELLOW), "Fracht", "Show transported freight/freight network", minimap_t::MAP_FREIGHT },
+	{ color_idx_to_rgb(COL_LIGHT_PURPLE), color_idx_to_rgb(COL_DARK_PURPLE), "Status", "Show capacity and if halt is overcrowded", minimap_t::MAP_STATUS },
+	{ color_idx_to_rgb(COL_LIGHT_PURPLE), color_idx_to_rgb(COL_DARK_PURPLE), "hl_btn_sort_waiting", "Show how many people/much is waiting at halts", minimap_t::MAP_WAITING },
+	{ color_idx_to_rgb(COL_LIGHT_PURPLE), color_idx_to_rgb(COL_DARK_PURPLE), "Queueing", "Show the change of waiting at halts", minimap_t::MAP_WAITCHANGE },
+	{ color_idx_to_rgb(COL_LIGHT_PURPLE), color_idx_to_rgb(COL_DARK_PURPLE), "Service", "Show how many convoi reach a station", minimap_t::MAP_SERVICE },
+	{ color_idx_to_rgb(COL_LIGHT_PURPLE), color_idx_to_rgb(COL_DARK_PURPLE), "Transfers", "Sum of departure/arrivals at halts", minimap_t::MAP_TRANSFER },
+	{ color_idx_to_rgb(COL_LIGHT_PURPLE), color_idx_to_rgb(COL_DARK_PURPLE), "Origin", "Show initial passenger departure", minimap_t::MAP_ORIGIN },
+	{ RGBA_WHITE,        color_idx_to_rgb(COL_GREY5),       "Traffic", "Show usage of network", minimap_t::MAP_TRAFFIC },
+	{ RGBA_WHITE,        color_idx_to_rgb(COL_GREY5),       "Speedlimit", "Show speedlimit of ways", minimap_t::MAX_SPEEDLIMIT },
+	{ RGBA_WHITE,        color_idx_to_rgb(COL_GREY5),       "Tracks", "Highlight railroad tracks", minimap_t::MAP_TRACKS },
+	{ color_idx_to_rgb(COL_LIGHT_GREEN),  color_idx_to_rgb(COL_DARK_GREEN),  "Depots", "Highlite depots", minimap_t::MAP_DEPOT },
+	{ RGBA_WHITE,        color_idx_to_rgb(COL_GREY5),       "Powerlines", "Highlite electrical transmission lines", minimap_t::MAP_POWERLINES },
+	{ RGBA_WHITE,        color_idx_to_rgb(COL_GREY5),       "Forest", "Highlite forests", minimap_t::MAP_FOREST },
+	{ RGBA_WHITE,        color_idx_to_rgb(COL_GREY5),       "Ownership", "Show the owenership of infrastructure", minimap_t::MAP_OWNER }
 };
 
 #define scrolly (*p_scrolly)
@@ -313,9 +313,9 @@ map_frame_t::map_frame_t() :
 		add_component(&b_rotate45);
 
 		// show contour
-		c_show_outlines.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate( "Show contour" ), color_idx_to_rgb(SYSCOL_TEXT) );
-		c_show_outlines.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate( "Show climates" ), color_idx_to_rgb(SYSCOL_TEXT) );
-		c_show_outlines.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate( "Show outline" ), color_idx_to_rgb(SYSCOL_TEXT) );
+		c_show_outlines.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate( "Show contour" ), (gui_theme_t::gui_color_text) );
+		c_show_outlines.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate( "Show climates" ), (gui_theme_t::gui_color_text) );
+		c_show_outlines.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate( "Show outline" ), (gui_theme_t::gui_color_text) );
 		c_show_outlines.add_listener( this );
 		if( (env_t::default_mapmode & minimap_t::MAP_CLIMATES) != 0 ) {
 			c_show_outlines.set_selection( 1 );
@@ -345,7 +345,7 @@ map_frame_t::map_frame_t() :
 	network_filter_container.add_component( &b_overlay_networks );
 
 	// player combo for network overlay
-	viewed_player_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("All"), color_idx_to_rgb(SYSCOL_TEXT));
+	viewed_player_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("All"), (gui_theme_t::gui_color_text));
 	viewable_players[ 0 ] = -1;
 	for(  int np = 0, count = 1;  np < MAX_PLAYER_COUNT;  np++  ) {
 		if(  welt->get_player( np )  &&  welt->get_player( np )->get_finance()->has_convoi()) {
@@ -361,20 +361,20 @@ map_frame_t::map_frame_t() :
 	// freight combo for network overlay
 	{
 		viewable_freight_types.append(NULL);
-		freight_type_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate("All"), color_idx_to_rgb(SYSCOL_TEXT)) ;
+		freight_type_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate("All"), (gui_theme_t::gui_color_text)) ;
 		viewable_freight_types.append(goods_manager_t::passengers);
-		freight_type_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate("Passagiere"), color_idx_to_rgb(SYSCOL_TEXT)) ;
+		freight_type_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate("Passagiere"), (gui_theme_t::gui_color_text)) ;
 		viewable_freight_types.append(goods_manager_t::mail);
-		freight_type_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate("Post"), color_idx_to_rgb(SYSCOL_TEXT)) ;
+		freight_type_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate("Post"), (gui_theme_t::gui_color_text)) ;
 		viewable_freight_types.append(goods_manager_t::none); // for all freight ...
-		freight_type_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate("Fracht"), color_idx_to_rgb(SYSCOL_TEXT)) ;
+		freight_type_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate("Fracht"), (gui_theme_t::gui_color_text)) ;
 		for(  int i = 0;  i < goods_manager_t::get_max_catg_index();  i++  ) {
 			const goods_desc_t *freight_type = goods_manager_t::get_info_catg(i);
 			const int index = freight_type->get_catg_index();
 			if(  index == goods_manager_t::INDEX_NONE  ||  freight_type->get_catg()==0  ) {
 				continue;
 			}
-			freight_type_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate(freight_type->get_catg_name()), color_idx_to_rgb(SYSCOL_TEXT));
+			freight_type_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate(freight_type->get_catg_name()), (gui_theme_t::gui_color_text));
 			viewable_freight_types.append(freight_type);
 		}
 		for(  int i=0;  i < goods_manager_t::get_count();  i++  ) {
@@ -382,7 +382,7 @@ map_frame_t::map_frame_t() :
 			if(  ware->get_catg() == 0  &&  ware->get_index() > 2  ) {
 				// Special freight: Each good is special
 				viewable_freight_types.append(ware);
-				freight_type_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate(ware->get_name()), color_idx_to_rgb(SYSCOL_TEXT)) ;
+				freight_type_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate(ware->get_name()), (gui_theme_t::gui_color_text)) ;
 			}
 		}
 	}
@@ -394,7 +394,7 @@ map_frame_t::map_frame_t() :
 
 	// mode of transport combo for network overlay
 	for (int i = 0; i < simline_t::MAX_LINE_TYPE; i++) {
-		transport_type_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(simline_t::get_linetype_name((simline_t::linetype)i), color_idx_to_rgb(SYSCOL_TEXT));
+		transport_type_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(simline_t::get_linetype_name((simline_t::linetype)i), (gui_theme_t::gui_color_text));
 	}
 	transport_type_c.set_selection(0);
 	minimap_t::get_instance()->transport_type_showed_on_map = simline_t::line;
@@ -418,7 +418,7 @@ map_frame_t::map_frame_t() :
 	// insert filter buttons in legend container
 	for (int index=0; index<MAP_MAX_BUTTONS; index++) {
 		filter_buttons[index].init( button_t::box_state | button_t::flexible, button_init[index].button_text);
-		filter_buttons[index].text_color = color_idx_to_rgb(SYSCOL_TEXT);
+		filter_buttons[index].text_color = (gui_theme_t::gui_color_text);
 		filter_buttons[index].set_tooltip( button_init[index].tooltip_text );
 		filter_buttons[index].add_listener(this);
 		filter_container.add_component(filter_buttons + index);
@@ -467,7 +467,7 @@ void map_frame_t::update_buttons()
 {
 	for(  int i=0;  i<MAP_MAX_BUTTONS;  i++  ) {
 		filter_buttons[i].pressed = (button_init[i].mode&env_t::default_mapmode)!=0;
-		filter_buttons[i].background_color = color_idx_to_rgb(filter_buttons[i].pressed ? button_init[i].select_color : button_init[i].color);
+		filter_buttons[i].background_color = filter_buttons[i].pressed ? button_init[i].select_color : button_init[i].color;
 	}
 }
 

@@ -56,19 +56,19 @@ banner_t::banner_t() : gui_frame_t("")
 {
 	set_table_layout(1,0);
 
-	new_component<gui_label_t>("This is Simutrans" SIM_VERSION_BUILD_STRING, color_idx_to_rgb(SYSCOL_TEXT_TITLE), gui_label_t::left)->set_shadow(color_idx_to_rgb(SYSCOL_TEXT_SHADOW), true);
+	new_component<gui_label_t>("This is Simutrans" SIM_VERSION_BUILD_STRING, (SYSCOL_TEXT_TITLE), gui_label_t::left)->set_shadow((SYSCOL_TEXT_SHADOW), true);
 
-	new_component<gui_label_t>(get_version(), color_idx_to_rgb(SYSCOL_TEXT_HIGHLIGHT), gui_label_t::left)->set_shadow(color_idx_to_rgb(SYSCOL_TEXT_SHADOW), true);
+	new_component<gui_label_t>(get_version(), (SYSCOL_TEXT_HIGHLIGHT), gui_label_t::left)->set_shadow((SYSCOL_TEXT_SHADOW), true);
 
 	add_table(5,0);
 	{
-		new_component_span<gui_label_t>("The version is developed by", SYSCOL_TEXT_TITLE, gui_label_t::left, 5)->set_shadow(color_idx_to_rgb(SYSCOL_TEXT_SHADOW), true);
+		new_component_span<gui_label_t>("The version is developed by", SYSCOL_TEXT_TITLE, gui_label_t::left, 5)->set_shadow((SYSCOL_TEXT_SHADOW), true);
 		new_component<gui_fill_t>();
 
 		add_table(1,0);
-		new_component<gui_label_t>("the simutrans team", SYSCOL_TEXT_HIGHLIGHT, gui_label_t::left)->set_shadow(color_idx_to_rgb(SYSCOL_TEXT_SHADOW), true);
-		new_component<gui_label_t>("under the Artistic Licence", SYSCOL_TEXT_HIGHLIGHT, gui_label_t::left)->set_shadow(color_idx_to_rgb(SYSCOL_TEXT_SHADOW), true);
-		new_component<gui_label_t>("based on Simutrans 84.22.1", SYSCOL_TEXT_HIGHLIGHT, gui_label_t::left)->set_shadow(color_idx_to_rgb(SYSCOL_TEXT_SHADOW), true);
+		new_component<gui_label_t>("the simutrans team", SYSCOL_TEXT_HIGHLIGHT, gui_label_t::left)->set_shadow((SYSCOL_TEXT_SHADOW), true);
+		new_component<gui_label_t>("under the Artistic Licence", SYSCOL_TEXT_HIGHLIGHT, gui_label_t::left)->set_shadow((SYSCOL_TEXT_SHADOW), true);
+		new_component<gui_label_t>("based on Simutrans 84.22.1", SYSCOL_TEXT_HIGHLIGHT, gui_label_t::left)->set_shadow((SYSCOL_TEXT_SHADOW), true);
 		end_table();
 
 		new_component<gui_fill_t>();
@@ -77,16 +77,16 @@ banner_t::banner_t() : gui_frame_t("")
 	}
 	end_table();
 
-	new_component<gui_label_t>("Selling of the program is forbidden.", color_idx_to_rgb(COL_ORANGE), gui_label_t::left)->set_shadow(color_idx_to_rgb(SYSCOL_TEXT_SHADOW), true);
-	new_component<gui_label_t>("For questions and support please visit:", SYSCOL_TEXT_TITLE, gui_label_t::left)->set_shadow(color_idx_to_rgb(SYSCOL_TEXT_SHADOW), true);
+	new_component<gui_label_t>("Selling of the program is forbidden.", color_idx_to_rgb(COL_ORANGE), gui_label_t::left)->set_shadow((SYSCOL_TEXT_SHADOW), true);
+	new_component<gui_label_t>("For questions and support please visit:", SYSCOL_TEXT_TITLE, gui_label_t::left)->set_shadow((SYSCOL_TEXT_SHADOW), true);
 
 	add_table(3,0);
 	{
 		new_component<gui_fill_t>();
 		add_table(1,0);
-		new_component<gui_label_t>("https://www.simutrans.com", SYSCOL_TEXT_HIGHLIGHT, gui_label_t::left)->set_shadow(color_idx_to_rgb(SYSCOL_TEXT_SHADOW), true);
-		new_component<gui_label_t>("https://forum.simutrans.com", SYSCOL_TEXT_HIGHLIGHT, gui_label_t::left)->set_shadow(color_idx_to_rgb(SYSCOL_TEXT_SHADOW), true);
-		new_component<gui_label_t>("https://wiki.simutrans.com", SYSCOL_TEXT_HIGHLIGHT, gui_label_t::left)->set_shadow(color_idx_to_rgb(SYSCOL_TEXT_SHADOW), true);
+		new_component<gui_label_t>("https://www.simutrans.com", SYSCOL_TEXT_HIGHLIGHT, gui_label_t::left)->set_shadow((SYSCOL_TEXT_SHADOW), true);
+		new_component<gui_label_t>("https://forum.simutrans.com", SYSCOL_TEXT_HIGHLIGHT, gui_label_t::left)->set_shadow((SYSCOL_TEXT_SHADOW), true);
+		new_component<gui_label_t>("https://wiki.simutrans.com", SYSCOL_TEXT_HIGHLIGHT, gui_label_t::left)->set_shadow((SYSCOL_TEXT_SHADOW), true);
 		end_table();
 		new_component<gui_fill_t>();
 	}

@@ -187,7 +187,7 @@ void citybuilding_edit_frame_t::fill_list()
 	scl.set_selection(-1);
 	for(building_desc_t const* const i : building_list) {
 		// color code for objects: BLACK: normal, YELLOW: consumer only, GREEN: source only
-		rgba_t color = color_idx_to_rgb(SYSCOL_TEXT);
+		rgba_t color = (gui_theme_t::gui_color_text);
 		switch (i->get_type()) {
 			case building_desc_t::city_res:
                 color = color_idx_to_rgb(COL_DARK_BLUE + env_t::gui_player_color_dark);

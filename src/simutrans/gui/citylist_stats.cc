@@ -14,8 +14,8 @@
 
 
 citylist_stats_t::citylist_stats_t(stadt_t *c) :
-    name_label(color_idx_to_rgb(gui_theme_t::gui_color_text)),
-	population_label(color_idx_to_rgb(gui_theme_t::gui_color_text))
+    name_label((gui_theme_t::gui_color_text)),
+	population_label((gui_theme_t::gui_color_text))
 {
 	city = c;
 	set_table_layout(4, 0);

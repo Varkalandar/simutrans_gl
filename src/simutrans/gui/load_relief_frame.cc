@@ -30,7 +30,7 @@ class load_relief_mode_scrollitem_t : public gui_scrolled_list_t::const_text_scr
 {
 public:
 	load_relief_mode_scrollitem_t(env_t::height_conversion_mode mode) :
-		gui_scrolled_list_t::const_text_scrollitem_t(translator::translate(load_mode_texts[(int)mode]), color_idx_to_rgb(SYSCOL_TEXT)),
+		gui_scrolled_list_t::const_text_scrollitem_t(translator::translate(load_mode_texts[(int)mode]), (gui_theme_t::gui_color_text)),
 		mode(mode)
 	{}
 

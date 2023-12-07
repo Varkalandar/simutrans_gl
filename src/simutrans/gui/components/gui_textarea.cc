@@ -105,7 +105,7 @@ void gui_textarea_t::draw(scr_coord offset)
 			int px_len;
 			if (  -LINESPACE <= draw_y  &&  draw_y <= display_get_height() + LINESPACE) {
 				// draw when in screen area
-				px_len = display_text_proportional_len_clip_rgb(x, draw_y, buf, ALIGN_LEFT | DT_CLIP, color_idx_to_rgb(SYSCOL_TEXT), true, len, 0, FS_NORMAL);
+				px_len = display_text_proportional_len_clip_rgb(x, draw_y, buf, ALIGN_LEFT | DT_CLIP, (gui_theme_t::gui_color_text), true, len, 0, FS_NORMAL);
 			}
 			else {
 				// track required length when out of screen area

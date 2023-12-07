@@ -276,7 +276,7 @@ public:
 	/**
 	 * @return color for map display
 	 */
-	rgba_t get_color() const;
+	rgb888_t get_color() const;
 
 	void set_productivity(uint16 p) { productivity=p; }
 	uint16 get_productivity() const { return productivity; }

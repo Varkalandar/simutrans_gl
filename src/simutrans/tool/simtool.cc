@@ -5018,7 +5018,7 @@ void tool_build_roadsign_t::get_values(player_t *player, uint8 &spacing, bool &r
 void tool_build_roadsign_t::draw_after(scr_coord k, bool dirty) const
 {
 	if(  icon!=IMG_EMPTY  &&  is_selected()  ) {
-		display_img_blend( icon, k.x, k.y, TRANSPARENT50_FLAG|OUTLINE_FLAG|color_idx_to_rgb(COL_BLACK), false, dirty );
+		display_img_blend(icon, k.x, k.y, color_idx_to_rgb(COL_BLACK), false, dirty);
 		char level_str[16];
 		sprintf(level_str, "%i", signal[welt->get_active_player_nr()].spacing);
 		display_proportional_rgb( k.x+4, k.y+4, level_str, ALIGN_LEFT, color_idx_to_rgb(COL_YELLOW), true );
@@ -6164,7 +6164,7 @@ DBG_MESSAGE("tool_headquarter()", "building headquarters at (%d,%d)", pos.x, pos
 			// tell the world of it ...
 			cbuffer_t buf;
 			buf.printf( translator::translate("%s s\nheadquarter now\nat (%i,%i)."), player->get_name(), pos.x, pos.y );
-			welt->get_message()->add_message( buf, hq->get_pos(), message_t::ai, PLAYER_FLAG|player->get_player_nr(), hq->get_tile()->get_background(0,0,0) );
+			welt->get_message()->add_message( buf, hq->get_pos(), message_t::ai, color_idx_to_rgb(player->get_player_color1()), hq->get_tile()->get_background(0,0,0) );
 			// reset to query tool, since costly relocations should be avoided
 			if(can_use_gui()  &&  player == welt->get_active_player()) {
 				welt->set_tool( tool_t::general_tool[TOOL_QUERY], player );
@@ -6609,7 +6609,7 @@ const char *tool_make_stop_public_t::work( player_t *player, koord3d p )
 						if (env_t::networkmode && !has_been_announced) {
 							cbuffer_t buf;
 							buf.printf(translator::translate("(%s) now public way."), w->get_pos().get_str());
-							welt->get_message()->add_message(buf, w->get_pos(), message_t::ai, PLAYER_FLAG | player->get_player_nr(), IMG_EMPTY);
+							welt->get_message()->add_message(buf, w->get_pos(), message_t::ai, color_idx_to_rgb(player->get_player_color1()), IMG_EMPTY);
 							has_been_announced = true; // one message is enough
 						}
 						cost = -welt->scale_with_month_length(cost * welt->get_settings().cst_make_public_months);
@@ -7081,7 +7081,7 @@ bool tool_show_underground_t::is_selected() const
 void tool_show_underground_t::draw_after(scr_coord k, bool dirty) const
 {
 	if(  icon!=IMG_EMPTY  &&  is_selected()  ) {
-		display_img_blend( icon, k.x, k.y, TRANSPARENT50_FLAG|OUTLINE_FLAG|color_idx_to_rgb(COL_BLACK), false, dirty );
+		display_img_blend(icon, k.x, k.y, color_idx_to_rgb(COL_BLACK), false, dirty);
 		// additionally show level in sliced mode
 		if(  default_param!=NULL  &&  grund_t::underground_mode==grund_t::ugm_level  ) {
 			char level_str[16];
@@ -8228,7 +8228,7 @@ const char* tool_add_message_t::work(player_t* player, koord3d pos )
 			return "";
 		}
 		welt->get_message()->add_message( text+1, pos, type,
-								player == NULL || ( (type & message_t::playermsg_flag) != 0)  ? color_idx_to_rgb(COL_BLACK) : PLAYER_FLAG|player->get_player_nr(), IMG_EMPTY );
+								player == NULL || ( (type & message_t::playermsg_flag) != 0)  ? color_idx_to_rgb(COL_BLACK) : color_idx_to_rgb(player->get_player_color1()), IMG_EMPTY );
 
 	}
 	return NULL;

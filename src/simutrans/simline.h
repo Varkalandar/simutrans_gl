@@ -8,7 +8,7 @@
 
 
 #include "simtypes.h"
-#include "simcolor.h"
+#include "display/rgba.h"
 #include "convoihandle.h"
 #include "linehandle.h"
 
@@ -71,7 +71,7 @@ private:
 	 * the current state saved as color
 	 * Meanings are BLACK (ok), WHITE (no convois), YELLOW (no vehicle moved), RED (last month income minus), BLUE (at least one convoi vehicle is obsolete)
 	 */
-	int state_color;
+	rgba_t state_color;
 
 	/**
 	 * a list of all convoys assigned to this line
@@ -130,7 +130,7 @@ public:
 	/**
 	 * returns the state of the line
 	 */
-	int get_state_color() const { return state_color; }
+	rgba_t get_state_color() const { return state_color; }
 
 	/**
 	 * return the schedule of the line

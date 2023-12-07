@@ -107,7 +107,7 @@ void factory_desc_t::calc_checksum(checksum_t *chk) const
 	get_building()->calc_checksum(chk);
 }
 
-rgba_t factory_desc_t::get_color() const
+rgb888_t factory_desc_t::get_color() const
 {
-	return color_idx_to_rgb(color);
+	return get_color_rgb(color);
 }

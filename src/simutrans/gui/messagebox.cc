@@ -26,7 +26,7 @@ news_window::news_window(const char* text, rgba_t title_color) :
 }
 
 fatal_news::fatal_news(const char* text) :
-	news_window(text, env_t::default_window_title_color)
+	news_window(text, env_t::default_window_title_color_rgb)
 {
 	copy_to_clipboard.init(button_t::roundbox, "Copy to clipboard");
 	copy_to_clipboard.add_listener( this );
@@ -50,7 +50,7 @@ bool fatal_news::action_triggered(gui_action_creator_t *comp, value_t)
 
 
 news_img::news_img(const char* text) :
-	news_window(text, env_t::default_window_title_color),
+	news_window(text, env_t::default_window_title_color_rgb),
 	image()
 {
 	init(skinverwaltung_t::meldungsymbol->get_image_id(0));

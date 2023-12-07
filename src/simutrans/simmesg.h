@@ -62,7 +62,7 @@ public:
 		playermsg_flag              = 1 << 15
 	};
 
-	void add_message( const char *text, koord3d pos, uint16 what, rgba_t color, image_id image=IMG_EMPTY );
+	void add_message(const char *text, koord3d pos, uint16 what, rgba_t color=RGBA_WHITE, image_id image=IMG_EMPTY);
 
 	/* determines, which message is displayed where */
 	void get_message_flags( sint32 *t, sint32 *w, sint32 *a, sint32  *i);

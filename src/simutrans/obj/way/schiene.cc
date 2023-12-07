@@ -174,8 +174,8 @@ void schiene_t::rdwr(loadsave_t *file)
 rgba_t schiene_t::get_outline_colour() const
 {
 	if (!show_reservations || !reserved.is_bound()) {
-		return 0;
+		return RGBA_BLACK;
 	}
 
-	return TRANSPARENT75_FLAG | OUTLINE_FLAG | color_idx_to_rgb(COL_RED);
+	return color_idx_to_rgb(COL_RED);
 }

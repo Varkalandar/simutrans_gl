@@ -27,7 +27,7 @@
 #include <string>
 
 
-rgba_t baum_t::outline_color = 0;
+rgba_t baum_t::outline_color = RGBA_BLACK;
 
 freelist_tpl<baum_t> baum_t::fl;
 
@@ -188,7 +188,7 @@ rgba_t baum_t::get_outline_colour() const
 void baum_t::recalc_outline_color()
 {
 	outline_color = (env_t::hide_trees  &&  env_t::hide_with_transparency) ?
-		(TRANSPARENT25_FLAG | OUTLINE_FLAG | color_idx_to_rgb(COL_BLACK)) : 0;
+		color_idx_to_rgb(COL_BLACK) : RGBA_BLACK;
 }
 
 
