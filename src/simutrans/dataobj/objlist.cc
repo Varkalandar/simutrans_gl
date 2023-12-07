@@ -1116,11 +1116,7 @@ void objlist_t::rdwr(loadsave_t *file, koord3d current_pos)
 
 /** display all things, faster, but will lead to clipping errors
  */
-#ifdef MULTI_THREAD
-void objlist_t::display_obj_quick_and_dirty( const sint16 xpos, const sint16 ypos, const uint8 start_offset, const sint8 clip_num ) const
-#else
 void objlist_t::display_obj_quick_and_dirty( const sint16 xpos, const sint16 ypos, const uint8 start_offset, const bool is_global ) const
-#endif
 {
 	if(capacity==0) {
 		return;
@@ -1131,14 +1127,10 @@ void objlist_t::display_obj_quick_and_dirty( const sint16 xpos, const sint16 ypo
 			obj.one->display( xpos, ypos  CLIP_NUM_PAR);
 		}
 		// foreground need to be drawn in any case
-#ifdef MULTI_THREAD
-		obj.one->display_after(xpos, ypos, clip_num );
-#else
 		obj.one->display_after( xpos, ypos, is_global );
 		if(  is_global  ) {
 			obj.one->clear_flag( obj_t::dirty );
 		}
-#endif
 		return;
 	}
 
@@ -1148,14 +1140,10 @@ void objlist_t::display_obj_quick_and_dirty( const sint16 xpos, const sint16 ypo
 	}
 	// foreground (needs to be done backwards!
 	for(  size_t n = top;  n-- != 0;    ) {
-#ifdef MULTI_THREAD
-		obj.some[n]->display_after( xpos, ypos, clip_num );
-#else
 		obj.some[n]->display_after( xpos, ypos, is_global );
 		if(  is_global  ) {
 			obj.some[n]->clear_flag( obj_t::dirty );
 		}
-#endif
 	}
 }
 
@@ -1258,11 +1246,7 @@ uint8 objlist_t::display_obj_vh( const sint16 xpos, const sint16 ypos, const uin
  * @param start_offset .. draws also background images of all objects with index>=start_offset
  * @param is_global will be only true for the main display; all miniworld windows should still reset main window
  */
-#ifdef MULTI_THREAD
-void objlist_t::display_obj_fg( const sint16 xpos, const sint16 ypos, const uint8 start_offset, const sint8 clip_num ) const
-#else
 void objlist_t::display_obj_fg( const sint16 xpos, const sint16 ypos, const uint8 start_offset, const bool is_global ) const
-#endif
 {
 	if(  top == 0  ) {
 		// nothing => finish
@@ -1274,14 +1258,10 @@ void objlist_t::display_obj_fg( const sint16 xpos, const sint16 ypos, const uint
 		if(  start_offset == 0  ) {
 			obj.one->display( xpos, ypos  CLIP_NUM_PAR);
 		}
-#ifdef MULTI_THREAD
-		obj.one->display_after( xpos, ypos, clip_num );
-#else
 		obj.one->display_after( xpos, ypos, is_global );
 		if(  is_global  ) {
 			obj.one->clear_flag(obj_t::dirty);
 		}
-#endif
 		return;
 	}
 
@@ -1290,38 +1270,13 @@ void objlist_t::display_obj_fg( const sint16 xpos, const sint16 ypos, const uint
 	}
 	// foreground (needs to be done backwards!)
 	for(  size_t n = top;  n-- != 0;    ) {
-#ifdef MULTI_THREAD
-		obj.some[n]->display_after( xpos, ypos, clip_num );
-#else
 		obj.some[n]->display_after( xpos, ypos, is_global );
 		if(  is_global  ) {
 			obj.some[n]->clear_flag( obj_t::dirty );
 		}
-#endif
 	}
 	return;
 }
-
-
-#ifdef MULTI_THREAD
-void objlist_t::display_obj_overlay(const sint16 xpos, const sint16 ypos) const
-{
-	if(  top == 0  ) {
-		return; // nothing => finish
-	}
-
-	if(  capacity == 1  ) {
-		obj.one->display_overlay( xpos, ypos );
-		obj.one->clear_flag( obj_t::dirty );
-	}
-	else {
-		for(  size_t n = top;  n-- != 0;    ) {
-			obj.some[n]->display_overlay( xpos, ypos );
-			obj.some[n]->clear_flag( obj_t::dirty );
-		}
-	}
-}
-#endif
 
 
 void objlist_t::check_season(const bool calc_only_season_change)

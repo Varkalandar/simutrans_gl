@@ -156,7 +156,6 @@ void main_view_t::display(bool force_dirty)
 	}
 
     // slow serial way of display
-	clear_all_poly_clip();
 	display_region(koord(clip_rr.x, clip_rr.y), koord(clip_rr.w, clip_rr.h), y_min, dpy_height + 4 * 4, false );
 
 	// and finally overlays (station coverage and signs)

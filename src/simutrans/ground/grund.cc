@@ -1160,7 +1160,7 @@ void grund_t::display_boden(const sint16 xpos, const sint16 ypos, const sint16 r
 			// .. nonconvex n/w if not both n/w are active
 			if(  clip  ) {
 				const ribi_t::ribi way_ribi = (static_cast<const weg_t*>(d))->get_ribi_unmasked();
-				clear_all_poly_clip( CLIP_NUM_VAR );
+				// clear_all_poly_clip( CLIP_NUM_VAR );
 				const uint8 non_convex = (way_ribi & ribi_t::northwest) == ribi_t::northwest ? 0 : 16;
 				if(  way_ribi & ribi_t::west  ) {
 					const int dh = corner_nw(get_disp_way_slope()) * hgt_step;
@@ -1176,7 +1176,7 @@ void grund_t::display_boden(const sint16 xpos, const sint16 ypos, const sint16 r
 		}
 		// end of clipping
 		if(  clip  ) {
-			clear_all_poly_clip( CLIP_NUM_VAR );
+			// clear_all_poly_clip( CLIP_NUM_VAR );
 		}
 	}
 }
@@ -1379,7 +1379,7 @@ void grund_t::display_obj_all(const sint16 xpos, const sint16 ypos, const sint16
 	}
 
 	// end of clipping
-	clear_all_poly_clip( CLIP_NUM_VAR );
+	// clear_all_poly_clip( CLIP_NUM_VAR );
 
 	// here: we are either ground(kartenboden) or visible
 	const bool visible = !ist_karten_boden()  ||  is_karten_boden_visible();
@@ -1452,7 +1452,7 @@ void grund_t::display_obj_all(const sint16 xpos, const sint16 ypos, const sint16
 	const uint8 offset_vh = display_obj_bg( xpos, ypos, is_global, false, visible CLIP_NUM_PAR );
 	if(  !visible  ) {
 		// end of clipping
-		clear_all_poly_clip( CLIP_NUM_VAR );
+		// clear_all_poly_clip( CLIP_NUM_VAR );
 		return;
 	}
 	// display vehicles of w/nw/n neighbors
@@ -1549,13 +1549,13 @@ void grund_t::display_obj_all(const sint16 xpos, const sint16 ypos, const sint16
 		activate_ribi_clip( (ribi & (corner_se(slope)>0 ?  ribi_t::southeast : ribi_t::northwest) )| 16 CLIP_NUM_PAR );
 	}
 	else {
-		clear_all_poly_clip( CLIP_NUM_VAR );
+		// clear_all_poly_clip( CLIP_NUM_VAR );
 	}
 	display_obj_fg( xpos, ypos, is_global, offset_fg CLIP_NUM_PAR );
 
 	// end of clipping
 	if (tunnel_portal) {
-		clear_all_poly_clip( CLIP_NUM_VAR );
+		// clear_all_poly_clip( CLIP_NUM_VAR );
 	}
 }
 

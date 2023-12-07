@@ -595,7 +595,8 @@ void planquadrat_t::display_overlay(const sint16 xpos, const sint16 ypos) const
 						status = color_idx_to_rgb(COL_GREEN);
 					}
 				}
-				display_img_blend( overlay_img(gr), xpos, ypos, status | OUTLINE_FLAG | TRANSPARENT50_FLAG, 0, true);
+				status.alpha = 0.5f;
+				display_img_blend(overlay_img(gr), xpos, ypos, status, 0, true);
 			}
 		}
 	}
@@ -609,8 +610,9 @@ void planquadrat_t::display_overlay(const sint16 xpos, const sint16 ypos) const
 			image_id img = overlay_img(gr);
 
 			for(int halt_count = 0; halt_count < halt_list_count; halt_count++) {
-				const rgba_t transparent = PLAYER_FLAG | OUTLINE_FLAG | color_idx_to_rgb(halt_list[halt_count]->get_owner()->get_player_color1() + 4);
-				display_img_blend( img, xpos, ypos, transparent | TRANSPARENT25_FLAG, 0, 0);
+				rgba_t transparent = color_idx_to_rgb(halt_list[halt_count]->get_owner()->get_player_color1() + 4);
+				transparent.alpha = 0.5f;
+				display_img_blend(img, xpos, ypos, transparent, 0, 0);
 			}
 /*
 // unfortunately, too expensive for display
@@ -637,7 +639,7 @@ void planquadrat_t::display_overlay(const sint16 xpos, const sint16 ypos) const
 			const sint16 off = (raster_tile_width>>5);
 			// suitable start search
 			for (size_t h = halt_list_count; h-- != 0;) {
-				display_fillbox_wh_clip_rgb(x - h * off, y + h * off, r, r, PLAYER_FLAG | color_idx_to_rgb(halt_list[h]->get_owner()->get_player_color1() + 4), kartenboden_dirty);
+				display_fillbox_wh_clip_rgb(x - h * off, y + h * off, r, r, color_idx_to_rgb(halt_list[h]->get_owner()->get_player_color1() + 4), kartenboden_dirty);
 			}
 		}
 	}

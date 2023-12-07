@@ -18,9 +18,9 @@
 #include <signal.h>
 
 #include "simsys.h"
-#include "../macros.h"
 #include "../simdebug.h"
 #include "../simevent.h"
+#include "../display/simgraph.h"
 #include "../display/rgba.h"
 
 #include <GLFW/glfw3.h>
@@ -30,8 +30,22 @@ static bool sigterm_received = false;
 
 void error_callback(int error, const char* description)
 {
-    fprintf(stderr, "Error: %s\n", description);
+    dbg->message("GLFW Error", "Error %d: %s\n", error, description);
 }
+
+
+void sysgl_cursor_pos_callback(GLFWwindow *window, double x, double y)
+{
+    dbg->message("cursor_pos_callback()", "x=%f y=%f", x, y);
+
+    sys_event.type = SIM_MOUSE_MOVE;
+    sys_event.code = SIM_MOUSE_MOVED;
+    sys_event.mx = (scr_coord_val)x;
+    sys_event.my = (scr_coord_val)y;
+    sys_event.mb = 0;
+    sys_event.key_mod = 0;
+}
+
 
 
 bool dr_set_screen_scale(sint16)
@@ -113,6 +127,7 @@ void dr_prepare_flush()
 
 void dr_flush()
 {
+    display_flush_buffer();
 }
 
 
@@ -134,10 +149,14 @@ void set_pointer(int)
 
 void GetEvents()
 {
+    // dbg->message("GetEvents()", "Called.");
+
 	if(  sigterm_received  ) {
 		sys_event.type = SIM_SYSTEM;
 		sys_event.code = SYSTEM_QUIT;
 	}
+
+    glfwPollEvents();
 }
 
 
@@ -174,6 +193,7 @@ uint32 dr_time()
 
 void dr_sleep(uint32 msec)
 {
+    // dbg->message("dr_sleep()", "Called, sleeping %dms.", msec);
 /*
 	// this would be 100% POSIX but is usually not very accurate ...
 	if(  msec>0  ) {
@@ -256,6 +276,3 @@ int main(int argc, char **argv)
 #endif
 	return sysmain(argc, argv);
 }
-
-
-

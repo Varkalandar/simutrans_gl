@@ -1357,7 +1357,7 @@ void stadt_t::rotate90( const sint16 y_size )
 	// townhall position may be changed a little!
 	sparse_tpl<rgb888_t> pax_destinations_temp(koord( PAX_DESTINATIONS_SIZE, PAX_DESTINATIONS_SIZE ));
 
-	rgba_t color;
+	rgb888_t color;
 	koord pos;
 	for( uint16 i = 0; i < pax_destinations_new.get_data_count(); i++ ) {
 		pax_destinations_new.get_nonzero(i, pos, color);
@@ -1902,7 +1902,7 @@ void stadt_t::step_passagiere()
 				city_history_month[0][history_type + HIST_OFFSET_TRANSPORTED] += pax_left_to_do;
 
 				// destination logged
-				merke_passagier_ziel(dest_pos, color_idx_to_rgb(COL_YELLOW));
+				merke_passagier_ziel(dest_pos, get_color_rgb(COL_YELLOW));
 			}
 			else if(  route_result==haltestelle_t::ROUTE_WALK  ) {
 				if(  factory_entry  ) {
@@ -1918,7 +1918,7 @@ void stadt_t::step_passagiere()
 				city_history_month[0][history_type + HIST_OFFSET_WALKED] += pax_left_to_do;
 
 				// probably not a good idea to mark them as player only cares about remote traffic
-				//merke_passagier_ziel(dest_pos, color_idx_to_rgb(COL_YELLOW));
+				//merke_passagier_ziel(dest_pos, get_color_rgb(COL_YELLOW));
 			}
 			else if(  route_result==haltestelle_t::ROUTE_OVERCROWDED  ) {
 				// overcrowded routes cause unhappiness to be logged
@@ -1930,13 +1930,13 @@ void stadt_t::step_passagiere()
 					// all routes to goal are overcrowded -> register at first stop (closest)
 					for(halthandle_t const s : start_halts) {
 						s->add_pax_unhappy(pax_left_to_do);
-						merke_passagier_ziel(dest_pos, color_idx_to_rgb(COL_ORANGE));
+						merke_passagier_ziel(dest_pos, get_color_rgb(COL_ORANGE));
 						break;
 					}
 				}
 
 				// destination logged
-				merke_passagier_ziel(dest_pos, color_idx_to_rgb(COL_ORANGE));
+				merke_passagier_ziel(dest_pos, get_color_rgb(COL_ORANGE));
 			}
 			else if (  route_result == haltestelle_t::NO_ROUTE  ) {
 				// since there is no route from any start halt -> register no route at first halts (closest)
@@ -1944,7 +1944,7 @@ void stadt_t::step_passagiere()
 					s->add_pax_no_route(pax_left_to_do);
 					break;
 				}
-				merke_passagier_ziel(dest_pos, color_idx_to_rgb(COL_DARK_ORANGE));
+				merke_passagier_ziel(dest_pos, get_color_rgb(COL_DARK_ORANGE));
 #ifdef DESTINATION_CITYCARS
 				//citycars with destination
 				generate_private_cars( origin_pos, dest_pos );
@@ -2127,7 +2127,7 @@ void stadt_t::step_passagiere()
 		//citycars with destination
 		generate_private_cars( origin_pos, ziel );
 #endif
-		merke_passagier_ziel(ziel, color_idx_to_rgb(COL_ORANGE));
+		merke_passagier_ziel(ziel, get_color_rgb(COL_ORANGE));
 		// we show unhappy instead no route for destination stop
 	}
 }

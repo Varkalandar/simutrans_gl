@@ -328,6 +328,8 @@ void display_blend_wh_rgb(scr_coord_val, scr_coord_val, scr_coord_val, scr_coord
 
 void display_fillbox_wh_rgb(scr_coord_val x, scr_coord_val y, scr_coord_val w, scr_coord_val h, rgba_t color, bool )
 {
+    dbg->message("display_fillbox_wh_rgb()", "Called %d,%d,%d,%d color %f,%f,%f,%f", x, y, w, h, color.red, color.green, color.blue, color.alpha);
+
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	glBegin(GL_QUADS);
@@ -345,6 +347,8 @@ void display_fillbox_wh_rgb(scr_coord_val x, scr_coord_val y, scr_coord_val w, s
 
 void display_fillbox_wh_clip_rgb(scr_coord_val x, scr_coord_val y, scr_coord_val w, scr_coord_val h, rgba_t color, bool  CLIP_NUM_DEF_NOUSE)
 {
+    dbg->message("display_fillbox_wh_clip_rgb()", "Called %d,%d,%d,%d color %f,%f,%f,%f", x, y, w, h, color.red, color.green, color.blue, color.alpha);
+
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	glBegin(GL_QUADS);
@@ -364,7 +368,7 @@ void display_vline_wh_clip_rgb(scr_coord_val x, scr_coord_val y, scr_coord_val h
   display_fillbox_wh_clip_rgb(x, y, 1, h, color, dirty);
 }
 
-void display_array_wh(scr_coord_val, scr_coord_val, scr_coord_val, scr_coord_val, const uint8 *)
+void display_array_wh(scr_coord_val, scr_coord_val, scr_coord_val, scr_coord_val, const rgb888_t *data)
 {
 }
 
@@ -381,32 +385,42 @@ void display_ddd_box_clip_rgb(scr_coord_val, scr_coord_val, scr_coord_val, scr_c
 {
 }
 
-void display_ddd_proportional_clip(scr_coord_val, scr_coord_val, rgba_t, rgba_t, const char *, int  CLIP_NUM_DEF_NOUSE)
-{
-}
 
 void display_flush_buffer()
 {
+    dbg->debug("display_flush_buffer()", "Called");
+
+    // display_fillbox_wh_clip_rgb(0, 0, 1000, 1000, RGBA_WHITE, true);
+
 	glfwSwapBuffers(window);
-	printf("Ping!\n");
 }
 
-void display_show_pointer(int)
+
+void display_show_pointer(int v)
 {
+	dbg->message("display_show_pointer()", "%d", v);
 }
+
 
 void display_set_pointer(int)
 {
 }
 
-void display_show_load_pointer(int)
+
+void display_show_load_pointer(int v)
 {
+	dbg->message("display_show_load_pointer()", "%d", v);
 }
+
+
+// callback refs
+void sysgl_cursor_pos_callback(GLFWwindow *window, double x, double y);
 
 bool simgraph_init(scr_size size, sint16)
 {
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
 
 	window = glfwCreateWindow(size.w, size.h, "Simutrans GL", NULL, NULL);
 
@@ -418,7 +432,14 @@ bool simgraph_init(scr_size size, sint16)
 
 		// enable vsync (1 == next frame)
 		glfwSwapInterval(1);
+
+        glfwSetCursorPosCallback(window, sysgl_cursor_pos_callback);
+
 	}
+
+    // glViewport(0, 0, size.w, size.h);
+
+    glOrtho(0, size.w, 0, size.h, -1, 1);
 
 	return window;
 }
@@ -498,19 +519,6 @@ image_id get_image_count()
 	return 0;
 }
 
-#ifdef MULTI_THREAD
-void add_poly_clip(int, int, int, int, int  CLIP_NUM_DEF_NOUSE)
-{
-}
-
-void clear_all_poly_clip(const sint8)
-{
-}
-
-void activate_ribi_clip(int  CLIP_NUM_DEF_NOUSE)
-{
-}
-#else
 void add_poly_clip(int, int, int, int, int)
 {
 }
@@ -522,4 +530,3 @@ void clear_all_poly_clip()
 void activate_ribi_clip(int)
 {
 }
-#endif

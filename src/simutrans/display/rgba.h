@@ -15,6 +15,11 @@ public:
 		return *this;
 	}
 
+    bool operator ==(const uint8_t & c) const
+    {
+		return r == c && g == c && b == c;
+	}
+
 };
 
 

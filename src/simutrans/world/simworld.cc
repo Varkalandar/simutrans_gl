@@ -5534,7 +5534,7 @@ void karte_t::switch_active_player(uint8 new_player, bool silent)
 			// tell the player
 			cbuffer_t buf;
 			buf.printf( translator::translate("Now active as %s.\n"), get_active_player()->get_name() );
-			msg->add_message(buf, koord3d::invalid, message_t::ai | message_t::do_not_rdwr_flag, PLAYER_FLAG|get_active_player()->get_player_nr(), IMG_EMPTY);
+			msg->add_message(buf, koord3d::invalid, message_t::ai | message_t::do_not_rdwr_flag, color_idx_to_rgb(get_active_player()->get_player_color1()), IMG_EMPTY);
 		}
 
 		// update menu entries

@@ -954,6 +954,9 @@ int simu_main(int argc, char** argv)
 	// if no object files given, we ask the user
 	int retries=0;
 	while(   env_t::pak_name.empty()  &&  retries < 2  ) {
+
+        dbg->message("simu_main()", "Asking for pak file names");
+
 		if(  ask_objfilename() == 0  ) {
 			retries++;
 		}
@@ -979,6 +982,8 @@ int simu_main(int argc, char** argv)
 		return EXIT_FAILURE;
 	}
 #endif
+
+    dbg->message("simu_main()", "Checking for valid pak");
 
 	// check for valid pak path
 	{

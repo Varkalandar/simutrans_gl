@@ -2277,6 +2277,10 @@ void modal_dialogue(gui_frame_t* gui, ptrdiff_t magic, karte_t* welt, bool (*qui
 			if (quit()) {
 				break;
 			}
+
+			dbg->message("Beep!", "gui is %s", gui->get_name());
+			gui->draw(win_get_pos(gui), gui->get_windowsize());
+
 			dr_prepare_flush();
 			gui->draw(win_get_pos(gui), gui->get_windowsize());
 			dr_flush();

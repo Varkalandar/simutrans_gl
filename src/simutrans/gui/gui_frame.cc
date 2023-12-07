@@ -185,6 +185,8 @@ void gui_frame_t::draw(scr_coord pos, scr_size size)
 	// draw background
 	if(  opaque  ) {
 		display_img_stretch(gui_theme_t::windowback, scr_rect( pos + titlebar_size, size - titlebar_size ), RGBA_BLACK);
+        display_fillbox_wh_rgb(pos.y, pos.y, size.w, size.h, RGBA_WHITE, true);
+
 		if(  dirty  ) {
 			mark_rect_dirty_wc(pos.x, pos.y, pos.x + size.w, pos.y + titlebar_size.h );
 		}
