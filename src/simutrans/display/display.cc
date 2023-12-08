@@ -61,6 +61,8 @@ int display_text_proportional_len_clip_rgb(scr_coord_val x, scr_coord_val y,
 	font_t * font = (size == FS_NORMAL) ? &default_font : &headline_font;
 	rgba_t color = default_color;
 
+	// dbg->message("display_text_proportional_len_clip_rgb()", "Text %s", txt);
+
 	if (len < 0) {
 		// don't know len yet
 		len = 0x7FFF;

@@ -47,7 +47,7 @@ void sprachengui_t::init_font_from_lang()
 
 	// fallback if entry is missing -> use latin-1 font
 	if(  prop_font_file == default_name  ) {
-		prop_font_file = "cyr.bdf";
+		prop_font_file = "LiberationSans-Regular.ttf";
 	}
 
 	if(  reload_font  ) {
@@ -68,7 +68,7 @@ void sprachengui_t::init_font_from_lang()
 	}
 
 	 */
-	
+
 	const char * p = translator::translate("SEP_THOUSAND");
 	char c = ',';
 	if(*p != 'S') {
@@ -129,14 +129,14 @@ sprachengui_t::sprachengui_t() :
 		b->set_no_translate(true);
 		b->add_listener(this);
 
-		
+
 		// disabled with the move to TTF fonts
 		/*
-		
+
 		// check, if font exists
-		
-		
-		
+
+
+
 		uint16 num_loaded = false;
 		char prop_font_file_name[1024];
 		tstrncpy( prop_font_file_name, lang->translate("PROP_FONT_FILE"), lengthof(prop_font_file_name) );
@@ -173,7 +173,7 @@ sprachengui_t::sprachengui_t() :
 		}
 
 		 */
-		
+
 		// press button
 		int id = translator::get_language(lang->iso);
 		if(  translator::get_language() == id  ) {

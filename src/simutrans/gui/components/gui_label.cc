@@ -72,6 +72,8 @@ void gui_label_t::set_text_pointer(const char *text_par, bool autosize)
 
 void gui_label_t::draw(scr_coord offset)
 {
+    // dbg->message("gui_label_t::draw", "Called");
+
 	if(  align == money_right) {
 		if(text) {
 			const char *separator = NULL;

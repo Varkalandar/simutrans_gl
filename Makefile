@@ -106,8 +106,8 @@ else ifeq ($(OSTYPE),mingw)
 else ifeq ($(OSTYPE),linux)
   ifeq ($(shell expr $(STATIC) \>= 1), 1)
     LDFLAGS +=  -Wl,-Bstatic -lm
-    DYNAMICSTART = -Wl,-Bdynamic 
-    DYNAMICEND = -Wl,-Bstatic 
+    DYNAMICSTART = -Wl,-Bdynamic
+    DYNAMICEND = -Wl,-Bstatic
   endif
 else ifeq ($(OSTYPE),mac)
   LDFLAGS += -framework Cocoa
@@ -358,6 +358,7 @@ SOURCES += src/simutrans/descriptor/tunnel_desc.cc
 SOURCES += src/simutrans/descriptor/vehicle_desc.cc
 SOURCES += src/simutrans/descriptor/way_desc.cc
 SOURCES += src/simutrans/display/font.cc
+SOURCES += src/simutrans/display/gl_textures.cc
 #SOURCES += src/simutrans/display/simgraph$(COLOUR_DEPTH).cc
 SOURCES += src/simutrans/display/simview.cc
 SOURCES += src/simutrans/display/viewport.cc

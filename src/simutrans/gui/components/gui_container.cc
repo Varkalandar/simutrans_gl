@@ -249,6 +249,8 @@ bool gui_container_t::infowin_event(const event_t *ev)
  */
 void gui_container_t::draw(scr_coord offset)
 {
+    // dbg->message("gui_container_t::draw()", "Called");
+
 	const scr_coord screen_pos = pos + offset;
 	bool redraw_focus = false;
 
@@ -260,6 +262,8 @@ void gui_container_t::draw(scr_coord offset)
 #define shorten(d) clamp(d, 0, 0x4fff)
 	display_ddd_box_clip_rgb(shorten(screen_pos.x), shorten(screen_pos.y), shorten(get_size().w), shorten(get_size().h), color_idx_to_rgb(COL_RED), color_idx_to_rgb(COL_RED));
 #endif
+    // dbg->message("gui_container_t::draw()", "drawing %d components", components.get_count());
+
 	// iterate backwards
 	for(  uint32 iter = components.get_count(); iter > 0; iter--) {
 		gui_component_t*const c = components[iter-1];
@@ -282,6 +286,8 @@ void gui_container_t::draw(scr_coord offset)
 				display_ddd_box_clip_rgb(shorten(c_pos.x), shorten(c_pos.y), shorten(c->get_size().w), shorten(c->get_size().h), color_idx_to_rgb(color),color_idx_to_rgb(color));
 			}
 #endif
+
+            // dbg->message("gui_container_t::draw()", "drawing %p at %d,%d", c, screen_pos.x, screen_pos.y);
 			c->draw(screen_pos);
 		}
 	}

@@ -13,6 +13,8 @@
 #include <stdio.h>
 #include <vector>
 
+class gl_texture_t;
+
 /**
  * Terminology:
  *  - glyph:        display data of a single character
@@ -32,16 +34,19 @@ public:
 
 		uint8* bitmap;
 
-                uint8 height;
+        uint8 height;
 		uint8 width;
 		uint8 advance;
 		uint8 top;
+
+		uint32_t sheet_index;
 	};
 
-public:
+	gl_texture_t * glyph_sheet;
+
 	font_t();
 
-public:
+
 	/// @returns true on success
 	bool load_from_file(const char *fname, int size);
 	bool is_loaded() const { return !glyphs.empty(); }
@@ -63,7 +68,7 @@ public:
 
 	/// @returns height in pixels of the glyph of a character
 	uint8 get_glyph_height(utf32 c) const;
-        
+
 	/// @returns yoffset in pixels of the glyph of a character
 	uint8 get_glyph_top(uint32 c) const;
 

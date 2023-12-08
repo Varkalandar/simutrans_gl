@@ -136,7 +136,7 @@ static char *recode(const char *src, bool translate_from_utf, bool translate_to_
 			}
 
 			src += 2;
-			
+
 			if(c2 == 't') {
 				*dst++ = c = '\t';
 			} else {
@@ -387,7 +387,7 @@ void translator::load_language_file(FILE* file)
 				// HACK: so we guess about latin2 from the font name!
 				langs[single_instance.lang_count].is_latin2_based = STRNICMP( buffer1+5, "latin2", 6 )==0;
 				// we must register now a unicode font
-				langs[single_instance.lang_count].texts.set( "PROP_FONT_FILE", langs[single_instance.lang_count].is_latin2_based ? "cyr.bdf" : strdup(buffer1) );
+				langs[single_instance.lang_count].texts.set( "PROP_FONT_FILE", langs[single_instance.lang_count].is_latin2_based ? "LiberationSans-Regular.ttf" : strdup(buffer1) );
 				break;
 			}
 		}

@@ -10,6 +10,8 @@
 
 #include "simgraph.h"
 #include "rgba.h"
+#include "font.h"
+#include "gl_textures.h"
 
 #include <GLFW/glfw3.h>
 
@@ -18,6 +20,19 @@ static GLFWwindow* window;
 
 scr_coord_val tile_raster_width = 16; // zoomed
 scr_coord_val base_tile_raster_width = 16; // original
+
+#define MAX_POLY_CLIPS 6
+
+MSVC_ALIGN(64) struct clipping_info_t {
+	// current clipping rectangle
+	clip_dimension clip_rect;
+	// clipping rectangle to be swapped by display_clip_wh_toggle
+	clip_dimension clip_rect_swap;
+	bool swap_active;
+} GCC_ALIGN(64); // aligned to separate cachelines
+
+clipping_info_t clips;
+#define CR clips CLIP_NUM_INDEX
 
 
 // things to get rid off
@@ -230,33 +245,55 @@ void display_get_base_image_offset(image_id image, scr_coord_val *xoff, scr_coor
 	}
 }
 
+
 clip_dimension display_get_clip_wh(CLIP_NUM_DEF_NOUSE0)
 {
-	clip_dimension clip_rect;
-	clip_rect.x = 0;
-	clip_rect.xx = 0;
-	clip_rect.w = 0;
-	clip_rect.y = 0;
-	clip_rect.yy = 0;
-	clip_rect.h = 0;
-	return clip_rect;
+	return CR.clip_rect;
 }
 
-void display_set_clip_wh(scr_coord_val, scr_coord_val, scr_coord_val, scr_coord_val  CLIP_NUM_DEF_NOUSE, bool)
+
+void display_set_clip_wh(scr_coord_val x, scr_coord_val y, scr_coord_val w, scr_coord_val h CLIP_NUM_DEF_NOUSE, bool)
 {
+	CR.clip_rect.x = x;
+	CR.clip_rect.y = y;
+	CR.clip_rect.w = w;
+	CR.clip_rect.h = h;
+	CR.clip_rect.xx = x + w; // watch out, clips to scr_coord_val max
+	CR.clip_rect.yy = y + h; // watch out, clips to scr_coord_val max
 }
 
-void display_push_clip_wh(scr_coord_val, scr_coord_val, scr_coord_val, scr_coord_val  CLIP_NUM_DEF_NOUSE)
+
+void display_push_clip_wh(scr_coord_val x, scr_coord_val y, scr_coord_val w, scr_coord_val h  CLIP_NUM_DEF)
 {
+	assert(!CR.swap_active);
+	// save active clipping rectangle
+	CR.clip_rect_swap = CR.clip_rect;
+	// active rectangle provided by parameters
+	display_set_clip_wh(x, y, w, h  CLIP_NUM_PAR);
+	CR.swap_active = true;
 }
 
-void display_swap_clip_wh(CLIP_NUM_DEF_NOUSE0)
+
+void display_swap_clip_wh(CLIP_NUM_DEF0)
 {
+	if (CR.swap_active) {
+		// swap clipping rectangles
+		clip_dimension save = CR.clip_rect;
+		CR.clip_rect = CR.clip_rect_swap;
+		CR.clip_rect_swap = save;
+	}
 }
 
-void display_pop_clip_wh(CLIP_NUM_DEF_NOUSE0)
+
+void display_pop_clip_wh(CLIP_NUM_DEF0)
 {
+	if (CR.swap_active) {
+		// swap original clipping rectangle back
+		CR.clip_rect   = CR.clip_rect_swap;
+		CR.swap_active = false;
+	}
 }
+
 
 void display_scroll_band(const scr_coord_val, const scr_coord_val, const scr_coord_val)
 {
@@ -328,7 +365,7 @@ void display_blend_wh_rgb(scr_coord_val, scr_coord_val, scr_coord_val, scr_coord
 
 void display_fillbox_wh_rgb(scr_coord_val x, scr_coord_val y, scr_coord_val w, scr_coord_val h, rgba_t color, bool )
 {
-    dbg->message("display_fillbox_wh_rgb()", "Called %d,%d,%d,%d color %f,%f,%f,%f", x, y, w, h, color.red, color.green, color.blue, color.alpha);
+    // dbg->message("display_fillbox_wh_rgb()", "Called %d,%d,%d,%d color %f,%f,%f,%f", x, y, w, h, color.red, color.green, color.blue, color.alpha);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -347,7 +384,7 @@ void display_fillbox_wh_rgb(scr_coord_val x, scr_coord_val y, scr_coord_val w, s
 
 void display_fillbox_wh_clip_rgb(scr_coord_val x, scr_coord_val y, scr_coord_val w, scr_coord_val h, rgba_t color, bool  CLIP_NUM_DEF_NOUSE)
 {
-    dbg->message("display_fillbox_wh_clip_rgb()", "Called %d,%d,%d,%d color %f,%f,%f,%f", x, y, w, h, color.red, color.green, color.blue, color.alpha);
+    // dbg->message("display_fillbox_wh_clip_rgb()", "Called %d,%d,%d,%d color %f,%f,%f,%f", x, y, w, h, color.red, color.green, color.blue, color.alpha);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -372,9 +409,71 @@ void display_array_wh(scr_coord_val, scr_coord_val, scr_coord_val, scr_coord_val
 {
 }
 
-int display_glyph(scr_coord_val x, scr_coord_val y, utf32 c, control_alignment_t flags, rgba_t default_color, const font_t * font  CLIP_NUM_DEF_NOUSE)
+int display_glyph(scr_coord_val x, scr_coord_val y, utf32 c, control_alignment_t flags, rgba_t color, const font_t * font  CLIP_NUM_DEF_NOUSE)
 {
-	return 0;
+    // dbg->message("display_glyph()", "Called %d,%d glyph=%d", x, y, c);
+
+    /*
+    display_fillbox_wh_clip_rgb(0, 0, 1024, 500, rgba_t(0.5f, 0.5f, 0.5f), true);
+
+    glColor4f(1, 1, 1, 1);
+
+	glBindTexture(GL_TEXTURE_2D, font->glyph_sheet->tex_id);
+	glBegin(GL_QUADS);
+
+    glTexCoord2f(0, 0);
+	glVertex2i(0, 0);
+
+    glTexCoord2f(1, 0);
+	glVertex2i(1024, 0);
+
+    glTexCoord2f(1, 1);
+	glVertex2i(1024, 1000);
+
+    glTexCoord2f(0, 1);
+	glVertex2i(0, 1000);
+
+	glEnd();
+*/
+
+    const scr_coord_val w = font->get_glyph_width(c);
+    const scr_coord_val h = font->get_glyph_height(c);
+
+    // Pixel coordinates of the glyph in the sheet
+    const int gnr = font->glyphs[c].sheet_index;
+    const int glyph_line = (gnr / 32) * 32;
+    const int glyph_row = (gnr & 31) * 32;
+
+    // texture coordinates in fractions of sheet size
+    float left = glyph_row / (float)font->glyph_sheet->width;
+    float top = glyph_line / (float)font->glyph_sheet->height;
+    float gw = w  / (float)font->glyph_sheet->width;
+    float gh = h / (float)font->glyph_sheet->height;
+
+    const int gy = y + font->get_glyph_top(c);
+
+	glColor4f(color.red, color.green, color.blue, color.alpha);
+
+    // dbg->message("display_glyph()", "tex id=%d", font->glyph_sheet->tex_id);
+
+	glBindTexture(GL_TEXTURE_2D, font->glyph_sheet->tex_id);
+	glBegin(GL_QUADS);
+
+    glTexCoord2f(left, top);
+	glVertex2i(x, gy);
+
+    glTexCoord2f(left+gw, top);
+	glVertex2i(x+w, gy);
+
+    glTexCoord2f(left+gw, top+gh);
+	glVertex2i(x+w, gy+h);
+
+    glTexCoord2f(left, top+gh);
+	glVertex2i(x, gy+h);
+
+	glEnd();
+
+	return font->get_glyph_advance(c);
 }
 
 void display_ddd_box_rgb(scr_coord_val, scr_coord_val, scr_coord_val, scr_coord_val, rgba_t, rgba_t, bool)
@@ -388,9 +487,7 @@ void display_ddd_box_clip_rgb(scr_coord_val, scr_coord_val, scr_coord_val, scr_c
 
 void display_flush_buffer()
 {
-    dbg->debug("display_flush_buffer()", "Called");
-
-    // display_fillbox_wh_clip_rgb(0, 0, 1000, 1000, RGBA_WHITE, true);
+    // dbg->debug("display_flush_buffer()", "Called");
 
 	glfwSwapBuffers(window);
 }
@@ -435,11 +532,18 @@ bool simgraph_init(scr_size size, sint16)
 
         glfwSetCursorPosCallback(window, sysgl_cursor_pos_callback);
 
+        // 2D Initialization
+        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        glEnable(GL_TEXTURE_2D);
+
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        glDisable(GL_LIGHTING);
+        glDisable(GL_DEPTH_TEST);
+
+        simgraph_resize(size);
 	}
-
-    // glViewport(0, 0, size.w, size.h);
-
-    glOrtho(0, size.w, 0, size.h, -1, 1);
 
 	return window;
 }
@@ -462,9 +566,15 @@ void simgraph_exit()
 	dr_os_close();
 }
 
-void simgraph_resize(scr_size)
+
+void simgraph_resize(scr_size size)
 {
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0, size.w, size.h, 0, 1, -1);
+    glViewport(0, 0, size.w, size.h);
 }
+
 
 void display_snapshot()
 {

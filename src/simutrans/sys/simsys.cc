@@ -687,7 +687,7 @@ std::string dr_get_system_font()
 #elif defined(ANDROID)
 	return FONT_PATH_X "Roboto-Regular.ttf";
 #else
-	return FONT_PATH_X "cyr.bdf";
+	return FONT_PATH_X "LiberationSans-Regular.ttf";
 #endif
 #else
 	return "";

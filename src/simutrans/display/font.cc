@@ -4,16 +4,13 @@
  */
 
 #include "font.h"
+#include "gl_textures.h"
 
 #include "../macros.h"
 #include "../simdebug.h"
 #include "../sys/simsys.h"
 #include "../simtypes.h"
 #include "../utils/simstring.h"
-
-#ifdef USE_FREETYPE
-#include "../dataobj/environment.h"
-#endif
 
 #include <math.h>
 #include <cassert>
@@ -40,12 +37,39 @@ font_t::font_t() :
 }
 
 
-#ifdef USE_FREETYPE
-
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include FT_GLYPH_H
 #include FT_TRUETYPE_TABLES_H
+
+
+void texture_setpix(uint8_t * texture, int scanwidth, int x, int y, uint8 alpha)
+{
+    uint32_t dpos =
+        (y * scanwidth) +
+        x * 4;
+
+        texture[dpos] = 255; // red
+        texture[dpos+1] = 255; // green
+        texture[dpos+2] = 255; // blue
+        texture[dpos+3] = alpha; // alpha
+}
+
+void convert_glyph(font_t::glyph_t glyph, uint8_t * texture, int scanwidth)
+{
+    int gx = (glyph.sheet_index & 31) * 32;
+    int gy = (glyph.sheet_index / 32) * 32;
+
+	dbg->message("convert_glyph()", "sheet pos %d, %d, wh = %d, %d", gx, gy, glyph.height, glyph.width);
+
+    for(int y=0; y<glyph.height; y++) {
+        for(int x=0; x<glyph.width; x++) {
+            uint8 alpha = glyph.bitmap[y*glyph.width + x];
+
+            texture_setpix(texture, scanwidth, gx+x, gy+y, alpha);
+        }
+    }
+}
 
 
 bool font_t::load_from_freetype(const char *fname, int pixel_height)
@@ -58,17 +82,16 @@ bool font_t::load_from_freetype(const char *fname, int pixel_height)
 		return false;
 	}
 
-	// Ok, we guessed something about the filename, now actually load it
 	FT_Face face;
 
 	if(  FT_New_Face( ft_library, fname, 0, &face ) != FT_Err_Ok  ) {
-		dbg->error( "font_t::load_from_freetype", "Cannot load %s", fname );
-		FT_Done_FreeType( ft_library );
+		dbg->error("font_t::load_from_freetype", "Cannot load %s", fname);
+		FT_Done_FreeType(ft_library);
 		return false;
 	}
 
 	if(  FT_Set_Pixel_Sizes( face, 0, pixel_height ) != FT_Err_Ok  ) {
-		dbg->error( "font_t::load_from_freetype", "Cannot load %s", fname);
+		dbg->error("font_t::load_from_freetype", "Render pixel height %d for %s", pixel_height, fname);
 		FT_Done_Face(face);
 		FT_Done_FreeType(ft_library);
 		return false;
@@ -79,7 +102,7 @@ bool font_t::load_from_freetype(const char *fname, int pixel_height)
 	const sint16 ascent = face->size->metrics.ascender/64;
 	linespace           = face->size->metrics.height/64;
 	descent             = face->size->metrics.descender/64;
-	
+
 	tstrncpy( this->fname, fname, lengthof(this->fname) );
 
 	uint32 num_glyphs = 0;
@@ -113,33 +136,31 @@ bool font_t::load_from_freetype(const char *fname, int pixel_height)
 		// now render into cache
 		// the bitmap is at slot->bitmap
 		// the glyph base is at slot->bitmap_left, CELL_HEIGHT - slot->bitmap_top
-		
+
 		glyph_t & glyph = glyphs[glyph_nr];
-		
+
 		// set glyph size
 		glyph.height  = face->glyph->bitmap.rows;
 		glyph.width   = face->glyph->bitmap.width;
-		glyph.advance = face->glyph->bitmap.width+1;				
-		
+		glyph.advance = face->glyph->bitmap.width+1;
+
 		// Hajo: the bitmaps are all top aligned. Bitmap top is the ascent
 		// above the base line
 		// to find the real top position, we must take the font ascent
-		// and reduce it by the glyph ascent 
+		// and reduce it by the glyph ascent
 		glyph.top = ascent - face->glyph->bitmap_top - 1;
-		
+
 		// transform glyph to Simutrans bitmap
-		
+
 		glyph.bitmap = (uint8*)calloc(glyph.height * glyph.width, 1);
 		uint8 * const bitmap = glyph.bitmap;
-		
+
 		for(int y = 0; y < glyph.height; y++) {
 			for(int x = 0; x < face->glyph->bitmap.pitch; x++) {
-			
+
 				const uint8 alpha = face->glyph->bitmap.buffer[y * face->glyph->bitmap.pitch + x];
-				// simgraph blend routines want 5 bit alpha i.e. 0 .. 31
-				
-				bitmap[y * glyph.width + x] = (uint8)(pow((alpha / 255.0), 0.75) * 32);
-			}		
+				bitmap[y * glyph.width + x] = (uint8)(pow((alpha / 255.0), 0.75) * 255);
+			}
 		}
 	}
 
@@ -158,16 +179,48 @@ bool font_t::load_from_freetype(const char *fname, int pixel_height)
 
 	// Use only needed amount
 	glyphs.resize(num_glyphs);
-	
+
 	// Hajo: how to get proper space width?
 	glyphs[(uint32)' '].advance = glyphs[(uint32)'i'].advance;
 
 	FT_Done_Face( face );
 	FT_Done_FreeType( ft_library );
+
+    dbg->message("font_t::load_from_freetype", "Loaded %d glyphs", num_glyphs);
+
+    uint32_t glyph_bitmap_count = 0;
+
+    // scan for used glyphs
+    for(uint32 i = 0; i < num_glyphs; i++)
+    {
+        if(glyphs[i].advance < 0xFF) glyph_bitmap_count ++;
+    }
+
+    dbg->message("font_t::load_from_freetype", "%d glyphs have actual bitmaps", glyph_bitmap_count);
+
+	// Hajo: we need proper glyph sizes some day ...
+    int scanwidth = 1024 * 4; // 32 glyphs per line, 4 bytes per pixel
+    int scanlines = ((glyph_bitmap_count + 31) / 32) * 32;
+
+	uint8* texture = (uint8*)calloc(scanwidth * scanlines, 1);
+
+    glyph_bitmap_count = 0;
+
+	// convert bitmaps to rgba
+    for(uint32 i = 0; i < num_glyphs; i++)
+    {
+        if(glyphs[i].advance < 0xFF)
+        {
+            glyphs[i].sheet_index = glyph_bitmap_count++;
+            convert_glyph(glyphs[i], texture, scanwidth);
+        }
+    }
+
+    // make it an opengl texture
+    glyph_sheet = gl_texture_t::create_texture(scanwidth/4, scanlines, texture);
+
 	return true;
 }
-
-#endif
 
 
 void font_t::print_debug() const
@@ -181,9 +234,7 @@ bool font_t::load_from_file(const char *srcfilename, int size)
 {
 	tstrncpy( fname, srcfilename, lengthof(fname) );
 
-#ifdef USE_FREETYPE
 	bool ok = load_from_freetype( fname, size );
-#endif
 
 #if MSG_LEVEL>=4
 	if(  ok  ) {
