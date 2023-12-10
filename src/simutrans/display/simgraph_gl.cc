@@ -3,7 +3,9 @@
  * (see LICENSE.txt)
  */
 
-#include "../simconst.h"
+
+// #include "../simconst.h"
+#include "../simmem.h"
 #include "../sys/simsys.h"
 #include "../simdebug.h"
 #include "../descriptor/image.h"
@@ -33,6 +35,48 @@ MSVC_ALIGN(64) struct clipping_info_t {
 
 clipping_info_t clips;
 #define CR clips CLIP_NUM_INDEX
+
+#define TRANSPARENT_RUN (0x8000u)
+
+struct imd_t {
+	sint16 x; // current (zoomed) min x offset
+	sint16 y; // current (zoomed) min y offset
+	sint16 w; // current (zoomed) width
+	sint16 h; // current (zoomed) height
+
+	// uint8 recode_flags;
+	// uint16 player_flags; // bit # is player number, ==1 cache image needs recoding
+
+	// PIXVAL* data[MAX_PLAYER_COUNT]; // current data - zoomed and recolored (player + daynight)
+
+	// PIXVAL* zoom_data; // zoomed original data
+	uint32 len;    // current zoom image data size (or base if not zoomed) (used for allocation purposes only)
+
+	sint16 base_x; // min x offset
+	sint16 base_y; // min y offset
+	sint16 base_w; // width
+	sint16 base_h; // height
+
+	gl_texture_t * texture;
+
+	uint8_t * base_data; // original image data
+};
+
+/*
+ * Image table
+ */
+static struct imd_t* images = NULL;
+
+/*
+ * Number of loaded images
+ */
+static image_id anz_images = 0;
+
+/*
+ * Number of allocated entries for images
+ * (>= anz_images)
+ */
+static image_id alloc_images = 0;
 
 
 // things to get rid off
@@ -139,9 +183,9 @@ rgba_t color_idx_to_rgba(int idx, int transparent_percent)
 }
 
 
-rgb888_t get_color_rgb(uint8)
+rgb888_t get_color_rgb(uint8 idx)
 {
-	return {0,0,0};
+	return special_pal[idx];
 }
 
 void env_t_rgb_to_system_colors()
@@ -213,9 +257,164 @@ void display_set_player_color_scheme(const int, const uint8, const uint8)
 {
 }
 
-void register_image(image_t* image)
+
+static uint8_t * rgb555to888(const uint16_t c, const uint8_t alpha, uint8_t *tp)
 {
-	image->imageid = 1;
+    *tp++ = (c >> 7) & 0xF8; // red
+    *tp++ = (c >> 2) & 0xF8; // green
+    *tp++ = (c << 3) & 0xF8; // blue
+    *tp++ = alpha;           // alpha
+
+    return tp;
+}
+
+/**
+ * Copy pixel, replace player color
+ */
+static inline void colorpixcopy(uint8_t * dest, const uint16_t * src, const uint16_t * const end)
+{
+	if (*src < 0x8020) {
+		while (src < end) {
+			// *dest++ = rgbmap_current[*src++];
+            uint16_t c = *src ++;
+            dest = rgb555to888(c, 255, dest);
+		}
+	}
+	else {
+		while (src < end) {
+			// a semi-transparent pixel
+			uint16 c   = *src++ - 0x8020;
+			uint16 aux = c - 0x8020;
+
+			uint8_t alpha = (31 - (aux % 31)) << 3;
+            dest = rgb555to888(c & 0x7FF, alpha, dest);
+            // dest = rgb555to888(0x7FF, 255, dest);
+		}
+	}
+}
+
+
+static uint8_t * convert(const uint16_t * sp, const uint16_t runlen, uint8_t * tp)
+{
+    // dbg->message("covert()", "Converting a run of %d pixels", runlen);
+
+    const uint16_t * end = sp + runlen;
+
+    while(sp < end)
+    {
+        uint16_t c = *sp ++;
+        tp = rgb555to888(c, 255, tp);
+    }
+
+    return tp;
+}
+
+
+void register_image(image_t * image_in)
+{
+	struct imd_t *image;
+
+	/* valid image? */
+	if(image_in->len == 0 || image_in->h == 0) {
+		dbg->warning("register_image()", "Ignoring image %d because of missing data", anz_images);
+		image_in->imageid = IMG_EMPTY;
+		return;
+	}
+
+    dbg->message("register_image()", "Currently at %d images", anz_images);
+
+	if(anz_images == alloc_images) {
+		if(images==NULL) {
+			alloc_images = 510;
+		}
+		else {
+			alloc_images += 512;
+		}
+		if(anz_images > alloc_images) {
+			// overflow
+			dbg->fatal( "register_image", "*** Out of images (more than %li!) ***", anz_images );
+		}
+		images = REALLOC(images, imd_t, alloc_images);
+	}
+
+	image_in->imageid = anz_images;
+	image = &images[anz_images];
+	anz_images++;
+
+	image->x = image_in->x;
+	image->w = image_in->w;
+	image->y = image_in->y;
+	image->h = image_in->h;
+
+	dbg->message("register_image()", "Converting %dx%d pixels", image_in->w, image_in->h);
+
+	uint8_t * rgba_data = (uint8_t *)calloc(image_in->w * image_in->h, 4);
+    uint8_t * tp = rgba_data;
+    const uint16_t * sp = image_in->data;
+    scr_coord_val h = image_in->h;
+    uint16_t runlen;
+
+    do { // line decoder
+        uint16_t runlen = *sp++;
+        uint8_t *p = tp;
+
+        // one line decoder
+        do {
+            // we start with a clear run
+            p += (runlen & ~TRANSPARENT_RUN);
+
+//            dbg->message("register_image()", "Converting %d transparent pixels", runlen);
+
+            // now get colored pixels
+            runlen = *sp++;
+            if(runlen & TRANSPARENT_RUN) {
+                runlen &= ~TRANSPARENT_RUN;
+
+//                dbg->message("register_image()", "Converting %d special color pixels", runlen);
+                colorpixcopy( p, sp, sp+runlen );
+                p += runlen * 4;
+                sp += runlen;
+            }
+            else {
+//                dbg->message("register_image()", "Converting %d color pixels", runlen);
+
+                p = convert(sp, runlen, p);
+                sp += runlen;
+            }
+            runlen = *sp++;
+        } while(runlen);
+
+//        dbg->message("register_image()", "-- Line converted, %d left --", h);
+
+        tp += image_in->w * 4;
+    } while(--h > 0);
+
+    // debug
+/*
+    for(int y = 0; y < image_in->h; y++)
+    {
+        for(int x = 0; x < image_in->w; x++)
+        {
+            int i = y * image_in->w * 4 + x * 4;
+
+            rgba_data[i] = 64;
+            rgba_data[i+1] = (x == 0 || y == 0) ? 255 : 64;
+            rgba_data[i+2] = (x == image_in->w-1 || y == image_in->h-1) ? 255 : 64;
+            rgba_data[i+3] = 255;
+        }
+    }
+*/
+
+	image->len = image_in->len;
+
+	image->base_x = image_in->x;
+	image->base_w = image_in->w;
+	image->base_y = image_in->y;
+	image->base_h = image_in->h;
+
+    image->texture = gl_texture_t::create_texture(image_in->w, image_in->h, rgba_data);
+
+	image->base_data = rgba_data;
 }
 
 bool display_snapshot(const scr_rect &)
@@ -223,25 +422,27 @@ bool display_snapshot(const scr_rect &)
 	return false;
 }
 
+
+/** query offsets */
 void display_get_image_offset(image_id image, scr_coord_val *xoff, scr_coord_val *yoff, scr_coord_val *xw, scr_coord_val *yw)
 {
-	if(  image < 2  ) {
-		// initialize offsets with dummy values
-		*xoff = 0;
-		*yoff = 0;
-		*xw   = 0;
-		*yw   = 0;
+	if(  image < anz_images  ) {
+		*xoff = images[image].x;
+		*yoff = images[image].y;
+		*xw   = images[image].w;
+		*yw   = images[image].h;
 	}
 }
 
+
+/** query un-zoomed offsets */
 void display_get_base_image_offset(image_id image, scr_coord_val *xoff, scr_coord_val *yoff, scr_coord_val *xw, scr_coord_val *yw)
 {
-	if(  image < 2  ) {
-		// initialize offsets with dummy values
-		*xoff = 0;
-		*yoff = 0;
-		*xw   = 0;
-		*yw   = 0;
+	if(  image < anz_images  ) {
+		*xoff = images[image].base_x;
+		*yoff = images[image].base_y;
+		*xw   = images[image].base_w;
+		*yw   = images[image].base_h;
 	}
 }
 
@@ -252,7 +453,7 @@ clip_dimension display_get_clip_wh(CLIP_NUM_DEF_NOUSE0)
 }
 
 
-void display_set_clip_wh(scr_coord_val x, scr_coord_val y, scr_coord_val w, scr_coord_val h CLIP_NUM_DEF_NOUSE, bool)
+void display_set_clip_wh(scr_coord_val x, scr_coord_val y, scr_coord_val w, scr_coord_val h, bool)
 {
 	CR.clip_rect.x = x;
 	CR.clip_rect.y = y;
@@ -263,18 +464,18 @@ void display_set_clip_wh(scr_coord_val x, scr_coord_val y, scr_coord_val w, scr_
 }
 
 
-void display_push_clip_wh(scr_coord_val x, scr_coord_val y, scr_coord_val w, scr_coord_val h  CLIP_NUM_DEF)
+void display_push_clip_wh(scr_coord_val x, scr_coord_val y, scr_coord_val w, scr_coord_val h)
 {
 	assert(!CR.swap_active);
 	// save active clipping rectangle
 	CR.clip_rect_swap = CR.clip_rect;
 	// active rectangle provided by parameters
-	display_set_clip_wh(x, y, w, h  CLIP_NUM_PAR);
+	display_set_clip_wh(x, y, w, h);
 	CR.swap_active = true;
 }
 
 
-void display_swap_clip_wh(CLIP_NUM_DEF0)
+void display_swap_clip_wh()
 {
 	if (CR.swap_active) {
 		// swap clipping rectangles
@@ -299,29 +500,205 @@ void display_scroll_band(const scr_coord_val, const scr_coord_val, const scr_coo
 {
 }
 
-void display_img_aux(const image_id, scr_coord_val, scr_coord_val, const sint8, const bool, const bool  CLIP_NUM_DEF_NOUSE)
+
+void display_img_aux(const image_id id, scr_coord_val x, scr_coord_val y, const sint8 player_nr, const bool, const bool  CLIP_NUM_DEF_NOUSE)
 {
+    display_color_img(id, x, y, player_nr, true, true);
 }
 
-void display_color_img(const image_id, scr_coord_val, scr_coord_val, const sint8, const bool, const bool  CLIP_NUM_DEF_NOUSE)
+
+void display_color_img(const image_id id, scr_coord_val x, scr_coord_val y, const sint8 player_nr, const bool, const bool  CLIP_NUM_DEF_NOUSE)
 {
+    glEnable(GL_SCISSOR_TEST);
+    glScissor(CR.clip_rect.x, CR.clip_rect.y, CR.clip_rect.w, CR.clip_rect.h);
+
+    imd_t imd = images[id];
+
+    x += imd.base_x;
+    y += imd.base_y;
+
+    glColor4f(1, 1, 1, 1);
+
+	glBindTexture(GL_TEXTURE_2D, imd.texture->tex_id);
+	glBegin(GL_QUADS);
+
+    glTexCoord2f(0, 0);
+	glVertex2i(x, y);
+
+    glTexCoord2f(1, 0);
+	glVertex2i(x+imd.base_w, y);
+
+    glTexCoord2f(1, 1);
+	glVertex2i(x+imd.base_w, y+imd.base_h);
+
+    glTexCoord2f(0, 1);
+	glVertex2i(x, y+imd.base_h);
+
+	glEnd();
+    glDisable(GL_SCISSOR_TEST);
 }
 
-void display_base_img(const image_id, scr_coord_val, scr_coord_val, const sint8, const bool, const bool  CLIP_NUM_DEF_NOUSE)
+void display_base_img(const image_id id, scr_coord_val x, scr_coord_val y, const sint8 player_nr, const bool, const bool  CLIP_NUM_DEF_NOUSE)
 {
+    display_color_img(id, x, y, player_nr, true, true);
 }
 
 void display_fit_img_to_width( const image_id, sint16)
 {
 }
 
-void display_img_stretch(const stretch_map_t &, scr_rect, rgba_t)
+
+// local helper function for tiles buttons
+static void display_three_image_row(image_id i1, image_id i2, image_id i3, scr_rect row, rgba_t color)
 {
+	if(  i1!=IMG_EMPTY  ) {
+		scr_coord_val w = images[i1].w;
+		display_color_img(i1, row.x, row.y, 0, false, true  CLIP_NUM_DEFAULT);
+		row.x += w;
+		row.w -= w;
+	}
+	// right
+	if(  i3!=IMG_EMPTY  ) {
+		scr_coord_val w = images[i3].w;
+		display_color_img(i3, row.get_right()-w, row.y, 0, false, true  CLIP_NUM_DEFAULT);
+		row.w -= w;
+	}
+	// middle
+	if(  i2!=IMG_EMPTY  ) {
+		scr_coord_val w = images[i2].w;
+		// tile it wide
+		while(  w <= row.w  ) {
+			display_color_img(i2, row.x, row.y, 0, false, true  CLIP_NUM_DEFAULT);
+			row.x += w;
+			row.w -= w;
+		}
+		// for the rest we have to clip the rectangle
+		if(  row.w > 0  ) {
+			clip_dimension const cl = display_get_clip_wh();
+			display_set_clip_wh(cl.x, cl.y, max(0,min(row.get_right(),cl.xx)-cl.x), cl.h);
+			display_color_img(i2, row.x, row.y, 0, false, true  CLIP_NUM_DEFAULT);
+			display_set_clip_wh(cl.x, cl.y, cl.w, cl.h);
+		}
+	}
 }
 
-void display_img_stretch_blend(const stretch_map_t &, scr_rect, rgba_t)
+
+static scr_coord_val get_img_width(image_id img)
 {
+	return img != IMG_EMPTY ? images[ img ].w : 0;
 }
+
+
+static scr_coord_val get_img_height(image_id img)
+{
+	return img != IMG_EMPTY ? images[ img ].h : 0;
+}
+
+
+typedef void (*DISP_THREE_ROW_FUNC)(image_id, image_id, image_id, scr_rect, rgba_t);
+
+/**
+ * Base method to display a 3x3 array of images to fit the scr_rect.
+ * Special cases:
+ * - if images[*][1] are empty, display images[*][0] vertically aligned
+ * - if images[1][*] are empty, display images[0][*] horizontally aligned
+ */
+static void display_img_stretch_intern( const stretch_map_t &imag, scr_rect area, DISP_THREE_ROW_FUNC display_three_image_rowf, rgba_t color)
+{
+	scr_coord_val h_top    = max(max(get_img_height(imag[0][0]), get_img_height(imag[1][0])), get_img_height(imag[2][0]));
+	scr_coord_val h_middle = max(max(get_img_height(imag[0][1]), get_img_height(imag[1][1])), get_img_height(imag[2][1]));
+	scr_coord_val h_bottom = max(max(get_img_height(imag[0][2]), get_img_height(imag[1][2])), get_img_height(imag[2][2]));
+
+	// center vertically if images[*][1] are empty, display images[*][0]
+	if(  imag[0][1] == IMG_EMPTY  &&  imag[1][1] == IMG_EMPTY  &&  imag[2][1] == IMG_EMPTY  ) {
+		scr_coord_val h = max(h_top, get_img_height(imag[1][1]));
+		// center vertically
+		area.y += (area.h-h)/2;
+	}
+
+	// center horizontally if images[1][*] are empty, display images[0][*]
+	if(  imag[1][0] == IMG_EMPTY  &&  imag[1][1] == IMG_EMPTY  &&  imag[1][2] == IMG_EMPTY  ) {
+		scr_coord_val w_left = max(max( get_img_width(imag[0][0]), get_img_width(imag[0][1])), get_img_width(imag[0][2]));
+		// center vertically
+		area.x += (area.w-w_left)/2;
+	}
+
+	// top row
+	display_three_image_rowf( imag[0][0], imag[1][0], imag[2][0], area, color);
+
+	// bottom row
+	if(  h_bottom > 0  ) {
+		scr_rect row( area.x, area.y+area.h-h_bottom, area.w, h_bottom );
+		display_three_image_rowf( imag[0][2], imag[1][2], imag[2][2], row, color);
+	}
+
+	// now stretch the middle
+	if(  h_middle > 0  ) {
+		scr_rect row( area.x, area.y+h_top, area.w, area.h-h_top-h_bottom);
+		// tile it wide
+		while(  h_middle <= row.h  ) {
+			display_three_image_rowf( imag[0][1], imag[1][1], imag[2][1], row, color);
+			row.y += h_middle;
+			row.h -= h_middle;
+		}
+		// for the rest we have to clip the rectangle
+		if(  row.h > 0  ) {
+			clip_dimension const cl = display_get_clip_wh();
+			display_set_clip_wh( cl.x, cl.y, cl.w, max(0,min(row.get_bottom(),cl.yy)-cl.y) );
+			display_three_image_rowf( imag[0][1], imag[1][1], imag[2][1], row, color);
+			display_set_clip_wh(cl.x, cl.y, cl.w, cl.h );
+		}
+	}
+}
+
+
+void display_img_stretch( const stretch_map_t &imag, scr_rect area, rgba_t color )
+{
+	display_img_stretch_intern(imag, area, display_three_image_row, color);
+}
+
+
+static void display_three_blend_row(image_id i1, image_id i2, image_id i3, scr_rect row, rgba_t color)
+{
+	if(  i1!=IMG_EMPTY  ) {
+		scr_coord_val w = images[i1].w;
+		display_rezoomed_img_blend(i1, row.x, row.y, 0, color, false, true);
+		row.x += w;
+		row.w -= w;
+	}
+	// right
+	if(  i3!=IMG_EMPTY  ) {
+		scr_coord_val w = images[i3].w;
+		display_rezoomed_img_blend(i3, row.get_right()-w, row.y, 0, color, false, true);
+		row.w -= w;
+	}
+	// middle
+	if(  i2!=IMG_EMPTY  ) {
+		scr_coord_val w = images[i2].w;
+		// tile it wide
+		while(  w <= row.w  ) {
+			display_rezoomed_img_blend(i2, row.x, row.y, 0, color, false, true);
+			row.x += w;
+			row.w -= w;
+		}
+		// for the rest we have to clip the rectangle
+		if(  row.w > 0  ) {
+			clip_dimension const cl = display_get_clip_wh();
+			display_set_clip_wh( cl.x, cl.y, max(0,min(row.get_right(),cl.xx)-cl.x), cl.h );
+			display_rezoomed_img_blend(i2, row.x, row.y, 0, color, false, true);
+			display_set_clip_wh(cl.x, cl.y, cl.w, cl.h);
+		}
+	}
+}
+
+
+// this displays a 3x3 array of images to fit the scr_rect like above, but blend the color
+void display_img_stretch_blend( const stretch_map_t &imag, scr_rect area, rgba_t color )
+{
+	// display_img_stretch_intern(imag, area, display_three_blend_row, color);
+	display_img_stretch_intern(imag, area, display_three_image_row, color);
+}
+
 
 void display_rezoomed_img_blend(const image_id, scr_coord_val, scr_coord_val, const sint8, rgba_t, const bool, const bool  CLIP_NUM_DEF_NOUSE)
 {
@@ -358,8 +735,21 @@ rgba_t display_blend_colors(rgba_t c1, rgba_t c2, float mix)
 }
 
 
-void display_blend_wh_rgb(scr_coord_val, scr_coord_val, scr_coord_val, scr_coord_val, rgba_t)
+void display_blend_wh_rgb(scr_coord_val x, scr_coord_val y, scr_coord_val w, scr_coord_val h, rgba_t color)
 {
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	glBegin(GL_QUADS);
+
+	// glColor4f(color.red, color.green, color.blue, color.alpha);
+    glColor4f(0, 0, 1, 1);
+
+	glVertex2i(x, y);
+	glVertex2i(x+w, y);
+	glVertex2i(x+w, y+h);
+	glVertex2i(x, y+h);
+
+	glEnd();
 }
 
 
@@ -488,6 +878,19 @@ void display_ddd_box_clip_rgb(scr_coord_val, scr_coord_val, scr_coord_val, scr_c
 void display_flush_buffer()
 {
     // dbg->debug("display_flush_buffer()", "Called");
+/*
+    display_set_clip_wh(0, 0, 1024, 1000);
+
+    display_fillbox_wh_rgb(0, 0, 1000, 1000, RGBA_BLACK, true);
+    // debug, show all textures
+    for(int i = 0; i < anz_images; i++)
+    {
+        int x = (i % 10) * 64;
+        int y = (i / 10) * 64;
+
+        display_color_img(i, x, y, 0, true, true);
+    }
+*/
 
 	glfwSwapBuffers(window);
 }
@@ -525,6 +928,8 @@ bool simgraph_init(scr_size size, sint16)
 
 	if(window)
 	{
+		display_set_clip_wh(0, 0, size.w, size.h);
+
 		glfwMakeContextCurrent(window);
 
 		// enable vsync (1 == next frame)
@@ -616,8 +1021,33 @@ void display_progress(int, int)
 {
 }
 
-void display_img_aligned(const image_id, scr_rect, int, sint8, bool)
+void display_img_aligned(const image_id n, scr_rect area, int align, sint8 player_nr, bool dirty)
 {
+	if(  n < anz_images  ) {
+		scr_coord_val x,y;
+
+		// align the image horizontally
+		x = area.x;
+		if(  (align & ALIGN_RIGHT) == ALIGN_CENTER_H  ) {
+			x -= images[n].x;
+			x += (area.w-images[n].w)/2;
+		}
+		else if(  (align & ALIGN_RIGHT) == ALIGN_RIGHT  ) {
+			x = area.get_right() - images[n].x - images[n].w;
+		}
+
+		// align the image vertically
+		y = area.y;
+		if(  (align & ALIGN_BOTTOM) == ALIGN_CENTER_V  ) {
+			y -= images[n].y;
+			y += (area.h-images[n].h)/2;
+		}
+		else if(  (align & ALIGN_BOTTOM) == ALIGN_BOTTOM  ) {
+			y = area.get_bottom() - images[n].y - images[n].h;
+		}
+
+		display_color_img(n, x, y, player_nr, false, dirty  CLIP_NUM_DEFAULT);
+	}
 }
 
 void display_proportional_ellipsis_rgb(scr_rect, const char *, int, rgba_t, bool, bool, rgba_t)
@@ -626,7 +1056,7 @@ void display_proportional_ellipsis_rgb(scr_rect, const char *, int, rgba_t, bool
 
 image_id get_image_count()
 {
-	return 0;
+	return anz_images;
 }
 
 void add_poly_clip(int, int, int, int, int)

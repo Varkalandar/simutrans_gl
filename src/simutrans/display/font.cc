@@ -60,7 +60,7 @@ void convert_glyph(font_t::glyph_t glyph, uint8_t * texture, int scanwidth)
     int gx = (glyph.sheet_index & 31) * 32;
     int gy = (glyph.sheet_index / 32) * 32;
 
-	dbg->message("convert_glyph()", "sheet pos %d, %d, wh = %d, %d", gx, gy, glyph.height, glyph.width);
+	// dbg->message("convert_glyph()", "sheet pos %d, %d, wh = %d, %d", gx, gy, glyph.height, glyph.width);
 
     for(int y=0; y<glyph.height; y++) {
         for(int x=0; x<glyph.width; x++) {
