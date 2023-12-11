@@ -4,12 +4,25 @@
 #include <GLFW/glfw3.h>
 
 
+static uint32_t gl_currently_bound_tex_id = 0;
+
+
+void gl_texture_t::bind(uint32_t tex_id)
+{
+    if(gl_currently_bound_tex_id != tex_id)
+    {
+        glBindTexture(GL_TEXTURE_2D, tex_id);
+        gl_currently_bound_tex_id = tex_id;
+    }
+}
+
+
 gl_texture_t * gl_texture_t::create_texture(int width, int height, uint8_t * data)
 {
     // Create a new texture object in memory and bind it
     GLuint texId;
     glGenTextures(1, &texId);
-    glBindTexture(GL_TEXTURE_2D, texId);
+    bind(texId);
 
     dbg->message("create_texture()", "id=%d error=%x", texId, glGetError());
 
@@ -44,7 +57,7 @@ void gl_texture_t::update_texture(uint8_t * data)
     // dbg->message("update_texture()", "id=%d", tex_id);
 
     this->data = data;
-    glBindTexture(GL_TEXTURE_2D, tex_id);
+    bind(tex_id);
 
     // All RGB bytes are aligned to each other and each component is 1 byte
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -73,7 +86,7 @@ void gl_texture_t::update_texture(uint8_t * data)
 
 void gl_texture_t::update_region(int x, int y, int w, int h, uint8_t *data)
 {
-    glBindTexture(GL_TEXTURE_2D, tex_id);
+    bind(tex_id);
 
 	glTexSubImage2D(GL_TEXTURE_2D,
 						0, // level,

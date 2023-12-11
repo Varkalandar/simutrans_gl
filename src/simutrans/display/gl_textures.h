@@ -18,6 +18,7 @@ public:
     }
 
     static gl_texture_t * create_texture(int width, int height, uint8_t * data);
+    static void bind(uint32_t tex_id);
 
     void update_texture(uint8_t * data);
     void update_region(int x, int y, int w, int h, uint8_t *data);

@@ -20,8 +20,10 @@
 
 static GLFWwindow* window;
 static GLint gl_max_texture_size;
-static GLint gl_currently_bound_tex_id;
 
+
+// we try to collect and combine images into large
+// tile sheets to minimize texture switching.
 static gl_texture_t * gl_texture_sheets[64];
 static int gl_current_sheet;
 static int gl_current_sheet_x;
@@ -31,6 +33,10 @@ static int gl_current_sheet_y;
 scr_coord_val tile_raster_width = 16; // zoomed
 scr_coord_val base_tile_raster_width = 16; // original
 
+static scr_coord_val display_width;
+static scr_coord_val display_height;
+
+static scr_coord_val raster_size = 64;
 
 static clip_dimension clip_rect;
 static clip_dimension clip_rect_swap;
@@ -79,9 +85,6 @@ static image_id anz_images = 0;
  * (>= anz_images)
  */
 static image_id alloc_images = 0;
-
-
-static scr_coord_val raster_size = 64;
 
 
 // things to get rid off
@@ -193,21 +196,22 @@ rgb888_t get_color_rgb(uint8 idx)
 	return special_pal[idx];
 }
 
+
 void env_t_rgb_to_system_colors()
 {
 }
 
 
-/** 
- * changes the raster width after loading 
+/**
+ * changes the raster width after loading
  */
 scr_coord_val display_set_base_raster_width(scr_coord_val new_raster)
 {
 	scr_coord_val old = base_tile_raster_width;
-	
+
 	base_tile_raster_width = new_raster;
 	tile_raster_width = new_raster;
-	
+
 	return old;
 }
 
@@ -216,57 +220,65 @@ void set_zoom_factor(int)
 {
 }
 
+
 int zoom_factor_up()
 {
 	return false;
 }
+
 
 int zoom_factor_down()
 {
 	return false;
 }
 
+
 void mark_rect_dirty_wc(scr_coord_val, scr_coord_val, scr_coord_val, scr_coord_val)
 {
 }
+
 
 void mark_rect_dirty_clip(scr_coord_val, scr_coord_val, scr_coord_val, scr_coord_val  CLIP_NUM_DEF_NOUSE)
 {
 }
 
+
 void mark_screen_dirty()
 {
 }
+
 
 void display_mark_img_dirty(image_id, scr_coord_val, scr_coord_val)
 {
 }
 
+
 scr_coord_val display_get_width()
 {
-	int width, height;
-	glfwGetWindowSize(window, &width, &height);
-	return width;
+    return display_width;
 }
+
 
 scr_coord_val display_get_height()
 {
-	int width, height;
-	glfwGetWindowSize(window, &width, &height);
-	return height;
+    return display_height;
 }
+
 
 void display_set_height(scr_coord_val)
 {
 }
 
+
 void display_set_actual_width(scr_coord_val)
 {
 }
 
+
 void display_day_night_shift(int)
 {
 }
+
 
 void display_set_player_color_scheme(const int, const uint8, const uint8)
 {
@@ -454,9 +466,6 @@ void register_image(image_t * image_in)
 	image->base_h = image_in->h;
 	image->base_data = rgba_data;
 
-	// loading images messes with the textures. Drawing needs to bind freshly.
-	gl_currently_bound_tex_id = 0;
-	
 	// is this an oversized image?
 	if(image->base_w > tile_raster_width || image->base_h > tile_raster_width)
 	{
@@ -483,7 +492,7 @@ void register_image(image_t * image_in)
 		image->sheet_y = gl_current_sheet_y;
 		image->texture = gl_texture_sheets[gl_current_sheet];
 
-		copy_into_texture_sheet(image, image->texture->data, gl_max_texture_size);	
+		copy_into_texture_sheet(image, image->texture->data, gl_max_texture_size);
 		image->texture->update_region(image->sheet_x, image->sheet_y, image->base_w, image->base_h, image->base_data);
 
 		// advance in row
@@ -583,7 +592,7 @@ void display_set_clip_wh(scr_coord_val x, scr_coord_val y, scr_coord_val w, scr_
 		clip_wh( &x, &w, clip_rect.x, clip_rect.xx);
 		clip_wh( &y, &h, clip_rect.y, clip_rect.yy);
 	}
-	
+
 	clip_rect.x = x;
 	clip_rect.y = y;
 	clip_rect.w = w;
@@ -645,12 +654,7 @@ static void display_tile_from_sheet(gl_texture_t * gltex, int x, int y,
     float gw = tile_w  / (float)gltex->width;
     float gh = tile_h / (float)gltex->height;
 
-    // if(gltex->tex_id != gl_currently_bound_tex_id)
-    {
-        glBindTexture(GL_TEXTURE_2D, gltex->tex_id);
-        gl_currently_bound_tex_id = gltex->tex_id;
-        // dbg->message("display_tile_from_sheet()", "Binding new tex %d", gl_currently_bound_tex_id);
-    }
+    gl_texture_t::bind(gltex->tex_id);
 
 	glBegin(GL_QUADS);
 
@@ -676,13 +680,14 @@ static void display_box_wh(int x, int y, int w, int h, rgba_t color)
 	display_fillbox_wh_rgb(x, y+h-1, w, 1, color, true);
 }
 
+
 void display_color_img(const image_id id, scr_coord_val x, scr_coord_val y, const sint8 player_nr, const bool, const bool  CLIP_NUM_DEF_NOUSE)
 {
 	if(id < anz_images)
 	{
 		// debug clipping
 		// display_box_wh(clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h, rgba_t(1, 0, 0, 0.5f));
-		
+
 	    glScissor(clip_rect.x, display_get_height()-clip_rect.y-clip_rect.h, clip_rect.w, clip_rect.h);
 		// glScissor(clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h);
 		glEnable(GL_SCISSOR_TEST);
@@ -701,10 +706,12 @@ void display_color_img(const image_id id, scr_coord_val x, scr_coord_val y, cons
 	}
 }
 
+
 void display_base_img(const image_id id, scr_coord_val x, scr_coord_val y, const sint8 player_nr, const bool, const bool  CLIP_NUM_DEF_NOUSE)
 {
     display_color_img(id, x, y, player_nr, true, true);
 }
+
 
 void display_fit_img_to_width( const image_id, sint16)
 {
@@ -715,8 +722,8 @@ void display_fit_img_to_width( const image_id, sint16)
 static void display_three_image_row( image_id i1, image_id i2, image_id i3, scr_rect row, rgba_t)
 {
 // 	dbg->message("display_three_image_row", "%d %d %d %d", row.x, row.y, row.w, row.h);
-	
-	
+
+
 	if(  i1!=IMG_EMPTY  ) {
 		scr_coord_val w = images[i1].w;
 		display_color_img( i1, row.x, row.y, 0, false, true  CLIP_NUM_DEFAULT);
@@ -773,21 +780,21 @@ static void display_img_stretch_intern( const stretch_map_t &imag, scr_rect area
  	// display_set_clip_wh(area.x, area.y-100, area.w, 1000, false);
 
 	// display_fillbox_wh_rgb(area.x, area.y, area.w, area.h, RGBA_WHITE, true);
-	
+
 // 	dbg->message("display_set_clip_wh", "%d %d %d %d", area.x, area.y, area.w, area.h);
-	
+
 	scr_coord_val h_top    = max(max( get_img_height(imag[0][0]), get_img_height(imag[1][0])), get_img_height(imag[2][0]));
 	scr_coord_val h_middle = max(max( get_img_height(imag[0][1]), get_img_height(imag[1][1])), get_img_height(imag[2][1]));
 	scr_coord_val h_bottom = max(max( get_img_height(imag[0][2]), get_img_height(imag[1][2])), get_img_height(imag[2][2]));
 
-	
+
 	// center vertically if images[*][1] are empty, display images[*][0]
 	if(  imag[0][1] == IMG_EMPTY  &&  imag[1][1] == IMG_EMPTY  &&  imag[2][1] == IMG_EMPTY  ) {
 		scr_coord_val h = max(h_top, get_img_height(imag[1][1]));
 		// center vertically
 		area.y += (area.h-h)/2;
 	}
-	
+
 	// center horizontally if images[1][*] are empty, display images[0][*]
 	if(  imag[1][0] == IMG_EMPTY  &&  imag[1][1] == IMG_EMPTY  &&  imag[1][2] == IMG_EMPTY  ) {
 		scr_coord_val w_left = max(max( get_img_width(imag[0][0]), get_img_width(imag[0][1])), get_img_width(imag[0][2]));
@@ -876,13 +883,16 @@ void display_rezoomed_img_blend(const image_id, scr_coord_val, scr_coord_val, co
 {
 }
 
+
 void display_rezoomed_img_alpha(const image_id, const image_id, const unsigned, scr_coord_val, scr_coord_val, const sint8, rgba_t, const bool, const bool  CLIP_NUM_DEF_NOUSE)
 {
 }
 
+
 void display_base_img_blend(const image_id, scr_coord_val, scr_coord_val, const sint8, rgba_t, const bool, const bool  CLIP_NUM_DEF_NOUSE)
 {
 }
+
 
 void display_base_img_alpha(const image_id, const image_id, const unsigned, scr_coord_val, scr_coord_val, const sint8, rgba_t, const bool, bool  CLIP_NUM_DEF_NOUSE)
 {
@@ -912,7 +922,7 @@ void display_blend_wh_rgb(scr_coord_val x, scr_coord_val y, scr_coord_val w, scr
     glScissor(clip_rect.x, display_get_height()-clip_rect.y-clip_rect.h, clip_rect.w, clip_rect.h);
 	glEnable(GL_SCISSOR_TEST);
 
-	glBindTexture(GL_TEXTURE_2D, 0);
+	gl_texture_t::bind(0);
 
 	glBegin(GL_QUADS);
 
@@ -934,7 +944,7 @@ void display_fillbox_wh_rgb(scr_coord_val x, scr_coord_val y, scr_coord_val w, s
 {
     // dbg->message("display_fillbox_wh_rgb()", "Called %d,%d,%d,%d color %f,%f,%f,%f", x, y, w, h, color.red, color.green, color.blue, color.alpha);
 
-	glBindTexture(GL_TEXTURE_2D, 0);
+	gl_texture_t::bind(0);
 
 	glBegin(GL_QUADS);
 
@@ -957,7 +967,7 @@ void display_fillbox_wh_clip_rgb(scr_coord_val x, scr_coord_val y, scr_coord_val
     // glScissor(clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h);
 	glEnable(GL_SCISSOR_TEST);
 
-	glBindTexture(GL_TEXTURE_2D, 0);
+	gl_texture_t::bind(0);
 
 	glBegin(GL_QUADS);
 
@@ -973,10 +983,12 @@ void display_fillbox_wh_clip_rgb(scr_coord_val x, scr_coord_val y, scr_coord_val
 	glDisable(GL_SCISSOR_TEST);
 }
 
+
 void display_vline_wh_clip_rgb(scr_coord_val x, scr_coord_val y, scr_coord_val h, rgba_t color, bool dirty CLIP_NUM_DEF_NOUSE)
 {
   display_fillbox_wh_clip_rgb(x, y, 1, h, color, dirty);
 }
+
 
 void display_array_wh(scr_coord_val, scr_coord_val, scr_coord_val, scr_coord_val, const rgb888_t *data)
 {
@@ -1012,6 +1024,7 @@ int display_glyph(scr_coord_val x, scr_coord_val y, utf32 c, control_alignment_t
 void display_ddd_box_rgb(scr_coord_val, scr_coord_val, scr_coord_val, scr_coord_val, rgba_t, rgba_t, bool)
 {
 }
+
 
 void display_ddd_box_clip_rgb(scr_coord_val, scr_coord_val, scr_coord_val, scr_coord_val, rgba_t, rgba_t)
 {
@@ -1089,7 +1102,13 @@ bool simgraph_init(scr_size size, sint16)
 
 	if(window)
 	{
-		display_set_clip_wh(0, 0, size.w, size.h, false);
+        int width, height;
+        glfwGetWindowSize(window, &width, &height);
+
+        display_width = (scr_coord_val)width;
+        display_height = (scr_coord_val)height;
+
+		display_set_clip_wh(0, 0, display_width, display_height, false);
 
 		glfwMakeContextCurrent(window);
 
@@ -1100,7 +1119,7 @@ bool simgraph_init(scr_size size, sint16)
         glfwSetCursorPosCallback(window, sysgl_cursor_pos_callback);
         glfwSetMouseButtonCallback(window, sysgl_mouse_button_callback);
 		glfwSetScrollCallback(window, sysgl_scroll_callback);
-		
+
         // 2D Initialization
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         glEnable(GL_TEXTURE_2D);
