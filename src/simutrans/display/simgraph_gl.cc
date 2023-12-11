@@ -36,8 +36,6 @@ scr_coord_val base_tile_raster_width = 16; // original
 static scr_coord_val display_width;
 static scr_coord_val display_height;
 
-static scr_coord_val raster_size = 64;
-
 static clip_dimension clip_rect;
 static clip_dimension clip_rect_swap;
 static bool swap_active = 0;
@@ -287,11 +285,21 @@ void display_set_player_color_scheme(const int, const uint8, const uint8)
 
 static uint8_t * rgb343to888(const uint16_t c, const uint8_t alpha, uint8_t *tp)
 {
+
     *tp++ = (c >> 2) & 0xE0; // red
     *tp++ = (c << 1) & 0xF0; // green
     *tp++ = (c << 5) & 0xE0; // blue
     *tp++ = alpha;           // alpha
 
+
+/*	
+    *tp++ = 255; // red
+    *tp++ = 255; // green
+    *tp++ = 0; // blue
+    *tp++ = 255;           // alpha
+	
+	dbg->message("rgb343to888", "343 input %x, alpha=%d -> %d %d %d", c, alpha, *(tp-4), *(tp-3), *(tp-2));
+*/
     return tp;
 }
 
@@ -306,27 +314,25 @@ static uint8_t * rgb555to888(const uint16_t c, const uint8_t alpha, uint8_t *tp)
     return tp;
 }
 
+
 /**
  * Copy pixel, replace player color
  */
 static inline void colorpixcopy(uint8_t * dest, const uint16_t * src, const uint16_t * const end)
 {
+	// player color or transparent?
 	if (*src < 0x8020) {
+		// player color, opaque
 		while (src < end) {
-			// *dest++ = rgbmap_current[*src++];
-            uint16_t c = *src ++;
-            dest = rgb555to888(c, 255, dest);
+			dest = rgb555to888(*src++, 255, dest);;
 		}
 	}
 	else {
 		while (src < end) {
 			// a semi-transparent pixel
-			uint16 c   = *src++ - 0x8020;
-			uint16 aux = c - 0x8020;
-
-			uint8_t alpha = (31 - (aux % 31)) << 3;
-            dest = rgb343to888(c & 0x7FF, alpha, dest);
-            // dest = rgb555to888(0x7FF, 255, dest);
+			uint16 aux   = *src++ - 0x8020;
+			uint16 alpha = 32 - ((aux % 31) + 1);
+			dest = rgb343to888(aux, alpha, dest);
 		}
 	}
 }
@@ -341,7 +347,19 @@ static uint8_t * convert(const uint16_t * sp, const uint16_t runlen, uint8_t * t
     while(sp < end)
     {
         uint16_t c = *sp ++;
-        tp = rgb555to888(c, 255, tp);
+		if(c >= 0x8000) 
+		{
+			// dbg->message("covert()", "Found suspicious pixel %x", c);
+			uint32 rgb = image_t::rgbtab[c & 255];
+			*tp ++ = (rgb >> 16) & 0xFF;
+			*tp ++ = (rgb >> 8) & 0xFF;
+			*tp ++ = (rgb >> 0) & 0xFF;
+			*tp ++ = (rgb >> 24) & 0xFF;
+		}
+		else
+		{
+			tp = rgb555to888(c, 255, tp);
+		}
     }
 
     return tp;
@@ -399,7 +417,7 @@ void register_image(image_t * image_in)
 
 	dbg->message("register_image()", "Currently at %d images, converting %dx%d pixels", anz_images, image_in->w, image_in->h);
 
-	uint8_t * rgba_data = (uint8_t *)calloc(image_in->w * image_in->h, 4);
+	uint8_t * rgba_data = (uint8_t *)calloc(image_in->w * image_in->h * 4, 1);
     uint8_t * tp = rgba_data;
     const uint16_t * sp = image_in->data;
     scr_coord_val h = image_in->h;
@@ -503,7 +521,7 @@ void register_image(image_t * image_in)
 		if(gl_current_sheet_x > gl_max_texture_size)
 		{
 			gl_current_sheet_x = 0;
-			gl_current_sheet_y += raster_size;
+			gl_current_sheet_y += base_tile_raster_width;
 
 			dbg->message("register_image()", "Starting texture sheet line %d", gl_current_sheet_y);
 
@@ -639,20 +657,15 @@ void display_scroll_band(const scr_coord_val, const scr_coord_val, const scr_coo
 }
 
 
-void display_img_aux(const image_id id, scr_coord_val x, scr_coord_val y, const sint8 player_nr, const bool, const bool  CLIP_NUM_DEF_NOUSE)
-{
-    display_color_img(id, x, y, player_nr, true, true);
-}
 
-
-static void display_tile_from_sheet(gl_texture_t * gltex, int x, int y,
+static void display_tile_from_sheet(const gl_texture_t * gltex, int x, int y, int w, int h,
                                     int tile_x, int tile_y, int tile_w, int tile_h)
 {
     // texture coordinates in fractions of sheet size
-    float left = tile_x / (float)gltex->width;
-    float top = tile_y / (float)gltex->height;
-    float gw = tile_w  / (float)gltex->width;
-    float gh = tile_h / (float)gltex->height;
+    const float left = tile_x / (float)gltex->width;
+    const float top = tile_y / (float)gltex->height;
+    const float gw = tile_w  / (float)gltex->width;
+    const float gh = tile_h / (float)gltex->height;
 
     gl_texture_t::bind(gltex->tex_id);
 
@@ -661,14 +674,14 @@ static void display_tile_from_sheet(gl_texture_t * gltex, int x, int y,
     glTexCoord2f(left, top);
 	glVertex2i(x, y);
 
-    glTexCoord2f(left+gw, top);
-	glVertex2i(x+tile_w, y);
+    glTexCoord2f(left + gw, top);
+	glVertex2i(x + w, y);
 
-    glTexCoord2f(left+gw, top+gh);
-	glVertex2i(x+tile_w, y+tile_h);
+    glTexCoord2f(left + gw, top + gh);
+	glVertex2i(x + w, y + h);
 
-    glTexCoord2f(left, top+gh);
-	glVertex2i(x, y+tile_h);
+    glTexCoord2f(left, top + gh);
+	glVertex2i(x, y + h);
 
 	glEnd();
 }
@@ -681,7 +694,7 @@ static void display_box_wh(int x, int y, int w, int h, rgba_t color)
 }
 
 
-void display_color_img(const image_id id, scr_coord_val x, scr_coord_val y, const sint8 player_nr, const bool, const bool  CLIP_NUM_DEF_NOUSE)
+void display_color_img(const image_id id, scr_coord_val x, scr_coord_val y, const sint8 player_nr, scr_coord_val w, scr_coord_val h)
 {
 	if(id < anz_images)
 	{
@@ -697,9 +710,12 @@ void display_color_img(const image_id id, scr_coord_val x, scr_coord_val y, cons
 		x += imd.base_x;
 		y += imd.base_y;
 
+		w = (w == 0) ? imd.base_w : w;
+		h = (h == 0) ? imd.base_h : h;
+		
 		glColor4f(1, 1, 1, 1);
 
-		display_tile_from_sheet(imd.texture, x, y,
+		display_tile_from_sheet(imd.texture, x, y, w, h,
 								imd.sheet_x, imd.sheet_y, imd.base_w, imd.base_h);
 
 		glDisable(GL_SCISSOR_TEST);
@@ -709,12 +725,7 @@ void display_color_img(const image_id id, scr_coord_val x, scr_coord_val y, cons
 
 void display_base_img(const image_id id, scr_coord_val x, scr_coord_val y, const sint8 player_nr, const bool, const bool  CLIP_NUM_DEF_NOUSE)
 {
-    display_color_img(id, x, y, player_nr, true, true);
-}
-
-
-void display_fit_img_to_width( const image_id, sint16)
-{
+    display_color_img(id, x, y, player_nr);
 }
 
 
@@ -726,7 +737,7 @@ static void display_three_image_row( image_id i1, image_id i2, image_id i3, scr_
 
 	if(  i1!=IMG_EMPTY  ) {
 		scr_coord_val w = images[i1].w;
-		display_color_img( i1, row.x, row.y, 0, false, true  CLIP_NUM_DEFAULT);
+		display_color_img(i1, row.x, row.y, 0);
 		row.x += w;
 		row.w -= w;
 	}
@@ -735,19 +746,19 @@ static void display_three_image_row( image_id i1, image_id i2, image_id i3, scr_
 		scr_coord_val w = images[i2].w;
 		// tile it wide
 		while(  w <= row.w  ) {
-			display_color_img( i2, row.x, row.y, 0, false, true  CLIP_NUM_DEFAULT);
+			display_color_img(i2, row.x, row.y, 0);
 			row.x += w;
 			row.w -= w;
 		}
 		// for the rest we have to clip the rectangle
 		if(  row.w > 0  ) {
-			display_color_img( i2, row.x, row.y, 0, false, true  CLIP_NUM_DEFAULT);
+			display_color_img(i2, row.x, row.y, 0);
 		}
 	}
 	// right
 	if(  i3!=IMG_EMPTY  ) {
 		scr_coord_val w = images[i3].w;
-		display_color_img( i3, row.get_right()-w, row.y, 0, false, true  CLIP_NUM_DEFAULT);
+		display_color_img(i3, row.get_right()-w, row.y, 0);
 		row.w -= w;
 	}
 }
@@ -777,9 +788,6 @@ static void display_img_stretch_intern( const stretch_map_t &imag, scr_rect area
 {
 	clip_dimension clip = display_get_clip_wh();
  	display_set_clip_wh(area.x, area.y, area.w, area.h, false);
- 	// display_set_clip_wh(area.x, area.y-100, area.w, 1000, false);
-
-	// display_fillbox_wh_rgb(area.x, area.y, area.w, area.h, RGBA_WHITE, true);
 
 // 	dbg->message("display_set_clip_wh", "%d %d %d %d", area.x, area.y, area.w, area.h);
 
@@ -926,8 +934,7 @@ void display_blend_wh_rgb(scr_coord_val x, scr_coord_val y, scr_coord_val w, scr
 
 	glBegin(GL_QUADS);
 
-	// glColor4f(color.red, color.green, color.blue, color.alpha);
-    glColor4f(0, 0, 1, 1);
+	glColor4f(color.red, color.green, color.blue, color.alpha);
 
 	glVertex2i(x, y);
 	glVertex2i(x+w, y);
@@ -995,7 +1002,7 @@ void display_array_wh(scr_coord_val, scr_coord_val, scr_coord_val, scr_coord_val
 }
 
 
-int display_glyph(scr_coord_val x, scr_coord_val y, utf32 c, control_alignment_t flags, rgba_t color, const font_t * font  CLIP_NUM_DEF_NOUSE)
+int display_glyph(scr_coord_val x, scr_coord_val y, utf32 c, rgba_t color, const font_t * font  CLIP_NUM_DEF_NOUSE)
 {
     const scr_coord_val w = font->get_glyph_width(c);
     const scr_coord_val h = font->get_glyph_height(c);
@@ -1013,7 +1020,7 @@ int display_glyph(scr_coord_val x, scr_coord_val y, utf32 c, control_alignment_t
 
 	glColor4f(color.red, color.green, color.blue, color.alpha);
 
-    display_tile_from_sheet(font->glyph_sheet, x, gy, glyph_x, glyph_y, w, h);
+    display_tile_from_sheet(font->glyph_sheet, x, gy, w, h, glyph_x, glyph_y, w, h);
 
     glDisable(GL_SCISSOR_TEST);
 
@@ -1044,7 +1051,7 @@ void display_flush_buffer()
         int x = (i % 10) * 64;
         int y = (i / 10) * 64;
 
-        display_color_img(i, x, y, 0, true, true);
+        display_color_img(i, x, y, 0);
     }
 */
 
@@ -1237,7 +1244,7 @@ void display_img_aligned(const image_id n, scr_rect area, int align, sint8 playe
 			y = area.get_bottom() - images[n].y - images[n].h;
 		}
 
-		display_color_img(n, x, y, player_nr, false, dirty  CLIP_NUM_DEFAULT);
+		display_color_img(n, x, y, player_nr);
 	}
 }
 

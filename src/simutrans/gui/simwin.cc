@@ -409,7 +409,7 @@ static void win_draw_window_dragger(scr_coord pos, scr_size size)
 	pos += size;
 	if(  skinverwaltung_t::gadget  &&  skinverwaltung_t::gadget->get_image_id(SKIN_WINDOW_RESIZE)!=IMG_EMPTY  ) {
 		const image_t *dragger = skinverwaltung_t::gadget->get_image(SKIN_WINDOW_RESIZE);
-		display_color_img( dragger->get_id(), pos.x-dragger->get_pic()->w, pos.y-dragger->get_pic()->h, 0, false, false);
+		display_color_img(dragger->get_id(), pos.x-dragger->get_pic()->w, pos.y-dragger->get_pic()->h, 0);
 	}
 	else {
 		int dragger_size = min(D_DRAGGER_WIDTH, D_DRAGGER_HEIGHT);
@@ -1865,14 +1865,15 @@ void win_display_flush(double konto)
 
 	if(  skinverwaltung_t::toolbar_background  &&  skinverwaltung_t::toolbar_background->get_image_id(0) != IMG_EMPTY  ) {
 		const image_id back_img = skinverwaltung_t::toolbar_background->get_image_id(0);
-		display_fit_img_to_width( back_img, env_t::iconsize.w );
 
-		stretch_map_t imag = { {IMG_EMPTY, IMG_EMPTY, IMG_EMPTY}, {IMG_EMPTY, back_img, IMG_EMPTY}, {IMG_EMPTY, IMG_EMPTY, IMG_EMPTY} };
-		display_img_stretch(imag, scr_rect(menu_pos, menu_size), RGBA_BLACK);
+		for(scr_coord_val xp=0; xp < menu_size.w; xp += env_t::iconsize.w) {
+			display_color_img(back_img, menu_pos.x+xp, menu_pos.y, 0, env_t::iconsize.w, env_t::iconsize.w);
+		}
 	}
 	else {
 		display_fillbox_wh_rgb( menu_pos.x, menu_pos.y, menu_size.w, menu_size.h, color_idx_to_rgb(MN_GREY2), false );
 	}
+	
 	// .. extra logic to enable tooltips
 	tooltip_element = main_menu->is_hit( get_mouse_pos().x-menu_pos.x, get_mouse_pos().y-menu_pos.y) ? main_menu : NULL;
 	void *old_inside_event_handling = inside_event_handling;
@@ -1965,7 +1966,7 @@ void win_display_flush(double konto)
 	}
 
 	// season color
-	display_color_img( skinverwaltung_t::seasons_icons->get_image_id(wl->get_season()), 2, status_bar_icon_y, 0, false, true );
+	display_color_img(skinverwaltung_t::seasons_icons->get_image_id(wl->get_season()), 2, status_bar_icon_y, 0);
 	if(  tooltip_check  &&  tooltip_xpos<14  ) {
 		static char const* const seasons[] = { "q2", "q3", "q4", "q1" };
 		tooltip_text = translator::translate(seasons[wl->get_season()]);
@@ -1977,7 +1978,7 @@ void win_display_flush(double konto)
 	// shown if timeline game
 	if(  wl->use_timeline()  &&  skinverwaltung_t::timelinesymbol  ) {
 		right_border -= 14;
-		display_color_img( skinverwaltung_t::timelinesymbol->get_image_id(0), right_border, status_bar_icon_y, 0, false, true );
+		display_color_img(skinverwaltung_t::timelinesymbol->get_image_id(0), right_border, status_bar_icon_y, 0);
 		if(  tooltip_check  &&  tooltip_xpos>=right_border  ) {
 			tooltip_text = translator::translate("timeline");
 			tooltip_check = false;
@@ -1987,7 +1988,7 @@ void win_display_flush(double konto)
 	// shown if connected
 	if(  env_t::networkmode  &&  skinverwaltung_t::networksymbol  ) {
 		right_border -= 14;
-		display_color_img( skinverwaltung_t::networksymbol->get_image_id(0), right_border, status_bar_icon_y, 0, false, true );
+		display_color_img(skinverwaltung_t::networksymbol->get_image_id(0), right_border, status_bar_icon_y, 0);
 		if(  tooltip_check  &&  tooltip_xpos>=right_border  ) {
 			tooltip_text = translator::translate("Connected with server");
 			tooltip_check = false;
@@ -1997,7 +1998,7 @@ void win_display_flush(double konto)
 	// put pause icon
 	if(  wl->is_paused()  &&  skinverwaltung_t::pausesymbol  ) {
 		right_border -= 14;
-		display_color_img( skinverwaltung_t::pausesymbol->get_image_id(0), right_border, status_bar_icon_y, 0, false, true );
+		display_color_img(skinverwaltung_t::pausesymbol->get_image_id(0), right_border, status_bar_icon_y, 0);
 		if(  tooltip_check  &&  tooltip_xpos>=right_border  ) {
 			tooltip_text = translator::translate("GAME PAUSED");
 			tooltip_check = false;
@@ -2007,7 +2008,7 @@ void win_display_flush(double konto)
 	// put fast forward icon
 	if(  wl->is_fast_forward()  &&  skinverwaltung_t::fastforwardsymbol  ) {
 		right_border -= 14;
-		display_color_img( skinverwaltung_t::fastforwardsymbol->get_image_id(0), right_border, status_bar_icon_y, 0, false, true );
+		display_color_img(skinverwaltung_t::fastforwardsymbol->get_image_id(0), right_border, status_bar_icon_y, 0);
 		if(  tooltip_check  &&  tooltip_xpos>=right_border  ) {
 			tooltip_text = translator::translate("Fast forward");
 			tooltip_check = false;

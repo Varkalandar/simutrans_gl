@@ -76,8 +76,6 @@ bool world_view_t::infowin_event(const event_t* ev)
 
 void world_view_t::internal_draw(const scr_coord offset, obj_t const* const obj)
 {
-	display_set_image_proc(false);
-
 	const koord3d here3d    = get_location();
 	const koord   here      = here3d.get_2d();
 	scr_coord     fine_here = scr_coord(0, 0);

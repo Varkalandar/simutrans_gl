@@ -53,10 +53,10 @@ void loadingscreen_t::display_logo()
 			y = 1;
 		}
 
-		display_color_img(skinverwaltung_t::biglogosymbol->get_image_id(0), x, y, 0, false, true);
-		display_color_img(skinverwaltung_t::biglogosymbol->get_image_id(1), x+w, y, 0, false, true);
-		display_color_img(skinverwaltung_t::biglogosymbol->get_image_id(2), x, y+h, 0, false, true);
-		display_color_img(skinverwaltung_t::biglogosymbol->get_image_id(3), x+w, y+h, 0, false, true);
+		display_color_img(skinverwaltung_t::biglogosymbol->get_image_id(0), x, y, 0);
+		display_color_img(skinverwaltung_t::biglogosymbol->get_image_id(1), x+w, y, 0);
+		display_color_img(skinverwaltung_t::biglogosymbol->get_image_id(2), x, y+h, 0);
+		display_color_img(skinverwaltung_t::biglogosymbol->get_image_id(3), x+w, y+h, 0);
 	}
 }
 

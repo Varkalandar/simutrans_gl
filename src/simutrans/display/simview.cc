@@ -51,7 +51,6 @@ void main_view_t::display(bool force_dirty)
 
 #if COLOUR_DEPTH != 0
 	DBG_DEBUG4("main_view_t::display", "starting ...");
-	display_set_image_proc(true);
 
 	const sint16 disp_width = display_get_width();
 	const sint16 disp_real_height = display_get_height();

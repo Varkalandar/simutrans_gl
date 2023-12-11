@@ -329,8 +329,8 @@ void tool_selector_t::draw(scr_coord pos, scr_size sz)
 		if(  toolbar_id>0  &&  !(strstart((param==NULL)? "" : param, "-b"))  ) {
 			if(  skinverwaltung_t::toolbar_background  &&  skinverwaltung_t::toolbar_background->get_image_id(toolbar_id) != IMG_EMPTY  ) {
 				const image_id back_img = skinverwaltung_t::toolbar_background->get_image_id(toolbar_id);
-				display_fit_img_to_width( back_img, env_t::iconsize.w );
-				display_color_img( back_img, draw_pos.x, draw_pos.y, welt->get_active_player_nr(), false, true );
+
+				display_color_img(back_img, draw_pos.x, draw_pos.y, welt->get_active_player_nr(), env_t::iconsize.w, env_t::iconsize.w);
 			}
 			else {
 				display_fillbox_wh_clip_rgb( draw_pos.x, draw_pos.y, env_t::iconsize.w, env_t::iconsize.h, color_idx_to_rgb(MN_GREY2), false );
@@ -340,8 +340,8 @@ void tool_selector_t::draw(scr_coord pos, scr_size sz)
 		// if there's no image we simply skip, button will be transparent showing toolbar background
 		if(  icon_img != IMG_EMPTY  ) {
 			bool tool_dirty = dirty  ||  (tools[i].tool->is_selected() ^ tools[i].selected);
-			display_fit_img_to_width( icon_img, env_t::iconsize.w );
-			display_color_img(icon_img, draw_pos.x, draw_pos.y, player->get_player_nr(), false, tool_dirty);
+
+			display_color_img(icon_img, draw_pos.x, draw_pos.y, player->get_player_nr(), env_t::iconsize.w, env_t::iconsize.w);
 			tools[i].tool->draw_after( draw_pos, tool_dirty);
 			// store whether tool was selected
 			tools[i].selected = tools[i].tool->is_selected();
@@ -357,16 +357,16 @@ void tool_selector_t::draw(scr_coord pos, scr_size sz)
 	}
 
 	if(  offset.x != 0  &&  tool_icon_disp_start > 0  ) {
-		display_color_img(gui_theme_t::arrow_button_left_img[0], pos.x, pos.y + D_TITLEBAR_HEIGHT, 0, false, false);
+		display_color_img(gui_theme_t::arrow_button_left_img[0], pos.x, pos.y + D_TITLEBAR_HEIGHT, 0);
 	}
 	if(  offset.y != 0  &&  tool_icon_disp_start > 0  ) {
-		display_color_img(gui_theme_t::arrow_button_up_img[0], pos.x, pos.y + D_TITLEBAR_HEIGHT, 0, false, false);
+		display_color_img(gui_theme_t::arrow_button_up_img[0], pos.x, pos.y + D_TITLEBAR_HEIGHT, 0);
 	}
 	if(  tool_icon_height == 1  &&  (tool_icon_disp_start+tool_icon_width < tools.get_count()  ||  (-offset.x) < env_t::iconsize.w*tool_icon_width-get_windowsize().w)  ) {
-		display_color_img( gui_theme_t::arrow_button_right_img[0], pos.x+sz.w-D_ARROW_UP_WIDTH, pos.y+D_TITLEBAR_HEIGHT, 0, false, false );
+		display_color_img(gui_theme_t::arrow_button_right_img[0], pos.x+sz.w-D_ARROW_UP_WIDTH, pos.y+D_TITLEBAR_HEIGHT, 0);
 	}
 	if(  tool_icon_width == 1  &&  (tool_icon_disp_start+tool_icon_height < tools.get_count()  ||  (-offset.y) < env_t::iconsize.h*tool_icon_height-get_windowsize().h)  ) {
-		display_color_img(gui_theme_t::arrow_button_down_img[0], pos.x+sz.w-D_ARROW_DOWN_WIDTH, pos.y+D_TITLEBAR_HEIGHT+sz.h-D_ARROW_DOWN_HEIGHT, 0, false, false);
+		display_color_img(gui_theme_t::arrow_button_down_img[0], pos.x+sz.w-D_ARROW_DOWN_WIDTH, pos.y+D_TITLEBAR_HEIGHT+sz.h-D_ARROW_DOWN_HEIGHT, 0);
 	}
 
 	if(  !is_dragging  ) {

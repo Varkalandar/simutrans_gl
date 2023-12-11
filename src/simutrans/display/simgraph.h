@@ -127,9 +127,6 @@ scr_coord_val display_get_height();
 void display_set_height(scr_coord_val);
 void display_set_actual_width(scr_coord_val);
 
-// force a certain size on a image (for rescaling tool images)
-void display_fit_img_to_width( const image_id n, sint16 new_w );
-
 void display_day_night_shift(int night);
 
 // scrolls horizontally, will ignore clipping etc.
@@ -158,7 +155,7 @@ void display_rezoomed_img_alpha(const image_id n, const image_id alpha_n, const 
 #define display_img_alpha( n, a, f, x, y, c, dn, d ) display_rezoomed_img_alpha( (n), (a), (f), (x), (y), 0, (c), (dn), (d)  CLIP_NUM_DEFAULT)
 
 // display image with color (if there) and optional day and night change
-void display_color_img(const image_id n, scr_coord_val xp, scr_coord_val yp, const signed char player_nr, const bool daynight, const bool dirty  CLIP_NUM_DEF CLIP_NUM_DEFAULT_ZERO);
+void display_color_img(const image_id n, scr_coord_val xp, scr_coord_val yp, const signed char player_nr, scr_coord_val w=0, scr_coord_val h=0);
 
 // display unzoomed image
 void display_base_img(const image_id n, scr_coord_val xp, scr_coord_val yp, const signed char player_nr, const bool daynight, const bool dirty  CLIP_NUM_DEF CLIP_NUM_DEFAULT_ZERO);
@@ -191,24 +188,6 @@ extern signed short current_tile_raster_width;
 // call this instead of referring to current_tile_raster_width directly
 #define get_current_tile_raster_width() (current_tile_raster_width)
 
-// for switching between image procedure sets and setting current tile raster width
-inline void display_set_image_proc( bool is_global )
-{
-	if(  is_global  ) {
-		display_normal = display_img_aux;
-		display_color = display_color_img;
-		display_blend = display_rezoomed_img_blend;
-		display_alpha = display_rezoomed_img_alpha;
-		current_tile_raster_width = get_tile_raster_width();
-	}
-	else {
-		display_normal = display_base_img;
-		display_color = display_base_img;
-		display_blend = display_base_img_blend;
-		display_alpha = display_base_img_alpha;
-		current_tile_raster_width = get_base_tile_raster_width();
-	}
-}
 
 // Blends two colors
 rgba_t display_blend_colors(rgba_t background, rgba_t foreground, float blend);
@@ -237,7 +216,7 @@ void display_ddd_box_clip_rgb(scr_coord_val x1, scr_coord_val y1, scr_coord_val 
 
 
 // #ifdef MULTI_THREAD
-int display_glyph(scr_coord_val x, scr_coord_val y, utf32 c, control_alignment_t flags, rgba_t default_color, const font_t * font  CLIP_NUM_DEF  CLIP_NUM_DEFAULT_ZERO);
+int display_glyph(scr_coord_val x, scr_coord_val y, utf32 c, rgba_t default_color, const font_t * font  CLIP_NUM_DEF  CLIP_NUM_DEFAULT_ZERO);
 
 
 // line drawing primitives

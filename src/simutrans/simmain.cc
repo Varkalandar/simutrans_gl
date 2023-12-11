@@ -154,21 +154,21 @@ static void show_times(karte_t *welt, main_view_t *view)
 
 	uint32 ms = dr_time();
 	for (i = 0;  i < 6000000;  i++) {
-		display_img_aux( img, 50, 50, 1, 0, true  CLIP_NUM_DEFAULT);
+		display_color_img(img, 50, 50, 1);
 	}
 	dbg->message( "display_img()", "%i iterations took %li ms", i, dr_time() - ms );
 
 	image_id player_img = skinverwaltung_t::color_options->get_image_id(0);
 	ms = dr_time();
 	for (i = 0;  i < 1000000;  i++) {
-		display_color_img( player_img, 120, 100, i%15, 0, 1);
+		display_color_img(player_img, 120, 100, i%15);
 	}
 	dbg->message( "display_color_img() with recolor", "%i iterations took %li ms", i, dr_time() - ms );
 
 	ms = dr_time();
 	for (i = 0;  i < 1000000;  i++) {
-		display_color_img( img, 120, 100, 0, 1, 1);
-		display_color_img( player_img, 160, 150, 16, 1, 1);
+		display_color_img(img, 120, 100, 0);
+		display_color_img(player_img, 160, 150, 16);
 	}
 	dbg->message( "display_color_img()", "3x %i iterations took %li ms", i, dr_time() - ms );
 

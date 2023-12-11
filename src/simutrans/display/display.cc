@@ -118,7 +118,7 @@ int display_text_proportional_len_clip_rgb(scr_coord_val x, scr_coord_val y,
 			continue; // nothing to see
 		}
 
-		const int gw = display_glyph(x, y, c, flags, color, font);
+		const int gw = display_glyph(x, y, c, color, font);
 		x += gw + spacing;
 	}
 

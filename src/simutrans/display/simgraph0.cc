@@ -159,11 +159,7 @@ void display_scroll_band(const scr_coord_val, const scr_coord_val, const scr_coo
 {
 }
 
-void display_img_aux(const image_id, scr_coord_val, scr_coord_val, const sint8, const bool, const bool  CLIP_NUM_DEF_NOUSE)
-{
-}
-
-void display_color_img(const image_id, scr_coord_val, scr_coord_val, const sint8, const bool, const bool  CLIP_NUM_DEF_NOUSE)
+void display_color_img(const image_id, scr_coord_val, scr_coord_val, const sint8, scr_coord_val, scr_coord_val)
 {
 }
 
@@ -235,7 +231,7 @@ void display_array_wh(scr_coord_val, scr_coord_val, scr_coord_val, scr_coord_val
 {
 }
 
-int display_glyph(scr_coord_val x, scr_coord_val y, utf32 c, control_alignment_t flags, rgba_t default_color, const font_t * font  CLIP_NUM_DEF_NOUSE)
+int display_glyph(scr_coord_val x, scr_coord_val y, utf32 c, rgba_t, const font_t * font)
 {
 	return 0;
 }

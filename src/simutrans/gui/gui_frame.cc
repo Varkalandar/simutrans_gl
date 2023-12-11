@@ -185,16 +185,10 @@ void gui_frame_t::draw(scr_coord pos, scr_size size)
 	// draw background
 	if(  opaque  ) {
 		display_img_stretch(gui_theme_t::windowback, scr_rect( pos + titlebar_size, size - titlebar_size ), RGBA_WHITE);
-        display_fillbox_wh_rgb(pos.x, pos.y, size.w, size.h, rgba_t(0.5f, 0.5f, 0.5f, 0.5f), true);
-
-		if(  dirty  ) {
-			mark_rect_dirty_wc(pos.x, pos.y, pos.x + size.w, pos.y + titlebar_size.h );
-		}
+        // display_fillbox_wh_rgb(pos.x, pos.y, size.w, size.h, rgba_t(0.5f, 0.5f, 0.5f, 0.5f), true);
 	}
 	else {
-		if(  dirty  ) {
-			mark_rect_dirty_wc(pos.x, pos.y, pos.x + size.w, pos.y + size.h + titlebar_size.h );
-		}
+		dbg->message("Beep!", "Beep!");
 		display_blend_wh_rgb(pos.x+1, pos.y+titlebar_size.h, size.w-2, size.h-titlebar_size.h, color_transparent);
 	}
 	dirty = false;
