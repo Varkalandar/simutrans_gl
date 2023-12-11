@@ -387,7 +387,7 @@ void pakselector_t::list_filled(void)
 
 void pakselector_t::draw(scr_coord pos, scr_size size)
 {
-    dbg->message("pakselector_t::draw()", "Called, pos=%d, %d", pos.x, pos.y);
+    // dbg->message("pakselector_t::draw()", "Called, pos=%d, %d", pos.x, pos.y);
 
 	const rgba_t background = get_system_color({64, 64, 64});
 	display_fillbox_wh_rgb(0, 0, display_get_width(), display_get_height(), background, true);

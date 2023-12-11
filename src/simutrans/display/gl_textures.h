@@ -8,14 +8,19 @@ public:
     uint32_t tex_id;
     uint32_t width;
     uint32_t height;
+    uint8_t  *data;
 
-    gl_texture_t(uint32_t id, uint32_t w, uint32_t h) {
+    gl_texture_t(uint32_t id, uint32_t w, uint32_t h, uint8_t * data) {
         tex_id = id;
         width = w;
         height = h;
+        this->data = data;
     }
 
     static gl_texture_t * create_texture(int width, int height, uint8_t * data);
+
+    void update_texture(uint8_t * data);
+    void update_region(int x, int y, int w, int h, uint8_t *data);
 };
 
 #endif

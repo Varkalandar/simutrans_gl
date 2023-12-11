@@ -181,13 +181,13 @@ static void show_times(karte_t *welt, main_view_t *view)
 
 	ms = dr_time();
 	for (i = 0;  i < 300000;  i++) {
-		display_text_proportional_len_clip_rgb(100, 120, "Dies ist ein kurzer Textetxt ...", 0, 0, false, -1, 0, 0);
+		display_text_proportional_len_clip_rgb(100, 120, "Dies ist ein kurzer Textetxt ...", 0, RGBA_WHITE, false, -1, 0, FS_NORMAL);
 	}
 	dbg->message( "display_text_proportional_len_clip_rgb()", "%i iterations took %li ms", i, dr_time() - ms );
 
 	ms = dr_time();
 	for (i = 0;  i < 300000;  i++) {
-		display_fillbox_wh_rgb(100, 120, 300, 50, 0, false);
+		display_fillbox_wh_rgb(100, 120, 300, 50, RGBA_BLACK, false);
 	}
 	dbg->message( "display_fillbox_wh_rgb()", "%i iterations took %li ms", i, dr_time() - ms );
 

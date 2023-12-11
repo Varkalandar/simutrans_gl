@@ -19,22 +19,22 @@
 
 
 static GLFWwindow* window;
+static GLint gl_max_texture_size;
+static GLint gl_currently_bound_tex_id;
+
+static gl_texture_t * gl_texture_sheets[64];
+static int gl_current_sheet;
+static int gl_current_sheet_x;
+static int gl_current_sheet_y;
+
 
 scr_coord_val tile_raster_width = 16; // zoomed
 scr_coord_val base_tile_raster_width = 16; // original
 
-#define MAX_POLY_CLIPS 6
 
-MSVC_ALIGN(64) struct clipping_info_t {
-	// current clipping rectangle
-	clip_dimension clip_rect;
-	// clipping rectangle to be swapped by display_clip_wh_toggle
-	clip_dimension clip_rect_swap;
-	bool swap_active;
-} GCC_ALIGN(64); // aligned to separate cachelines
-
-clipping_info_t clips;
-#define CR clips CLIP_NUM_INDEX
+static clip_dimension clip_rect;
+static clip_dimension clip_rect_swap;
+static bool swap_active = 0;
 
 #define TRANSPARENT_RUN (0x8000u)
 
@@ -58,6 +58,8 @@ struct imd_t {
 	sint16 base_h; // height
 
 	gl_texture_t * texture;
+	sint16 sheet_x;
+	sint16 sheet_y;
 
 	uint8_t * base_data; // original image data
 };
@@ -77,6 +79,9 @@ static image_id anz_images = 0;
  * (>= anz_images)
  */
 static image_id alloc_images = 0;
+
+
+static scr_coord_val raster_size = 64;
 
 
 // things to get rid off
@@ -192,10 +197,20 @@ void env_t_rgb_to_system_colors()
 {
 }
 
-scr_coord_val display_set_base_raster_width(scr_coord_val)
+
+/** 
+ * changes the raster width after loading 
+ */
+scr_coord_val display_set_base_raster_width(scr_coord_val new_raster)
 {
-	return 0;
+	scr_coord_val old = base_tile_raster_width;
+	
+	base_tile_raster_width = new_raster;
+	tile_raster_width = new_raster;
+	
+	return old;
 }
+
 
 void set_zoom_factor(int)
 {
@@ -258,6 +273,17 @@ void display_set_player_color_scheme(const int, const uint8, const uint8)
 }
 
 
+static uint8_t * rgb343to888(const uint16_t c, const uint8_t alpha, uint8_t *tp)
+{
+    *tp++ = (c >> 2) & 0xE0; // red
+    *tp++ = (c << 1) & 0xF0; // green
+    *tp++ = (c << 5) & 0xE0; // blue
+    *tp++ = alpha;           // alpha
+
+    return tp;
+}
+
+
 static uint8_t * rgb555to888(const uint16_t c, const uint8_t alpha, uint8_t *tp)
 {
     *tp++ = (c >> 7) & 0xF8; // red
@@ -287,7 +313,7 @@ static inline void colorpixcopy(uint8_t * dest, const uint16_t * src, const uint
 			uint16 aux = c - 0x8020;
 
 			uint8_t alpha = (31 - (aux % 31)) << 3;
-            dest = rgb555to888(c & 0x7FF, alpha, dest);
+            dest = rgb343to888(c & 0x7FF, alpha, dest);
             // dest = rgb555to888(0x7FF, 255, dest);
 		}
 	}
@@ -310,6 +336,26 @@ static uint8_t * convert(const uint16_t * sp, const uint16_t runlen, uint8_t * t
 }
 
 
+static void copy_into_texture_sheet(imd_t * image, uint8_t * tex, int scanline)
+{
+    for(int y=0; y<image->base_h; y++)
+    {
+        for(int x=0; x<image->base_w; x++)
+        {
+            uint8_t * src = image->base_data + y*image->base_w * 4 + x * 4;
+            uint8_t * dst = tex +
+                            (gl_current_sheet_y+y) * scanline * 4+
+                            (gl_current_sheet_x+x) * 4;
+            // rgba
+            *dst++ = *src++;
+            *dst++ = *src++;
+            *dst++ = *src++;
+            *dst = *src;
+        }
+    }
+}
+
+
 void register_image(image_t * image_in)
 {
 	struct imd_t *image;
@@ -320,8 +366,6 @@ void register_image(image_t * image_in)
 		image_in->imageid = IMG_EMPTY;
 		return;
 	}
-
-    dbg->message("register_image()", "Currently at %d images", anz_images);
 
 	if(anz_images == alloc_images) {
 		if(images==NULL) {
@@ -341,18 +385,12 @@ void register_image(image_t * image_in)
 	image = &images[anz_images];
 	anz_images++;
 
-	image->x = image_in->x;
-	image->w = image_in->w;
-	image->y = image_in->y;
-	image->h = image_in->h;
-
-	dbg->message("register_image()", "Converting %dx%d pixels", image_in->w, image_in->h);
+	dbg->message("register_image()", "Currently at %d images, converting %dx%d pixels", anz_images, image_in->w, image_in->h);
 
 	uint8_t * rgba_data = (uint8_t *)calloc(image_in->w * image_in->h, 4);
     uint8_t * tp = rgba_data;
     const uint16_t * sp = image_in->data;
     scr_coord_val h = image_in->h;
-    uint16_t runlen;
 
     do { // line decoder
         uint16_t runlen = *sp++;
@@ -361,7 +399,7 @@ void register_image(image_t * image_in)
         // one line decoder
         do {
             // we start with a clear run
-            p += (runlen & ~TRANSPARENT_RUN);
+            p += (runlen & ~TRANSPARENT_RUN) * 4;
 
 //            dbg->message("register_image()", "Converting %d transparent pixels", runlen);
 
@@ -406,16 +444,71 @@ void register_image(image_t * image_in)
 */
 
 	image->len = image_in->len;
-
+	image->x = image_in->x;
+	image->y = image_in->y;
+	image->w = image_in->w;
+	image->h = image_in->h;
 	image->base_x = image_in->x;
-	image->base_w = image_in->w;
 	image->base_y = image_in->y;
+	image->base_w = image_in->w;
 	image->base_h = image_in->h;
-
-    image->texture = gl_texture_t::create_texture(image_in->w, image_in->h, rgba_data);
-
 	image->base_data = rgba_data;
+
+	// loading images messes with the textures. Drawing needs to bind freshly.
+	gl_currently_bound_tex_id = 0;
+	
+	// is this an oversized image?
+	if(image->base_w > tile_raster_width || image->base_h > tile_raster_width)
+	{
+		// yes, give it a texture of its own
+		image->texture = gl_texture_t::create_texture(image->base_w, image->base_h, image->base_data);
+		image->sheet_x = 0;
+		image->sheet_y = 0;
+	}
+	else
+	{
+		// do we need to start a new  sheet?
+		if(gl_texture_sheets[gl_current_sheet] == 0)
+		{
+			dbg->message("register_image()", "Starting texture sheet #%d", gl_current_sheet);
+			gl_current_sheet_x = 0;
+			gl_current_sheet_y = 0;
+
+			gl_texture_sheets[gl_current_sheet] =
+				gl_texture_t::create_texture(gl_max_texture_size, gl_max_texture_size,
+											 (uint8_t *)calloc(gl_max_texture_size * gl_max_texture_size * 4, 1));
+		}
+
+		image->sheet_x = gl_current_sheet_x;
+		image->sheet_y = gl_current_sheet_y;
+		image->texture = gl_texture_sheets[gl_current_sheet];
+
+		copy_into_texture_sheet(image, image->texture->data, gl_max_texture_size);	
+		image->texture->update_region(image->sheet_x, image->sheet_y, image->base_w, image->base_h, image->base_data);
+
+		// advance in row
+		gl_current_sheet_x += image->base_w;
+		// dbg->message("register_image()", "Advancing in sheet line to x=%d", gl_current_sheet_x);
+
+		// do we need to start a new row?
+		if(gl_current_sheet_x > gl_max_texture_size)
+		{
+			gl_current_sheet_x = 0;
+			gl_current_sheet_y += raster_size;
+
+			dbg->message("register_image()", "Starting texture sheet line %d", gl_current_sheet_y);
+
+			// time to start a new sheet?
+			if(gl_current_sheet_y >= gl_max_texture_size)
+			{
+				gl_current_sheet_y = 0;
+				gl_current_sheet ++;
+			}
+		}
+	}
+    // image->texture = gl_texture_t::create_texture(image_in->w, image_in->h, rgba_data);
 }
+
 
 bool display_snapshot(const scr_rect &)
 {
@@ -447,51 +540,87 @@ void display_get_base_image_offset(image_id image, scr_coord_val *xoff, scr_coor
 }
 
 
-clip_dimension display_get_clip_wh(CLIP_NUM_DEF_NOUSE0)
+/**
+ * Clips interval [x,x+w] such that left <= x and x+w <= right.
+ * If @p w is negative, it stays negative.
+ * @returns difference between old and new value of @p x.
+ */
+inline int clip_intv(scr_coord_val &x, scr_coord_val &w, const scr_coord_val left, const scr_coord_val right)
 {
-	return CR.clip_rect;
+	scr_coord_val xx = min(x+w, right);
+	scr_coord_val xoff = left - x;
+	if (xoff > 0) { // equivalent to x < left
+		x = left;
+	}
+	else {
+		xoff = 0;
+	}
+	w = xx - x;
+	return xoff;
 }
 
 
-void display_set_clip_wh(scr_coord_val x, scr_coord_val y, scr_coord_val w, scr_coord_val h, bool)
+/// wrapper for clip_intv
+static int clip_wh(scr_coord_val *x, scr_coord_val *w, const scr_coord_val left, const scr_coord_val right)
 {
-	CR.clip_rect.x = x;
-	CR.clip_rect.y = y;
-	CR.clip_rect.w = w;
-	CR.clip_rect.h = h;
-	CR.clip_rect.xx = x + w; // watch out, clips to scr_coord_val max
-	CR.clip_rect.yy = y + h; // watch out, clips to scr_coord_val max
+	return clip_intv(*x, *w, left, right);
+}
+
+
+clip_dimension display_get_clip_wh(CLIP_NUM_DEF_NOUSE0)
+{
+	return clip_rect;
+}
+
+
+void display_set_clip_wh(scr_coord_val x, scr_coord_val y, scr_coord_val w, scr_coord_val h, bool fit)
+{
+	if (!fit) {
+		// clip_wh( &x, &w, 0, display_get_width());
+		// clip_wh( &y, &h, 0, display_get_height());
+	}
+	else {
+		clip_wh( &x, &w, clip_rect.x, clip_rect.xx);
+		clip_wh( &y, &h, clip_rect.y, clip_rect.yy);
+	}
+	
+	clip_rect.x = x;
+	clip_rect.y = y;
+	clip_rect.w = w;
+	clip_rect.h = h;
+	clip_rect.xx = x + w; // watch out, clips to scr_coord_val max
+	clip_rect.yy = y + h; // watch out, clips to scr_coord_val max
 }
 
 
 void display_push_clip_wh(scr_coord_val x, scr_coord_val y, scr_coord_val w, scr_coord_val h)
 {
-	assert(!CR.swap_active);
+	assert(!swap_active);
 	// save active clipping rectangle
-	CR.clip_rect_swap = CR.clip_rect;
+	clip_rect_swap = clip_rect;
 	// active rectangle provided by parameters
 	display_set_clip_wh(x, y, w, h);
-	CR.swap_active = true;
+	swap_active = true;
 }
 
 
 void display_swap_clip_wh()
 {
-	if (CR.swap_active) {
+	if (swap_active) {
 		// swap clipping rectangles
-		clip_dimension save = CR.clip_rect;
-		CR.clip_rect = CR.clip_rect_swap;
-		CR.clip_rect_swap = save;
+		clip_dimension save = clip_rect;
+		clip_rect = clip_rect_swap;
+		clip_rect_swap = save;
 	}
 }
 
 
 void display_pop_clip_wh(CLIP_NUM_DEF0)
 {
-	if (CR.swap_active) {
+	if (swap_active) {
 		// swap original clipping rectangle back
-		CR.clip_rect   = CR.clip_rect_swap;
-		CR.swap_active = false;
+		clip_rect   = clip_rect_swap;
+		swap_active = false;
 	}
 }
 
@@ -507,35 +636,69 @@ void display_img_aux(const image_id id, scr_coord_val x, scr_coord_val y, const 
 }
 
 
-void display_color_img(const image_id id, scr_coord_val x, scr_coord_val y, const sint8 player_nr, const bool, const bool  CLIP_NUM_DEF_NOUSE)
+static void display_tile_from_sheet(gl_texture_t * gltex, int x, int y,
+                                    int tile_x, int tile_y, int tile_w, int tile_h)
 {
-    glEnable(GL_SCISSOR_TEST);
-    glScissor(CR.clip_rect.x, CR.clip_rect.y, CR.clip_rect.w, CR.clip_rect.h);
+    // texture coordinates in fractions of sheet size
+    float left = tile_x / (float)gltex->width;
+    float top = tile_y / (float)gltex->height;
+    float gw = tile_w  / (float)gltex->width;
+    float gh = tile_h / (float)gltex->height;
 
-    imd_t imd = images[id];
+    // if(gltex->tex_id != gl_currently_bound_tex_id)
+    {
+        glBindTexture(GL_TEXTURE_2D, gltex->tex_id);
+        gl_currently_bound_tex_id = gltex->tex_id;
+        // dbg->message("display_tile_from_sheet()", "Binding new tex %d", gl_currently_bound_tex_id);
+    }
 
-    x += imd.base_x;
-    y += imd.base_y;
-
-    glColor4f(1, 1, 1, 1);
-
-	glBindTexture(GL_TEXTURE_2D, imd.texture->tex_id);
 	glBegin(GL_QUADS);
 
-    glTexCoord2f(0, 0);
+    glTexCoord2f(left, top);
 	glVertex2i(x, y);
 
-    glTexCoord2f(1, 0);
-	glVertex2i(x+imd.base_w, y);
+    glTexCoord2f(left+gw, top);
+	glVertex2i(x+tile_w, y);
 
-    glTexCoord2f(1, 1);
-	glVertex2i(x+imd.base_w, y+imd.base_h);
+    glTexCoord2f(left+gw, top+gh);
+	glVertex2i(x+tile_w, y+tile_h);
 
-    glTexCoord2f(0, 1);
-	glVertex2i(x, y+imd.base_h);
+    glTexCoord2f(left, top+gh);
+	glVertex2i(x, y+tile_h);
 
 	glEnd();
-    glDisable(GL_SCISSOR_TEST);
+}
+
+
+static void display_box_wh(int x, int y, int w, int h, rgba_t color)
+{
+	display_fillbox_wh_rgb(x, y, w, 1, color, true);
+	display_fillbox_wh_rgb(x, y+h-1, w, 1, color, true);
+}
+
+void display_color_img(const image_id id, scr_coord_val x, scr_coord_val y, const sint8 player_nr, const bool, const bool  CLIP_NUM_DEF_NOUSE)
+{
+	if(id < anz_images)
+	{
+		// debug clipping
+		// display_box_wh(clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h, rgba_t(1, 0, 0, 0.5f));
+		
+	    glScissor(clip_rect.x, display_get_height()-clip_rect.y-clip_rect.h, clip_rect.w, clip_rect.h);
+		// glScissor(clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h);
+		glEnable(GL_SCISSOR_TEST);
+
+		imd_t & imd = images[id];
+
+		x += imd.base_x;
+		y += imd.base_y;
+
+		glColor4f(1, 1, 1, 1);
+
+		display_tile_from_sheet(imd.texture, x, y,
+								imd.sheet_x, imd.sheet_y, imd.base_w, imd.base_h);
+
+		glDisable(GL_SCISSOR_TEST);
+	}
 }
 
 void display_base_img(const image_id id, scr_coord_val x, scr_coord_val y, const sint8 player_nr, const bool, const bool  CLIP_NUM_DEF_NOUSE)
@@ -549,18 +712,15 @@ void display_fit_img_to_width( const image_id, sint16)
 
 
 // local helper function for tiles buttons
-static void display_three_image_row(image_id i1, image_id i2, image_id i3, scr_rect row, rgba_t color)
+static void display_three_image_row( image_id i1, image_id i2, image_id i3, scr_rect row, rgba_t)
 {
+// 	dbg->message("display_three_image_row", "%d %d %d %d", row.x, row.y, row.w, row.h);
+	
+	
 	if(  i1!=IMG_EMPTY  ) {
 		scr_coord_val w = images[i1].w;
-		display_color_img(i1, row.x, row.y, 0, false, true  CLIP_NUM_DEFAULT);
+		display_color_img( i1, row.x, row.y, 0, false, true  CLIP_NUM_DEFAULT);
 		row.x += w;
-		row.w -= w;
-	}
-	// right
-	if(  i3!=IMG_EMPTY  ) {
-		scr_coord_val w = images[i3].w;
-		display_color_img(i3, row.get_right()-w, row.y, 0, false, true  CLIP_NUM_DEFAULT);
 		row.w -= w;
 	}
 	// middle
@@ -568,17 +728,20 @@ static void display_three_image_row(image_id i1, image_id i2, image_id i3, scr_r
 		scr_coord_val w = images[i2].w;
 		// tile it wide
 		while(  w <= row.w  ) {
-			display_color_img(i2, row.x, row.y, 0, false, true  CLIP_NUM_DEFAULT);
+			display_color_img( i2, row.x, row.y, 0, false, true  CLIP_NUM_DEFAULT);
 			row.x += w;
 			row.w -= w;
 		}
 		// for the rest we have to clip the rectangle
 		if(  row.w > 0  ) {
-			clip_dimension const cl = display_get_clip_wh();
-			display_set_clip_wh(cl.x, cl.y, max(0,min(row.get_right(),cl.xx)-cl.x), cl.h);
-			display_color_img(i2, row.x, row.y, 0, false, true  CLIP_NUM_DEFAULT);
-			display_set_clip_wh(cl.x, cl.y, cl.w, cl.h);
+			display_color_img( i2, row.x, row.y, 0, false, true  CLIP_NUM_DEFAULT);
 		}
+	}
+	// right
+	if(  i3!=IMG_EMPTY  ) {
+		scr_coord_val w = images[i3].w;
+		display_color_img( i3, row.get_right()-w, row.y, 0, false, true  CLIP_NUM_DEFAULT);
+		row.w -= w;
 	}
 }
 
@@ -605,17 +768,26 @@ typedef void (*DISP_THREE_ROW_FUNC)(image_id, image_id, image_id, scr_rect, rgba
  */
 static void display_img_stretch_intern( const stretch_map_t &imag, scr_rect area, DISP_THREE_ROW_FUNC display_three_image_rowf, rgba_t color)
 {
-	scr_coord_val h_top    = max(max(get_img_height(imag[0][0]), get_img_height(imag[1][0])), get_img_height(imag[2][0]));
-	scr_coord_val h_middle = max(max(get_img_height(imag[0][1]), get_img_height(imag[1][1])), get_img_height(imag[2][1]));
-	scr_coord_val h_bottom = max(max(get_img_height(imag[0][2]), get_img_height(imag[1][2])), get_img_height(imag[2][2]));
+	clip_dimension clip = display_get_clip_wh();
+ 	display_set_clip_wh(area.x, area.y, area.w, area.h, false);
+ 	// display_set_clip_wh(area.x, area.y-100, area.w, 1000, false);
 
+	// display_fillbox_wh_rgb(area.x, area.y, area.w, area.h, RGBA_WHITE, true);
+	
+// 	dbg->message("display_set_clip_wh", "%d %d %d %d", area.x, area.y, area.w, area.h);
+	
+	scr_coord_val h_top    = max(max( get_img_height(imag[0][0]), get_img_height(imag[1][0])), get_img_height(imag[2][0]));
+	scr_coord_val h_middle = max(max( get_img_height(imag[0][1]), get_img_height(imag[1][1])), get_img_height(imag[2][1]));
+	scr_coord_val h_bottom = max(max( get_img_height(imag[0][2]), get_img_height(imag[1][2])), get_img_height(imag[2][2]));
+
+	
 	// center vertically if images[*][1] are empty, display images[*][0]
 	if(  imag[0][1] == IMG_EMPTY  &&  imag[1][1] == IMG_EMPTY  &&  imag[2][1] == IMG_EMPTY  ) {
 		scr_coord_val h = max(h_top, get_img_height(imag[1][1]));
 		// center vertically
 		area.y += (area.h-h)/2;
 	}
-
+	
 	// center horizontally if images[1][*] are empty, display images[0][*]
 	if(  imag[1][0] == IMG_EMPTY  &&  imag[1][1] == IMG_EMPTY  &&  imag[1][2] == IMG_EMPTY  ) {
 		scr_coord_val w_left = max(max( get_img_width(imag[0][0]), get_img_width(imag[0][1])), get_img_width(imag[0][2]));
@@ -626,11 +798,6 @@ static void display_img_stretch_intern( const stretch_map_t &imag, scr_rect area
 	// top row
 	display_three_image_rowf( imag[0][0], imag[1][0], imag[2][0], area, color);
 
-	// bottom row
-	if(  h_bottom > 0  ) {
-		scr_rect row( area.x, area.y+area.h-h_bottom, area.w, h_bottom );
-		display_three_image_rowf( imag[0][2], imag[1][2], imag[2][2], row, color);
-	}
 
 	// now stretch the middle
 	if(  h_middle > 0  ) {
@@ -643,12 +810,17 @@ static void display_img_stretch_intern( const stretch_map_t &imag, scr_rect area
 		}
 		// for the rest we have to clip the rectangle
 		if(  row.h > 0  ) {
-			clip_dimension const cl = display_get_clip_wh();
-			display_set_clip_wh( cl.x, cl.y, cl.w, max(0,min(row.get_bottom(),cl.yy)-cl.y) );
 			display_three_image_rowf( imag[0][1], imag[1][1], imag[2][1], row, color);
-			display_set_clip_wh(cl.x, cl.y, cl.w, cl.h );
 		}
 	}
+
+	// bottom row
+	if(  h_bottom > 0  ) {
+		scr_rect row( area.x, area.y+area.h-h_bottom, area.w, h_bottom );
+		display_three_image_rowf( imag[0][2], imag[1][2], imag[2][2], row, color);
+	}
+
+	display_set_clip_wh(clip.x, clip.y, clip.w, clip.h, false);
 }
 
 
@@ -737,6 +909,9 @@ rgba_t display_blend_colors(rgba_t c1, rgba_t c2, float mix)
 
 void display_blend_wh_rgb(scr_coord_val x, scr_coord_val y, scr_coord_val w, scr_coord_val h, rgba_t color)
 {
+    glScissor(clip_rect.x, display_get_height()-clip_rect.y-clip_rect.h, clip_rect.w, clip_rect.h);
+	glEnable(GL_SCISSOR_TEST);
+
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	glBegin(GL_QUADS);
@@ -750,6 +925,8 @@ void display_blend_wh_rgb(scr_coord_val x, scr_coord_val y, scr_coord_val w, scr
 	glVertex2i(x, y+h);
 
 	glEnd();
+
+	glDisable(GL_SCISSOR_TEST);
 }
 
 
@@ -776,6 +953,10 @@ void display_fillbox_wh_clip_rgb(scr_coord_val x, scr_coord_val y, scr_coord_val
 {
     // dbg->message("display_fillbox_wh_clip_rgb()", "Called %d,%d,%d,%d color %f,%f,%f,%f", x, y, w, h, color.red, color.green, color.blue, color.alpha);
 
+    glScissor(clip_rect.x, display_get_height()-clip_rect.y-clip_rect.h, clip_rect.w, clip_rect.h);
+    // glScissor(clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h);
+	glEnable(GL_SCISSOR_TEST);
+
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	glBegin(GL_QUADS);
@@ -788,6 +969,8 @@ void display_fillbox_wh_clip_rgb(scr_coord_val x, scr_coord_val y, scr_coord_val
 	glVertex2i(x, y+h);
 
 	glEnd();
+
+	glDisable(GL_SCISSOR_TEST);
 }
 
 void display_vline_wh_clip_rgb(scr_coord_val x, scr_coord_val y, scr_coord_val h, rgba_t color, bool dirty CLIP_NUM_DEF_NOUSE)
@@ -799,72 +982,32 @@ void display_array_wh(scr_coord_val, scr_coord_val, scr_coord_val, scr_coord_val
 {
 }
 
+
 int display_glyph(scr_coord_val x, scr_coord_val y, utf32 c, control_alignment_t flags, rgba_t color, const font_t * font  CLIP_NUM_DEF_NOUSE)
 {
-    // dbg->message("display_glyph()", "Called %d,%d glyph=%d", x, y, c);
-
-    /*
-    display_fillbox_wh_clip_rgb(0, 0, 1024, 500, rgba_t(0.5f, 0.5f, 0.5f), true);
-
-    glColor4f(1, 1, 1, 1);
-
-	glBindTexture(GL_TEXTURE_2D, font->glyph_sheet->tex_id);
-	glBegin(GL_QUADS);
-
-    glTexCoord2f(0, 0);
-	glVertex2i(0, 0);
-
-    glTexCoord2f(1, 0);
-	glVertex2i(1024, 0);
-
-    glTexCoord2f(1, 1);
-	glVertex2i(1024, 1000);
-
-    glTexCoord2f(0, 1);
-	glVertex2i(0, 1000);
-
-	glEnd();
-*/
-
     const scr_coord_val w = font->get_glyph_width(c);
     const scr_coord_val h = font->get_glyph_height(c);
 
     // Pixel coordinates of the glyph in the sheet
     const int gnr = font->glyphs[c].sheet_index;
-    const int glyph_line = (gnr / 32) * 32;
-    const int glyph_row = (gnr & 31) * 32;
-
-    // texture coordinates in fractions of sheet size
-    float left = glyph_row / (float)font->glyph_sheet->width;
-    float top = glyph_line / (float)font->glyph_sheet->height;
-    float gw = w  / (float)font->glyph_sheet->width;
-    float gh = h / (float)font->glyph_sheet->height;
+    const int glyph_x = (gnr & 31) * 32;
+    const int glyph_y = (gnr / 32) * 32;
 
     const int gy = y + font->get_glyph_top(c);
 
+    glScissor(clip_rect.x, display_get_height()-clip_rect.y-clip_rect.h, clip_rect.w, clip_rect.h);
+    // glScissor(clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h);
+    glEnable(GL_SCISSOR_TEST);
+
 	glColor4f(color.red, color.green, color.blue, color.alpha);
 
-    // dbg->message("display_glyph()", "tex id=%d", font->glyph_sheet->tex_id);
+    display_tile_from_sheet(font->glyph_sheet, x, gy, glyph_x, glyph_y, w, h);
 
-	glBindTexture(GL_TEXTURE_2D, font->glyph_sheet->tex_id);
-	glBegin(GL_QUADS);
-
-    glTexCoord2f(left, top);
-	glVertex2i(x, gy);
-
-    glTexCoord2f(left+gw, top);
-	glVertex2i(x+w, gy);
-
-    glTexCoord2f(left+gw, top+gh);
-	glVertex2i(x+w, gy+h);
-
-    glTexCoord2f(left, top+gh);
-	glVertex2i(x, gy+h);
-
-	glEnd();
+    glDisable(GL_SCISSOR_TEST);
 
 	return font->get_glyph_advance(c);
 }
+
 
 void display_ddd_box_rgb(scr_coord_val, scr_coord_val, scr_coord_val, scr_coord_val, rgba_t, rgba_t, bool)
 {
@@ -892,7 +1035,22 @@ void display_flush_buffer()
     }
 */
 
+/*
+    display_set_clip_wh(0, 0, 1024, 1000);
+    display_fillbox_wh_rgb(0, 0, 1000, 1000, rgba_t(0.5f, 0.5f, 0.5f, 1), true);
+    glColor4f(1, 1, 1, 1);
+    display_tile_from_sheet(gl_texture_sheets[0], 0, 0, 0, 0, 640, 480);
+*/
+
 	glfwSwapBuffers(window);
+
+	static uint32 time;
+	uint32 now = dr_time();
+
+	dbg->message("display_flush_buffer()", "Frame time=%dms", now - time);
+	time = now;
+
+	// glClear(GL_COLOR_BUFFER_BIT);
 }
 
 
@@ -915,6 +1073,9 @@ void display_show_load_pointer(int v)
 
 // callback refs
 void sysgl_cursor_pos_callback(GLFWwindow *window, double x, double y);
+void sysgl_mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
+void sysgl_scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+
 
 bool simgraph_init(scr_size size, sint16)
 {
@@ -928,15 +1089,18 @@ bool simgraph_init(scr_size size, sint16)
 
 	if(window)
 	{
-		display_set_clip_wh(0, 0, size.w, size.h);
+		display_set_clip_wh(0, 0, size.w, size.h, false);
 
 		glfwMakeContextCurrent(window);
 
 		// enable vsync (1 == next frame)
 		glfwSwapInterval(1);
 
+		// event callbacks
         glfwSetCursorPosCallback(window, sysgl_cursor_pos_callback);
-
+        glfwSetMouseButtonCallback(window, sysgl_mouse_button_callback);
+		glfwSetScrollCallback(window, sysgl_scroll_callback);
+		
         // 2D Initialization
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         glEnable(GL_TEXTURE_2D);
@@ -948,6 +1112,13 @@ bool simgraph_init(scr_size size, sint16)
         glDisable(GL_DEPTH_TEST);
 
         simgraph_resize(size);
+
+        glGetIntegerv(GL_MAX_TEXTURE_SIZE, &gl_max_texture_size);
+
+        // debug
+        // gl_max_texture_size = 640;
+
+        dbg->message("simgraph_init()", "GLFW max texture size is %d", gl_max_texture_size);
 	}
 
 	return window;
@@ -956,12 +1127,13 @@ bool simgraph_init(scr_size size, sint16)
 
 bool is_display_init()
 {
-	return false;
+	return window != NULL && images != NULL;
 }
 
 
-void display_free_all_images_above(image_id)
+void display_free_all_images_above(image_id limit)
 {
+	dbg->message("display_free_all_images_above()", "starting past %d", limit);
 }
 
 void simgraph_exit()

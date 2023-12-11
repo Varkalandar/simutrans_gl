@@ -34,18 +34,85 @@ void error_callback(int error, const char* description)
 }
 
 
+// bitfield tracking the mouse button states. a 1 bit means pressed
+uint16 mouse_buttons = 0;
+scr_coord_val mx = 0;
+scr_coord_val my = 0;
+
+
 void sysgl_cursor_pos_callback(GLFWwindow *window, double x, double y)
 {
-    dbg->message("cursor_pos_callback()", "x=%f y=%f", x, y);
+    // dbg->message("cursor_pos_callback()", "x=%f y=%f", x, y);
+    mx = (scr_coord_val)x;
+    my = (scr_coord_val)y;
 
     sys_event.type = SIM_MOUSE_MOVE;
     sys_event.code = SIM_MOUSE_MOVED;
-    sys_event.mx = (scr_coord_val)x;
-    sys_event.my = (scr_coord_val)y;
+    sys_event.mx = mx;
+    sys_event.my = my;
     sys_event.mb = 0;
     sys_event.key_mod = 0;
 }
 
+
+void sysgl_mouse_button_callback(GLFWwindow* , int button, int action, int mods)
+{
+    sys_event.type = SIM_MOUSE_BUTTONS;
+
+    sys_event.mx = mx;
+    sys_event.my = my;
+
+    if(action == GLFW_PRESS)
+    {
+        switch(button)
+        {
+            case GLFW_MOUSE_BUTTON_1:
+                sys_event.code = SIM_MOUSE_LEFTBUTTON + button;
+                mouse_buttons |= MOUSE_LEFTBUTTON;
+                break;
+            case GLFW_MOUSE_BUTTON_2:
+                sys_event.code = SIM_MOUSE_MIDBUTTON + button;
+                mouse_buttons |= MOUSE_MIDBUTTON;
+                break;
+            case GLFW_MOUSE_BUTTON_3:
+                sys_event.code = SIM_MOUSE_RIGHTBUTTON + button;
+                mouse_buttons |= MOUSE_RIGHTBUTTON;
+                break;
+        }
+    }
+    else
+    {
+        switch(button)
+        {
+            case GLFW_MOUSE_BUTTON_1:
+                sys_event.code = SIM_MOUSE_LEFTUP + button;
+                mouse_buttons &= ~MOUSE_LEFTBUTTON;
+                break;
+            case GLFW_MOUSE_BUTTON_2:
+                sys_event.code = SIM_MOUSE_MIDUP + button;
+                mouse_buttons &= ~MOUSE_MIDBUTTON;
+                break;
+            case GLFW_MOUSE_BUTTON_3:
+                sys_event.code = SIM_MOUSE_RIGHTUP + button;
+                mouse_buttons &= ~MOUSE_RIGHTBUTTON;
+                break;
+        }
+    }
+
+    sys_event.mb = mouse_buttons;
+    sys_event.key_mod = 0;
+
+
+    dbg->message("cursor_pos_callback()", "code=%d buttons=%d", sys_event.code, sys_event.mb);
+}
+
+
+void sysgl_scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+	sys_event.type    = SIM_MOUSE_BUTTONS;
+	sys_event.code    = yoffset > 0 ? SIM_MOUSE_WHEELUP : SIM_MOUSE_WHEELDOWN;
+	sys_event.key_mod = 0;
+}
 
 
 bool dr_set_screen_scale(sint16)
@@ -116,7 +183,7 @@ unsigned short *dr_textur_init()
 
 rgba_t get_system_color(rgb888_t color)
 {
-	return RGBA_BLACK;
+	return rgba_t(color);
 }
 
 

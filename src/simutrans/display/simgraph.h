@@ -48,7 +48,7 @@ display_set_clip_wh(x, y, w, h);
 #define PUSH_CLIP_FIT(x,y,w,h) \
 {\
 	clip_dimension const p_cr = display_get_clip_wh(); \
-	display_set_clip_wh(x, y, w, h CLIP_NUM_DEFAULT, true);
+	display_set_clip_wh(x, y, w, h, true);
 
 // restore a saved clipping rect
 #define POP_CLIP() \

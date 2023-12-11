@@ -327,7 +327,7 @@ static void win_draw_window_title(const scr_coord pos, const scr_size size,
 	    const int player_nr,
 		const bool is_top)
 {
-	PUSH_CLIP_FIT(pos.x, pos.y, size.w, size.h);
+	PUSH_CLIP(pos.x, pos.y, size.w, size.h);
 	rgba_t lighter, darker;
 
 	// Hajo: use themed title bars?

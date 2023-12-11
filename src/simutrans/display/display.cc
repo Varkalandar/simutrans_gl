@@ -12,6 +12,7 @@
 #include <cstring>
 
 #include "simgraph.h"
+#include "gl_textures.h"
 #include "display.h"
 #include "font.h"
 

@@ -1361,7 +1361,7 @@ void stadt_t::rotate90( const sint16 y_size )
 	koord pos;
 	for( uint16 i = 0; i < pax_destinations_new.get_data_count(); i++ ) {
 		pax_destinations_new.get_nonzero(i, pos, color);
-		assert( color != 0 );
+		assert( !(color == 0) );
 		pax_destinations_temp.set( PAX_DESTINATIONS_SIZE-1-pos.y, pos.x, color );
 	}
 	swap<rgb888_t>( pax_destinations_temp, pax_destinations_new );
@@ -1369,7 +1369,7 @@ void stadt_t::rotate90( const sint16 y_size )
 	pax_destinations_temp.clear();
 	for( uint16 i = 0; i < pax_destinations_old.get_data_count(); i++ ) {
 		pax_destinations_old.get_nonzero(i, pos, color);
-		assert( color != 0 );
+		assert( !(color == 0) );
 		pax_destinations_temp.set( PAX_DESTINATIONS_SIZE-1-pos.y, pos.x, color );
 	}
 	pax_destinations_new_change ++;

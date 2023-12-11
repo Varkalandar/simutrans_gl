@@ -242,6 +242,8 @@ bool pakset_manager_t::finish_loading()
 		}
 	}
 
+    dbg->warning("pakset_manager_t::finish_loading", "pak set loaded successfully");
+
 	return true;
 }
 
