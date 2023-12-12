@@ -24,7 +24,7 @@ static GLint gl_max_texture_size;
 
 // we try to collect and combine images into large
 // tile sheets to minimize texture switching.
-static gl_texture_t * gl_texture_sheets[64];
+static gl_texture_t * gl_texture_sheets[256];
 static int gl_current_sheet;
 static int gl_current_sheet_x;
 static int gl_current_sheet_y;
@@ -1160,8 +1160,9 @@ bool simgraph_init(scr_size size, sint16)
 
         glGetIntegerv(GL_MAX_TEXTURE_SIZE, &gl_max_texture_size);
 
-        // debug
-        // gl_max_texture_size = 640;
+        // some drivers seems to lie here?
+        // smaller textures work better
+        if(gl_max_texture_size > 4096) gl_max_texture_size = 4096;
 
         dbg->message("simgraph_init()", "GLFW max texture size is %d", gl_max_texture_size);
 	}

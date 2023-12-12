@@ -50,7 +50,7 @@ void sysgl_cursor_pos_callback(GLFWwindow *window, double x, double y)
     sys_event.code = SIM_MOUSE_MOVED;
     sys_event.mx = mx;
     sys_event.my = my;
-    sys_event.mb = 0;
+    sys_event.mb = mouse_buttons;
     sys_event.key_mod = 0;
 }
 
@@ -136,7 +136,7 @@ bool dr_os_init(const int*)
 
 	bool ok = glfwInit();
 
-	printf("GLFW init: %d", ok);
+	dbg->message("dr_os_init()", "GLFW init: %d", ok);
 
 	if(ok)
 	{
