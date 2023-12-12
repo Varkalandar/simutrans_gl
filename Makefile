@@ -44,6 +44,11 @@ else
   COLOUR_DEPTH := 16
 endif
 
+ifeq ($(BACKEND),ogl)
+  LDFLAGS += -lglfw -lGL
+endif
+
+
 # since threads are needed to be linked dynamically on most systems
 ifdef MULTI_THREAD
   ifeq ($(shell expr $(MULTI_THREAD) \>= 1), 1)
@@ -124,6 +129,7 @@ endif
 ifeq ($(BACKEND),ogl)
   SOURCES += src/simutrans/sys/simsys_gl.cc
   SOURCES += src/simutrans/display/simgraph_gl.cc
+  SOURCES += src/simutrans/display/gl_textures.cc
   SOURCES += src/simutrans/music/no_midi.cc
   SOURCES += src/simutrans/sound/no_sound.cc
 endif
@@ -358,8 +364,6 @@ SOURCES += src/simutrans/descriptor/tunnel_desc.cc
 SOURCES += src/simutrans/descriptor/vehicle_desc.cc
 SOURCES += src/simutrans/descriptor/way_desc.cc
 SOURCES += src/simutrans/display/font.cc
-SOURCES += src/simutrans/display/gl_textures.cc
-#SOURCES += src/simutrans/display/simgraph$(COLOUR_DEPTH).cc
 SOURCES += src/simutrans/display/simview.cc
 SOURCES += src/simutrans/display/viewport.cc
 SOURCES += src/simutrans/display/display.cc
@@ -727,6 +731,7 @@ ifeq ($(BACKEND),mixer_sdl2)
 endif
 
 ifeq ($(BACKEND),posix)
+  SOURCES += src/simutrans/display/simgraph0.cc
   SOURCES += src/simutrans/sys/simsys_posix.cc
   SOURCES += src/simutrans/music/no_midi.cc
   SOURCES += src/simutrans/sound/no_sound.cc

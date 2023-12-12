@@ -16,7 +16,7 @@
 
 
 class plainstring;
-struct rgb888_t;
+class rgb888_t;
 
 
 /**

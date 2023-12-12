@@ -27,7 +27,7 @@ simutrans: $(PROGDIR)/$(PROG)
 
 $(PROGDIR)/$(PROG): $(OBJS)
 	@echo "===> LD  $@"
-	$(Q)$(HOSTCXX) --verbose $(OBJS) -lglfw -lGL $(LDFLAGS) $(LIBS) -o $(PROGDIR)/$(PROG)
+	$(Q)$(HOSTCXX) --verbose $(OBJS) $(LDFLAGS) $(LIBS) -o $(PROGDIR)/$(PROG)
 
 -include $(DEPS)
 
