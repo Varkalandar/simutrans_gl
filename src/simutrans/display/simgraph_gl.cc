@@ -292,12 +292,12 @@ static uint8_t * rgb343to888(const uint16_t c, const uint8_t alpha, uint8_t *tp)
     *tp++ = alpha;           // alpha
 
 
-/*	
+/*
     *tp++ = 255; // red
     *tp++ = 255; // green
     *tp++ = 0; // blue
     *tp++ = 255;           // alpha
-	
+
 	dbg->message("rgb343to888", "343 input %x, alpha=%d -> %d %d %d", c, alpha, *(tp-4), *(tp-3), *(tp-2));
 */
     return tp;
@@ -315,16 +315,26 @@ static uint8_t * rgb555to888(const uint16_t c, const uint8_t alpha, uint8_t *tp)
 }
 
 
-/**
- * Copy pixel, replace player color
- */
-static inline void colorpixcopy(uint8_t * dest, const uint16_t * src, const uint16_t * const end)
+static uint8_t * special_rgb_to_rgba(const uint16_t c, const uint8_t alpha, uint8_t *tp)
 {
-	// player color or transparent?
+    uint32 rgb = image_t::rgbtab[c & 255];
+    *tp ++ = (rgb >> 16) & 0xFF;
+    *tp ++ = (rgb >> 8) & 0xFF;
+    *tp ++ = (rgb >> 0) & 0xFF;
+    *tp ++ = alpha;
+}
+
+
+static void convert_transparent_pixel_run(uint8_t * dest, const uint16_t * src, const uint16_t * const end)
+{
+    if(*src < 0x8000) dbg->message("convert_transparent_pixel_run()", "Found suspicious pixel %x", *src);
+
+
+	// player color or transparent rgb?
 	if (*src < 0x8020) {
-		// player color, opaque
+		// player or special color
 		while (src < end) {
-			dest = rgb555to888(*src++, 255, dest);;
+			dest = special_rgb_to_rgba(*src++, 255, dest);;
 		}
 	}
 	else {
@@ -332,7 +342,7 @@ static inline void colorpixcopy(uint8_t * dest, const uint16_t * src, const uint
 			// a semi-transparent pixel
 			uint16 aux   = *src++ - 0x8020;
 			uint16 alpha = 32 - ((aux % 31) + 1);
-			dest = rgb343to888(aux, alpha, dest);
+			dest = rgb343to888((aux >> 5) & 0x3FF, alpha << 5, dest);
 		}
 	}
 }
@@ -340,21 +350,21 @@ static inline void colorpixcopy(uint8_t * dest, const uint16_t * src, const uint
 
 static uint8_t * convert(const uint16_t * sp, const uint16_t runlen, uint8_t * tp)
 {
-    // dbg->message("covert()", "Converting a run of %d pixels", runlen);
+    // dbg->message("convert()", "Converting a run of %d pixels", runlen);
 
     const uint16_t * end = sp + runlen;
 
     while(sp < end)
     {
         uint16_t c = *sp ++;
-		if(c >= 0x8000) 
+		if(c >= 0x8000)
 		{
 			// dbg->message("covert()", "Found suspicious pixel %x", c);
 			uint32 rgb = image_t::rgbtab[c & 255];
 			*tp ++ = (rgb >> 16) & 0xFF;
 			*tp ++ = (rgb >> 8) & 0xFF;
 			*tp ++ = (rgb >> 0) & 0xFF;
-			*tp ++ = (rgb >> 24) & 0xFF;
+			*tp ++ = 255;
 		}
 		else
 		{
@@ -383,6 +393,64 @@ static void copy_into_texture_sheet(imd_t * image, uint8_t * tex, int scanline)
             *dst = *src;
         }
     }
+}
+
+
+static void convert_image(imd_t * image)
+{
+	// is this an oversized image?
+	if(image->base_w > tile_raster_width || image->base_h > tile_raster_width)
+	{
+		// yes, give it a texture of its own
+		image->texture = gl_texture_t::create_texture(image->base_w, image->base_h, image->base_data);
+		image->sheet_x = 0;
+		image->sheet_y = 0;
+	}
+	else
+	{
+		// dbg->message("register_image()", "Advancing in sheet line to x=%d", gl_current_sheet_x);
+
+		// do we need to start a new row?
+		if(gl_current_sheet_x + image->base_w > gl_max_texture_size)
+		{
+			gl_current_sheet_x = 0;
+			gl_current_sheet_y += base_tile_raster_width;
+
+			dbg->message("register_image()", "Starting texture sheet line %d of %d pixels", gl_current_sheet_y, gl_max_texture_size);
+
+			// time to start a new sheet?
+			if(gl_current_sheet_y >= gl_max_texture_size)
+			{
+				gl_current_sheet_y = 0;
+				gl_current_sheet ++;
+			}
+		}
+
+		// do we need to allocate a new  sheet?
+		if(gl_texture_sheets[gl_current_sheet] == 0)
+		{
+			dbg->message("register_image()", "Starting texture sheet #%d", gl_current_sheet);
+			gl_current_sheet_x = 0;
+			gl_current_sheet_y = 0;
+
+			gl_texture_sheets[gl_current_sheet] =
+				gl_texture_t::create_texture(gl_max_texture_size, gl_max_texture_size,
+											 (uint8_t *)calloc(gl_max_texture_size * gl_max_texture_size * 4, 1));
+
+            free(gl_texture_sheets[gl_current_sheet]->data);
+            gl_texture_sheets[gl_current_sheet]->data = 0;
+		}
+
+		image->sheet_x = gl_current_sheet_x;
+		image->sheet_y = gl_current_sheet_y;
+		image->texture = gl_texture_sheets[gl_current_sheet];
+
+		// copy_into_texture_sheet(image, image->texture->data, gl_max_texture_size);
+		image->texture->update_region(image->sheet_x, image->sheet_y, image->base_w, image->base_h, image->base_data);
+
+        // advance in row
+		gl_current_sheet_x += image->base_w;
+	}
 }
 
 
@@ -439,7 +507,7 @@ void register_image(image_t * image_in)
                 runlen &= ~TRANSPARENT_RUN;
 
 //                dbg->message("register_image()", "Converting %d special color pixels", runlen);
-                colorpixcopy( p, sp, sp+runlen );
+                convert_transparent_pixel_run(p, sp, sp+runlen);
                 p += runlen * 4;
                 sp += runlen;
             }
@@ -484,56 +552,7 @@ void register_image(image_t * image_in)
 	image->base_h = image_in->h;
 	image->base_data = rgba_data;
 
-	// is this an oversized image?
-	if(image->base_w > tile_raster_width || image->base_h > tile_raster_width)
-	{
-		// yes, give it a texture of its own
-		image->texture = gl_texture_t::create_texture(image->base_w, image->base_h, image->base_data);
-		image->sheet_x = 0;
-		image->sheet_y = 0;
-	}
-	else
-	{
-		// do we need to start a new  sheet?
-		if(gl_texture_sheets[gl_current_sheet] == 0)
-		{
-			dbg->message("register_image()", "Starting texture sheet #%d", gl_current_sheet);
-			gl_current_sheet_x = 0;
-			gl_current_sheet_y = 0;
-
-			gl_texture_sheets[gl_current_sheet] =
-				gl_texture_t::create_texture(gl_max_texture_size, gl_max_texture_size,
-											 (uint8_t *)calloc(gl_max_texture_size * gl_max_texture_size * 4, 1));
-		}
-
-		image->sheet_x = gl_current_sheet_x;
-		image->sheet_y = gl_current_sheet_y;
-		image->texture = gl_texture_sheets[gl_current_sheet];
-
-		copy_into_texture_sheet(image, image->texture->data, gl_max_texture_size);
-		image->texture->update_region(image->sheet_x, image->sheet_y, image->base_w, image->base_h, image->base_data);
-
-		// advance in row
-		gl_current_sheet_x += image->base_w;
-		// dbg->message("register_image()", "Advancing in sheet line to x=%d", gl_current_sheet_x);
-
-		// do we need to start a new row?
-		if(gl_current_sheet_x > gl_max_texture_size)
-		{
-			gl_current_sheet_x = 0;
-			gl_current_sheet_y += base_tile_raster_width;
-
-			dbg->message("register_image()", "Starting texture sheet line %d", gl_current_sheet_y);
-
-			// time to start a new sheet?
-			if(gl_current_sheet_y >= gl_max_texture_size)
-			{
-				gl_current_sheet_y = 0;
-				gl_current_sheet ++;
-			}
-		}
-	}
-    // image->texture = gl_texture_t::create_texture(image_in->w, image_in->h, rgba_data);
+	convert_image(image);
 }
 
 
@@ -664,7 +683,7 @@ static void display_tile_from_sheet(const gl_texture_t * gltex, int x, int y, in
     // texture coordinates in fractions of sheet size
     const float left = tile_x / (float)gltex->width;
     const float top = tile_y / (float)gltex->height;
-    const float gw = tile_w  / (float)gltex->width;
+    const float gw = tile_w / (float)gltex->width;
     const float gh = tile_h / (float)gltex->height;
 
     gl_texture_t::bind(gltex->tex_id);
@@ -712,7 +731,7 @@ void display_color_img(const image_id id, scr_coord_val x, scr_coord_val y, cons
 
 		w = (w == 0) ? imd.base_w : w;
 		h = (h == 0) ? imd.base_h : h;
-		
+
 		glColor4f(1, 1, 1, 1);
 
 		display_tile_from_sheet(imd.texture, x, y, w, h,
