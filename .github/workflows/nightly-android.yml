@@ -1,7 +1,8 @@
 name: Nightly build Android
 
 on:
-  push:
+  workflow_dispatch:
+#  push:
 
 jobs:
   build:

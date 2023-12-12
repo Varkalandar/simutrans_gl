@@ -14,16 +14,15 @@ scr_coord_val tile_raster_width = 16; // zoomed
 scr_coord_val base_tile_raster_width = 16; // original
 
 
-rgba_t color_idx_to_rgb(PIXVAL idx)
+rgba_t color_idx_to_rgb(int idx)
 {
-	return idx;
+	return RGBA_BLACK;
 }
 
-PIXVAL color_rgb_to_idx(PIXVAL color)
+rgba_t color_idx_to_rgba(int idx, int transparent_percent)
 {
-	return color;
+	return RGBA_BLACK;
 }
-
 
 rgb888_t get_color_rgb(uint8)
 {
@@ -201,15 +200,16 @@ display_image_proc display_color = display_base_img;
 display_blend_proc display_blend = display_base_img_blend;
 display_alpha_proc display_alpha = display_base_img_alpha;
 
-signed short current_tile_raster_width = 0;
+scr_coord_val current_tile_raster_width = 0;
 
-rgba_t display_blend_colors(rgba_t, rgba_t, int)
+
+rgba_t display_blend_colors(rgba_t, rgba_t, float)
 {
-	return 0;
+	return RGBA_BLACK;
 }
 
 
-void display_blend_wh_rgb(scr_coord_val, scr_coord_val, scr_coord_val, scr_coord_val, rgba_t, int )
+void display_blend_wh_rgb(scr_coord_val, scr_coord_val, scr_coord_val, scr_coord_val, rgba_t)
 {
 }
 
@@ -227,7 +227,7 @@ void display_vline_wh_clip_rgb(scr_coord_val, scr_coord_val, scr_coord_val, rgba
 {
 }
 
-void display_array_wh(scr_coord_val, scr_coord_val, scr_coord_val, scr_coord_val, const rgba_t *)
+void display_array_wh(scr_coord_val, scr_coord_val, scr_coord_val, scr_coord_val, const rgb888_t *)
 {
 }
 
@@ -241,10 +241,6 @@ void display_ddd_box_rgb(scr_coord_val, scr_coord_val, scr_coord_val, scr_coord_
 }
 
 void display_ddd_box_clip_rgb(scr_coord_val, scr_coord_val, scr_coord_val, scr_coord_val, rgba_t, rgba_t)
-{
-}
-
-void display_ddd_proportional_clip(scr_coord_val, scr_coord_val, rgba_t, rgba_t, const char *, int  CLIP_NUM_DEF_NOUSE)
 {
 }
 
@@ -328,10 +324,6 @@ void display_progress(int, int)
 }
 
 void display_img_aligned(const image_id, scr_rect, int, sint8, bool)
-{
-}
-
-void display_proportional_ellipsis_rgb(scr_rect, const char *, int, rgba_t, bool, bool, rgba_t)
 {
 }
 

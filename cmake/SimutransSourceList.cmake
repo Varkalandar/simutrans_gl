@@ -66,6 +66,7 @@ target_sources(simutrans PRIVATE
 		src/simutrans/descriptor/vehicle_desc.cc
 		src/simutrans/descriptor/way_desc.cc
 		src/simutrans/display/font.cc
+		src/simutrans/display/gl_textures.cc
 		src/simutrans/display/simview.cc
 		src/simutrans/display/viewport.cc
 		src/simutrans/display/display.cc

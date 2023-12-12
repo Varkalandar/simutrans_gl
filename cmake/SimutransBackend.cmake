@@ -3,6 +3,7 @@
 # (see LICENSE.txt)
 #
 
+list(APPEND AVAILABLE_BACKENDS "ogl")
 
 if (SDL2_FOUND)
 	list(APPEND AVAILABLE_BACKENDS "sdl2")

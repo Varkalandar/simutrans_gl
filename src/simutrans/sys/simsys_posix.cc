@@ -80,10 +80,11 @@ unsigned short *dr_textur_init()
 	return NULL;
 }
 
-PIXVAL get_system_color(rgb888_t)
+rgba_t get_system_color(rgb888_t color)
 {
-	return 1;
+	return rgba_t(color);
 }
+
 
 void dr_prepare_flush()
 {

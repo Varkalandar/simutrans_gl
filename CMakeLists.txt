@@ -169,6 +169,13 @@ elseif (SIMUTRANS_BACKEND STREQUAL "gdi")
 	target_link_libraries(simutrans PRIVATE imm32 xaudio2_8)
 	target_compile_definitions(simutrans PRIVATE COLOUR_DEPTH=16)
 
+elseif (SIMUTRANS_BACKEND STREQUAL "ogl")
+	target_sources(simutrans PRIVATE src/simutrans/display/simgraph_gl.cc src/simutrans/sys/simsys_gl.cc src/simutrans/sound/no_sound.cc src/simutrans/music/no_midi.cc)
+	target_link_libraries(simutrans PRIVATE GL)
+	target_link_libraries(simutrans PRIVATE glfw)
+
+	target_compile_definitions(simutrans PRIVATE COLOUR_DEPTH=16)
+
 else ()
 	if (NOT SIMUTRANS_BACKEND STREQUAL "none")
 		message(WARNING "Unknown backend '${SIMUTRANS_BACKEND}', falling back to headless compilation")

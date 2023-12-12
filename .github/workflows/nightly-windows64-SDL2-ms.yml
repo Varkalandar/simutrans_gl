@@ -3,7 +3,9 @@
 
 name: Nightly Built Windows64 SDL2
 
-on: [push]
+on:
+  workflow_dispatch:
+#  push:
 
 jobs:
   winSDL2-64:
