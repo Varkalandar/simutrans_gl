@@ -32,6 +32,8 @@ static int gl_current_sheet_y;
 
 scr_coord_val tile_raster_width = 16; // zoomed
 scr_coord_val base_tile_raster_width = 16; // original
+scr_coord_val current_tile_raster_width = 0;
+
 
 static scr_coord_val display_width;
 static scr_coord_val display_height;
@@ -205,10 +207,11 @@ void env_t_rgb_to_system_colors()
  */
 scr_coord_val display_set_base_raster_width(scr_coord_val new_raster)
 {
-	scr_coord_val old = base_tile_raster_width;
+	const scr_coord_val old = base_tile_raster_width;
 
 	base_tile_raster_width = new_raster;
 	tile_raster_width = new_raster;
+    current_tile_raster_width = new_raster;
 
 	return old;
 }
@@ -340,9 +343,11 @@ static void convert_transparent_pixel_run(uint8_t * dest, const uint16_t * src, 
 	else {
 		while (src < end) {
 			// a semi-transparent pixel
-			uint16 aux   = *src++ - 0x8020;
-			uint16 alpha = 32 - ((aux % 31) + 1);
-			dest = rgb343to888((aux >> 5) & 0x3FF, alpha << 5, dest);
+
+			// v = 0x8020 + 31*31 + pix*31 + alpha;
+			uint16 aux   = *src++ - 0x8020 - 31*31;
+			uint16 alpha = ((aux % 31) + 1);
+			dest = rgb343to888((aux / 31) & 0x3FF, alpha << 3, dest);
 		}
 	}
 }
@@ -931,7 +936,6 @@ display_image_proc display_color = display_base_img;
 display_blend_proc display_blend = display_base_img_blend;
 display_alpha_proc display_alpha = display_base_img_alpha;
 
-signed short current_tile_raster_width = 0;
 
 
 rgba_t display_blend_colors(rgba_t c1, rgba_t c2, float mix)

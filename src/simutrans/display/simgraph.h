@@ -183,7 +183,7 @@ extern display_image_proc display_normal;
 extern display_image_proc display_color;
 extern display_blend_proc display_blend;
 extern display_alpha_proc display_alpha;
-extern signed short current_tile_raster_width;
+extern scr_coord_val current_tile_raster_width;
 
 // call this instead of referring to current_tile_raster_width directly
 #define get_current_tile_raster_width() (current_tile_raster_width)
