@@ -7,6 +7,9 @@ for f in libbrotlidec libbrotlienc libbrotlicommon; do
 	cp "/mingw64/lib/$f-static.a" "/mingw64/lib/$f.a"
 done
 
+# debug support
+find /mingw64 -name \*.a
+
 # normal build
 echo "BACKEND = ogl" >config.default
 echo "OSTYPE = mingw" >>config.default
