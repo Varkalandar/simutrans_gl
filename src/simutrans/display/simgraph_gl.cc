@@ -325,6 +325,8 @@ static uint8_t * special_rgb_to_rgba(const uint16_t c, const uint8_t alpha, uint
     *tp ++ = (rgb >> 8) & 0xFF;
     *tp ++ = (rgb >> 0) & 0xFF;
     *tp ++ = alpha;
+
+    return tp;
 }
 
 
@@ -684,8 +686,8 @@ void display_scroll_band(const scr_coord_val, const scr_coord_val, const scr_coo
 
 
 
-static void display_tile_from_sheet(const gl_texture_t * gltex, int x, int y, int w, int h,
-                                    int tile_x, int tile_y, int tile_w, int tile_h)
+void display_tile_from_sheet(const gl_texture_t * gltex, int x, int y, int w, int h,
+                             int tile_x, int tile_y, int tile_w, int tile_h)
 {
     // texture coordinates in fractions of sheet size
     const float left = tile_x / (float)gltex->width;
