@@ -22,6 +22,8 @@ echo "FLAGS = -DREVISION=$(svn info --show-item revision svn://servers.simutrans
 echo "STATIC = 1" >>config.default
 echo "VERBOSE = 1" >>config.default
 
-make
+cmake -G Ninja -S . -B build -DCMAKE_BUILD_TYPE=Release -DOPTION_BUNDLE_LIBRARIES=ON
+cmake --build build -j$(nproc) --target install
+
 sh tools/distribute.sh
 mv simu*.zip simuwin64-ogl-nightly.zip
