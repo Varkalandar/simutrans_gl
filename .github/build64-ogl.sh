@@ -2,10 +2,10 @@
 # build open gl simutrans nightly
 
 # libbrotli static is broken in MinGW for freetype2
-for f in libbrotlidec libbrotlienc libbrotlicommon; do
-	mv "/mingw64/lib/$f.dll.a" "/mingw64/lib/$f.dll._"
-	cp "/mingw64/lib/$f-static.a" "/mingw64/lib/$f.a"
-done
+#for f in libbrotlidec libbrotlienc libbrotlicommon; do
+#	mv "/mingw64/lib/$f.dll.a" "/mingw64/lib/$f.dll._"
+#	cp "/mingw64/lib/$f-static.a" "/mingw64/lib/$f.a"
+#done
 
 # debug support
 find /mingw64 -name \*.a

@@ -188,31 +188,10 @@ ifdef MSG_LEVEL
 endif
 
 ifdef USE_FREETYPE
-  ifeq ($(shell expr $(USE_FREETYPE) \>= 1), 1)
-    CFLAGS   += -DUSE_FREETYPE
-    ifneq ($(FREETYPE_CONFIG),)
-      CFLAGS += $(shell $(FREETYPE_CONFIG) --cflags)
-      ifeq ($(shell expr $(STATIC) \>= 1), 1)
-        # since static is not supported by slightly old freetype versions
-        FTF := $(shell $(FREETYPE_CONFIG) --libs --static)
-        ifneq ($(FTF),)
-          LDFLAGS += $(subst -lm ,,$(FTF))
-        else
-          LDFLAGS += $(shell $(FREETYPE_CONFIG) --libs)
-        endif
-      else
-        LDFLAGS   += $(shell $(FREETYPE_CONFIG) --libs)
-      endif
-    else
-      LDFLAGS += -lfreetype
-      ifeq ($(OSTYPE),mingw)
-        LDFLAGS += -lpng -lharfbuzz
-      endif
-    endif
-
-    ifeq ($(OSTYPE),mingw)
-      LDFLAGS += -lfreetype
-    endif
+  CFLAGS  += -DUSE_FREETYPE $(shell pkg-config --cflags freetype2)
+  LDFLAGS += -lfreetype -lpng16 -lz -lbrotlidec -lbrotlicommon
+  ifeq ($(OSTYPE),mingw)
+    LDFLAGS += -lpng -lharfbuzz
   endif
 endif
 
