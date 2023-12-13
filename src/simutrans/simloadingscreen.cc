@@ -154,7 +154,6 @@ loadingscreen_t::~loadingscreen_t()
 	if(is_display_init()) {
 		win_redraw_world();
 		mark_screen_dirty();
-		ticker::set_redraw_all(true);
 	}
 	while(  !queued_events.empty()  ) {
 		queue_event( queued_events.remove_first() );

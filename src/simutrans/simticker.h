@@ -51,12 +51,6 @@ namespace ticker
 	void draw();
 
 	/**
-	 * Set true if ticker has to be redrawn fully
-	 * @sa redraw
-	 */
-	void set_redraw_all(bool redraw);
-
-	/**
 	 * Force a ticker redraw (e.g. after a window resize)
 	 */
 	void redraw();

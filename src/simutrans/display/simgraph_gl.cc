@@ -353,7 +353,7 @@ static void convert_transparent_pixel_run(uint8_t * dest, const uint16_t * src, 
 }
 
 
-static uint8_t * convert(const uint16_t * sp, const uint16_t runlen, uint8_t * tp)
+static uint8_t * convert_pixel_run(const uint16_t * sp, const uint16_t runlen, uint8_t * tp)
 {
     // dbg->message("convert()", "Converting a run of %d pixels", runlen);
 
@@ -519,7 +519,7 @@ void register_image(image_t * image_in)
             else {
 //                dbg->message("register_image()", "Converting %d color pixels", runlen);
 
-                p = convert(sp, runlen, p);
+                p = convert_pixel_run(sp, runlen, p);
                 sp += runlen;
             }
             runlen = *sp++;

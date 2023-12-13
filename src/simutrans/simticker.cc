@@ -33,7 +33,6 @@ struct node : public message_node_t
 
 
 static slist_tpl<node> list;
-static bool redraw_all = false;            ///< true, if also trigger background need redraw
 static int next_pos;                       ///< Next x offset of new message. Always greater or equal to display_width
 static int dx_since_last_draw = 0;         ///< Increased during update(); positive values move messages to the left
 
@@ -47,13 +46,6 @@ bool ticker::empty()
 void ticker::clear_messages()
 {
 	list.clear();
-	set_redraw_all(true);
-}
-
-
-void ticker::set_redraw_all(bool redraw)
-{
-	redraw_all = redraw;
 }
 
 
@@ -62,7 +54,6 @@ void ticker::add_msg_node(const message_node_t& msg)
 	const int count = list.get_count();
 
 	if(count==0) {
-		redraw_all = true;
 		next_pos = display_get_width();
 	}
 
@@ -135,53 +126,18 @@ void ticker::update()
 	while (!list.empty()  &&  list.front().xpos + list.front().w < 0) {
 		list.remove_first();
 	}
-
-	if (list.empty()) {
-		set_redraw_all(true);
-	}
 }
 
 
 void ticker::draw()
 {
 	const int start_y = env_t::menupos == MENU_BOTTOM ? win_get_statusbar_height() : display_get_height() - TICKER_HEIGHT - win_get_statusbar_height();
-	if (redraw_all) {
-		redraw();
-		return;
-	}
-	else if (list.empty()) {
-		// ticker not visible
-
-		// mark everything at the bottom as dirty to clear also tooltips and compass
-		mark_rect_dirty_wc(0, env_t::menupos == MENU_BOTTOM ? 0 : start_y - 128, display_get_width(), start_y + 128 + TICKER_HEIGHT);
-		return;
-	}
-
-	const int width = display_get_width();
-	if (width <= 0) {
-		return;
-	}
-
-	// do partial redraw
-	display_scroll_band( start_y, dx_since_last_draw, TICKER_HEIGHT );
-	display_fillbox_wh_rgb(width-dx_since_last_draw-6, start_y, dx_since_last_draw+6, TICKER_HEIGHT, (SYSCOL_TICKER_BACKGROUND), true);
-
-	// ok, ready for the text
-	PUSH_CLIP( 0, start_y, width - 1, TICKER_HEIGHT );
-	for(node & n : list) {
-		if (n.xpos < width) {
-			display_proportional_clip_rgb(n.xpos, start_y + TICKER_V_SPACE, n.msg, ALIGN_LEFT, n.color, true);
-		}
-	}
-	POP_CLIP();
-
-	dx_since_last_draw = 0;
+    redraw();
 }
 
 
 void ticker::redraw()
 {
-	set_redraw_all(false);
 	dx_since_last_draw = 0;
 	const int start_y = env_t::menupos == MENU_BOTTOM ? win_get_statusbar_height() : display_get_height() - TICKER_HEIGHT - win_get_statusbar_height();
 
