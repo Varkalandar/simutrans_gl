@@ -757,12 +757,16 @@ void display_base_img(const image_id id, scr_coord_val x, scr_coord_val y, const
 static void display_three_image_row( image_id i1, image_id i2, image_id i3, scr_rect row, rgba_t)
 {
 // 	dbg->message("display_three_image_row", "%d %d %d %d", row.x, row.y, row.w, row.h);
-
-
 	if(  i1!=IMG_EMPTY  ) {
 		scr_coord_val w = images[i1].w;
-		display_color_img(i1, row.x, row.y, 0);
+		display_color_img( i1, row.x, row.y, 0);
 		row.x += w;
+		row.w -= w;
+	}
+	// right
+	if(  i3!=IMG_EMPTY  ) {
+		scr_coord_val w = images[i3].w;
+		display_color_img( i3, row.get_right()-w, row.y, 0);
 		row.w -= w;
 	}
 	// middle
@@ -770,20 +774,17 @@ static void display_three_image_row( image_id i1, image_id i2, image_id i3, scr_
 		scr_coord_val w = images[i2].w;
 		// tile it wide
 		while(  w <= row.w  ) {
-			display_color_img(i2, row.x, row.y, 0);
+			display_color_img( i2, row.x, row.y, 0);
 			row.x += w;
 			row.w -= w;
 		}
 		// for the rest we have to clip the rectangle
 		if(  row.w > 0  ) {
-			display_color_img(i2, row.x, row.y, 0);
+			clip_dimension const cl = display_get_clip_wh();
+			display_set_clip_wh( cl.x, cl.y, max(0,min(row.get_right(),cl.xx)-cl.x), cl.h );
+			display_color_img( i2, row.x, row.y, 0);
+			display_set_clip_wh(cl.x, cl.y, cl.w, cl.h );
 		}
-	}
-	// right
-	if(  i3!=IMG_EMPTY  ) {
-		scr_coord_val w = images[i3].w;
-		display_color_img(i3, row.get_right()-w, row.y, 0);
-		row.w -= w;
 	}
 }
 
@@ -810,15 +811,9 @@ typedef void (*DISP_THREE_ROW_FUNC)(image_id, image_id, image_id, scr_rect, rgba
  */
 static void display_img_stretch_intern( const stretch_map_t &imag, scr_rect area, DISP_THREE_ROW_FUNC display_three_image_rowf, rgba_t color)
 {
-	clip_dimension clip = display_get_clip_wh();
- 	display_set_clip_wh(area.x, area.y, area.w, area.h, false);
-
-// 	dbg->message("display_set_clip_wh", "%d %d %d %d", area.x, area.y, area.w, area.h);
-
 	scr_coord_val h_top    = max(max( get_img_height(imag[0][0]), get_img_height(imag[1][0])), get_img_height(imag[2][0]));
 	scr_coord_val h_middle = max(max( get_img_height(imag[0][1]), get_img_height(imag[1][1])), get_img_height(imag[2][1]));
 	scr_coord_val h_bottom = max(max( get_img_height(imag[0][2]), get_img_height(imag[1][2])), get_img_height(imag[2][2]));
-
 
 	// center vertically if images[*][1] are empty, display images[*][0]
 	if(  imag[0][1] == IMG_EMPTY  &&  imag[1][1] == IMG_EMPTY  &&  imag[2][1] == IMG_EMPTY  ) {
@@ -837,6 +832,11 @@ static void display_img_stretch_intern( const stretch_map_t &imag, scr_rect area
 	// top row
 	display_three_image_rowf( imag[0][0], imag[1][0], imag[2][0], area, color);
 
+	// bottom row
+	if(  h_bottom > 0  ) {
+		scr_rect row( area.x, area.y+area.h-h_bottom, area.w, h_bottom );
+		display_three_image_rowf( imag[0][2], imag[1][2], imag[2][2], row, color);
+	}
 
 	// now stretch the middle
 	if(  h_middle > 0  ) {
@@ -849,17 +849,12 @@ static void display_img_stretch_intern( const stretch_map_t &imag, scr_rect area
 		}
 		// for the rest we have to clip the rectangle
 		if(  row.h > 0  ) {
+			clip_dimension const cl = display_get_clip_wh();
+			display_set_clip_wh( cl.x, cl.y, cl.w, max(0,min(row.get_bottom(),cl.yy)-cl.y) );
 			display_three_image_rowf( imag[0][1], imag[1][1], imag[2][1], row, color);
+			display_set_clip_wh(cl.x, cl.y, cl.w, cl.h );
 		}
 	}
-
-	// bottom row
-	if(  h_bottom > 0  ) {
-		scr_rect row( area.x, area.y+area.h-h_bottom, area.w, h_bottom );
-		display_three_image_rowf( imag[0][2], imag[1][2], imag[2][2], row, color);
-	}
-
-	display_set_clip_wh(clip.x, clip.y, clip.w, clip.h, false);
 }
 
 
