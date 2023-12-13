@@ -130,6 +130,7 @@ ifeq ($(BACKEND),ogl)
   SOURCES += src/simutrans/sys/simsys_gl.cc
   SOURCES += src/simutrans/display/simgraph_gl.cc
   SOURCES += src/simutrans/display/gl_textures.cc
+  SOURCES += src/simutrans/display/font.cc
   SOURCES += src/simutrans/music/no_midi.cc
   SOURCES += src/simutrans/sound/no_sound.cc
 endif
@@ -363,7 +364,6 @@ SOURCES += src/simutrans/descriptor/sound_desc.cc
 SOURCES += src/simutrans/descriptor/tunnel_desc.cc
 SOURCES += src/simutrans/descriptor/vehicle_desc.cc
 SOURCES += src/simutrans/descriptor/way_desc.cc
-SOURCES += src/simutrans/display/font.cc
 SOURCES += src/simutrans/display/simview.cc
 SOURCES += src/simutrans/display/viewport.cc
 SOURCES += src/simutrans/display/display.cc
@@ -732,6 +732,7 @@ endif
 
 ifeq ($(BACKEND),posix)
   SOURCES += src/simutrans/display/simgraph0.cc
+  SOURCES += src/simutrans/display/font0.cc
   SOURCES += src/simutrans/sys/simsys_posix.cc
   SOURCES += src/simutrans/music/no_midi.cc
   SOURCES += src/simutrans/sound/no_sound.cc
