@@ -3,7 +3,7 @@ name: Nightly Built Windows
 on: [push]
 
 jobs:
-  winSDL2-64:
+  mingw-opengl:
     runs-on: windows-latest
     steps:
 
@@ -12,7 +12,7 @@ jobs:
         with:
           msystem: MINGW64
           update: true
-          install: git zip unzip svn base-devel mingw-w64-x86_64-toolchain autoconf mingw-w64-x86_64-gcc mingw-w64-x86_64-freetype mingw-w64-x86_64-zstd mingw-w64-x86_64-libpng mingw-w64-x86_64-brotli mingw-w64-x86_64-SDL2 mingw-w64-x86_64-pkg-config mingw-w64-glfw
+          install: git zip unzip svn base-devel mingw-w64-x86_64-toolchain autoconf mingw-w64-x86_64-gcc mingw-w64-x86_64-freetype mingw-w64-x86_64-zstd mingw-w64-x86_64-libpng mingw-w64-x86_64-brotli mingw-w64-x86_64-SDL2 mingw-w64-x86_64-pkg-config mingw-w64-x86_64-glfw
 
       - name: Checkout code
         uses: actions/checkout@v3
