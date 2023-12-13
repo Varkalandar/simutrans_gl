@@ -404,12 +404,14 @@ static void copy_into_texture_sheet(imd_t * image, uint8_t * tex, int scanline)
 static void convert_image(imd_t * image)
 {
 	// is this an oversized image?
-	if(image->base_w > tile_raster_width || image->base_h > tile_raster_width)
+	if(image->base_w > base_tile_raster_width || image->base_h > base_tile_raster_width)
 	{
 		// yes, give it a texture of its own
 		image->texture = gl_texture_t::create_texture(image->base_w, image->base_h, image->base_data);
 		image->sheet_x = 0;
 		image->sheet_y = 0;
+
+		dbg->message("convert_image()", "Oversized image got tex id=%d", image->texture->tex_id);
 	}
 	else
 	{
@@ -488,7 +490,7 @@ void register_image(image_t * image_in)
 	image = &images[anz_images];
 	anz_images++;
 
-	dbg->message("register_image()", "Currently at %d images, converting %dx%d pixels", anz_images, image_in->w, image_in->h);
+	dbg->message("register_image()", "%d images, offset %d , %d, converting %dx%d pixels", anz_images, image_in->x, image_in->y, image_in->w, image_in->h);
 
 	uint8_t * rgba_data = (uint8_t *)calloc(image_in->w * image_in->h * 4, 1);
     uint8_t * tp = rgba_data;
@@ -1022,27 +1024,34 @@ void display_array_wh(scr_coord_val, scr_coord_val, scr_coord_val, scr_coord_val
 
 int display_glyph(scr_coord_val x, scr_coord_val y, utf32 c, rgba_t color, const font_t * font  CLIP_NUM_DEF_NOUSE)
 {
-    const scr_coord_val w = font->get_glyph_width(c);
-    const scr_coord_val h = font->get_glyph_height(c);
+    int advance = 1;
 
-    // Pixel coordinates of the glyph in the sheet
-    const int gnr = font->glyphs[c].sheet_index;
-    const int glyph_x = (gnr & 31) * 32;
-    const int glyph_y = (gnr / 32) * 32;
+    if(font->is_loaded())
+    {
+        const scr_coord_val w = font->get_glyph_width(c);
+        const scr_coord_val h = font->get_glyph_height(c);
 
-    const int gy = y + font->get_glyph_top(c);
+        // Pixel coordinates of the glyph in the sheet
+        const int gnr = font->glyphs[c].sheet_index;
+        const int glyph_x = (gnr & 31) * 32;
+        const int glyph_y = (gnr / 32) * 32;
 
-    glScissor(clip_rect.x, display_get_height()-clip_rect.y-clip_rect.h, clip_rect.w, clip_rect.h);
-    // glScissor(clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h);
-    glEnable(GL_SCISSOR_TEST);
+        const int gy = y + font->get_glyph_top(c);
 
-	glColor4f(color.red, color.green, color.blue, color.alpha);
+        glScissor(clip_rect.x, display_get_height()-clip_rect.y-clip_rect.h, clip_rect.w, clip_rect.h);
+        // glScissor(clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h);
+        glEnable(GL_SCISSOR_TEST);
 
-    display_tile_from_sheet(font->glyph_sheet, x, gy, w, h, glyph_x, glyph_y, w, h);
+        glColor4f(color.red, color.green, color.blue, color.alpha);
 
-    glDisable(GL_SCISSOR_TEST);
+        display_tile_from_sheet(font->glyph_sheet, x, gy, w, h, glyph_x, glyph_y, w, h);
 
-	return font->get_glyph_advance(c);
+        glDisable(GL_SCISSOR_TEST);
+
+        advance = font->get_glyph_advance(c);
+    }
+
+    return advance;
 }
 
 
