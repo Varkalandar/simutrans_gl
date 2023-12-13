@@ -191,7 +191,7 @@ ifdef USE_FREETYPE
   CFLAGS  += -DUSE_FREETYPE $(shell pkg-config --cflags freetype2)
   LDFLAGS += -lfreetype -lpng16 -lz -lbrotlidec -lbrotlicommon
   ifeq ($(OSTYPE),mingw)
-    LDFLAGS += -lpng -lharfbuzz
+    LDFLAGS += -lpng -lharfbuzz -lgraphite2
   endif
 endif
 
