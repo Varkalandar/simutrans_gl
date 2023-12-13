@@ -47,7 +47,7 @@ void pak_set_panel_t::load_pak_logos(slist_tpl<savegame_frame_t::dir_entry_t> *e
 	for(savegame_frame_t::dir_entry_t &i : *entries) {
 		if (i.type == savegame_frame_t::LI_ENTRY) {
 
-			// dbg->message("XXX", "Checking pak path %s", i.info);
+			dbg->message("load_pak_logos", "Checking pak path %s", i.info);
 
 			cbuffer_t name;
 			name.append(i.info);
@@ -58,7 +58,7 @@ void pak_set_panel_t::load_pak_logos(slist_tpl<savegame_frame_t::dir_entry_t> *e
 			// Hajo: Now we should have a logo in this ...
 			const skin_desc_t * logo = skinverwaltung_t::biglogosymbol;
 
-			// dbg->message("XXX", "Big logo is %p", logo);
+			dbg->message("load_pak_logos", "Big logo is %p", logo);
 
 			pak_logos.append(logo);
 		}
@@ -123,16 +123,20 @@ void pak_set_panel_t::draw_logo(const scr_coord_val xpos, const scr_coord_val yp
 {
 	const skin_desc_t * logo = pak_logos.at(index);
 	const rgba_t c = gui_theme_t::gui_highlight_color;
+
+    const image_t *image0 = logo->get_image(0);
+    const int w = image0->w;
+    const int h = image0->h + image0->y;
+
 	display_bevel_box(scr_rect(xpos-1, ypos-1, 258, 258), c, c, c, c, true);
 
 	// Hajo: Logos are designed for black background
-	const rgba_t black = get_system_color({0, 0, 0});
-	display_fillbox_wh_clip_rgb(xpos, ypos, 256, 256, black, true);
+	display_fillbox_wh_clip_rgb(xpos, ypos, 256, 256, RGBA_BLACK, true);
 
 	display_base_img(logo->get_image_id(0), xpos, ypos, 0, false, true);
-	display_base_img(logo->get_image_id(1), xpos+128, ypos, 0, false, true);
-	display_base_img(logo->get_image_id(2), xpos, ypos+128, 0, false, true);
-	display_base_img(logo->get_image_id(3), xpos+128, ypos+128, 0, false, true);
+	display_base_img(logo->get_image_id(1), xpos+w, ypos, 0, false, true);
+	display_base_img(logo->get_image_id(2), xpos, ypos+h, 0, false, true);
+	display_base_img(logo->get_image_id(3), xpos+w, ypos+h, 0, false, true);
 
 	const char * pak_name = strrchr(entry.info, '/');
 	if(pak_name) {
