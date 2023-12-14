@@ -12,7 +12,7 @@
 #include "../simline.h"
 #include "../convoihandle.h"
 #include "../dataobj/schedule.h"
-#include "../tpl/array2d_tpl.h"
+// #include "../tpl/array2d_tpl.h"
 #include "../tpl/vector_tpl.h"
 
 
@@ -24,6 +24,7 @@ class player_t;
 class schedule_t;
 class loadsave_t;
 class goods_desc_t;
+class gl_texture_t;
 
 
 #define MAX_SEVERITY_COLORS 10
@@ -76,7 +77,7 @@ private:
 	static minimap_t *single_instance;
 
 	/// the terrain map
-	array2d_tpl<rgb888_t> *map_data;
+	gl_texture_t *map_texture;
 
 	void set_map_color_clip(sint16 x, sint16 y, rgb888_t color);
 

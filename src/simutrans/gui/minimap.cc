@@ -33,6 +33,7 @@
 #include "../display/simgraph.h"
 #include "../display/display.h"
 #include "../display/viewport.h"
+#include "../display/gl_textures.h"
 #include "../utils/simrandom.h"
 #include "../player/simplay.h"
 
@@ -609,11 +610,14 @@ rgb888_t minimap_t::calc_severity_color_log(sint32 amount, sint32 max_value)
 }
 
 
-void minimap_t::set_map_color_clip( sint16 x, sint16 y, rgb888_t color )
+void minimap_t::set_map_color_clip(sint16 x, sint16 y, rgb888_t color)
 {
-	if(  0<=x  &&  (uint16)x < map_data->get_width()  &&  0<=y  &&  (uint16)y < map_data->get_height()  ) {
-		map_data->at( x, y ) = color;
-	}
+    uint8_t data[4];
+    data[0] = color.r;
+    data[1] = color.g;
+    data[2] = color.b;
+    data[3] = 255;
+    map_texture->update_region(x, y, 1, 1, data);
 }
 
 
@@ -622,7 +626,7 @@ void minimap_t::set_map_color(koord k_, const rgb888_t color)
 	// if map is in normal mode, set new color for map
 	// otherwise do nothing
 	// result: convois will not "paint over" special maps
-	if ( map_data==NULL  ||  !world->is_within_limits(k_)) {
+	if(map_texture == NULL || !world->is_within_limits(k_)) {
 		return;
 	}
 
@@ -652,9 +656,10 @@ void minimap_t::set_map_color(koord k_, const rgb888_t color)
 		}
 	}
 	else {
-		for(  sint32 x = max(0,c.x);  x < zoom_in+c.x  &&  (uint32)x < map_data->get_width();  x++  ) {
-			for(  sint32 y = max(0,c.y);  y < zoom_in+c.y  &&  (uint32)y < map_data->get_height();  y++  ) {
-				map_data->at(x, y) = color;
+		for(sint32 x = max(0, c.x); x < zoom_in + c.x && (uint32)x < map_texture->width; x++) {
+			for(sint32 y = max(0, c.y);  y < zoom_in + c.y && (uint32)y < map_texture->height; y++) {
+				// map_data->at(x, y) = color;
+				set_map_color_clip(x, y, color);
 			}
 		}
 	}
@@ -1078,11 +1083,14 @@ void minimap_t::calc_map()
 {
 	// only use bitmap size like screen size
 	scr_size minimap_size ( min( get_size().w, new_size.w ), min( get_size().h, new_size.h ) );
-	// actually the following line should reduce new/deletes, but does not work properly
-	if(  map_data==NULL  ||  (sint16) map_data->get_width()!=minimap_size.w  ||  (sint16) map_data->get_height()!=minimap_size.h  ) {
-		delete map_data;
-		map_data = new array2d_tpl<rgb888_t> ( minimap_size.w,minimap_size.h);
+
+	if(map_texture == NULL) {
+		dbg->message("minimap_t::calc_map()", "Allocating a new map texture");
+        void * clear_pixels = calloc(1024*1024*4, 1);
+        map_texture = gl_texture_t::create_texture(1024, 1024, (uint8_t *)clear_pixels);
+        free(clear_pixels);
 	}
+
 	cur_off = new_off;
 	cur_size = new_size;
 	needs_redraw = false;
@@ -1092,7 +1100,7 @@ void minimap_t::calc_map()
 	if(  !isometric  ) {
 		koord k;
 		koord start_off = koord( (cur_off.x*zoom_out)/zoom_in, (cur_off.y*zoom_out)/zoom_in );
-		koord end_off = start_off+koord( ( map_data->get_width()*zoom_out)/zoom_in+1, ( map_data->get_height()*zoom_out)/zoom_in+1 );
+		koord end_off = start_off+koord((map_texture->width*zoom_out)/zoom_in+1, (map_texture->height*zoom_out)/zoom_in+1);
 		for(  k.y=start_off.y;  k.y<end_off.y;  k.y+=zoom_out  ) {
 			for(  k.x=start_off.x;  k.x<end_off.x;  k.x+=zoom_out  ) {
 				calc_map_pixel(k);
@@ -1102,7 +1110,7 @@ void minimap_t::calc_map()
 	else {
 		// always the whole map ...
 		if(isometric) {
-			map_data->init(get_color_rgb(COL_BLACK));
+			// todo: map_data->init(get_color_rgb(COL_BLACK));
 		}
 		koord k;
 		for(  k.y=0;  k.y < world->get_size().y;  k.y++  ) {
@@ -1116,7 +1124,7 @@ void minimap_t::calc_map()
 
 minimap_t::minimap_t()
 {
-	map_data = NULL;
+	map_texture = NULL;
 	zoom_in = 1;
 	zoom_out = 1;
 	isometric = false;
@@ -1132,7 +1140,8 @@ minimap_t::minimap_t()
 
 minimap_t::~minimap_t()
 {
-	delete map_data;
+    dbg->message("minimap_t::~minimap_t()", "Called.");
+	// todo: delete map_data;
 }
 
 
@@ -1147,8 +1156,11 @@ minimap_t *minimap_t::get_instance()
 
 void minimap_t::init()
 {
-	delete map_data;
-	map_data = NULL;
+    dbg->message("minimap_t::init()", "Called");
+
+	// delete map_data;
+	// map_data = NULL;
+
 	needs_redraw = true;
 	is_visible = false;
 
@@ -1303,7 +1315,7 @@ void minimap_t::draw(scr_coord pos)
 		needs_redraw = false;
 	}
 
-	if( map_data==NULL) {
+	if(map_texture == NULL) {
 		return;
 	}
 
@@ -1337,13 +1349,17 @@ void minimap_t::draw(scr_coord pos)
 		pax_destinations_last_change = selected_city->get_pax_destinations_new_change();
 	}
 
-	if(  (uint16)cur_size.w > map_data->get_width()  ) {
-		display_fillbox_wh_clip_rgb( pos.x+new_off.x+map_data->get_width(), new_off.y+pos.y, 32767, map_data->get_height(), color_idx_to_rgb(COL_BLACK), true);
+	if((uint16)cur_size.w > map_texture->width) {
+		display_fillbox_wh_clip_rgb( pos.x+new_off.x+map_texture->width, new_off.y+pos.y, 32767, map_texture->height, color_idx_to_rgb(COL_BLACK), true);
 	}
-	if(  (uint16)cur_size.h > map_data->get_height()  ) {
-		display_fillbox_wh_clip_rgb( pos.x+new_off.x, pos.y+new_off.y+map_data->get_height(), 32767, 32767, color_idx_to_rgb(COL_BLACK), true);
+
+	if((uint16)cur_size.h > map_texture->height) {
+		display_fillbox_wh_clip_rgb( pos.x+new_off.x, pos.y+new_off.y+map_texture->height, 32767, 32767, color_idx_to_rgb(COL_BLACK), true);
 	}
-	display_array_wh( cur_off.x+pos.x, new_off.y+pos.y, map_data->get_width(), map_data->get_height(), map_data->to_array());
+
+	// display_array_wh( cur_off.x+pos.x, new_off.y+pos.y, map_texture_width, map_data->get_height(), map_data->to_array());
+	display_tile_from_sheet(map_texture, cur_off.x+pos.x, new_off.y+pos.y, map_texture->width, map_texture->height,
+	                        0, 0, map_texture->width, map_texture->height);
 
 	if(  !current_cnv.is_bound()  &&  mode & MAP_LINES    ) {
 		vector_tpl<linehandle_t> linee;
@@ -1474,7 +1490,7 @@ void minimap_t::draw(scr_coord pos)
 		}
 		else {
 			// easier with rectangular maps ...
-			display_blend_wh_rgb(cur_off.x+pos.x, cur_off.y+pos.y, map_data->get_width(), map_data->get_height(), color_idx_to_rgba(COL_WHITE, 75));
+			display_blend_wh_rgb(cur_off.x+pos.x, cur_off.y+pos.y, map_texture->width, map_texture->height, color_idx_to_rgba(COL_WHITE, 75));
 		}
 
 		scr_coord k1,k2;
