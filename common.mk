@@ -11,7 +11,7 @@ DIRS := $(sort $(dir $(OBJS)))
 DUMMY := $(shell mkdir -p $(DIRS))
 
 BUILDCONFIG_FILES := common.mk Makefile config.$(CFG)
-#BUILDCONFIG_FILES :=
+# BUILDCONFIG_FILES :=
 
 .PHONY: all clean
 

@@ -17,6 +17,7 @@
 
 class font_t;
 class rgba_t;
+class gl_texture_t;
 
 #if COLOUR_DEPTH != 0
 
@@ -129,11 +130,12 @@ void display_set_actual_width(scr_coord_val);
 
 void display_day_night_shift(int night);
 
-// scrolls horizontally, will ignore clipping etc.
-void display_scroll_band( const scr_coord_val start_y, const scr_coord_val x_offset, const scr_coord_val h );
-
 // set first and second company color for player
-void display_set_player_color_scheme(const int player, const uint8 col1, const uint8 col2 );
+void display_set_player_color_scheme(const int player, const uint8 col1, const uint8 col2);
+
+
+void display_tile_from_sheet(const gl_texture_t * gltex, int x, int y, int w, int h,
+                             int tile_x, int tile_y, int tile_w, int tile_h);
 
 // only used for GUI, display image inside a rect
 void display_img_aligned(const image_id n, scr_rect area, int align, sint8 player_nr_raw, const bool dirty);
