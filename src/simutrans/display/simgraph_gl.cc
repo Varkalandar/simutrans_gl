@@ -1124,6 +1124,7 @@ void display_show_load_pointer(int v)
 void sysgl_cursor_pos_callback(GLFWwindow *window, double x, double y);
 void sysgl_mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 void sysgl_scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+void sysgl_window_close_callback(GLFWwindow* window);
 
 
 bool simgraph_init(scr_size size, sint16)
@@ -1155,9 +1156,10 @@ bool simgraph_init(scr_size size, sint16)
         glfwSetCursorPosCallback(window, sysgl_cursor_pos_callback);
         glfwSetMouseButtonCallback(window, sysgl_mouse_button_callback);
 		glfwSetScrollCallback(window, sysgl_scroll_callback);
+        glfwSetWindowCloseCallback(window, sysgl_window_close_callback);
 
         // 2D Initialization
-        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glEnable(GL_TEXTURE_2D);
 
         glEnable(GL_BLEND);

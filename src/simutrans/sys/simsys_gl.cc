@@ -18,10 +18,15 @@
 #include <signal.h>
 
 #include "simsys.h"
+#include "../simversion.h"
+#include "../simintr.h"
 #include "../simdebug.h"
 #include "../simevent.h"
 #include "../display/simgraph.h"
 #include "../display/rgba.h"
+#include "../dataobj/environment.h"
+#include "../world/simworld.h"
+#include "../music/music.h"
 
 #include <GLFW/glfw3.h>
 
@@ -115,6 +120,56 @@ void sysgl_scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 }
 
 
+/**
+ * Quit immediately, save settings and game without visual feedback
+ */
+void sysgl_window_close_callback(GLFWwindow* window)
+{
+
+    // stop game processing
+    intr_disable();
+
+    DBG_DEBUG("sysgl_window_close_callback()", "env_t::reload_and_save_on_quit=%d", env_t::reload_and_save_on_quit);
+
+    // save game only if there is a game world
+    if(env_t::reload_and_save_on_quit && !env_t::networkmode && world() != NULL) {
+        // save current game, if not online
+        bool old_restore_UI = env_t::restore_UI;
+        env_t::restore_UI = true;
+
+        // construct from pak name an autosave if requested
+        std::string pak_name("autosave-");
+        pak_name.append(env_t::pak_name);
+        pak_name.erase(pak_name.length() - 1);
+        pak_name.append(".sve");
+
+        dr_chdir(env_t::user_dir);
+        world()->save(pak_name.c_str(), true, SAVEGAME_VER_NR, true);
+        env_t::restore_UI = old_restore_UI;
+    }
+
+    // save settings
+    {
+        dr_chdir(env_t::user_dir);
+        loadsave_t settings_file;
+        if (settings_file.wr_open("settings.xml", loadsave_t::xml, 0, "settings only/", SAVEGAME_VER_NR) == loadsave_t::FILE_STATUS_OK) {
+            env_t::rdwr(&settings_file);
+            env_t::default_settings.rdwr(&settings_file);
+            settings_file.close();
+        }
+    }
+
+    // stop the music
+    dr_stop_midi();
+
+    // leave the ship in an orderly manner
+    dr_os_close();
+
+    // and done for now.
+    exit(0);
+}
+
+
 bool dr_set_screen_scale(sint16)
 {
 	// no autoscaling as we have no display ...
@@ -149,7 +204,7 @@ bool dr_os_init(const int*)
 
 resolution dr_query_screen_resolution()
 {
-	resolution const res = { 640, 480 };
+	resolution const res = {1024, 768};
 	return res;
 }
 
