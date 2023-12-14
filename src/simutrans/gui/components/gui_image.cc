@@ -13,6 +13,7 @@ gui_image_t::gui_image_t( const image_id i, const uint8 p, control_alignment_t a
 	player_nr(p),
 	remove_offset(0,0),
 	remove_enabled(remove_offset_enabled),
+	alpha(1.0f),
 	display_offset(0,0)
 {
 	set_image(i,remove_offset_enabled);
@@ -107,12 +108,8 @@ void gui_image_t::draw( scr_coord offset ) {
 				break;
 
 		}
-// todo
-//		if (color_index) {
-//			display_base_img_blend(id , pos.x+offset.x+remove_offset.x, pos.y+offset.y+remove_offset.y, player_nr, color_index, false, true);
-//		}
-//		else {
-			display_base_img( id, pos.x+offset.x+remove_offset.x, pos.y+offset.y+remove_offset.y, (sint8)player_nr, false, true );
-//		}
+
+        display_set_color(rgba_t(1, 1, 1, alpha));
+        display_base_img(id, pos.x+offset.x+remove_offset.x, pos.y+offset.y+remove_offset.y, (sint8)player_nr, false, true);
 	}
 }

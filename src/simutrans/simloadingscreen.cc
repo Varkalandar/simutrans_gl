@@ -33,8 +33,8 @@ loadingscreen_t::loadingscreen_t( const char *w, uint32 max_p, bool logo, bool c
 	}
 
 	// darkens the current screen
-	display_blend_wh_rgb(0, 0, display_get_width(), display_get_height(), rgba_t(0, 0, 0, 0.5f));
-	mark_screen_dirty();
+	display_set_color(rgba_t(0, 0, 0, 0.5f));
+	display_fillbox_wh(0, 0, display_get_width(), display_get_height());
 
 	display_logo();
 }
@@ -53,6 +53,7 @@ void loadingscreen_t::display_logo()
 			y = 1;
 		}
 
+        display_set_color(RGBA_WHITE);
 		display_color_img(skinverwaltung_t::biglogosymbol->get_image_id(0), x, y, 0);
 		display_color_img(skinverwaltung_t::biglogosymbol->get_image_id(1), x+w, y, 0);
 		display_color_img(skinverwaltung_t::biglogosymbol->get_image_id(2), x, y+h, 0);

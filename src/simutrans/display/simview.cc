@@ -52,6 +52,8 @@ void main_view_t::display(bool force_dirty)
 #if COLOUR_DEPTH != 0
 	DBG_DEBUG4("main_view_t::display", "starting ...");
 
+	display_set_color(RGBA_WHITE);
+
 	const sint16 disp_width = display_get_width();
 	const sint16 disp_real_height = display_get_height();
 	const sint16 IMG_SIZE = get_tile_raster_width();
@@ -155,6 +157,7 @@ void main_view_t::display(bool force_dirty)
 	}
 
     // slow serial way of display
+    display_set_color(RGBA_WHITE);
 	display_region(koord(clip_rr.x, clip_rr.y), koord(clip_rr.w, clip_rr.h), y_min, dpy_height + 4 * 4, false );
 
 	// and finally overlays (station coverage and signs)

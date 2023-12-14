@@ -133,6 +133,10 @@ void display_day_night_shift(int night);
 // set first and second company color for player
 void display_set_player_color_scheme(const int player, const uint8 col1, const uint8 col2);
 
+/**
+ * Set color for subsequent drawing operations
+ */
+void display_set_color(const rgba_t & color);
 
 void display_tile_from_sheet(const gl_texture_t * gltex, int x, int y, int w, int h,
                              int tile_x, int tile_y, int tile_w, int tile_h);
@@ -195,7 +199,7 @@ extern scr_coord_val current_tile_raster_width;
 rgba_t display_blend_colors(rgba_t background, rgba_t foreground, float blend);
 
 // blends a rectangular region
-void display_blend_wh_rgb(scr_coord_val xp, scr_coord_val yp, scr_coord_val w, scr_coord_val h, rgba_t color);
+void display_fillbox_wh(scr_coord_val xp, scr_coord_val yp, scr_coord_val w, scr_coord_val h);
 
 void display_fillbox_wh_rgb(scr_coord_val xp, scr_coord_val yp, scr_coord_val w, scr_coord_val h, rgba_t color, bool dirty);
 
@@ -218,7 +222,7 @@ void display_ddd_box_clip_rgb(scr_coord_val x1, scr_coord_val y1, scr_coord_val 
 
 
 // #ifdef MULTI_THREAD
-int display_glyph(scr_coord_val x, scr_coord_val y, utf32 c, rgba_t default_color, const font_t * font  CLIP_NUM_DEF  CLIP_NUM_DEFAULT_ZERO);
+int display_glyph(scr_coord_val x, scr_coord_val y, utf32 c, const font_t * font);
 
 
 // line drawing primitives

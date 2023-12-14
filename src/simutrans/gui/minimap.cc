@@ -1455,26 +1455,27 @@ void minimap_t::draw(scr_coord pos)
 			scr_coord p4 = map_to_screen_coord( koord( 0, world->get_size().y ) );
 
 			// top and bottom part
+            display_set_color(rgba_t(1.0f, 1.0f, 1.0f, 0.75f));
 			const int toplines = min( p4.y, p2.y );
 			for( scr_coord_val y = 0;  y < toplines;  y++  ) {
-				display_blend_wh_rgb( pos.x+p1.x-2*y, pos.y+y, 4*y+4, 1, color_idx_to_rgba(COL_WHITE, 75));
-				display_blend_wh_rgb( pos.x+p3.x-2*y, pos.y+p3.y-y-1, 4*y+4, 1, color_idx_to_rgba(COL_WHITE, 75));
+				display_fillbox_wh(pos.x+p1.x-2*y, pos.y+y, 4*y+4, 1);
+				display_fillbox_wh(pos.x+p3.x-2*y, pos.y+p3.y-y-1, 4*y+4, 1);
 			}
 			// center area
 			if(  p1.x < p3.x  ) {
 				for( scr_coord_val y = toplines;  y < p3.y-toplines;  y++  ) {
-					display_blend_wh_rgb( pos.x+(y-toplines)*2, pos.y+y, 4*toplines+4, 1, color_idx_to_rgba(COL_WHITE, 75));
+					display_fillbox_wh(pos.x+(y-toplines)*2, pos.y+y, 4*toplines+4, 1);
 				}
 			}
 			else {
 				for( scr_coord_val y = toplines;  y < p3.y-toplines;  y++  ) {
-					display_blend_wh_rgb( pos.x+(y-toplines)*2, pos.y+p3.y-y-1, 4*toplines+4, 1, color_idx_to_rgba(COL_WHITE, 75));
+					display_fillbox_wh(pos.x+(y-toplines)*2, pos.y+p3.y-y-1, 4*toplines+4, 1);
 				}
 			}
 		}
 		else {
 			// easier with rectangular maps ...
-			display_blend_wh_rgb(cur_off.x+pos.x, cur_off.y+pos.y, map_data->get_width(), map_data->get_height(), color_idx_to_rgba(COL_WHITE, 75));
+			display_fillbox_wh(cur_off.x+pos.x, cur_off.y+pos.y, map_data->get_width(), map_data->get_height());
 		}
 
 		scr_coord k1,k2;
