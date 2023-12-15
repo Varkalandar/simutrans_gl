@@ -330,6 +330,7 @@ void tool_selector_t::draw(scr_coord pos, scr_size sz)
 			if(  skinverwaltung_t::toolbar_background  &&  skinverwaltung_t::toolbar_background->get_image_id(toolbar_id) != IMG_EMPTY  ) {
 				const image_id back_img = skinverwaltung_t::toolbar_background->get_image_id(toolbar_id);
 
+                display_set_color(RGBA_WHITE);
 				display_color_img(back_img, draw_pos.x, draw_pos.y, welt->get_active_player_nr(), env_t::iconsize.w, env_t::iconsize.w);
 			}
 			else {
@@ -341,6 +342,7 @@ void tool_selector_t::draw(scr_coord pos, scr_size sz)
 		if(  icon_img != IMG_EMPTY  ) {
 			bool tool_dirty = dirty  ||  (tools[i].tool->is_selected() ^ tools[i].selected);
 
+            display_set_color(RGBA_WHITE);
 			display_color_img(icon_img, draw_pos.x, draw_pos.y, player->get_player_nr(), env_t::iconsize.w, env_t::iconsize.w);
 			tools[i].tool->draw_after( draw_pos, tool_dirty);
 			// store whether tool was selected
