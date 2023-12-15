@@ -1084,11 +1084,11 @@ void display_flush_buffer()
 
 	glfwSwapBuffers(window);
 
-	static uint32 time;
-	uint32 now = dr_time();
+	// static uint32 time;
+	// uint32 now = dr_time();
 
-	dbg->message("display_flush_buffer()", "Frame time=%dms", now - time);
-	time = now;
+	// dbg->message("display_flush_buffer()", "Frame time=%dms", now - time);
+	// time = now;
 
 	glClear(GL_COLOR_BUFFER_BIT);
 }

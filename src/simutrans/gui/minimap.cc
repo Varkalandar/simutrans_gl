@@ -610,6 +610,95 @@ rgb888_t minimap_t::calc_severity_color_log(sint32 amount, sint32 max_value)
 }
 
 
+static inline void tex_setpix(uint8_t * tex, int x, int y, rgb888_t color)
+{
+    if(x >= 0 && x < 1024 && y >= 0 && y < 1024)
+    {
+        uint8_t * tp = tex + y * 1024 * 4 + x * 4;
+
+        // dbg->message("tex_setpix()", "Setting %d, %d to %d %d %d", x, y, color.r, color.g, color.b);
+
+        *tp ++ = color.r;
+        *tp ++ = color.g;
+        *tp ++ = color.b;
+        *tp = 255;
+    }
+
+}
+
+
+/**
+ * while usually the map is updated incrementally in small areas
+ * at times we need to redraw it completely. This method tries to
+ * do this more efficiently than pixel-by-pixel updates of the
+ * texture.
+ */
+void minimap_t::full_redraw()
+{
+    dbg->message("minimap_t::full_redraw()", "Called, visible=%d");
+
+    if(is_visible)
+    {
+        scr_size minimap_size ( min( get_size().w, new_size.w ), min( get_size().h, new_size.h ) );
+
+        if(map_texture == NULL) {
+            dbg->message("minimap_t::full_redraw()", "Allocating a new map texture");
+            void * clear_pixels = calloc(1024*1024*4, 1);
+            map_texture = gl_texture_t::create_texture(1024, 1024, (uint8_t *)clear_pixels);
+            map_texture->data = NULL;
+            free(clear_pixels);
+        }
+
+        cur_off = new_off;
+        cur_size = new_size;
+        needs_redraw = false;
+
+        uint8_t * pixels = (uint8_t *)calloc(1024*1024*4, 1);
+
+        // redraw the map
+        if(  !isometric  ) {
+            koord k;
+            koord start_off = koord( (cur_off.x*zoom_out)/zoom_in, (cur_off.y*zoom_out)/zoom_in );
+            koord end_off = start_off+koord((minimap_size.w*zoom_out)/zoom_in+1, (minimap_size.h*zoom_out)/zoom_in+1);
+            for(  k.y=start_off.y;  k.y<end_off.y;  k.y+=zoom_out  ) {
+                for(  k.x=start_off.x;  k.x<end_off.x;  k.x+=zoom_out  ) {
+
+                    // dbg->message("minimap_t::full_redraw()", "k = %d %d", k.x, k.y);
+
+                    rgb888_t color = calc_map_pixel(k);
+                    int x = k.x - start_off.x;
+                    int y = k.y - start_off.y;
+
+                    tex_setpix(pixels, x, y, color);
+                }
+            }
+
+            map_texture->update_region(0, 0, 1024, 1024, pixels);
+        }
+        else {
+            // always the whole map ...
+            if(isometric) {
+                // todo: map_data->init(get_color_rgb(COL_BLACK));
+            }
+            koord k;
+            for(  k.y=0;  k.y < world->get_size().y;  k.y++  ) {
+                for(  k.x=0;  k.x < world->get_size().x;  k.x++  ) {
+                    rgb888_t c = calc_map_pixel(k);
+
+                    // todo
+                }
+            }
+        }
+
+        free(pixels);
+    }
+}
+
+
+/**
+ * Opposed to full_redraw() this tries to do efficient updates
+ * of pixel size spots of the map
+ */
 void minimap_t::set_map_color_clip(sint16 x, sint16 y, rgb888_t color)
 {
     uint8_t data[4];
@@ -797,32 +886,32 @@ rgb888_t minimap_t::calc_ground_color(const grund_t *gr)
 }
 
 
-bool minimap_t::calc_map_pixel(const grund_t *gr)
+rgb888_t minimap_t::calc_map_pixel(const grund_t *gr)
 {
 	if (!gr) {
-		return false;
+		return rgb888_t(0, 0, 0);
 	}
 
-	const koord k = gr->get_pos().get_2d();
-
 	if(mode != MAP_PAX_DEST  &&  gr->get_convoi_vehicle()) {
-		set_map_color(k, COL_VEHICLE);
-		return true;
+		// set_map_color(k, COL_VEHICLE);
+		return COL_VEHICLE;
 	}
 
 	switch (mode & ~MAP_MODE_FLAGS) {
 
 		case MAP_PASSENGER:
 		case MAP_MAIL:
-			return false;
+			return rgb888_t(0, 0, 0);
 
 		// show usage
 		case MAP_FREIGHT:
 			// need to init the maximum?
 			if (max_cargo == 0) {
 				max_cargo = 1;
-				calc_map();
-				return true;
+
+				// todo, but ???
+				// calc_map();
+				return rgb888_t(0, 0, 0);;
 			}
 			else if (gr->hat_wege()) {
 				// now calc again ...
@@ -839,8 +928,8 @@ bool minimap_t::calc_map_pixel(const grund_t *gr)
 					if (cargo > max_cargo) {
 						max_cargo = cargo;
 					}
-					set_map_color(k, calc_severity_color_log(cargo, max_cargo));
-					return true;
+					// set_map_color(k, calc_severity_color_log(cargo, max_cargo));
+					return calc_severity_color_log(cargo, max_cargo);
 				}
 			}
 			break;
@@ -850,7 +939,7 @@ bool minimap_t::calc_map_pixel(const grund_t *gr)
 			// need to init the maximum?
 			if (max_passed == 0) {
 				max_passed = 1;
-				calc_map();
+				full_redraw();
 			}
 			else if (gr->hat_wege()) {
 				// now calc again ...
@@ -866,8 +955,8 @@ bool minimap_t::calc_map_pixel(const grund_t *gr)
 					if (passed > max_passed) {
 						max_passed = passed;
 					}
-					set_map_color(k, calc_severity_color_log(passed, max_passed));
-					return true;
+					// set_map_color(k, calc_severity_color_log(passed, max_passed));
+					return calc_severity_color_log(passed, max_passed);
 				}
 			}
 			break;
@@ -879,16 +968,16 @@ bool minimap_t::calc_map_pixel(const grund_t *gr)
 				const schiene_t* sch = (const schiene_t*)(gr->get_weg(track_wt));
 				// show signals
 				if (sch->has_sign() || sch->has_signal()) {
-					set_map_color(k, get_color_rgb(COL_YELLOW));
-					return true;
+					// set_map_color(k, get_color_rgb(COL_YELLOW));
+					return get_color_rgb(COL_YELLOW);
 				}
 				else if (sch->is_electrified()) {
-					set_map_color(k, get_color_rgb(COL_RED));
-					return true;
+					// set_map_color(k, get_color_rgb(COL_RED));
+					return get_color_rgb(COL_RED);
 				}
 				else {
-					set_map_color(k, get_color_rgb(COL_WHITE));
-					return true;
+					// set_map_color(k, get_color_rgb(COL_WHITE));
+					return get_color_rgb(COL_WHITE);
 				}
 
 			}
@@ -897,8 +986,8 @@ bool minimap_t::calc_map_pixel(const grund_t *gr)
 		// show max speed (if there)
 		case MAX_SPEEDLIMIT:
 			if (gr->get_max_speed()) {
-				set_map_color(k, calc_severity_color(gr->get_max_speed(), 450));
-				return true;
+				// set_map_color(k, calc_severity_color(gr->get_max_speed(), 450));
+				return calc_severity_color(gr->get_max_speed(), 450);
 			}
 			break;
 
@@ -907,32 +996,32 @@ bool minimap_t::calc_map_pixel(const grund_t *gr)
 			if (const leitung_t* lt = gr->find<leitung_t>()) {
 				const sint32 saturated_demand = std::min<uint64>(lt->get_net()->get_demand(), INT32_MAX);
 				const sint32 saturated_supply = std::min<uint64>(lt->get_net()->get_supply(), INT32_MAX);
-				set_map_color(k, calc_severity_color(saturated_demand, saturated_supply));
-				return true;
+				// set_map_color(k, calc_severity_color(saturated_demand, saturated_supply));
+				return calc_severity_color(saturated_demand, saturated_supply);
 			}
 			break;
 
 		case MAP_FOREST:
 			if (gr->get_top() > 1 && gr->obj_bei(gr->get_top() - 1)->get_typ() == obj_t::baum) {
-				set_map_color(k, get_color_rgb(COL_GREEN));
-				return true;
+				// set_map_color(k, get_color_rgb(COL_GREEN));
+				return get_color_rgb(COL_GREEN);
 			}
 			break;
 
 	case MAP_OWNER:
 		// show ownership
 		if (gr->is_halt()) {
-			set_map_color(k, get_color_rgb(gr->get_halt()->get_owner()->get_player_color1() + 3));
-			return true;
+			// set_map_color(k, get_color_rgb(gr->get_halt()->get_owner()->get_player_color1() + 3));
+			return get_color_rgb(gr->get_halt()->get_owner()->get_player_color1() + 3);
 		}
 		else if (weg_t* weg = gr->get_weg_nr(0)) {
-			set_map_color(k, weg->get_owner() == NULL ? get_color_rgb(COL_ORANGE) : get_color_rgb(weg->get_owner()->get_player_color1() + 3));
-			return true;
+			// set_map_color(k, weg->get_owner() == NULL ? get_color_rgb(COL_ORANGE) : get_color_rgb(weg->get_owner()->get_player_color1() + 3));
+			return weg->get_owner() == NULL ? get_color_rgb(COL_ORANGE) : get_color_rgb(weg->get_owner()->get_player_color1() + 3);
 		}
 		if (gebaeude_t* gb = gr->find<gebaeude_t>()) {
 			if (gb->get_owner() != NULL) {
-				set_map_color(k, get_color_rgb(gb->get_owner()->get_player_color1() + 3));
-				return true;
+				// set_map_color(k, get_color_rgb(gb->get_owner()->get_player_color1() + 3));
+				return get_color_rgb(gb->get_owner()->get_player_color1() + 3);
 			}
 		}
 		break;
@@ -940,9 +1029,11 @@ bool minimap_t::calc_map_pixel(const grund_t *gr)
 	case MAP_LEVEL:
 		if (max_building_level == 0) {
 			// init maximum
-			max_building_level = 1;
-			calc_map();
-			return true;
+
+			// todo
+			// max_building_level = 1;
+			// calc_map();
+			return rgb888_t(1, 1, 1);
 		}
 		else if (gr->get_typ() == grund_t::fundament) {
 			if (gebaeude_t* gb = gr->find<gebaeude_t>()) {
@@ -951,32 +1042,29 @@ bool minimap_t::calc_map_pixel(const grund_t *gr)
 					if (level > max_building_level) {
 						max_building_level = level;
 					}
-					set_map_color(k, calc_severity_color(level, max_building_level));
-					return true;
+					// set_map_color(k, calc_severity_color(level, max_building_level));
+					return calc_severity_color(level, max_building_level);
 				}
 			}
 		}
 		break;
-
-		default:
-			return false;
 	}
 
-	return false;
+	return rgb888_t(0, 0, 0);
 }
 
 
-void minimap_t::calc_map_pixel(const koord k)
+rgb888_t minimap_t::calc_map_pixel(const koord k)
 {
 	// no pixels visible, so noting to calculate
 	if(!is_visible) {
-		return;
+		return rgb888_t(1, 0, 0);
 	}
 
 	// always use to uppermost ground
 	const planquadrat_t *plan=world->access(k);
 	if(plan==NULL  ||  plan->get_boden_count()==0) {
-		return;
+		return rgb888_t(0, 1, 0);
 	}
 
 	switch (mode & ~MAP_MODE_FLAGS) {
@@ -986,8 +1074,8 @@ void minimap_t::calc_map_pixel(const koord k)
 			for (int i = 0; i < plan->get_haltlist_count(); i++) {
 				halthandle_t halt = plan->get_haltlist()[i];
 				if (halt->get_pax_enabled() && !halt->get_pax_connections().empty()) {
-					set_map_color(k, get_color_rgb(halt->get_owner()->get_player_color1() + 3));
-					return;
+					// set_map_color(k, get_color_rgb(halt->get_owner()->get_player_color1() + 3));
+					return get_color_rgb(halt->get_owner()->get_player_color1() + 3);
 				}
 			}
 			break;
@@ -998,8 +1086,8 @@ void minimap_t::calc_map_pixel(const koord k)
 			for (int i = 0; i < plan->get_haltlist_count(); i++) {
 				halthandle_t halt = plan->get_haltlist()[i];
 				if (halt->get_mail_enabled() && !halt->get_mail_connections().empty()) {
-					set_map_color(k, get_color_rgb(halt->get_owner()->get_player_color1() + 3));
-					return;
+					// set_map_color(k, get_color_rgb(halt->get_owner()->get_player_color1() + 3));
+					return get_color_rgb(halt->get_owner()->get_player_color1() + 3);
 				}
 			}
 			break;
@@ -1010,24 +1098,29 @@ void minimap_t::calc_map_pixel(const koord k)
 		for (uint8 i = 1; i < plan->get_boden_count(); i++) {
 			const grund_t* gr = plan->get_boden_bei(i);
 			if (gr->get_typ()==grund_t::tunnelboden) {
-				if (calc_map_pixel(gr)) {
-					return;
+				rgb888_t c = calc_map_pixel(gr);
+
+				if (! (c == 0)) {
+					return c;
 				}
 				last_tunnel = gr;
 			}
 		}
 		if(last_tunnel) {
-			set_map_color(k, calc_ground_color(last_tunnel));
+			// set_map_color(k, calc_ground_color(last_tunnel));
+			return calc_ground_color(last_tunnel);
 		}
 		else {
-			set_map_color(k, get_color_rgb(COL_BLACK));
+			// set_map_color(k, get_color_rgb(COL_BLACK));
+			return get_color_rgb(COL_BLACK);
 		}
 	}
 	else if(grund_t::underground_mode == grund_t::ugm_level) {
 		for (uint8 i = 0; i < plan->get_boden_count(); i++) {
 			const grund_t* gr = plan->get_boden_bei(i);
-			if ((gr->get_hoehe() == grund_t::underground_level  ||  (i==0  && gr->get_hoehe() == grund_t::underground_level))  &&  calc_map_pixel(gr)) {
-				return;
+			// if ((gr->get_hoehe() == grund_t::underground_level  ||  (i==0  && gr->get_hoehe() == grund_t::underground_level))  &&  calc_map_pixel(gr)) {
+			if ((gr->get_hoehe() == grund_t::underground_level  ||  (i==0  && gr->get_hoehe() == grund_t::underground_level))) {
+				return calc_map_pixel(gr);
 			}
 		}
 		grund_t* gr = plan->get_boden_in_hoehe(grund_t::underground_level);
@@ -1035,22 +1128,29 @@ void minimap_t::calc_map_pixel(const koord k)
 			gr = plan->get_kartenboden();
 		}
 		if (gr->get_hoehe() <= grund_t::underground_level) {
-			set_map_color(k, calc_ground_color(gr));
+			// set_map_color(k, calc_ground_color(gr));
+			return calc_ground_color(gr);
 		}
 		else {
-			set_map_color(k, get_color_rgb(COL_BLACK));
+			// set_map_color(k, get_color_rgb(COL_BLACK));
+			return rgb888_t(0, 0, 0);
 		}
 	}
 	else {
 		for (uint8 i = 0; i < plan->get_boden_count(); i++) {
 			const grund_t* gr = plan->get_boden_bei(i);
-			if (calc_map_pixel(gr)) {
-				return;
+			rgb888_t c = calc_map_pixel(gr);
+
+			if (! (c==0)) {
+				return c;
 			}
 		}
 		// Nothing special => calculate ground color based on last index
-		set_map_color(k, calc_ground_color(plan->get_boden_bei(plan->get_boden_count() - 1)));
+		// set_map_color(k, calc_ground_color(plan->get_boden_bei(plan->get_boden_count() - 1)));
+		return calc_ground_color(plan->get_boden_bei(plan->get_boden_count() - 1));
 	}
+
+	return rgb888_t(0, 0, 0);
 }
 
 
@@ -1062,13 +1162,8 @@ scr_size minimap_t::get_min_size() const
 
 scr_size minimap_t::get_max_size() const
 {
-	scr_coord size = map_to_screen_coord( koord( world->get_size().x, 0 ) );
-	scr_coord down = map_to_screen_coord( koord( world->get_size().x, world->get_size().y ) );
-	size.y = down.y;
-	if(  isometric  ) {
-		size.x += zoom_in*2;
-	}
-	return scr_size(size.x, size.y);
+	scr_size max_size(1024, 1024);
+	return max_size;
 }
 
 
@@ -1076,49 +1171,6 @@ void minimap_t::calc_map_size()
 {
 	set_size( get_max_size() ); // of the gui_component to adjust scroll bars
 	needs_redraw = true;
-}
-
-
-void minimap_t::calc_map()
-{
-	scr_size minimap_size ( min( get_size().w, new_size.w ), min( get_size().h, new_size.h ) );
-
-	if(map_texture == NULL) {
-		dbg->message("minimap_t::calc_map()", "Allocating a new map texture");
-        void * clear_pixels = calloc(4096*4096*4, 1);
-        map_texture = gl_texture_t::create_texture(4096, 4096, (uint8_t *)clear_pixels);
-        map_texture->data = NULL;
-        free(clear_pixels);
-	}
-
-	cur_off = new_off;
-	cur_size = new_size;
-	needs_redraw = false;
-	is_visible = true;
-
-	// redraw the map
-	if(  !isometric  ) {
-		koord k;
-		koord start_off = koord( (cur_off.x*zoom_out)/zoom_in, (cur_off.y*zoom_out)/zoom_in );
-		koord end_off = start_off+koord((map_texture->width*zoom_out)/zoom_in+1, (map_texture->height*zoom_out)/zoom_in+1);
-		for(  k.y=start_off.y;  k.y<end_off.y;  k.y+=zoom_out  ) {
-			for(  k.x=start_off.x;  k.x<end_off.x;  k.x+=zoom_out  ) {
-				calc_map_pixel(k);
-			}
-		}
-	}
-	else {
-		// always the whole map ...
-		if(isometric) {
-			// todo: map_data->init(get_color_rgb(COL_BLACK));
-		}
-		koord k;
-		for(  k.y=0;  k.y < world->get_size().y;  k.y++  ) {
-			for(  k.x=0;  k.x < world->get_size().x;  k.x++  ) {
-				calc_map_pixel(k);
-			}
-		}
-	}
 }
 
 
@@ -1162,7 +1214,6 @@ void minimap_t::init()
 	// map_data = NULL;
 
 	needs_redraw = true;
-	is_visible = false;
 
 	calc_map_size();
 	max_building_level = max_cargo = max_passed = 0;
@@ -1284,7 +1335,7 @@ void minimap_t::draw(scr_coord pos)
 
 	if(  last_mode != mode  ) {
 		// only needing update, if last mode was also not about halts or background rendering ...
-		needs_redraw = (mode^last_mode) & (~MAP_MODE_FLAGS | MAP_CLIMATES | MAP_HIDE_CONTOUR);
+		needs_redraw |= (mode^last_mode) & (~MAP_MODE_FLAGS | MAP_CLIMATES | MAP_HIDE_CONTOUR);
 
 		if(  (mode & MAP_LINES) == 0  ||  (mode^last_mode) & MAP_MODE_HALT_FLAGS  ) {
 			// rebuilt stop_cache needed
@@ -1311,7 +1362,7 @@ void minimap_t::draw(scr_coord pos)
 	}
 
 	if( needs_redraw ) {
-		calc_map();
+		full_redraw();
 		needs_redraw = false;
 	}
 
@@ -1323,7 +1374,7 @@ void minimap_t::draw(scr_coord pos)
 		const uint32 current_pax_destinations = selected_city->get_pax_destinations_new_change();
 		if(  pax_destinations_last_change > current_pax_destinations  ) {
 			// new month started.
-			calc_map();
+			full_redraw();
 		}
 		else if(  pax_destinations_last_change < current_pax_destinations  ) {
 			// new pax_dest in city.
@@ -1360,6 +1411,7 @@ void minimap_t::draw(scr_coord pos)
 	// display_array_wh( cur_off.x+pos.x, new_off.y+pos.y, map_texture_width, map_data->get_height(), map_data->to_array());
     display_set_color(RGBA_BLACK);
     display_fillbox_wh(pos.x, pos.y, map_texture->width, map_texture->height);
+    display_set_color(RGBA_WHITE);
 	display_tile_from_sheet(map_texture, pos.x, pos.y, map_texture->width, map_texture->height,
 	                        0, 0, map_texture->width, map_texture->height);
 
@@ -1880,7 +1932,7 @@ void minimap_t::set_selected_city( const stadt_t* _city )
 		if(  _city  ) {
 			pax_destinations_last_change = _city->get_pax_destinations_new_change();
 		}
-		calc_map();
+		full_redraw();
 	}
 }
 

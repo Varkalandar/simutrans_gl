@@ -1960,7 +1960,7 @@ void karte_t::enlarge_map(settings_t const* sets, sint8 const* const h_field)
 
 		minimap_t::is_visible = minimap_was_visible;
 		minimap_t::get_instance()->init();
-		minimap_t::get_instance()->calc_map();
+		minimap_t::get_instance()->full_redraw();
 		minimap_t::get_instance()->set_display_mode( minimap_t::get_instance()->get_display_mode() );
 
 		set_dirty();
@@ -4842,7 +4842,7 @@ void karte_t::update_underground()
 	get_view()->clear_prepared();
 	world_view_t::invalidate_all();
 	set_dirty();
-	minimap_t::get_instance()->calc_map();
+	minimap_t::get_instance()->full_redraw();
 }
 
 void karte_t::prepare_tiles(rect_t const &new_area, rect_t const &old_area) {

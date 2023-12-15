@@ -1730,7 +1730,7 @@ const char *tool_add_city_t::work( player_t *player, koord3d pos )
 				stadt->verbinde_fabriken();
 
 				player_t::book_construction_costs(player, cost, k, ignore_wt);
-				minimap_t::get_instance()->calc_map();
+				minimap_t::get_instance()->full_redraw();
 				return NULL;
 			}
 		}

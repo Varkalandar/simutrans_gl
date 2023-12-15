@@ -7,6 +7,20 @@ class rgb888_t
 public:
 	uint8_t r, g, b;
 
+	rgb888_t()
+    {
+		this->r = 0;
+		this->g = 0;
+		this->b = 0;
+	}
+
+	rgb888_t(uint8_t r, uint8_t g, uint8_t b)
+    {
+		this->r = r;
+		this->g = g;
+		this->b = b;
+	}
+
     rgb888_t & operator =(const uint8_t & c)
     {
 		r = c;

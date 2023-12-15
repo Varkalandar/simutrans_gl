@@ -1039,7 +1039,7 @@ int factory_builder_t::increase_industry_density( bool tell_me )
 				buf.printf( translator::translate("Factory chain extended\nfor %s near\n%s built with\n%i factories."), translator::translate(last_built_consumer->get_name()), stadt_name, nr );
 				welt->get_message()->add_message(buf, last_built_consumer->get_pos(), message_t::industry, CITY_KI, last_built_consumer->get_desc()->get_building()->get_tile(0)->get_background(0, 0, 0));
 			}
-			minimap_t::get_instance()->calc_map();
+			minimap_t::get_instance()->full_redraw();
 			return nr;
 		}
 		else {

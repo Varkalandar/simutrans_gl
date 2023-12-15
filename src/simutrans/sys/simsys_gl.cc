@@ -373,7 +373,7 @@ void dr_notify_input_pos(scr_coord pos)
 
 static void posix_sigterm(int)
 {
-	DBG_MESSAGE("Received SIGTERM", "exiting...");
+	dbg->message("Received SIGTERM", "exiting...");
 	sigterm_received = 1;
 }
 

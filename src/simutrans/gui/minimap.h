@@ -79,6 +79,10 @@ private:
 	/// the terrain map
 	gl_texture_t *map_texture;
 
+	/**
+	 * Opposed to full_redraw() this tries to do efficient updates
+	 * of pixel size spots of the map
+	 */
 	void set_map_color_clip(sint16 x, sint16 y, rgb888_t color);
 
 	/// all stuff connected with schedule display
@@ -164,6 +168,15 @@ private:
 	void set_map_color(koord k, rgb888_t color);
 
 public:
+
+	/**
+	 * while usually the map is updated incrementally in small areas
+	 * at times we need to redraw it completely. This method tries to
+	 * do this more efficiently than pixel-by-pixel updates of the
+	 * texture.
+	 */
+	void full_redraw();
+
 	scr_coord map_to_screen_coord(const koord &k) const;
 
 	void toggle_isometric() { isometric = !isometric; }
@@ -206,13 +219,11 @@ public:
 	}
 
 	/// update color with render mode (but few are ignored ... )
-	void calc_map_pixel(const koord k);
+	rgb888_t calc_map_pixel(const koord k);
 
 	/// update color with render mode (but for that kind of ground)
 	// true for
-	bool calc_map_pixel(const grund_t *gr);
-
-	void calc_map();
+	rgb888_t calc_map_pixel(const grund_t *gr);
 
 	/// calculates the current size of the map (but do not change anything else)
 	void calc_map_size();

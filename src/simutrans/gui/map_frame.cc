@@ -674,6 +674,7 @@ bool map_frame_t::infowin_event(const event_t *ev)
 
 	if(ev->ev_class == INFOWIN) {
 		if(ev->ev_code == WIN_OPEN) {
+			minimap_t::get_instance()->is_visible = true;
 			minimap_t::get_instance()->set_xy_offset_size( scr_coord(0,0), scr_size(0,0) );
 		}
 		else if(ev->ev_code == WIN_CLOSE) {
