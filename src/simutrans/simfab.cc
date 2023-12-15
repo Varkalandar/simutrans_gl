@@ -3394,8 +3394,8 @@ void fabrik_t::display_status(sint16 xpos, sint16 ypos)
 					display_fillbox_wh_clip_rgb(xpos + D_WAITINGBAR_WIDTH - 1, ypos - v - 1, 1, v, color_idx_to_rgb(COL_GREY1), true);
 				}
 				else {
-                    goods_color.alpha = 0.4f;
-					display_blend_wh_rgb(xpos + 1, ypos - v - 1, D_WAITINGBAR_WIDTH - 2, v, goods_color);
+                    display_set_color(rgba_t(goods_color, 0.4f));
+					display_fillbox_wh(xpos + 1, ypos - v - 1, D_WAITINGBAR_WIDTH - 2, v);
 					mark_rect_dirty_wc(xpos + 1, ypos - v - 1, xpos + D_WAITINGBAR_WIDTH - 1, ypos - 1);
 				}
 			}
@@ -3430,8 +3430,8 @@ void fabrik_t::display_status(sint16 xpos, sint16 ypos)
 					display_fillbox_wh_clip_rgb(xpos + D_WAITINGBAR_WIDTH - 1, ypos - v - 1, 1, v, color_idx_to_rgb(COL_GREY1), true);
 				}
 				else {
-                    goods_color.alpha = 0.5f;
-					display_blend_wh_rgb(xpos + 1, ypos - v - 1, D_WAITINGBAR_WIDTH - 2, v, goods_color);
+                    display_set_color(rgba_t(goods_color, 0.4f));
+					display_fillbox_wh(xpos + 1, ypos - v - 1, D_WAITINGBAR_WIDTH - 2, v);
 					mark_rect_dirty_wc(xpos + 1, ypos - v - 1, xpos + D_WAITINGBAR_WIDTH - 1, ypos - 1);
 				}
 			}

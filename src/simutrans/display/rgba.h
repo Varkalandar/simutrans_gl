@@ -51,6 +51,14 @@ public:
         this->alpha = alpha;
     }
 
+    rgba_t(rgba_t color, float alpha)
+    {
+        this->red = color.red / 255.0f;
+        this->green = color.green / 255.0f;
+        this->blue = color.blue / 255.0f;
+        this->alpha = alpha;
+    }
+
     uint32_t asUint32()
     {
         return ((int)(alpha * 255) << 24) + ((int)(red * 255) << 16) + ((int)(green * 255) << 8) + ((int)(blue * 255));

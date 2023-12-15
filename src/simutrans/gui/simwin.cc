@@ -186,7 +186,7 @@ static int display_gadget_box(sint8 code,
 
 	// Do we have a gadget image?
 	if(  img != NULL  ) {
-
+        display_set_color(RGBA_WHITE);
 		// Max Kielland: This center the gadget image and compensates for any left/top margins within the image to be backward compatible with older PAK sets.
 		display_img_aligned(img->imageid, scr_rect(x, y, D_GADGET_WIDTH, D_TITLEBAR_HEIGHT), ALIGN_CENTER_H | ALIGN_CENTER_V, 0, false);
 
@@ -361,11 +361,11 @@ static void win_draw_window_title(const scr_coord pos, const scr_size size,
 
 		if(!is_top) {
 			// not top => darker
-			color = display_blend_colors(title_color, color_idx_to_rgb(COL_BLACK), env_t::bottom_window_darkness);
+			color = display_blend_colors(title_color, RGBA_BLACK, env_t::bottom_window_darkness * 0.01f);
 		}
 
-		lighter = display_blend_colors(color, color_idx_to_rgb(COL_WHITE), 25);
-		darker  = display_blend_colors(color, color_idx_to_rgb(COL_BLACK), 25);
+		lighter = display_blend_colors(color, color_idx_to_rgb(COL_WHITE), 0.25f);
+		darker  = display_blend_colors(color, color_idx_to_rgb(COL_BLACK), 0.25f);
 
 		// fill title bar with color
 		display_fillbox_wh_clip_rgb(pos.x, pos.y, size.w, D_TITLEBAR_HEIGHT, color, true);
@@ -1190,6 +1190,14 @@ void display_win(int win)
 		if(need_dragger) {
 			win_draw_window_dragger( pos, size);
 		}
+
+		// darken non-top windows
+		if((unsigned)win != wins.get_count()-1)
+		{
+            // not top
+            display_set_color(rgba_t(0.0f, 0.0f, 0.0f, 0.25f));
+            display_fillbox_wh(wins[win].pos.x, wins[win].pos.y, size.w, size.h);
+		}
 	}
 }
 
@@ -1873,7 +1881,7 @@ void win_display_flush(double konto)
 	else {
 		display_fillbox_wh_rgb( menu_pos.x, menu_pos.y, menu_size.w, menu_size.h, color_idx_to_rgb(MN_GREY2), false );
 	}
-	
+
 	// .. extra logic to enable tooltips
 	tooltip_element = main_menu->is_hit( get_mouse_pos().x-menu_pos.x, get_mouse_pos().y-menu_pos.y) ? main_menu : NULL;
 	void *old_inside_event_handling = inside_event_handling;
@@ -2280,8 +2288,6 @@ void modal_dialogue(gui_frame_t* gui, ptrdiff_t magic, karte_t* welt, bool (*qui
 			}
 
 			// dbg->message("modal_dialogue()", "gui is %s", gui->get_name());
-			gui->draw(win_get_pos(gui), gui->get_windowsize());
-
 			dr_prepare_flush();
 			gui->draw(win_get_pos(gui), gui->get_windowsize());
 			dr_flush();

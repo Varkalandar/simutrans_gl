@@ -182,14 +182,17 @@ void gui_frame_t::resize(const scr_coord delta)
 void gui_frame_t::draw(scr_coord pos, scr_size size)
 {
 	scr_size titlebar_size(0, ( has_title()*D_TITLEBAR_HEIGHT ));
+
+	display_set_color(rgba_t(1.0f, 1.0f, 1.0f, 0.5f));
+
 	// draw background
 	if(  opaque  ) {
 		display_img_stretch(gui_theme_t::windowback, scr_rect( pos + titlebar_size, size - titlebar_size ), RGBA_WHITE);
-        // display_fillbox_wh_rgb(pos.x, pos.y, size.w, size.h, rgba_t(0.5f, 0.5f, 0.5f, 0.5f), true);
 	}
 	else {
-		dbg->message("Beep!", "Beep!");
-		display_blend_wh_rgb(pos.x+1, pos.y+titlebar_size.h, size.w-2, size.h-titlebar_size.h, color_transparent);
+        display_set_color(color_transparent);
+		display_fillbox_wh(pos.x+1, pos.y+titlebar_size.h, size.w-2, size.h-titlebar_size.h);
+        display_set_color(RGBA_WHITE);
 	}
 	dirty = false;
 
@@ -199,8 +202,9 @@ void gui_frame_t::draw(scr_coord pos, scr_size size)
 
 	// for shadows of the windows
 	if(  gui_theme_t::gui_drop_shadows  ) {
-		display_blend_wh_rgb( pos.x+size.w, pos.y+1, 2, size.h, color_idx_to_rgb(COL_BLACK));
-		display_blend_wh_rgb( pos.x+1, pos.y+size.h, size.w, 2, color_idx_to_rgb(COL_BLACK));
+        display_set_color(rgba_t(0, 0, 0, 0.5f));
+		display_fillbox_wh(pos.x+size.w, pos.y+1, 2, size.h);
+		display_fillbox_wh(pos.x+1, pos.y+size.h, size.w, 2);
 	}
 }
 

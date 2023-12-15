@@ -59,10 +59,12 @@ int display_text_proportional_len_clip_rgb(scr_coord_val x, scr_coord_val y,
 	                                       const rgba_t default_color, bool dirty,
 	                                       sint32 len, sint32 spacing, font_size_t size)
 {
+	// dbg->message("display_text_proportional_len_clip_rgb()", "Text %s", txt);
+
 	font_t * font = (size == FS_NORMAL) ? &default_font : &headline_font;
 	rgba_t color = default_color;
 
-	// dbg->message("display_text_proportional_len_clip_rgb()", "Text %s", txt);
+	display_set_color(color);
 
 	if (len < 0) {
 		// don't know len yet
@@ -114,11 +116,12 @@ int display_text_proportional_len_clip_rgb(scr_coord_val x, scr_coord_val y,
 			if(decoder.has_next()) {
 				utf32 c2 = decoder.next();
 				color = handle_color_sequences(c2, default_color);
+                display_set_color(color);
 			}
 			continue; // nothing to see
 		}
 
-		const int gw = display_glyph(x, y, c, color, font);
+		const int gw = display_glyph(x, y, c, font);
 		x += gw + spacing;
 	}
 

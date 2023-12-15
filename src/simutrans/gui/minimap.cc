@@ -1081,13 +1081,13 @@ void minimap_t::calc_map_size()
 
 void minimap_t::calc_map()
 {
-	// only use bitmap size like screen size
 	scr_size minimap_size ( min( get_size().w, new_size.w ), min( get_size().h, new_size.h ) );
 
 	if(map_texture == NULL) {
 		dbg->message("minimap_t::calc_map()", "Allocating a new map texture");
-        void * clear_pixels = calloc(1024*1024*4, 1);
-        map_texture = gl_texture_t::create_texture(1024, 1024, (uint8_t *)clear_pixels);
+        void * clear_pixels = calloc(4096*4096*4, 1);
+        map_texture = gl_texture_t::create_texture(4096, 4096, (uint8_t *)clear_pixels);
+        map_texture->data = NULL;
         free(clear_pixels);
 	}
 
@@ -1310,7 +1310,7 @@ void minimap_t::draw(scr_coord pos)
 		last_mode = mode;
 	}
 
-	if(  needs_redraw  ||  cur_off!=new_off  ||  cur_size!=new_size  ) {
+	if( needs_redraw ) {
 		calc_map();
 		needs_redraw = false;
 	}
@@ -1358,6 +1358,7 @@ void minimap_t::draw(scr_coord pos)
 	}
 
 	// display_array_wh( cur_off.x+pos.x, new_off.y+pos.y, map_texture_width, map_data->get_height(), map_data->to_array());
+    display_set_color(RGBA_WHITE);
 	display_tile_from_sheet(map_texture, cur_off.x+pos.x, new_off.y+pos.y, map_texture->width, map_texture->height,
 	                        0, 0, map_texture->width, map_texture->height);
 
@@ -1471,26 +1472,28 @@ void minimap_t::draw(scr_coord pos)
 			scr_coord p4 = map_to_screen_coord( koord( 0, world->get_size().y ) );
 
 			// top and bottom part
+            display_set_color(rgba_t(1.0f, 1.0f, 1.0f, 0.75f));
 			const int toplines = min( p4.y, p2.y );
 			for( scr_coord_val y = 0;  y < toplines;  y++  ) {
-				display_blend_wh_rgb( pos.x+p1.x-2*y, pos.y+y, 4*y+4, 1, color_idx_to_rgba(COL_WHITE, 75));
-				display_blend_wh_rgb( pos.x+p3.x-2*y, pos.y+p3.y-y-1, 4*y+4, 1, color_idx_to_rgba(COL_WHITE, 75));
+				display_fillbox_wh(pos.x+p1.x-2*y, pos.y+y, 4*y+4, 1);
+				display_fillbox_wh(pos.x+p3.x-2*y, pos.y+p3.y-y-1, 4*y+4, 1);
 			}
 			// center area
 			if(  p1.x < p3.x  ) {
 				for( scr_coord_val y = toplines;  y < p3.y-toplines;  y++  ) {
-					display_blend_wh_rgb( pos.x+(y-toplines)*2, pos.y+y, 4*toplines+4, 1, color_idx_to_rgba(COL_WHITE, 75));
+					display_fillbox_wh(pos.x+(y-toplines)*2, pos.y+y, 4*toplines+4, 1);
 				}
 			}
 			else {
 				for( scr_coord_val y = toplines;  y < p3.y-toplines;  y++  ) {
-					display_blend_wh_rgb( pos.x+(y-toplines)*2, pos.y+p3.y-y-1, 4*toplines+4, 1, color_idx_to_rgba(COL_WHITE, 75));
+					display_fillbox_wh(pos.x+(y-toplines)*2, pos.y+p3.y-y-1, 4*toplines+4, 1);
 				}
 			}
 		}
 		else {
 			// easier with rectangular maps ...
-			display_blend_wh_rgb(cur_off.x+pos.x, cur_off.y+pos.y, map_texture->width, map_texture->height, color_idx_to_rgba(COL_WHITE, 75));
+            display_set_color(rgba_t(1.0f, 1.0f, 1.0f, 0.75f));
+			display_fillbox_wh(cur_off.x+pos.x, cur_off.y+pos.y, size.w, size.h);
 		}
 
 		scr_coord k1,k2;

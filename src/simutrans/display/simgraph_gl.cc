@@ -680,10 +680,13 @@ void display_pop_clip_wh(CLIP_NUM_DEF0)
 }
 
 
-void display_scroll_band(const scr_coord_val, const scr_coord_val, const scr_coord_val)
+/**
+ * Set color for subsequent drawing operations
+ */
+void display_set_color(const rgba_t & color)
 {
+    glColor4f(color.red, color.green, color.blue, color.alpha);
 }
-
 
 
 void display_tile_from_sheet(const gl_texture_t * gltex, int x, int y, int w, int h,
@@ -740,8 +743,6 @@ void display_color_img(const image_id id, scr_coord_val x, scr_coord_val y, cons
 
 		w = (w == 0) ? imd.base_w : w;
 		h = (h == 0) ? imd.base_h : h;
-
-		glColor4f(1, 1, 1, 1);
 
 		display_tile_from_sheet(imd.texture, x, y, w, h,
 								imd.sheet_x, imd.sheet_y, imd.base_w, imd.base_h);
@@ -936,18 +937,20 @@ display_blend_proc display_blend = display_base_img_blend;
 display_alpha_proc display_alpha = display_base_img_alpha;
 
 
-
-rgba_t display_blend_colors(rgba_t c1, rgba_t c2, float mix)
+rgba_t display_blend_colors(rgba_t c1, rgba_t c2, float alpha)
 {
+    // dbg->message("display_blend_colors()", "alpha=%f", alpha);
+
 	return rgba_t(
-        c1.red * (1-mix) + c2.red * mix,
-        c1.green * (1-mix) + c2.green * mix,
-        c1.blue * (1-mix) + c2.blue * mix
+        c1.red * (1-alpha) + c2.red * alpha,
+        c1.green * (1-alpha) + c2.green * alpha,
+        c1.blue * (1-alpha) + c2.blue * alpha,
+        1.0f
 	);
 }
 
 
-void display_blend_wh_rgb(scr_coord_val x, scr_coord_val y, scr_coord_val w, scr_coord_val h, rgba_t color)
+void display_fillbox_wh(scr_coord_val x, scr_coord_val y, scr_coord_val w, scr_coord_val h)
 {
     glScissor(clip_rect.x, display_get_height()-clip_rect.y-clip_rect.h, clip_rect.w, clip_rect.h);
 	glEnable(GL_SCISSOR_TEST);
@@ -955,8 +958,6 @@ void display_blend_wh_rgb(scr_coord_val x, scr_coord_val y, scr_coord_val w, scr
 	gl_texture_t::bind(0);
 
 	glBegin(GL_QUADS);
-
-	glColor4f(color.red, color.green, color.blue, color.alpha);
 
 	glVertex2i(x, y);
 	glVertex2i(x+w, y);
@@ -1024,7 +1025,7 @@ void display_array_wh(scr_coord_val, scr_coord_val, scr_coord_val, scr_coord_val
 }
 
 
-int display_glyph(scr_coord_val x, scr_coord_val y, utf32 c, rgba_t color, const font_t * font  CLIP_NUM_DEF_NOUSE)
+int display_glyph(scr_coord_val x, scr_coord_val y, utf32 c, const font_t * font)
 {
     int advance = 1;
 
@@ -1043,8 +1044,6 @@ int display_glyph(scr_coord_val x, scr_coord_val y, utf32 c, rgba_t color, const
         glScissor(clip_rect.x, display_get_height()-clip_rect.y-clip_rect.h, clip_rect.w, clip_rect.h);
         // glScissor(clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h);
         glEnable(GL_SCISSOR_TEST);
-
-        glColor4f(color.red, color.green, color.blue, color.alpha);
 
         display_tile_from_sheet(font->glyph_sheet, x, gy, w, h, glyph_x, glyph_y, w, h);
 

@@ -353,12 +353,15 @@ void button_t::draw(scr_coord offset)
 	rgba_t text_color = pressed ? (SYSCOL_BUTTON_TEXT_SELECTED) : this->text_color;
 	text_color = b_enabled ? text_color : (SYSCOL_BUTTON_TEXT_DISABLED);
 
+	display_set_color(RGBA_WHITE);
+
 	switch (type & TYPE_MASK) {
 
 		case box: // Colored background box
 			{
 				display_img_stretch(gui_theme_t::button_tiles[get_state_offset()], area, RGBA_BLACK);
-				display_img_stretch_blend( gui_theme_t::button_color_tiles[b_enabled && pressed], area, background_color);
+                display_set_color(background_color);
+				display_img_stretch_blend(gui_theme_t::button_color_tiles[b_enabled && pressed], area, background_color);
 				if(  text  ) {
 					text_color = pressed ? SYSCOL_COLORED_BUTTON_TEXT_SELECTED : text_color;
 					// move the text to leave evt. space for a colored box top left or bottom right of it
