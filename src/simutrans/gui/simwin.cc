@@ -1190,6 +1190,14 @@ void display_win(int win)
 		if(need_dragger) {
 			win_draw_window_dragger( pos, size);
 		}
+
+		// darken non-top windows
+		if((unsigned)win != wins.get_count()-1)
+		{
+            // not top
+            display_set_color(rgba_t(0, 0, 0, 0.25f));
+            display_fillbox_wh(wins[win].pos.x, wins[win].pos.y, size.w, size.h);
+		}
 	}
 }
 
@@ -2280,8 +2288,6 @@ void modal_dialogue(gui_frame_t* gui, ptrdiff_t magic, karte_t* welt, bool (*qui
 			}
 
 			// dbg->message("modal_dialogue()", "gui is %s", gui->get_name());
-			gui->draw(win_get_pos(gui), gui->get_windowsize());
-
 			dr_prepare_flush();
 			gui->draw(win_get_pos(gui), gui->get_windowsize());
 			dr_flush();
