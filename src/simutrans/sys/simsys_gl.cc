@@ -31,6 +31,12 @@
 #include <GLFW/glfw3.h>
 
 static bool sigterm_received = false;
+static slist_tpl<sys_event_t> events;
+
+// bitfield tracking the mouse button states. a 1 bit means pressed
+static uint16 mouse_buttons = 0;
+static scr_coord_val mx = 0;
+static scr_coord_val my = 0;
 
 
 void error_callback(int error, const char* description)
@@ -39,48 +45,53 @@ void error_callback(int error, const char* description)
 }
 
 
-// bitfield tracking the mouse button states. a 1 bit means pressed
-uint16 mouse_buttons = 0;
-scr_coord_val mx = 0;
-scr_coord_val my = 0;
-
-
 void sysgl_cursor_pos_callback(GLFWwindow *window, double x, double y)
 {
     // dbg->message("cursor_pos_callback()", "x=%f y=%f", x, y);
-    mx = (scr_coord_val)x;
-    my = (scr_coord_val)y;
 
-    sys_event.type = SIM_MOUSE_MOVE;
-    sys_event.code = SIM_MOUSE_MOVED;
-    sys_event.mx = mx;
-    sys_event.my = my;
-    sys_event.mb = mouse_buttons;
-    sys_event.key_mod = 0;
+    scr_coord_val nx = (scr_coord_val)x;
+    scr_coord_val ny = (scr_coord_val)y;
+
+    // only trigger an even if mouse pos actually changed
+    if(nx != mx || ny != my)
+    {
+        mx = nx;
+        my = ny;
+
+        sys_event_t event;
+        event.type = SIM_MOUSE_MOVE;
+        event.code = SIM_MOUSE_MOVED;
+        event.mx = mx;
+        event.my = my;
+        event.mb = mouse_buttons;
+        event.key_mod = 0;
+
+        events.append(event);
+    }
 }
 
 
 void sysgl_mouse_button_callback(GLFWwindow* , int button, int action, int mods)
 {
-    sys_event.type = SIM_MOUSE_BUTTONS;
-
-    sys_event.mx = mx;
-    sys_event.my = my;
+    sys_event_t event;
+    event.type = SIM_MOUSE_BUTTONS;
+    event.mx = mx;
+    event.my = my;
 
     if(action == GLFW_PRESS)
     {
         switch(button)
         {
             case GLFW_MOUSE_BUTTON_1:
-                sys_event.code = SIM_MOUSE_LEFTBUTTON + button;
+                event.code = SIM_MOUSE_LEFTBUTTON + button;
                 mouse_buttons |= MOUSE_LEFTBUTTON;
                 break;
             case GLFW_MOUSE_BUTTON_2:
-                sys_event.code = SIM_MOUSE_MIDBUTTON + button;
+                event.code = SIM_MOUSE_MIDBUTTON + button;
                 mouse_buttons |= MOUSE_MIDBUTTON;
                 break;
             case GLFW_MOUSE_BUTTON_3:
-                sys_event.code = SIM_MOUSE_RIGHTBUTTON + button;
+                event.code = SIM_MOUSE_RIGHTBUTTON + button;
                 mouse_buttons |= MOUSE_RIGHTBUTTON;
                 break;
         }
@@ -90,33 +101,37 @@ void sysgl_mouse_button_callback(GLFWwindow* , int button, int action, int mods)
         switch(button)
         {
             case GLFW_MOUSE_BUTTON_1:
-                sys_event.code = SIM_MOUSE_LEFTUP + button;
+                event.code = SIM_MOUSE_LEFTUP + button;
                 mouse_buttons &= ~MOUSE_LEFTBUTTON;
                 break;
             case GLFW_MOUSE_BUTTON_2:
-                sys_event.code = SIM_MOUSE_MIDUP + button;
+                event.code = SIM_MOUSE_MIDUP + button;
                 mouse_buttons &= ~MOUSE_MIDBUTTON;
                 break;
             case GLFW_MOUSE_BUTTON_3:
-                sys_event.code = SIM_MOUSE_RIGHTUP + button;
+                event.code = SIM_MOUSE_RIGHTUP + button;
                 mouse_buttons &= ~MOUSE_RIGHTBUTTON;
                 break;
         }
     }
 
-    sys_event.mb = mouse_buttons;
-    sys_event.key_mod = 0;
+    event.mb = mouse_buttons;
+    event.key_mod = 0;
 
+    events.append(event);
 
-    dbg->message("cursor_pos_callback()", "code=%d buttons=%d", sys_event.code, sys_event.mb);
+    dbg->message("sysgl_mouse_button_callback()", "code=%d buttons=%d", sys_event.code, sys_event.mb);
 }
 
 
 void sysgl_scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-	sys_event.type    = SIM_MOUSE_BUTTONS;
-	sys_event.code    = yoffset > 0 ? SIM_MOUSE_WHEELUP : SIM_MOUSE_WHEELDOWN;
-	sys_event.key_mod = 0;
+    sys_event_t event;
+	event.type    = SIM_MOUSE_BUTTONS;
+	event.code    = yoffset > 0 ? SIM_MOUSE_WHEELUP : SIM_MOUSE_WHEELDOWN;
+	event.key_mod = 0;
+
+    events.append(event);
 }
 
 
@@ -273,12 +288,21 @@ void GetEvents()
 {
     // dbg->message("GetEvents()", "Called.");
 
-	if(  sigterm_received  ) {
+    glfwPollEvents();
+
+    if(events.empty()) {
+        sys_event.type = SIM_NOEVENT;
+        sys_event.code = 0;
+    }
+    else {
+        sys_event = events.remove_first();
+    }
+
+    // priority event, nothing else matters if this comes
+	if(sigterm_received) {
 		sys_event.type = SIM_SYSTEM;
 		sys_event.code = SYSTEM_QUIT;
 	}
-
-    glfwPollEvents();
 }
 
 

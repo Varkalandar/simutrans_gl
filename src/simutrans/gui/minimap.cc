@@ -1358,8 +1358,9 @@ void minimap_t::draw(scr_coord pos)
 	}
 
 	// display_array_wh( cur_off.x+pos.x, new_off.y+pos.y, map_texture_width, map_data->get_height(), map_data->to_array());
-    display_set_color(RGBA_WHITE);
-	display_tile_from_sheet(map_texture, cur_off.x+pos.x, new_off.y+pos.y, map_texture->width, map_texture->height,
+    display_set_color(RGBA_BLACK);
+    display_fillbox_wh(pos.x, pos.y, map_texture->width, map_texture->height);
+	display_tile_from_sheet(map_texture, pos.x, pos.y, map_texture->width, map_texture->height,
 	                        0, 0, map_texture->width, map_texture->height);
 
 	if(  !current_cnv.is_bound()  &&  mode & MAP_LINES    ) {

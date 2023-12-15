@@ -645,6 +645,8 @@ void display_set_clip_wh(scr_coord_val x, scr_coord_val y, scr_coord_val w, scr_
 	clip_rect.h = h;
 	clip_rect.xx = x + w; // watch out, clips to scr_coord_val max
 	clip_rect.yy = y + h; // watch out, clips to scr_coord_val max
+
+    glScissor(clip_rect.x, display_get_height()-clip_rect.y-clip_rect.h, clip_rect.w, clip_rect.h);
 }
 
 
@@ -666,6 +668,7 @@ void display_swap_clip_wh()
 		clip_dimension save = clip_rect;
 		clip_rect = clip_rect_swap;
 		clip_rect_swap = save;
+        glScissor(clip_rect.x, display_get_height()-clip_rect.y-clip_rect.h, clip_rect.w, clip_rect.h);
 	}
 }
 
@@ -676,6 +679,7 @@ void display_pop_clip_wh(CLIP_NUM_DEF0)
 		// swap original clipping rectangle back
 		clip_rect   = clip_rect_swap;
 		swap_active = false;
+        glScissor(clip_rect.x, display_get_height()-clip_rect.y-clip_rect.h, clip_rect.w, clip_rect.h);
 	}
 }
 
@@ -698,6 +702,8 @@ void display_tile_from_sheet(const gl_texture_t * gltex, int x, int y, int w, in
     const float gw = tile_w / (float)gltex->width;
     const float gh = tile_h / (float)gltex->height;
 
+    glEnable(GL_SCISSOR_TEST);
+
     gl_texture_t::bind(gltex->tex_id);
 
 	glBegin(GL_QUADS);
@@ -715,6 +721,8 @@ void display_tile_from_sheet(const gl_texture_t * gltex, int x, int y, int w, in
 	glVertex2i(x, y + h);
 
 	glEnd();
+
+    glDisable(GL_SCISSOR_TEST);
 }
 
 
@@ -732,10 +740,6 @@ void display_color_img(const image_id id, scr_coord_val x, scr_coord_val y, cons
 		// debug clipping
 		// display_box_wh(clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h, rgba_t(1, 0, 0, 0.5f));
 
-	    glScissor(clip_rect.x, display_get_height()-clip_rect.y-clip_rect.h, clip_rect.w, clip_rect.h);
-		// glScissor(clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h);
-		glEnable(GL_SCISSOR_TEST);
-
 		imd_t & imd = images[id];
 
 		x += imd.base_x;
@@ -746,8 +750,6 @@ void display_color_img(const image_id id, scr_coord_val x, scr_coord_val y, cons
 
 		display_tile_from_sheet(imd.texture, x, y, w, h,
 								imd.sheet_x, imd.sheet_y, imd.base_w, imd.base_h);
-
-		glDisable(GL_SCISSOR_TEST);
 	}
 }
 
@@ -952,7 +954,6 @@ rgba_t display_blend_colors(rgba_t c1, rgba_t c2, float alpha)
 
 void display_fillbox_wh(scr_coord_val x, scr_coord_val y, scr_coord_val w, scr_coord_val h)
 {
-    glScissor(clip_rect.x, display_get_height()-clip_rect.y-clip_rect.h, clip_rect.w, clip_rect.h);
 	glEnable(GL_SCISSOR_TEST);
 
 	gl_texture_t::bind(0);
@@ -993,8 +994,6 @@ void display_fillbox_wh_clip_rgb(scr_coord_val x, scr_coord_val y, scr_coord_val
 {
     // dbg->message("display_fillbox_wh_clip_rgb()", "Called %d,%d,%d,%d color %f,%f,%f,%f", x, y, w, h, color.red, color.green, color.blue, color.alpha);
 
-    glScissor(clip_rect.x, display_get_height()-clip_rect.y-clip_rect.h, clip_rect.w, clip_rect.h);
-    // glScissor(clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h);
 	glEnable(GL_SCISSOR_TEST);
 
 	gl_texture_t::bind(0);
@@ -1041,14 +1040,7 @@ int display_glyph(scr_coord_val x, scr_coord_val y, utf32 c, const font_t * font
 
         const int gy = y + font->get_glyph_top(c);
 
-        glScissor(clip_rect.x, display_get_height()-clip_rect.y-clip_rect.h, clip_rect.w, clip_rect.h);
-        // glScissor(clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h);
-        glEnable(GL_SCISSOR_TEST);
-
         display_tile_from_sheet(font->glyph_sheet, x, gy, w, h, glyph_x, glyph_y, w, h);
-
-        glDisable(GL_SCISSOR_TEST);
-
         advance = font->get_glyph_advance(c);
     }
 
