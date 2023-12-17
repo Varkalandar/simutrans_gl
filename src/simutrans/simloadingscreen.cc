@@ -33,8 +33,8 @@ loadingscreen_t::loadingscreen_t( const char *w, uint32 max_p, bool logo, bool c
 	}
 
 	// darkens the current screen
-	display_set_color(rgba_t(0, 0, 0, 0.5f));
-	display_fillbox_wh(0, 0, display_get_width(), display_get_height());
+	// display_set_color(rgba_t(0, 0, 0, 0.5f));
+	// display_fillbox_wh(0, 0, display_get_width(), display_get_height());
 
 	display_logo();
 }
@@ -62,7 +62,6 @@ void loadingscreen_t::display_logo()
 }
 
 
-// show everything but the logo
 void loadingscreen_t::display()
 {
 	const int width = display_get_width();
@@ -80,8 +79,11 @@ void loadingscreen_t::display()
 
 		dr_prepare_flush();
 
+		display_set_color(RGBA_WHITE);
+		display_logo();
+		
 		if(  info  ) {
-			display_proportional_rgb( half_width, bar_y - LINESPACE - 2, info, ALIGN_CENTER_H, color_idx_to_rgb(COL_WHITE), true );
+			display_proportional_rgb( half_width, bar_y - LINESPACE - 2, info, ALIGN_CENTER_H, RGBA_WHITE, true );
 		}
 
 		// outline

@@ -623,7 +623,6 @@ static inline void tex_setpix(uint8_t * tex, int x, int y, rgb888_t color)
         *tp ++ = color.b;
         *tp = 255;
     }
-
 }
 
 
@@ -656,7 +655,17 @@ void minimap_t::full_redraw()
         uint8_t * pixels = (uint8_t *)calloc(1024*1024*4, 1);
 
         // redraw the map
-        if(  !isometric  ) {
+        if(isometric) {
+            koord k;
+            for(  k.y=0;  k.y < world->get_size().y;  k.y++  ) {
+                for(  k.x=0;  k.x < world->get_size().x;  k.x++  ) {
+                    rgb888_t c = calc_map_pixel(k);
+
+                    // todo
+                }
+            }
+        }
+        else {
             koord k;
             koord start_off = koord( (cur_off.x*zoom_out)/zoom_in, (cur_off.y*zoom_out)/zoom_in );
             koord end_off = start_off+koord((minimap_size.w*zoom_out)/zoom_in+1, (minimap_size.h*zoom_out)/zoom_in+1);
@@ -674,20 +683,6 @@ void minimap_t::full_redraw()
             }
 
             map_texture->update_region(0, 0, 1024, 1024, pixels);
-        }
-        else {
-            // always the whole map ...
-            if(isometric) {
-                // todo: map_data->init(get_color_rgb(COL_BLACK));
-            }
-            koord k;
-            for(  k.y=0;  k.y < world->get_size().y;  k.y++  ) {
-                for(  k.x=0;  k.x < world->get_size().x;  k.x++  ) {
-                    rgb888_t c = calc_map_pixel(k);
-
-                    // todo
-                }
-            }
         }
 
         free(pixels);
@@ -747,7 +742,6 @@ void minimap_t::set_map_color(koord k_, const rgb888_t color)
 	else {
 		for(sint32 x = max(0, c.x); x < zoom_in + c.x && (uint32)x < map_texture->width; x++) {
 			for(sint32 y = max(0, c.y);  y < zoom_in + c.y && (uint32)y < map_texture->height; y++) {
-				// map_data->at(x, y) = color;
 				set_map_color_clip(x, y, color);
 			}
 		}
