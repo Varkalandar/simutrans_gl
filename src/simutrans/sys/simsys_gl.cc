@@ -39,6 +39,64 @@ static scr_coord_val mx = 0;
 static scr_coord_val my = 0;
 
 
+static uint32_t convert_special_key(uint32_t key)
+{
+	uint32_t code;
+
+	switch(key) {
+		case GLFW_KEY_BACKSPACE:  code = SIM_KEY_BACKSPACE;             break;
+		case GLFW_KEY_TAB:        code = SIM_KEY_TAB;                   break;
+		case GLFW_KEY_ENTER:      code = SIM_KEY_ENTER;                 break;
+		case GLFW_KEY_ESCAPE:     code = SIM_KEY_ESCAPE;                break;
+		case GLFW_KEY_DELETE:     code = SIM_KEY_DELETE;                break;
+		case GLFW_KEY_DOWN:       code = SIM_KEY_DOWN;                  break;
+		case GLFW_KEY_END:        code = SIM_KEY_END;                   break;
+		case GLFW_KEY_HOME:       code = SIM_KEY_HOME;                  break;
+		case GLFW_KEY_F1:         code = SIM_KEY_F1;                    break;
+		case GLFW_KEY_F2:         code = SIM_KEY_F2;                    break;
+		case GLFW_KEY_F3:         code = SIM_KEY_F3;                    break;
+		case GLFW_KEY_F4:         code = SIM_KEY_F4;                    break;
+		case GLFW_KEY_F5:         code = SIM_KEY_F5;                    break;
+		case GLFW_KEY_F6:         code = SIM_KEY_F6;                    break;
+		case GLFW_KEY_F7:         code = SIM_KEY_F7;                    break;
+		case GLFW_KEY_F8:         code = SIM_KEY_F8;                    break;
+		case GLFW_KEY_F9:         code = SIM_KEY_F9;                    break;
+		case GLFW_KEY_F10:        code = SIM_KEY_F10;                   break;
+		case GLFW_KEY_F11:        code = SIM_KEY_F11;                   break;
+		case GLFW_KEY_F12:        code = SIM_KEY_F12;                   break;
+		case GLFW_KEY_F13:        code = SIM_KEY_F13;                   break;
+		case GLFW_KEY_F14:        code = SIM_KEY_F14;                   break;
+		case GLFW_KEY_F15:        code = SIM_KEY_F15;                   break;
+		/*
+		case GLFW_KEY_KP_0:       np = true; code = (numlock ? '0' : (unsigned long)SIM_KEY_NUMPAD_BASE); break;
+		case GLFW_KEY_KP_1:       np = true; code = (numlock ? '1' : (unsigned long)SIM_KEY_DOWNLEFT); break;
+		case GLFW_KEY_KP_2:       np = true; code = (numlock ? '2' : (unsigned long)SIM_KEY_DOWN); break;
+		case GLFW_KEY_KP_3:       np = true; code = (numlock ? '3' : (unsigned long)SIM_KEY_DOWNRIGHT); break;
+		case GLFW_KEY_KP_4:       np = true; code = (numlock ? '4' : (unsigned long)SIM_KEY_LEFT); break;
+		case GLFW_KEY_KP_5:       np = true; code = (numlock ? '5' : (unsigned long)SIM_KEY_CENTER); break;
+		case GLFW_KEY_KP_6:       np = true; code = (numlock ? '6' : (unsigned long)SIM_KEY_RIGHT); break;
+		case GLFW_KEY_KP_7:       np = true; code = (numlock ? '7' : (unsigned long)SIM_KEY_UPLEFT); break;
+		case GLFW_KEY_KP_8:       np = true; code = (numlock ? '8' : (unsigned long)SIM_KEY_UP); break;
+		case GLFW_KEY_KP_9:       np = true; code = (numlock ? '9' : (unsigned long)SIM_KEY_UPRIGHT); break;
+		 */
+		case GLFW_KEY_KP_ENTER:   code = SIM_KEY_ENTER;                 break;
+		case GLFW_KEY_LEFT:       code = SIM_KEY_LEFT;                  break;
+		case GLFW_KEY_PAGE_DOWN:   code = '<';                           break;
+		case GLFW_KEY_PAGE_UP:     code = '>';                           break;
+		case GLFW_KEY_RIGHT:      code = SIM_KEY_RIGHT;                 break;
+		case GLFW_KEY_UP:         code = SIM_KEY_UP;                    break;
+		case GLFW_KEY_PAUSE:      code = SIM_KEY_PAUSE;                 break;
+		case GLFW_KEY_SCROLL_LOCK: code = SIM_KEY_SCROLLLOCK;            break;
+		default: {
+			code = 0;
+			break;
+		}
+	}
+
+	return code;
+}
+
+
 void error_callback(int error, const char* description)
 {
     dbg->message("GLFW Error", "Error %d: %s\n", error, description);
@@ -132,6 +190,46 @@ void sysgl_scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 	event.key_mod = 0;
 
     events.append(event);
+}
+
+
+void sysgl_character_callback(GLFWwindow* window, unsigned int codepoint)
+{
+    dbg->message("sysgl_character_callback()", "code=%d", codepoint);
+	
+    sys_event_t event;
+	event.type    = SIM_KEYBOARD;
+	event.code    = codepoint;	
+	event.key_mod = 0;
+
+    events.append(event);
+}
+
+
+void sysgl_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    dbg->message("sysgl_key_callback()", "key=%d action=%d mods=%d", key, action, mods);
+
+    if(action == GLFW_PRESS)
+	{
+		uint32_t code = convert_special_key(key);
+		if(code) {
+			sys_event_t event;
+			event.type    = SIM_KEYBOARD;
+			event.code    = code;	
+			event.key_mod = 0;
+			events.append(event);		
+		}
+	}
+	
+    if(action == GLFW_RELEASE)
+	{
+		sys_event_t event;
+		event.type    = SIM_KEYBOARD;
+		event.code    = 0;	
+		event.key_mod = 0;
+	    events.append(event);
+	}
 }
 
 

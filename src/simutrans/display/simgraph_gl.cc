@@ -1115,6 +1115,8 @@ void display_show_load_pointer(int v)
 void sysgl_cursor_pos_callback(GLFWwindow *window, double x, double y);
 void sysgl_mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 void sysgl_scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+void sysgl_character_callback(GLFWwindow* window, unsigned int codepoint);
+void sysgl_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 void sysgl_window_close_callback(GLFWwindow* window);
 
 
@@ -1147,6 +1149,8 @@ bool simgraph_init(scr_size size, sint16)
         glfwSetCursorPosCallback(window, sysgl_cursor_pos_callback);
         glfwSetMouseButtonCallback(window, sysgl_mouse_button_callback);
 		glfwSetScrollCallback(window, sysgl_scroll_callback);
+		glfwSetCharCallback(window, sysgl_character_callback);
+		glfwSetKeyCallback(window, sysgl_key_callback);
         glfwSetWindowCloseCallback(window, sysgl_window_close_callback);
 
         // 2D Initialization
