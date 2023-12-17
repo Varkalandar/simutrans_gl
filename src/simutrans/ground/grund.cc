@@ -1646,7 +1646,8 @@ scr_size display_themed_label(sint16 xpos, sint16 ypos, const char* text,
 						label_height);
 
 	const sint16 pnr = player ? player->get_player_nr() : 1;
-	display_img_stretch(label, area, color_idx_to_rgb(pnr));
+	display_set_color(RGBA_WHITE);
+	display_img_stretch(label, area, RGBA_WHITE);
 
     display_proportional_rgb(area.x+margin_left, area.y+margin_top, text, ALIGN_LEFT, color, dirty);
 
@@ -1673,6 +1674,7 @@ void display_themed_marker(sint16 xpos, sint16 ypos, const char* text,
 	// the extra bottom part
 	const sint8 pnr = player ? player->get_player_nr() : 1;
 	const image_id iid = skinverwaltung_t::display_marker_label->get_image_id(9);
+	display_set_color(RGBA_WHITE);
 	display_img_aligned(iid, scr_rect(xpos, ypos + size.h + yoff, size.w, 16), ALIGN_CENTER_H, pnr, dirty);
 }
 
