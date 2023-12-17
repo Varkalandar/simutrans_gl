@@ -69,7 +69,7 @@ protected:
 
 	void set_owner( const player_t *player ) { owner = player; }
 
-	void set_transparent(rgba_t col) { opaque = col.alpha==0; color_transparent = col; }
+	void set_transparent(rgba_t col) { opaque = (col.alpha >= 250); color_transparent = col; }
 
 	static karte_ptr_t welt;
 

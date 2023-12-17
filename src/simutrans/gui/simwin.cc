@@ -335,9 +335,11 @@ static void win_draw_window_title(const scr_coord pos, const scr_size size,
 		const scr_rect area(pos.x, pos.y, size.w, D_TITLEBAR_HEIGHT);
 
 		// Hajo: calculate real shading, how?
-		lighter = get_system_color({128, 128, 128});
+		lighter = rgba_t(0.5f, 0.5f, 0.5f, 1.0f);
 		darker  = RGBA_BLACK;
 
+		display_set_color(RGBA_WHITE);
+		
 		// Hajo: does this theme have player colored title bars?
 		if(skinverwaltung_t::title_bar_player) {
 			// Yes, so we can use normal text and player color bar

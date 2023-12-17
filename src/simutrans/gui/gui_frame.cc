@@ -183,7 +183,7 @@ void gui_frame_t::draw(scr_coord pos, scr_size size)
 {
 	scr_size titlebar_size(0, ( has_title()*D_TITLEBAR_HEIGHT ));
 
-	display_set_color(rgba_t(1.0f, 1.0f, 1.0f, 0.75f));
+	display_set_color(rgba_t(1.0f, 1.0f, 1.0f, 0.8f));
 
 	// draw background
 	if(  opaque  ) {
@@ -192,11 +192,11 @@ void gui_frame_t::draw(scr_coord pos, scr_size size)
 	else {
         display_set_color(color_transparent);
 		display_fillbox_wh(pos.x+1, pos.y+titlebar_size.h, size.w-2, size.h-titlebar_size.h);
-        display_set_color(RGBA_WHITE);
 	}
 	dirty = false;
 
 	PUSH_CLIP_FIT(pos.x+1, pos.y+titlebar_size.h+1, size.w-2, size.h-titlebar_size.h-2);
+	display_set_color(RGBA_WHITE);
 	gui_aligned_container_t::draw(pos);
 	POP_CLIP();
 
