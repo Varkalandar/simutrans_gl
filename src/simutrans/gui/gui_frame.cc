@@ -183,7 +183,7 @@ void gui_frame_t::draw(scr_coord pos, scr_size size)
 {
 	scr_size titlebar_size(0, ( has_title()*D_TITLEBAR_HEIGHT ));
 
-	display_set_color(rgba_t(1.0f, 1.0f, 1.0f, 0.5f));
+	display_set_color(rgba_t(1.0f, 1.0f, 1.0f, 0.75f));
 
 	// draw background
 	if(  opaque  ) {
