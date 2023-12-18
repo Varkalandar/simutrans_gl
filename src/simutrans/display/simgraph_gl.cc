@@ -1172,6 +1172,14 @@ bool simgraph_init(scr_size size, sint16)
         if(gl_max_texture_size > 4096) gl_max_texture_size = 4096;
 
         dbg->message("simgraph_init()", "GLFW max texture size is %d", gl_max_texture_size);
+        
+        // try to oad the font given in the environment and if that fails,
+        // try to load the standard font which is bundled with Simutrans GL
+       	if(!display_load_font(env_t::fontname.c_str()) &&
+	       !display_load_font(FONT_PATH_X "LiberationSans-Regular.ttf") ) {
+            dr_fatal_notify("No fonts found!");
+            return false;
+        }
 	}
 
 	return window;
