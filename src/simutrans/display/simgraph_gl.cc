@@ -371,7 +371,7 @@ static uint8_t * convert_pixel_run(const uint16_t * sp, const uint16_t runlen, u
         uint16_t c = *sp ++;
 		if(c >= 0x8000)
 		{
-			// dbg->message("covert()", "Found suspicious pixel %x", c);
+			// dbg->message("convert()", "Found suspicious pixel %x", c);
 			uint32 rgb = image_t::rgbtab[c & 255];
 			*tp ++ = (rgb >> 16) & 0xFF;
 			*tp ++ = (rgb >> 8) & 0xFF;
@@ -1223,12 +1223,70 @@ void display_snapshot()
 {
 }
 
-void display_direct_line_rgb(const scr_coord_val, const scr_coord_val, const scr_coord_val, const scr_coord_val, rgba_t)
+void display_direct_line_rgb(const scr_coord_val x, const scr_coord_val y, const scr_coord_val xx, const scr_coord_val yy, rgba_t color)
 {
+	glEnable(GL_SCISSOR_TEST);
+
+	gl_texture_t::bind(0);
+
+	glBegin(GL_LINES);
+
+	glColor4f(color.red, color.green, color.blue, color.alpha);
+
+	glVertex2i(x, y);
+	glVertex2i(xx, yy);
+
+	glEnd();
+
+	glDisable(GL_SCISSOR_TEST);
+    
 }
 
-void display_direct_line_dotted_rgb(const scr_coord_val, const scr_coord_val, const scr_coord_val, const scr_coord_val, const scr_coord_val, const scr_coord_val, rgba_t)
+void display_direct_line_dotted_rgb(const scr_coord_val x, const scr_coord_val y, const scr_coord_val xx, const scr_coord_val yy, const scr_coord_val draw, const scr_coord_val dontDraw, rgba_t color)
 {
+    display_set_color(color);
+
+	int i, steps;
+	sint64 xp, yp;
+	sint64 xs, ys;
+	int counter=0;
+	bool mustDraw=true;
+
+	const int dx = xx - x;
+	const int dy = yy - y;
+
+	steps = (abs(dx) > abs(dy) ? abs(dx) : abs(dy));
+	if (steps == 0) {
+		steps = 1;
+	}
+
+	xs = ((sint64)dx << 16) / steps;
+	ys = ((sint64)dy << 16) / steps;
+
+	xp = (sint64)x << 16;
+	yp = (sint64)y << 16;
+
+	for(  i = 0;  i <= steps;  i++  ) {
+		counter ++;
+		if(  mustDraw  ) {
+			if(  counter == draw  ) {
+				mustDraw = !mustDraw;
+				counter = 0;
+			}
+		}
+		if(  !mustDraw  ) {
+			if(  counter == dontDraw  ) {
+				mustDraw=!mustDraw;
+				counter=0;
+			}
+		}
+
+		if(  mustDraw  ) {
+			display_fillbox_wh(xp >> 16, yp >> 16, 1, 1);
+		}
+		xp += xs;
+		yp += ys;
+	}    
 }
 
 void display_circle_rgb( scr_coord_val, scr_coord_val, int, const rgba_t)
