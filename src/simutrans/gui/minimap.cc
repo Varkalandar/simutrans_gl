@@ -57,9 +57,15 @@ static sint32 max_building_level = 0;
 
 minimap_t * minimap_t::single_instance = NULL;
 karte_ptr_t minimap_t::world;
+
 minimap_t::MAP_DISPLAY_MODE minimap_t::mode = MAP_TOWN;
 minimap_t::MAP_DISPLAY_MODE minimap_t::last_mode = MAP_TOWN;
 bool minimap_t::is_visible = false;
+
+// In full redraw we track the actual size of the drawn
+// area, using these two variables.
+static int map_tex_cur_width = 0;
+static int map_tex_cur_height = 0;
 
 #define MAX_MAP_TYPE_LAND 31
 #define MAX_MAP_TYPE_WATER 5
@@ -610,11 +616,11 @@ rgb888_t minimap_t::calc_severity_color_log(sint32 amount, sint32 max_value)
 }
 
 
-static inline void tex_setpix(uint8_t * tex, int x, int y, rgb888_t color)
+static inline void tex_setpix(uint8_t * tex, int width, int height, int x, int y, rgb888_t color)
 {
-    if(x >= 0 && x < 1024 && y >= 0 && y < 1024)
+    if(x >= 0 && x < width && y >= 0 && y < height)
     {
-        uint8_t * tp = tex + y * 1024 * 4 + x * 4;
+        uint8_t * tp = tex + y * width * 4 + x * 4;
 
         // dbg->message("tex_setpix()", "Setting %d, %d to %d %d %d", x, y, color.r, color.g, color.b);
 
@@ -634,7 +640,7 @@ static inline void tex_setpix(uint8_t * tex, int x, int y, rgb888_t color)
  */
 void minimap_t::full_redraw()
 {
-    dbg->message("minimap_t::full_redraw()", "Called, visible=%d");
+    dbg->message("minimap_t::full_redraw()", "Called, visible=%d, new_size=%d, %d", is_visible, new_size.w, new_size.h);
 
     if(is_visible)
     {
@@ -652,20 +658,32 @@ void minimap_t::full_redraw()
         cur_size = new_size;
         needs_redraw = false;
 
-        uint8_t * pixels = (uint8_t *)calloc(1024*1024*4, 1);
 
         // redraw the map
         if(isometric) {
+            map_tex_cur_width = new_size.w;
+            map_tex_cur_height = new_size.h;            
+            uint8_t * pixels = (uint8_t *)calloc(new_size.w * new_size.h * 4, 1);
+
             koord k;
             for(  k.y=0;  k.y < world->get_size().y;  k.y++  ) {
                 for(  k.x=0;  k.x < world->get_size().x;  k.x++  ) {
-                    rgb888_t c = calc_map_pixel(k);
+                    rgb888_t color = calc_map_pixel(k);
 
-                    // todo
+                    int x = (k.x - k.y);
+                    int y = (k.x + k.y) / 2;
+
+                    tex_setpix(pixels, new_size.w, new_size.h, x+world->get_size().x, y, color);
                 }
             }
+            map_texture->update_region(0, 0, new_size.w, new_size.h, pixels);
+            free(pixels);
         }
         else {
+            map_tex_cur_width = new_size.w;
+            map_tex_cur_height = new_size.h;            
+            uint8_t * pixels = (uint8_t *)calloc(new_size.w * new_size.h * 4, 1);
+            
             koord k;
             koord start_off = koord( (cur_off.x*zoom_out)/zoom_in, (cur_off.y*zoom_out)/zoom_in );
             koord end_off = start_off+koord((minimap_size.w*zoom_out)/zoom_in+1, (minimap_size.h*zoom_out)/zoom_in+1);
@@ -678,14 +696,13 @@ void minimap_t::full_redraw()
                     int x = k.x - start_off.x;
                     int y = k.y - start_off.y;
 
-                    tex_setpix(pixels, x, y, color);
+                    tex_setpix(pixels, new_size.w, new_size.h, x, y, color);
                 }
             }
 
-            map_texture->update_region(0, 0, 1024, 1024, pixels);
+            map_texture->update_region(0, 0, new_size.w, new_size.h, pixels);
+            free(pixels);
         }
-
-        free(pixels);
     }
 }
 
@@ -1327,6 +1344,11 @@ void minimap_t::draw(scr_coord pos)
 		new_size = cur_size;
 	}
 
+    if(new_off != cur_off)
+    {
+		needs_redraw = true;
+    }
+    
 	if(  last_mode != mode  ) {
 		// only needing update, if last mode was also not about halts or background rendering ...
 		needs_redraw |= (mode^last_mode) & (~MAP_MODE_FLAGS | MAP_CLIMATES | MAP_HIDE_CONTOUR);
@@ -1357,7 +1379,6 @@ void minimap_t::draw(scr_coord pos)
 
 	if( needs_redraw ) {
 		full_redraw();
-		needs_redraw = false;
 	}
 
 	if(map_texture == NULL) {
@@ -1406,7 +1427,9 @@ void minimap_t::draw(scr_coord pos)
     display_set_color(RGBA_BLACK);
     display_fillbox_wh(pos.x, pos.y, map_texture->width, map_texture->height);
     display_set_color(RGBA_WHITE);
-	display_tile_from_sheet(map_texture, pos.x, pos.y, map_texture->width, map_texture->height,
+	display_tile_from_sheet(map_texture, 
+                            pos.x + cur_off.x, pos.y + cur_off.y, 
+                            map_texture->width * zoom_in / zoom_out, map_texture->height * zoom_in / zoom_out,
 	                        0, 0, map_texture->width, map_texture->height);
 
 	if(  !current_cnv.is_bound()  &&  mode & MAP_LINES    ) {
