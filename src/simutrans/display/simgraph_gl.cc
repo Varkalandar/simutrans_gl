@@ -9,11 +9,13 @@
 #include "../sys/simsys.h"
 #include "../simdebug.h"
 #include "../descriptor/image.h"
+#include "../pathes.h"
 
 #include "simgraph.h"
 #include "rgba.h"
 #include "font.h"
 #include "gl_textures.h"
+#include "../dataobj/environment.h"
 
 #include <GLFW/glfw3.h>
 
@@ -85,6 +87,9 @@ static image_id anz_images = 0;
  * (>= anz_images)
  */
 static image_id alloc_images = 0;
+
+
+extern bool display_load_font(const char *fname, bool reload = false);
 
 
 // things to get rid off
