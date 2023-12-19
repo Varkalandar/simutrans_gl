@@ -1072,7 +1072,7 @@ void sysgl_scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void sysgl_character_callback(GLFWwindow* window, unsigned int codepoint);
 void sysgl_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 void sysgl_window_close_callback(GLFWwindow* window);
-
+void sysgl_framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
 bool simgraph_init(scr_size size, sint16)
 {
@@ -1106,7 +1106,8 @@ bool simgraph_init(scr_size size, sint16)
 		glfwSetCharCallback(window, sysgl_character_callback);
 		glfwSetKeyCallback(window, sysgl_key_callback);
         glfwSetWindowCloseCallback(window, sysgl_window_close_callback);
-
+        glfwSetFramebufferSizeCallback(window, sysgl_framebuffer_size_callback);
+        
         // 2D Initialization
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glEnable(GL_TEXTURE_2D);
@@ -1161,16 +1162,35 @@ void simgraph_exit()
 
 void simgraph_resize(scr_size size)
 {
+    dbg->message("simgraph_resize()", "width=%d height=%d", size.w, size.h);
+
+    // sanity check
+	if(size.h <= 0) {
+		size.h = 64;
+	}
+    
+    // setup open gl projection
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     glOrtho(0, size.w, size.h, 0, 1, -1);
     glViewport(0, 0, size.w, size.h);
+    
+    
+	// only resize, if internal values are different
+	if(display_width != size.w || display_height != size.h) {
+
+        display_width = size.w;
+        display_height = size.h;
+
+        display_set_clip_wh(0, 0, display_width, display_height);
+	}
 }
 
 
 void display_snapshot()
 {
 }
+
 
 void display_direct_line_rgb(const scr_coord_val x, const scr_coord_val y, const scr_coord_val xx, const scr_coord_val yy, rgba_t color)
 {

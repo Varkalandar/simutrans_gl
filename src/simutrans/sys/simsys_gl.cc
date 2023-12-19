@@ -284,6 +284,20 @@ void sysgl_window_close_callback(GLFWwindow* window)
 }
 
 
+void sysgl_framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+    dbg->message("sysgl_framebuffer_size_callback()", "width=%d height=%d", width, height);
+
+    sys_event_t event;
+    event.new_window_size_w = max(16, width);
+	event.new_window_size_h = max(16, height);
+	event.type = SIM_SYSTEM;
+	event.code = SYSTEM_RESIZE;
+
+    events.append(event);
+}
+
+
 bool dr_set_screen_scale(sint16)
 {
 	// no autoscaling as we have no display ...
