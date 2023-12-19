@@ -58,8 +58,8 @@ bottom_window_text_color = #C0C0C0
 # This is an ARGB value
 window_body_tint = #DDFFFFFF
 
-# In Simutrans GL bottom windows can overlayed with a shade. Trasnparency is
-# the transludency of the shade, not the window body.
+# In Simutrans GL bottom windows can overlayed with a shade. Transparency is
+# the translucency of the shade, not the window body.
 # This is an ARGB value
 bottom_window_tint = #22000000
 

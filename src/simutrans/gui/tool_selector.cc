@@ -94,6 +94,12 @@ void tool_selector_t::reset_tools()
 }
 
 
+rgba_t tool_selector_t::get_titlecolor() const 
+{ 
+    return env_t::default_window_title_color_rgb; 
+}
+
+
 bool tool_selector_t::is_hit(int x, int y)
 {
 	int dx = (x-offset.x)/env_t::iconsize.w;
@@ -273,7 +279,7 @@ void tool_selector_t::draw(scr_coord pos, scr_size sz)
 			tool_icon_width = (display_get_width() + env_t::iconsize.w - 1) / env_t::iconsize.w;
 			tool_icon_height = 1; // only single row for title bar
 			set_windowsize(sz);
-			// check for too large values (acter changing width etc.)
+			// check for too large values (after changing width etc.)
 			if (  display_get_width() >= (int)tools.get_count() * env_t::iconsize.w  ) {
 				tool_icon_disp_start = 0;
 				offset.x = 0;
@@ -342,7 +348,7 @@ void tool_selector_t::draw(scr_coord pos, scr_size sz)
 		if(  icon_img != IMG_EMPTY  ) {
 			bool tool_dirty = dirty  ||  (tools[i].tool->is_selected() ^ tools[i].selected);
 
-            display_set_color(RGBA_WHITE);
+            display_set_color(tools[i].tool->is_selected() ? rgba_t(1.0f, 0.5f, 0.0f, 1.0f) : RGBA_WHITE);
 			display_color_img(icon_img, draw_pos.x, draw_pos.y, player->get_player_nr(), env_t::iconsize.w, env_t::iconsize.w);
 			tools[i].tool->draw_after( draw_pos, tool_dirty);
 			// store whether tool was selected
@@ -350,13 +356,7 @@ void tool_selector_t::draw(scr_coord pos, scr_size sz)
 		}
 	}
 
-	if( is_dragging ) {
-		mark_rect_dirty_wc(pos.x, pos.y+D_TITLEBAR_HEIGHT, pos.x+sz.w, pos.y+sz.h+D_TITLEBAR_HEIGHT );
-	}
-	else if(  dirty  &&  (tool_icon_disp_end-tool_icon_disp_start < tool_icon_width*tool_icon_height)  ) {
-		// mark empty space empty
-		mark_rect_dirty_wc(pos.x, pos.y, pos.x + tool_icon_width*env_t::iconsize.w, pos.y + tool_icon_height*env_t::iconsize.h);
-	}
+    display_set_color(RGBA_WHITE);
 
 	if(  offset.x != 0  &&  tool_icon_disp_start > 0  ) {
 		display_color_img(gui_theme_t::arrow_button_left_img[0], pos.x, pos.y + D_TITLEBAR_HEIGHT, 0);
@@ -395,6 +395,13 @@ void tool_selector_t::draw(scr_coord pos, scr_size sz)
 }
 
 
+/**
+ * Since no information is needed to save and restore this, returning magic is enough
+ */
+uint32 tool_selector_t::get_rdwr_id()
+{ 
+    return magic_toolbar+toolbar_id; 
+}
 
 bool tool_selector_t::empty(player_t *player) const
 {

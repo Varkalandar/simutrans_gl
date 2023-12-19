@@ -9,8 +9,7 @@
 
 #include "gui_frame.h"
 #include "../tpl/vector_tpl.h"
-#include "simwin.h"
-#include "../dataobj/environment.h"
+
 
 class tool_t;
 
@@ -78,7 +77,7 @@ public:
 
 	const char *get_help_filename() const OVERRIDE {return help_file;}
 
-	rgba_t get_titlecolor() const OVERRIDE { return env_t::default_window_title_color_rgb; }
+	rgba_t get_titlecolor() const OVERRIDE;
 
 	bool is_hit(int x, int y) OVERRIDE;
 
@@ -97,8 +96,10 @@ public:
 	 */
 	void draw(scr_coord pos, scr_size size) OVERRIDE;
 
-	// since no information are needed to be saved to restore this, returning magic is enough
-	uint32 get_rdwr_id() OVERRIDE { return magic_toolbar+toolbar_id; }
+	/**
+         * Since no information is needed to save and restore this, returning magic is enough
+         */
+	uint32 get_rdwr_id() OVERRIDE;
 
 	bool empty(player_t *player) const;
 };

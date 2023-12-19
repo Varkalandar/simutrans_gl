@@ -62,6 +62,7 @@
 #include "../tpl/stringhashtable_tpl.h"
 
 #include "../gui/minimap.h" // for debugging
+#include "../gui/simwin.h"
 #include "../gui/tool_selector.h"
 #include "../gui/messagebox.h"
 

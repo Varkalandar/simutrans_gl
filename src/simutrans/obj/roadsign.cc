@@ -27,6 +27,7 @@
 
 #include "../gui/trafficlight_info.h"
 #include "../gui/privatesign_info.h"
+#include "../gui/simwin.h"
 #include "../gui/tool_selector.h"
 
 #include "../tpl/stringhashtable_tpl.h"
