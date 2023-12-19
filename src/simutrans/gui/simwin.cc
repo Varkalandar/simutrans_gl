@@ -409,9 +409,10 @@ static void win_draw_window_title(const scr_coord pos, const scr_size size,
 static void win_draw_window_dragger(scr_coord pos, scr_size size)
 {
 	pos += size;
-	if(  skinverwaltung_t::gadget  &&  skinverwaltung_t::gadget->get_image_id(SKIN_WINDOW_RESIZE)!=IMG_EMPTY  ) {
+	if(skinverwaltung_t::gadget && skinverwaltung_t::gadget->get_image_id(SKIN_WINDOW_RESIZE) != IMG_EMPTY) {
 		const image_t *dragger = skinverwaltung_t::gadget->get_image(SKIN_WINDOW_RESIZE);
-		display_color_img(dragger->get_id(), pos.x-dragger->get_pic()->w, pos.y-dragger->get_pic()->h, 0);
+		display_set_color(RGBA_WHITE);
+        display_color_img(dragger->get_id(), pos.x-dragger->get_pic()->w, pos.y-dragger->get_pic()->h, 0);
 	}
 	else {
 		int dragger_size = min(D_DRAGGER_WIDTH, D_DRAGGER_HEIGHT);
@@ -1190,7 +1191,7 @@ void display_win(int win)
 
 		// draw dragger
 		if(need_dragger) {
-			win_draw_window_dragger( pos, size);
+			win_draw_window_dragger(pos, size);
 		}
 
 		// darken non-top windows
