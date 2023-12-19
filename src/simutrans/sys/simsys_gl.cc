@@ -142,15 +142,15 @@ void sysgl_mouse_button_callback(GLFWwindow *, int button, int action, int mods)
         switch(button)
         {
             case GLFW_MOUSE_BUTTON_1:
-                event.code = SIM_MOUSE_LEFTBUTTON + button;
+                event.code = SIM_MOUSE_LEFTBUTTON;
                 mouse_buttons |= MOUSE_LEFTBUTTON;
                 break;
-            case GLFW_MOUSE_BUTTON_2:
-                event.code = SIM_MOUSE_MIDBUTTON + button;
+            case GLFW_MOUSE_BUTTON_3:
+                event.code = SIM_MOUSE_MIDBUTTON;
                 mouse_buttons |= MOUSE_MIDBUTTON;
                 break;
-            case GLFW_MOUSE_BUTTON_3:
-                event.code = SIM_MOUSE_RIGHTBUTTON + button;
+            case GLFW_MOUSE_BUTTON_2:
+                event.code = SIM_MOUSE_RIGHTBUTTON;
                 mouse_buttons |= MOUSE_RIGHTBUTTON;
                 break;
         }
@@ -160,15 +160,15 @@ void sysgl_mouse_button_callback(GLFWwindow *, int button, int action, int mods)
         switch(button)
         {
             case GLFW_MOUSE_BUTTON_1:
-                event.code = SIM_MOUSE_LEFTUP + button;
+                event.code = SIM_MOUSE_LEFTUP;
                 mouse_buttons &= ~MOUSE_LEFTBUTTON;
                 break;
-            case GLFW_MOUSE_BUTTON_2:
-                event.code = SIM_MOUSE_MIDUP + button;
+            case GLFW_MOUSE_BUTTON_3:
+                event.code = SIM_MOUSE_MIDUP;
                 mouse_buttons &= ~MOUSE_MIDBUTTON;
                 break;
-            case GLFW_MOUSE_BUTTON_3:
-                event.code = SIM_MOUSE_RIGHTUP + button;
+            case GLFW_MOUSE_BUTTON_2:
+                event.code = SIM_MOUSE_RIGHTUP;
                 mouse_buttons &= ~MOUSE_RIGHTBUTTON;
                 break;
         }
