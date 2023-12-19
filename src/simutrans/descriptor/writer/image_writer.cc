@@ -203,10 +203,10 @@ uint16 *image_writer_t::encode_image(int x, int y, dimension* dim, int* len)
 			colored_run_counter = dest++;
 			count = 0;
 
-			PIXVAL has_transparent = 0;
+			uint16_t has_transparent = 0;
 			while(  !is_transparent(pix)  ) {
 				// write the colored pixel
-				PIXVAL pixval = pixrgb_to_pixval(pix);
+				uint16_t pixval = pixrgb_to_pixval(pix);
 				if(  pixval >= 0x8020  &&  !has_transparent  ) {
 					if(  count  ) {
 						*colored_run_counter = endian(uint16(count));

@@ -190,8 +190,10 @@ image_t *image_t::copy_fliphorizontal() const
 	return target_image;
 }
 
-
+#ifdef MAKEOBJ
+#else
 void image_t::register_image()
 {
 	::register_image(this);
 }
+#endif

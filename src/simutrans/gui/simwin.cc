@@ -1197,7 +1197,8 @@ void display_win(int win)
 		if((unsigned)win != wins.get_count()-1)
 		{
             // not top
-            display_set_color(rgba_t(0.0f, 0.0f, 0.0f, 0.25f));
+            // display_set_color(rgba_t(0.0f, 0.0f, 0.0f, 0.25f));
+            display_set_color(env_t::bottom_window_tint);
             display_fillbox_wh(wins[win].pos.x, wins[win].pos.y, size.w, size.h);
 		}
 	}

@@ -1085,7 +1085,7 @@ void settings_t::parse_simuconf( tabfile_t& simuconf, sint16& disp_width, sint16
 
 	// listen directive is a comma separated list of IP addresses to listen on
 	if( *contents.get( "listen" ) ) {
-		env_t::listen.clear();
+		env_t::listen->clear();
 		std::string s = ltrim( contents.get( "listen" ) );
 
 		// Find index of first ',' copy from start of string to that position
@@ -1096,11 +1096,11 @@ void settings_t::parse_simuconf( tabfile_t& simuconf, sint16& disp_width, sint16
 		size_t end;
 
 		end = s.find_first_of( "," );
-		env_t::listen.append_unique( ltrim( s.substr( start, end ).c_str() ) );
+		env_t::listen->append_unique( ltrim( s.substr( start, end ).c_str() ) );
 		while( end != std::string::npos ) {
 			start = end;
 			end = s.find_first_of( ",", start + 1 );
-			env_t::listen.append_unique( ltrim( s.substr( start + 1, end - 1 - start ).c_str() ) );
+			env_t::listen->append_unique( ltrim( s.substr( start + 1, end - 1 - start ).c_str() ) );
 		}
 	}
 
@@ -1610,13 +1610,13 @@ void settings_t::parse_colours(tabfile_t& simuconf)
 
 	simuconf.read( contents );
 
-	contents.get_color("default_window_title_color", RGBA_BLACK, &env_t::default_window_title_color_rgb);
-	contents.get_color("front_window_text_color",    RGBA_BLACK, &env_t::front_window_text_color_rgb);
-	contents.get_color("bottom_window_text_color",   RGBA_BLACK, &env_t::bottom_window_text_color_rgb);
-	contents.get_color("tooltip_background_color",   RGBA_BLACK, &env_t::tooltip_color_rgb);
-	contents.get_color("tooltip_text_color",         RGBA_BLACK, &env_t::tooltip_textcolor_rgb);
-	contents.get_color("cursor_overlay_color",       RGBA_BLACK, &env_t::cursor_overlay_color_rgb);
-	contents.get_color("background_color",           RGBA_BLACK, &env_t::background_color_rgb);
+	env_t::decode_color(contents.get_string("default_window_title_color", NULL), RGBA_BLACK, &env_t::default_window_title_color_rgb);
+	env_t::decode_color(contents.get_string("front_window_text_color", NULL),    RGBA_BLACK, &env_t::front_window_text_color_rgb);
+	env_t::decode_color(contents.get_string("bottom_window_text_color", NULL),   RGBA_BLACK, &env_t::bottom_window_text_color_rgb);
+	env_t::decode_color(contents.get_string("tooltip_background_color", NULL),   RGBA_BLACK, &env_t::tooltip_color_rgb);
+	env_t::decode_color(contents.get_string("tooltip_text_color", NULL),         RGBA_BLACK, &env_t::tooltip_textcolor_rgb);
+	env_t::decode_color(contents.get_string("cursor_overlay_color", NULL),       RGBA_BLACK, &env_t::cursor_overlay_color_rgb);
+	env_t::decode_color(contents.get_string("background_color", NULL),           RGBA_BLACK, &env_t::background_color_rgb);
 
 	env_t::bottom_window_darkness = contents.get_int("env_t::bottom_window_darkness", env_t::bottom_window_darkness);
 }

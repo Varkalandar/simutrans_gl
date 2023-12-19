@@ -11,6 +11,7 @@
 #include "../simconst.h"
 #include "../simtypes.h"
 #include "../sys/simsys.h"
+#include "../tpl/vector_tpl.h"
 #include "../simmesg.h"
 #include "../display/alignment.h"
 
@@ -75,7 +76,7 @@ std::string env_t::server_pakurl;
 std::string env_t::server_infurl;
 std::string env_t::server_admin_pw;
 std::string env_t::server_motd_filename;
-vector_tpl<std::string> env_t::listen;
+vector_tpl<std::string> * env_t::listen = new vector_tpl<std::string>();
 bool env_t::server_save_game_on_quit = false;
 bool env_t::reload_and_save_on_quit = true;
 uint8 env_t::network_heavy_mode = 0;
@@ -160,6 +161,8 @@ rgb888_t env_t::tooltip_color_rgb;
 int env_t::tooltip_color;
 rgb888_t env_t::tooltip_textcolor_rgb;
 int env_t::tooltip_textcolor;
+rgba_t env_t::bottom_window_tint = RGBA_CLEAR;
+rgba_t env_t::window_body_tint =  RGBA_WHITE;
 sint8 env_t::toolbar_max_width;
 sint8 env_t::toolbar_max_height;
 rgb888_t env_t::cursor_overlay_color_rgb;
@@ -340,8 +343,8 @@ void env_t::init()
 	compass_screen_position = 0; // disbale, other could be ALIGN_RIGHT|ALIGN_BOTTOM;
 
 	// Listen on all addresses by default
-	listen.append_unique("::");
-	listen.append_unique("0.0.0.0");
+	listen->append_unique("::");
+	listen->append_unique("0.0.0.0");
 	show_money_message = 0;
 }
 
@@ -617,3 +620,63 @@ void env_t::rdwr(loadsave_t *file)
 	// server settings are not saved, since they are server specific
 	// and could be different on different servers on the same computers
 }
+
+
+/**
+ * Decodes a color string like #AARRGGBB.
+ * 
+ * @param color_string The color string to parse
+ * @param def The default value if string is null
+ * @param color_rgb optional storage for rgb888_t result
+ * @return the color
+ */
+rgba_t env_t::decode_color(const char * color_string, rgba_t def, rgb888_t *color_rgb)
+{
+	// const char *value = contents.get_string(key,NULL);
+
+	if(color_string) {
+		// skip spaces/tabs
+		while (*color_string > 0 && *color_string <= 32) {
+			color_string ++;
+		}
+
+		if(*color_string == '#') {
+			const uint32 v = strtoul( color_string+1, NULL, 16 );
+			uint8 a = (v >> 24) & 0xFF;
+			uint8 r = (v >> 16) & 0xFF;
+			uint8 g = (v >>  8) & 0xFF;
+			uint8 b = (v) & 0xFF;
+
+            // if no alpha value is given, we default to fully opaque
+            if(strlen(color_string) < 8)
+            {
+                a = 0xFF;
+            }
+
+            dbg->message("env_t::decode_color()", "Input %s -> %x %x %x (a=%x)", color_string, r, g, b, a);
+            
+			// we save in settings as RGB888
+			if (color_rgb) {
+				*color_rgb = rgb888_t(r, g, b);
+			}
+
+			return rgba_t(r * 1/255.0f, g * 1/255.0f, b * 1/255.0f, a * 1/255.0f);
+		}
+		else {
+			// this inputs also hex correct
+			uint8 index = (uint8)strtoul( color_string, NULL, 0 );
+			// we save in settings as RGB888
+			if (color_rgb) {
+				*color_rgb = get_color_rgb(index);
+			}
+
+            dbg->message("env_t::decode_color()", "Input %s -> index=%d", color_string, index);
+
+			return color_idx_to_rgb(index);
+		}
+	}
+
+    return def;
+}
+
+

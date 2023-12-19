@@ -129,47 +129,6 @@ const scr_size &tabfileobj_t::get_scr_size(const char *key, scr_size def)
 }
 
 
-rgba_t tabfileobj_t::get_color(const char *key, rgba_t def, rgb888_t *color_rgb)
-{
-	const char *value = get_string(key,NULL);
-
-	if(!value) {
-		return def;
-	}
-	else {
-		// skip spaces/tabs
-		while ( *value>0  &&  *value<=32  ) {
-			value ++;
-		}
-
-		if(  *value=='#'  ) {
-			const uint32 v = strtoul( value+1, NULL, 16 ) & 0xFFFFFFul;
-			const rgb888_t col = {
-				(uint8)(v >> 16),
-				(uint8)(v >>  8),
-				(uint8)(v >>  0)
-			};
-			// we save in settings as RGB888
-			if (color_rgb) {
-				*color_rgb = col;
-			}
-
-			return col;
-		}
-		else {
-			// this inputs also hex correct
-			uint8 index = (uint8)strtoul( value, NULL, 0 );
-			// we save in settings as RGB888
-			if (color_rgb) {
-				*color_rgb = get_color_rgb(index);
-			}
-
-			return color_idx_to_rgb(index);
-		}
-	}
-}
-
-
 int tabfileobj_t::get_int(const char *key, int def)
 {
 	const char *value = get_string(key,NULL);

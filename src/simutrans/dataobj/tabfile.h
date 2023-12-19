@@ -6,10 +6,8 @@
 #ifndef DATAOBJ_TABFILE_H
 #define DATAOBJ_TABFILE_H
 
-
 #include <stdio.h>
 
-#include "../display/rgba.h"
 #include "../tpl/stringhashtable_tpl.h"
 #include "../tpl/vector_tpl.h"
 
@@ -160,12 +158,6 @@ public:
 	 */
 	const koord &get_koord(const char *key, koord def);
 	const scr_size &get_scr_size(const char *key, scr_size def);
-
-	/**
-	 * Get a color in the system format when given a #AABBCC
-	 * and optionally set RGB888 for a chosen var with color_rgb
-	 */
-	rgba_t get_color(const char *key, rgba_t def, rgb888_t *color_rgb = NULL);
 
 	/**
 	 * Get an int

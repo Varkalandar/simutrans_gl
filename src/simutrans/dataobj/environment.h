@@ -12,12 +12,13 @@
 #include "../simconst.h"
 #include "../simcolor.h"
 #include "settings.h"
+#include "../display/rgba.h"
 #include "../display/scr_coord.h"
 
-#include "../tpl/vector_tpl.h"
 #include "../utils/plainstring.h"
 #include "../utils/log.h"
 
+template <class T> class vector_tpl;
 
 #define TILE_HEIGHT_STEP (env_t::pak_tile_height_step)
 
@@ -149,7 +150,7 @@ public:
 	static std::string server_admin_pw;
 
 	/// IP addresses to listen on/send announcements on
-	static vector_tpl<std::string> listen;
+	static vector_tpl<std::string> * listen;
 
 	/// pause server if no client connected
 	static bool pause_server_no_clients;
@@ -261,8 +262,10 @@ public:
 	static int bottom_window_text_color;
 	static rgb888_t default_window_title_color_rgb;
 	static int default_window_title_color;
-	static uint8 bottom_window_darkness;
-
+	static uint8 bottom_window_darkness;       // this is for the title bar
+        static rgba_t bottom_window_tint;          // this is to shade the non-top window body
+        static rgba_t window_body_tint;            // color and transparency of any window body
+        
 	static uint8 gui_player_color_dark;
 	static uint8 gui_player_color_bright;
 
@@ -512,6 +515,17 @@ public:
 	 * @see simmain.cc
 	 */
 	static void rdwr(loadsave_t *file);
+
+
+        /**
+         * Decodes a color string like #AARRGGBB.
+         * 
+         * @param color_string The color string to parse
+         * @param def The default value if string is null
+         * @param color_rgb optional storage for rgb888_t result
+         * @return the color
+         */
+        static rgba_t decode_color(const char * color_string, rgba_t def, rgb888_t *color_rgb);
 };
 
 #endif

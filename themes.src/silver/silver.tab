@@ -1,4 +1,4 @@
-# Simutrans default touch theme
+# Simutrans "silver" theme
 #
 # Read the wiki article for better explanation and full parameters list
 # https://wiki.simutrans.com/en_themeDef
@@ -53,6 +53,15 @@ bottom_window_bar_color = 3
 # some colors are 215-white, 240-black 208-214- all shades of gray
 front_window_text_color = #FFFFFF
 bottom_window_text_color = #C0C0C0
+
+# In Simutrans GL front windows can get a color tint, including transparency
+# This is an ARGB value
+window_body_tint = #DDFFFFFF
+
+# In Simutrans GL bottom windows can overlayed with a shade. Trasnparency is
+# the transludency of the shade, not the window body.
+# This is an ARGB value
+bottom_window_tint = #22000000
 
 #################################colour stuff#################################
 

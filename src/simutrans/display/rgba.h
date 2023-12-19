@@ -1,7 +1,6 @@
 #ifndef DISPLAY_RGBA_H
 #define DISPLAY_RGBA_H
 
-
 class rgb888_t
 {
 public:
