@@ -359,9 +359,9 @@ void button_t::draw(scr_coord offset)
 
 		case box: // Colored background box
 			{
-				display_img_stretch(gui_theme_t::button_tiles[get_state_offset()], area, RGBA_BLACK);
+				display_img_stretch(gui_theme_t::button_tiles[get_state_offset()], area);
                 display_set_color(background_color);
-				display_img_stretch_blend(gui_theme_t::button_color_tiles[b_enabled && pressed], area, background_color);
+				display_img_stretch(gui_theme_t::button_color_tiles[b_enabled && pressed], area);
 				if(  text  ) {
 					text_color = pressed ? SYSCOL_COLORED_BUTTON_TEXT_SELECTED : text_color;
 					// move the text to leave evt. space for a colored box top left or bottom right of it
@@ -377,7 +377,7 @@ void button_t::draw(scr_coord offset)
 
 		case roundbox: // button with inside text
 			{
-				display_img_stretch(gui_theme_t::round_button_tiles[get_state_offset()], area, RGBA_BLACK);
+				display_img_stretch(gui_theme_t::round_button_tiles[get_state_offset()], area);
 				if(  text  ) {
 					// move the text to leave evt. space for a colored box top left or bottom right of it
 					scr_rect area_text = area - gui_theme_t::gui_button_text_offset_right;
@@ -391,8 +391,10 @@ void button_t::draw(scr_coord offset)
 			break;
 
 		case imagebox:
-			display_img_stretch(gui_theme_t::button_tiles[get_state_offset()], area, RGBA_BLACK);
-			display_img_stretch_blend(gui_theme_t::button_color_tiles[b_enabled && pressed], area, (pressed ? text_color: background_color));
+			display_img_stretch(gui_theme_t::button_tiles[get_state_offset()], area);
+            
+            display_set_color(pressed ? text_color: background_color);
+			display_img_stretch(gui_theme_t::button_color_tiles[b_enabled && pressed], area);
 			display_img_aligned(img, area, ALIGN_CENTER_H | ALIGN_CENTER_V, 0, true);
 			if (win_get_focus() == this) {
 				draw_focus_rect(area);
@@ -401,7 +403,7 @@ void button_t::draw(scr_coord offset)
 
 		case sortarrow:
 			{
-				display_img_stretch(gui_theme_t::button_tiles[0], area, RGBA_BLACK);
+				display_img_stretch(gui_theme_t::button_tiles[0], area);
 
 				const uint8 block_height = 2;
 				const uint8 bars_height = uint8((size.h-block_height-4)/4)*block_height*2 + block_height;

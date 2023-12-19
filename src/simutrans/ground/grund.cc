@@ -1647,7 +1647,7 @@ scr_size display_themed_label(sint16 xpos, sint16 ypos, const char* text,
 
 	const sint16 pnr = player ? player->get_player_nr() : 1;
 	display_set_color(RGBA_WHITE);
-	display_img_stretch(label, area, RGBA_WHITE);
+	display_img_stretch(label, area);
 
     display_proportional_rgb(area.x+margin_left, area.y+margin_top, text, ALIGN_LEFT, color, dirty);
 

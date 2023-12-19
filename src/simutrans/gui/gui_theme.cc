@@ -747,7 +747,7 @@ bool gui_theme_t::themes_init(const char *file_name, bool init_fonts, bool init_
 	}
 	env_t::default_theme = file_name;
 
-    dbg->message("themes init", "gui_color_text=%x", gui_theme_t::gui_color_text);
+    // dbg->message("themes init", "gui_color_text=%x", gui_theme_t::gui_color_text);
     
 	return true;
 }

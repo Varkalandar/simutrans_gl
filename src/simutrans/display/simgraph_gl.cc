@@ -766,7 +766,7 @@ void display_base_img(const image_id id, scr_coord_val x, scr_coord_val y, const
 
 
 // local helper function for tiles buttons
-static void display_three_image_row( image_id i1, image_id i2, image_id i3, scr_rect row, rgba_t)
+static void display_three_image_row( image_id i1, image_id i2, image_id i3, scr_rect row)
 {
 // 	dbg->message("display_three_image_row", "%d %d %d %d", row.x, row.y, row.w, row.h);
 	if(  i1!=IMG_EMPTY  ) {
@@ -812,16 +812,13 @@ static scr_coord_val get_img_height(image_id img)
 	return img != IMG_EMPTY ? images[ img ].h : 0;
 }
 
-
-typedef void (*DISP_THREE_ROW_FUNC)(image_id, image_id, image_id, scr_rect, rgba_t);
-
 /**
  * Base method to display a 3x3 array of images to fit the scr_rect.
  * Special cases:
  * - if images[*][1] are empty, display images[*][0] vertically aligned
  * - if images[1][*] are empty, display images[0][*] horizontally aligned
  */
-static void display_img_stretch_intern( const stretch_map_t &imag, scr_rect area, DISP_THREE_ROW_FUNC display_three_image_rowf, rgba_t color)
+void display_img_stretch(const stretch_map_t &imag, scr_rect area)
 {
 	scr_coord_val h_top    = max(max( get_img_height(imag[0][0]), get_img_height(imag[1][0])), get_img_height(imag[2][0]));
 	scr_coord_val h_middle = max(max( get_img_height(imag[0][1]), get_img_height(imag[1][1])), get_img_height(imag[2][1]));
@@ -842,12 +839,12 @@ static void display_img_stretch_intern( const stretch_map_t &imag, scr_rect area
 	}
 
 	// top row
-	display_three_image_rowf( imag[0][0], imag[1][0], imag[2][0], area, color);
+	display_three_image_row( imag[0][0], imag[1][0], imag[2][0], area);
 
 	// bottom row
 	if(  h_bottom > 0  ) {
 		scr_rect row( area.x, area.y+area.h-h_bottom, area.w, h_bottom );
-		display_three_image_rowf( imag[0][2], imag[1][2], imag[2][2], row, color);
+		display_three_image_row( imag[0][2], imag[1][2], imag[2][2], row);
 	}
 
 	// now stretch the middle
@@ -855,7 +852,7 @@ static void display_img_stretch_intern( const stretch_map_t &imag, scr_rect area
 		scr_rect row( area.x, area.y+h_top, area.w, area.h-h_top-h_bottom);
 		// tile it wide
 		while(  h_middle <= row.h  ) {
-			display_three_image_rowf( imag[0][1], imag[1][1], imag[2][1], row, color);
+			display_three_image_row( imag[0][1], imag[1][1], imag[2][1], row);
 			row.y += h_middle;
 			row.h -= h_middle;
 		}
@@ -863,58 +860,10 @@ static void display_img_stretch_intern( const stretch_map_t &imag, scr_rect area
 		if(  row.h > 0  ) {
 			clip_dimension const cl = display_get_clip_wh();
 			display_set_clip_wh( cl.x, cl.y, cl.w, max(0,min(row.get_bottom(),cl.yy)-cl.y) );
-			display_three_image_rowf( imag[0][1], imag[1][1], imag[2][1], row, color);
+			display_three_image_row( imag[0][1], imag[1][1], imag[2][1], row);
 			display_set_clip_wh(cl.x, cl.y, cl.w, cl.h );
 		}
 	}
-}
-
-
-void display_img_stretch( const stretch_map_t &imag, scr_rect area, rgba_t color )
-{
-	display_img_stretch_intern(imag, area, display_three_image_row, color);
-}
-
-
-static void display_three_blend_row(image_id i1, image_id i2, image_id i3, scr_rect row, rgba_t color)
-{
-	if(  i1!=IMG_EMPTY  ) {
-		scr_coord_val w = images[i1].w;
-		display_rezoomed_img_blend(i1, row.x, row.y, 0, color, false, true);
-		row.x += w;
-		row.w -= w;
-	}
-	// right
-	if(  i3!=IMG_EMPTY  ) {
-		scr_coord_val w = images[i3].w;
-		display_rezoomed_img_blend(i3, row.get_right()-w, row.y, 0, color, false, true);
-		row.w -= w;
-	}
-	// middle
-	if(  i2!=IMG_EMPTY  ) {
-		scr_coord_val w = images[i2].w;
-		// tile it wide
-		while(  w <= row.w  ) {
-			display_rezoomed_img_blend(i2, row.x, row.y, 0, color, false, true);
-			row.x += w;
-			row.w -= w;
-		}
-		// for the rest we have to clip the rectangle
-		if(  row.w > 0  ) {
-			clip_dimension const cl = display_get_clip_wh();
-			display_set_clip_wh( cl.x, cl.y, max(0,min(row.get_right(),cl.xx)-cl.x), cl.h );
-			display_rezoomed_img_blend(i2, row.x, row.y, 0, color, false, true);
-			display_set_clip_wh(cl.x, cl.y, cl.w, cl.h);
-		}
-	}
-}
-
-
-// this displays a 3x3 array of images to fit the scr_rect like above, but blend the color
-void display_img_stretch_blend( const stretch_map_t &imag, scr_rect area, rgba_t color )
-{
-	// display_img_stretch_intern(imag, area, display_three_blend_row, color);
-	display_img_stretch_intern(imag, area, display_three_image_row, color);
 }
 
 

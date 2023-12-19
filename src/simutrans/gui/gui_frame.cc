@@ -188,7 +188,7 @@ void gui_frame_t::draw(scr_coord pos, scr_size size)
 
 	// draw background
 	if(  opaque  ) {
-		display_img_stretch(gui_theme_t::windowback, scr_rect( pos + titlebar_size, size - titlebar_size ), RGBA_WHITE);
+		display_img_stretch(gui_theme_t::windowback, scr_rect( pos + titlebar_size, size - titlebar_size ));
 	}
 	else {
         display_set_color(color_transparent);

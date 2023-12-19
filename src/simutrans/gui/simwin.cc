@@ -344,9 +344,9 @@ static void win_draw_window_title(const scr_coord pos, const scr_size size,
 		if(skinverwaltung_t::title_bar_player) {
 			// Yes, so we can use normal text and player color bar
 			if(player_nr >= 0) {
-				display_img_stretch(gui_theme_t::gui_title_bar_player, area, RGBA_BLACK); // todo: player color
+				display_img_stretch(gui_theme_t::gui_title_bar_player, area); // todo: player color
 			} else {
-				display_img_stretch(gui_theme_t::gui_title_bar, area, RGBA_BLACK);
+				display_img_stretch(gui_theme_t::gui_title_bar, area);
 			}
 		} else {
 			// A theme without player color title bars. In this case we change
@@ -354,7 +354,7 @@ static void win_draw_window_title(const scr_coord pos, const scr_size size,
 
 			text_color = player_nr >= 0 ? color_idx_to_rgb(7) : RGBA_WHITE; // todo: real player color
 
-			display_img_stretch(gui_theme_t::gui_title_bar, area, RGBA_BLACK);
+			display_img_stretch(gui_theme_t::gui_title_bar, area);
 		}
 
 	} else {

@@ -11,7 +11,7 @@
 void gui_divider_t::draw(scr_coord offset)
 {
     display_set_color(RGBA_WHITE);
-	display_img_stretch( gui_theme_t::divider, scr_rect( get_pos()+offset, get_size() ), RGBA_BLACK);
+	display_img_stretch(gui_theme_t::divider, scr_rect( get_pos()+offset, get_size() ));
 }
 
 

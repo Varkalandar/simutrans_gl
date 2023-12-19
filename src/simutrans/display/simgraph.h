@@ -170,10 +170,7 @@ typedef image_id stretch_map_t[3][3];
 
 // this displays a 3x3 array of images to fit the scr_rect
 // Hajo: color is a player color index here.
-void display_img_stretch( const stretch_map_t &imag, scr_rect area, rgba_t color );
-
-// this displays a 3x3 array of images to fit the scr_rect like above, but blend the color
-void display_img_stretch_blend( const stretch_map_t &imag, scr_rect area, rgba_t color );
+void display_img_stretch(const stretch_map_t &imag, scr_rect area);
 
 // display unzoomed image with alpha, either blended or as outline
 void display_base_img_blend(const image_id n, scr_coord_val xp, scr_coord_val yp, const signed char player_nr, rgba_t color_index, const bool daynight, const bool dirty  CLIP_NUM_DEF CLIP_NUM_DEFAULT_ZERO);
