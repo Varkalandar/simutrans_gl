@@ -272,7 +272,7 @@ void obj_t::display_after(int xpos, int ypos, bool) const
 		xpos += tile_raster_scale_x( get_xoff(), raster_width );
 		ypos += tile_raster_scale_y( get_yoff(), raster_width );
 
-        display_set_color(RGBA_WHITE);
+        // display_set_color(RGBA_WHITE);
 
 		if(  owner_n != PLAYER_UNOWNED  ) {
 			if(  obj_t::show_owner  ) {

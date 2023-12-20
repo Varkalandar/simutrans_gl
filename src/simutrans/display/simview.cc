@@ -216,6 +216,8 @@ void main_view_t::display(bool force_dirty)
 				}
 			}
 		}
+        
+        display_set_color(RGBA_WHITE);
 		zeiger->display( pointer_pos.x , pointer_pos.y  CLIP_NUM_DEFAULT);
 		zeiger->clear_flag( obj_t::dirty );
 	}
