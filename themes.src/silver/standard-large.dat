@@ -191,18 +191,18 @@ Image[5]=> title_bar.1.2
 Image[6]=> title_bar.2.0
 Image[7]=> title_bar.2.1
 Image[8]=> title_bar.2.2
-#--
-#Obj=menu
-#name=TitleBarPlayer
-#Image[0]=> title_bar_player.0.0
-#Image[1]=> title_bar_player.0.1
-#Image[2]=> title_bar_player.0.2
-#Image[3]=> title_bar_player.1.0
-#Image[4]=> title_bar_player.1.1
-#Image[5]=> title_bar_player.1.2
-#Image[6]=> title_bar_player.2.0
-#Image[7]=> title_bar_player.2.1
-#Image[8]=> title_bar_player.2.2
+--
+Obj=menu
+name=TitleBarPlayer
+Image[0]=> title_bar_player.0.0
+Image[1]=> title_bar_player.0.1
+Image[2]=> title_bar_player.0.2
+Image[3]=> title_bar_player.1.0
+Image[4]=> title_bar_player.1.1
+Image[5]=> title_bar_player.1.2
+Image[6]=> title_bar_player.2.0
+Image[7]=> title_bar_player.2.1
+Image[8]=> title_bar_player.2.2
 --
 #################################################################
 #

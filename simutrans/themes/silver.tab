@@ -58,8 +58,8 @@ bottom_window_text_color = #C0C0C0
 # This is an ARGB value
 window_body_tint = #DDFFFFFF
 
-# In Simutrans GL bottom windows can overlayed with a shade. Trasnparency is
-# the transludency of the shade, not the window body.
+# In Simutrans GL bottom windows can overlayed with a shade. Transparency is
+# the translucency of the shade, not the window body.
 # This is an ARGB value
 bottom_window_tint = #22000000
 
@@ -129,6 +129,38 @@ gui_color_loadingbar_inner = #D6ECF7
 # Color player bright
 gui_player_color_dark = 1	
 gui_player_color_bright = 3
+
+# text labels
+
+# text margins inside the labels (left, top, right, bottom)
+gui_display_text_label_margins = 6, 6, 5, 4
+# The color of the label text. Can be a number 1-7, to indicate player color
+# brightness or it cant be a RGB value like #000000.
+gui_display_text_label_color = #000000
+
+# station labels
+
+# text margins inside the labels (left, top, right, bottom)
+gui_display_station_label_margins = 22, 6, 5, 4
+# The color of the label text. Can be a number 1-7, to indicate player color
+# brightness or it cant be a RGB value like #000000.
+gui_display_station_label_color = #000000
+
+# marker labels
+
+# text margins inside the labels (left, top, right, bottom)
+gui_display_marker_label_margins = 12, 6, 12, 4
+# The color of the label text. Can be a number 1-7, to indicate player color
+# brightness or it cant be a RGB value like #000000.
+gui_display_marker_label_color = #000000
+
+# factory labels
+
+# text margins inside the labels (left, top, right, bottom)
+gui_display_factory_label_margins = 12, 7, 12, 7
+# The color of the label text. Can be a number 1-7, to indicate player color
+# brightness or it cant be a RGB value like #000000.
+gui_display_factory_label_color = #000000
 
 # make the chat window transparent in network games
 gui_chat_window_network_transparency = 25
