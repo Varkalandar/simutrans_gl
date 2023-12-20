@@ -673,7 +673,8 @@ void minimap_t::full_redraw()
                     int x = (k.x - k.y);
                     int y = (k.x + k.y) / 2;
 
-                    tex_setpix(pixels, new_size.w, new_size.h, x+world->get_size().x, y, color);
+                    tex_setpix(pixels, new_size.w, new_size.h, 
+                               x + world->get_size().x - cur_off.x, y - cur_off.y, color);
                 }
             }
             map_texture->update_region(0, 0, new_size.w, new_size.h, pixels);
@@ -696,7 +697,7 @@ void minimap_t::full_redraw()
                     int x = k.x - start_off.x;
                     int y = k.y - start_off.y;
 
-                    tex_setpix(pixels, new_size.w, new_size.h, x, y, color);
+                    tex_setpix(pixels, new_size.w, new_size.h, x/zoom_out, y/zoom_out, color);
                 }
             }
 
