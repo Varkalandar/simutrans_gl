@@ -59,7 +59,8 @@ bool ai_passenger_t::set_active(bool new_state)
 {
 	// only activate, when there are buses available!
 	if(  new_state  ) {
-		new_state = NULL!=vehicle_search( road_wt, 50, 80, goods_manager_t::passengers, false);
+		// Todo: crashes in assertation because simrand is not allowed when this is called.
+        // new_state = NULL!=vehicle_search( road_wt, 50, 80, goods_manager_t::passengers, false);
 	}
 	return player_t::set_active( new_state );
 }
@@ -1178,25 +1179,34 @@ DBG_MESSAGE("ai_passenger_t::do_passenger_ki()","using %s on %s",road_vehicle->g
 					// wait only, if target is not a hub but an attraction/factory
 					create_bus_transport_vehicle(platz1,1,list,2,end_stadt==NULL);
 					state = NR_SUCCESS;
-					// tell the player
+					
+                    // tell the player
 					cbuffer_t buf;
-					if(end_attraction!=NULL) {
+                    koord3d zpos;
+					
+                    if(end_attraction!=NULL) {
 						platz1 = end_attraction->get_pos().get_2d();
 						buf.printf(translator::translate("%s now\noffers bus services\nbetween %s\nand attraction\n%s\nat (%i,%i).\n"), get_name(), start_stadt->get_name(), make_single_line_string(translator::translate(end_attraction->get_tile()->get_desc()->get_name()),2), platz1.x, platz1.y );
 						end_stadt = start_stadt;
+                        zpos = end_attraction->get_pos();
 					}
 					else if(ziel!=NULL) {
 						platz1 = ziel->get_pos().get_2d();
 						buf.printf( translator::translate("%s now\noffers bus services\nbetween %s\nand factory\n%s\nat (%i,%i).\n"), get_name(), start_stadt->get_name(), make_single_line_string(translator::translate(ziel->get_name()),2), platz1.x, platz1.y );
 						end_stadt = start_stadt;
+                        zpos = ziel->get_pos();
 					}
 					else {
 						buf.printf( translator::translate("Travellers now\nuse %s's\nbusses between\n%s \nand %s.\n"), get_name(), start_stadt->get_name(), end_stadt->get_name() );
 						// add two intown routes
 						cover_city_with_bus_route(platz1, 6);
 						cover_city_with_bus_route(platz2, 6);
+                        zpos.x = platz1.x;
+                        zpos.y = platz1.y;
+                        zpos.z = 0;
 					}
-					welt->get_message()->add_message(buf, end_attraction->get_pos(), message_t::ai, RGBA_WHITE, road_vehicle->get_base_image());
+                    rgba_t color = color_idx_to_rgb(get_player_color1());
+					welt->get_message()->add_message(buf, zpos, message_t::ai, color, road_vehicle->get_base_image());
 				}
 			}
 		}
