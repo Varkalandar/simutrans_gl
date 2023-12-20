@@ -201,7 +201,7 @@ bool skinverwaltung_t::successfully_loaded(skintyp_t type)
 
 bool skinverwaltung_t::register_desc(skintyp_t type, const skin_desc_t* desc)
 {
-        dbg->message( "skinverwaltung_t::register_desc()","object %s type %d added.", desc->get_name(), type);
+    dbg->message( "skinverwaltung_t::register_desc()","object %s type %d added.", desc->get_name(), type);
 
 	special_obj_tpl<skin_desc_t> const* sd;
 	switch (type) {
