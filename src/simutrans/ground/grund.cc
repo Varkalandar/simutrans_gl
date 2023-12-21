@@ -947,7 +947,7 @@ void grund_t::display_boden(const sint16 xpos, const sint16 ypos, const sint16 r
 			// fence before a drop
 			const sint16 offset = -tile_raster_scale_y( TILE_HEIGHT_STEP*corner_nw(get_grund_hang()), raster_tile_width);
 			const uint16 typ = abs_back_imageid - grund_t::BIID_ENCODE_FENCE_OFFSET - 1 + (artificial ? grund_t::FENCE_IMAGE_COUNT : 0);
-			display_normal( ground_desc_t::fences->get_image(typ), xpos, ypos + offset, 0, true, dirty CLIP_NUM_PAR );
+			display_normal(ground_desc_t::fences->get_image(typ), xpos, ypos + offset, 0);
 		}
 		else {
 			// artificial slope
@@ -989,12 +989,12 @@ void grund_t::display_boden(const sint16 xpos, const sint16 ypos, const sint16 r
 							if( sl_draw->get_image( img_index ) == IMG_EMPTY ) {
 								img_index = 4 + 4 * (hgt_diff>1) + grund_t::WALL_IMAGE_COUNT * (uint16)i;
 							}
-							display_normal( sl_draw->get_image( img_index ), xpos, ypos + yoff, 0, true, dirty CLIP_NUM_PAR );
+							display_normal(sl_draw->get_image( img_index ), xpos, ypos + yoff, 0);
 							yoff     -= tile_raster_scale_y( TILE_HEIGHT_STEP * (hgt_diff > 1 ? 2 : 1), raster_tile_width );
 							hgt_diff -= 2;
 						}
 					}
-					display_normal( sl_draw->get_image( back_image[i] + wall_image_offset[i] ), xpos, ypos + yoff, 0, true, dirty CLIP_NUM_PAR );
+					display_normal(sl_draw->get_image( back_image[i] + wall_image_offset[i] ), xpos, ypos + yoff, 0);
 				}
 			}
 		}
@@ -1012,7 +1012,7 @@ void grund_t::display_boden(const sint16 xpos, const sint16 ypos, const sint16 r
 		if(get_typ()!=wasser) {
 			// show image if tile is visible
 			if (visible)  {
-				display_normal( get_image(), xpos, ypos, 0, true, dirty CLIP_NUM_PAR );
+				display_normal( get_image(), xpos, ypos, 0);
 #ifdef SHOW_FORE_GRUND
 				if (get_flag(grund_t::draw_as_obj)) {
 					display_blend( get_image(), xpos, ypos, 0, color_idx_to_rgb(COL_RED) | OUTLINE_FLAG |TRANSPARENT50_FLAG, true, dirty CLIP_NUM_PAR );
@@ -1105,7 +1105,7 @@ void grund_t::display_boden(const sint16 xpos, const sint16 ypos, const sint16 r
 								if(  shore==IMG_EMPTY  &&  snow_transition<=0  ) {
 									shore = ground_desc_t::shore->get_image(slope,0);
 								}
-								display_normal( shore, xpos, ypos, 0, true, dirty CLIP_NUM_PAR );
+								display_normal(shore, xpos, ypos, 0);
 							}
 						}
 						else {
@@ -1135,14 +1135,14 @@ void grund_t::display_boden(const sint16 xpos, const sint16 ypos, const sint16 r
 				// for undergroundmode = ugm_all the grid is plotted in display_obj
 				if(  show_grid  ){
 					const uint8 hang = get_grund_hang();
-					display_normal( ground_desc_t::get_border_image(hang), xpos, ypos, 0, true, dirty CLIP_NUM_PAR );
+					display_normal(ground_desc_t::get_border_image(hang), xpos, ypos, 0);
 				}
 			}
 		}
 		else {
 			// take animation into account
 			if(  underground_mode != ugm_all  ) {
-				display_normal( ground_desc_t::sea->get_image(get_image(),wasser_t::stage), xpos, ypos, 0, true, dirty|wasser_t::change_stage CLIP_NUM_PAR );
+				display_normal(ground_desc_t::sea->get_image(get_image(),wasser_t::stage), xpos, ypos, 0);
 			}
 			else {
 				display_blend( ground_desc_t::sea->get_image(get_image(),wasser_t::stage), xpos, ypos, 0, rgba_t(0, 0, 0, 0.5f), true, dirty|wasser_t::change_stage CLIP_NUM_PAR );
@@ -1202,17 +1202,17 @@ void grund_t::display_border( sint16 xpos, sint16 ypos, const sint16 raster_tile
 		diff = -min(corner_sw(slope),corner_se(slope));
 		sint16 zz = pos.z-welt->get_groundwater();
 		if(  diff < zz && ((zz-diff)&1)==1  ) {
-			display_normal( ground_desc_t::slopes->get_image(15), x, y, 0, true, false CLIP_NUM_PAR );
+			display_normal(ground_desc_t::slopes->get_image(15), x, y, 0);
 			y -= hgt_step;
 			diff++;
 		}
 		// ok, now we have the height; since the slopes may end with a fence they are drawn in reverse order
 		while(  diff < zz  ) {
-			display_normal( ground_desc_t::slopes->get_image(19), x, y, 0, true, false CLIP_NUM_PAR );
+			display_normal(ground_desc_t::slopes->get_image(19), x, y, 0);
 			y -= hgt_step*2;
 			diff+=2;
 		}
-		display_normal( slope_img, x, y, 0, true, false CLIP_NUM_PAR );
+		display_normal(slope_img, x, y, 0);
 	}
 
 	if(  pos.x-welt->get_size().x+1 == 0  ) {
@@ -1225,17 +1225,17 @@ void grund_t::display_border( sint16 xpos, sint16 ypos, const sint16 raster_tile
 		diff = -min(corner_se(slope),corner_ne(slope));
 		sint16 zz = pos.z-welt->get_groundwater();
 		if(  diff < zz && ((zz-diff)&1)==1  ) {
-			display_normal( ground_desc_t::slopes->get_image(4), x, y, 0, true, false CLIP_NUM_PAR );
+			display_normal(ground_desc_t::slopes->get_image(4), x, y, 0);
 			y -= hgt_step;
 			diff++;
 		}
 		// ok, now we have the height; since the slopes may end with a fence they are drawn in reverse order
 		while(  diff < zz  ) {
-			display_normal( ground_desc_t::slopes->get_image(8), x, y, 0, true, false CLIP_NUM_PAR );
+			display_normal(ground_desc_t::slopes->get_image(8), x, y, 0);
 			y -= hgt_step*2;
 			diff+=2;
 		}
-		display_normal( slope_img, x, y, 0, true, false CLIP_NUM_PAR );
+		display_normal(slope_img, x, y, 0);
 	}
 }
 
@@ -1567,17 +1567,17 @@ uint8 grund_t::display_obj_bg(const sint16 xpos, const sint16 ypos, const bool i
 	if(  visible  ) {
 		// display back part of markers
 		if(  is_global  &&  get_flag( grund_t::marked )  ) {
-			display_normal( ground_desc_t::get_marker_image( get_grund_hang(), true ), xpos, ypos, 0, true, dirty CLIP_NUM_PAR );
+			display_normal(ground_desc_t::get_marker_image( get_grund_hang(), true ), xpos, ypos, 0);
 			if(  !ist_karten_boden()  ) {
 				const grund_t *gr = welt->lookup_kartenboden(pos.get_2d());
 				const sint16 raster_tile_width = get_current_tile_raster_width();
 				if(  pos.z < gr->get_disp_height()  ) {
 					//display back part of marker for grunds in between
 					for(  sint8 z = pos.z + 1;  z < gr->get_disp_height();  z++  ) {
-						display_normal( ground_desc_t::get_marker_image(0, true), xpos, ypos - tile_raster_scale_y( (z - pos.z) * TILE_HEIGHT_STEP, raster_tile_width ), 0, true, true CLIP_NUM_PAR );
+						display_normal(ground_desc_t::get_marker_image(0, true), xpos, ypos - tile_raster_scale_y( (z - pos.z) * TILE_HEIGHT_STEP, raster_tile_width ), 0);
 					}
 					//display back part of marker for ground
-					display_normal( ground_desc_t::get_marker_image( gr->get_grund_hang() | gr->get_weg_hang(), true ), xpos, ypos - tile_raster_scale_y( (gr->get_hoehe() - pos.z) * TILE_HEIGHT_STEP, raster_tile_width ), 0, true, true CLIP_NUM_PAR );
+					display_normal(ground_desc_t::get_marker_image( gr->get_grund_hang() | gr->get_weg_hang(), true ), xpos, ypos - tile_raster_scale_y( (gr->get_hoehe() - pos.z) * TILE_HEIGHT_STEP, raster_tile_width ), 0);
 				}
 			}
 		}
@@ -1588,7 +1588,7 @@ uint8 grund_t::display_obj_bg(const sint16 xpos, const sint16 ypos, const bool i
 	else { // must be karten_boden
 		// in undergroundmode: draw ground grid
 		const uint8 hang = underground_mode == ugm_all ? get_grund_hang() : (slope_t::type)slope_t::flat;
-		display_normal( ground_desc_t::get_border_image(hang), xpos, ypos, 0, true, dirty CLIP_NUM_PAR );
+		display_normal(ground_desc_t::get_border_image(hang), xpos, ypos, 0);
 		// show marker for marked but invisible tiles
 		if(  is_global  &&  get_flag( grund_t::marked )  ) {
 			display_color_img(ground_desc_t::get_marker_image( hang, true ), xpos, ypos, 0);
@@ -1612,17 +1612,17 @@ void grund_t::display_obj_fg(const sint16 xpos, const sint16 ypos, const bool is
 
 	// display front part of markers
 	if(  is_global  &&  get_flag( grund_t::marked )  ) {
-		display_normal( ground_desc_t::get_marker_image( get_grund_hang(), false ), xpos, ypos, 0, true, dirty CLIP_NUM_PAR );
+		display_normal(ground_desc_t::get_marker_image( get_grund_hang(), false ), xpos, ypos, 0);
 		if(  !ist_karten_boden()  ) {
 			const grund_t *gr = welt->lookup_kartenboden(pos.get_2d());
 			const sint16 raster_tile_width = get_tile_raster_width();
 			if(  pos.z > gr->get_hoehe()  ) {
 				//display front part of marker for grunds in between
 				for(  sint8 z = pos.z - 1;  z > gr->get_hoehe();  z--  ) {
-					display_normal( ground_desc_t::get_marker_image( 0, false ), xpos, ypos - tile_raster_scale_y( (z - pos.z) * TILE_HEIGHT_STEP, raster_tile_width ), 0, true, true CLIP_NUM_PAR );
+					display_normal(ground_desc_t::get_marker_image( 0, false ), xpos, ypos - tile_raster_scale_y( (z - pos.z) * TILE_HEIGHT_STEP, raster_tile_width ), 0);
 				}
 				//display front part of marker for ground
-				display_normal( ground_desc_t::get_marker_image( gr->get_grund_hang(), false ), xpos, ypos - tile_raster_scale_y( (gr->get_hoehe() - pos.z) * TILE_HEIGHT_STEP, raster_tile_width ), 0, true, true CLIP_NUM_PAR );
+				display_normal(ground_desc_t::get_marker_image( gr->get_grund_hang(), false ), xpos, ypos - tile_raster_scale_y( (gr->get_hoehe() - pos.z) * TILE_HEIGHT_STEP, raster_tile_width ), 0);
 			}
 		}
 	}

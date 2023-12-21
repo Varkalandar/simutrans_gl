@@ -216,11 +216,11 @@ void obj_t::display(int xpos, int ypos  CLIP_NUM_DEF) const
 					display_blend( image, xpos, ypos, owner_n, color_idx_to_rgb(welt->get_player(owner_n)->get_player_color1()+2), 0, is_dirty  CLIP_NUM_PAR);
 				}
 				else {
-					display_color( image, xpos, ypos, owner_n, true, is_dirty  CLIP_NUM_PAR);
+					display_color(image, xpos, ypos, owner_n);
 				}
 			}
 			else {
-				display_normal( image, xpos, ypos, 0, true, is_dirty  CLIP_NUM_PAR);
+				display_normal(image, xpos, ypos, 0);
 			}
 			// this obj has another image on top (e.g. skyscraper)
 			ypos -= raster_width;
@@ -283,7 +283,7 @@ void obj_t::display_after(int xpos, int ypos, bool) const
 				display_blend(image, xpos, ypos, owner_n, (SYSCOL_OBJECT_HIGHLIGHT), 0, is_dirty  CLIP_NUM_PAR);
 			}
 			else {
-				display_color( image, xpos, ypos, owner_n, true, is_dirty  CLIP_NUM_PAR);
+				display_color(image, xpos, ypos, owner_n);
 			}
 		}
 		else if(  obj_t::get_flag( highlight )  ) {
@@ -291,7 +291,7 @@ void obj_t::display_after(int xpos, int ypos, bool) const
 			display_blend( image, xpos, ypos, owner_n, (SYSCOL_OBJECT_HIGHLIGHT), 0, is_dirty  CLIP_NUM_PAR);
 		}
 		else {
-			display_normal( image, xpos, ypos, 0, true, is_dirty  CLIP_NUM_PAR);
+			display_normal(image, xpos, ypos, 0);
 		}
 	}
 }

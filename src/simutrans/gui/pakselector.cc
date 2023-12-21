@@ -134,10 +134,10 @@ void pak_set_panel_t::draw_logo(const scr_coord_val xpos, const scr_coord_val yp
 	display_fillbox_wh_clip_rgb(xpos, ypos, 256, 256, RGBA_BLACK, true);
 
 	display_set_color(RGBA_WHITE);
-	display_base_img(logo->get_image_id(0), xpos, ypos, 0, false, true);
-	display_base_img(logo->get_image_id(1), xpos+w, ypos, 0, false, true);
-	display_base_img(logo->get_image_id(2), xpos, ypos+h, 0, false, true);
-	display_base_img(logo->get_image_id(3), xpos+w, ypos+h, 0, false, true);
+	display_base_img(logo->get_image_id(0), xpos, ypos, 0);
+	display_base_img(logo->get_image_id(1), xpos+w, ypos, 0);
+	display_base_img(logo->get_image_id(2), xpos, ypos+h, 0);
+	display_base_img(logo->get_image_id(3), xpos+w, ypos+h, 0);
 
 	const char * pak_name = strrchr(entry.info, '/');
 	if(pak_name) {

@@ -337,7 +337,7 @@ void tool_selector_t::draw(scr_coord pos, scr_size sz)
 				const image_id back_img = skinverwaltung_t::toolbar_background->get_image_id(toolbar_id);
 
                 display_set_color(RGBA_WHITE);
-				display_color_img(back_img, draw_pos.x, draw_pos.y, welt->get_active_player_nr(), env_t::iconsize.w, env_t::iconsize.w);
+				display_base_img(back_img, draw_pos.x, draw_pos.y, welt->get_active_player_nr(), env_t::iconsize.w, env_t::iconsize.w);
 			}
 			else {
 				display_fillbox_wh_clip_rgb( draw_pos.x, draw_pos.y, env_t::iconsize.w, env_t::iconsize.h, color_idx_to_rgb(MN_GREY2), false );
@@ -348,8 +348,8 @@ void tool_selector_t::draw(scr_coord pos, scr_size sz)
 		if(  icon_img != IMG_EMPTY  ) {
 			bool tool_dirty = dirty  ||  (tools[i].tool->is_selected() ^ tools[i].selected);
 
-            display_set_color(tools[i].tool->is_selected() ? rgba_t(1.0f, 0.5f, 0.0f, 1.0f) : RGBA_WHITE);
-			display_color_img(icon_img, draw_pos.x, draw_pos.y, player->get_player_nr(), env_t::iconsize.w, env_t::iconsize.w);
+            display_set_color(tools[i].tool->is_selected() ? rgba_t(0.2f, 0.5f, 0.0f, 1.0f) : RGBA_WHITE);
+			display_base_img(icon_img, draw_pos.x, draw_pos.y, player->get_player_nr(), env_t::iconsize.w, env_t::iconsize.w);
 			tools[i].tool->draw_after( draw_pos, tool_dirty);
 			// store whether tool was selected
 			tools[i].selected = tools[i].tool->is_selected();
@@ -359,16 +359,16 @@ void tool_selector_t::draw(scr_coord pos, scr_size sz)
     display_set_color(RGBA_WHITE);
 
 	if(  offset.x != 0  &&  tool_icon_disp_start > 0  ) {
-		display_color_img(gui_theme_t::arrow_button_left_img[0], pos.x, pos.y + D_TITLEBAR_HEIGHT, 0);
+		display_base_img(gui_theme_t::arrow_button_left_img[0], pos.x, pos.y + D_TITLEBAR_HEIGHT, 0);
 	}
 	if(  offset.y != 0  &&  tool_icon_disp_start > 0  ) {
-		display_color_img(gui_theme_t::arrow_button_up_img[0], pos.x, pos.y + D_TITLEBAR_HEIGHT, 0);
+		display_base_img(gui_theme_t::arrow_button_up_img[0], pos.x, pos.y + D_TITLEBAR_HEIGHT, 0);
 	}
 	if(  tool_icon_height == 1  &&  (tool_icon_disp_start+tool_icon_width < tools.get_count()  ||  (-offset.x) < env_t::iconsize.w*tool_icon_width-get_windowsize().w)  ) {
-		display_color_img(gui_theme_t::arrow_button_right_img[0], pos.x+sz.w-D_ARROW_UP_WIDTH, pos.y+D_TITLEBAR_HEIGHT, 0);
+		display_base_img(gui_theme_t::arrow_button_right_img[0], pos.x+sz.w-D_ARROW_UP_WIDTH, pos.y+D_TITLEBAR_HEIGHT, 0);
 	}
 	if(  tool_icon_width == 1  &&  (tool_icon_disp_start+tool_icon_height < tools.get_count()  ||  (-offset.y) < env_t::iconsize.h*tool_icon_height-get_windowsize().h)  ) {
-		display_color_img(gui_theme_t::arrow_button_down_img[0], pos.x+sz.w-D_ARROW_DOWN_WIDTH, pos.y+D_TITLEBAR_HEIGHT+sz.h-D_ARROW_DOWN_HEIGHT, 0);
+		display_base_img(gui_theme_t::arrow_button_down_img[0], pos.x+sz.w-D_ARROW_DOWN_WIDTH, pos.y+D_TITLEBAR_HEIGHT+sz.h-D_ARROW_DOWN_HEIGHT, 0);
 	}
 
 	if(  !is_dragging  ) {

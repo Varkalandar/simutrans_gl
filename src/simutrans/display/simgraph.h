@@ -160,11 +160,12 @@ void display_rezoomed_img_blend(const image_id n, scr_coord_val xp, scr_coord_va
 void display_rezoomed_img_alpha(const image_id n, const image_id alpha_n, const unsigned alpha_flags, scr_coord_val xp, scr_coord_val yp, const signed char player_nr, rgba_t color_index, const bool daynight, const bool dirty  CLIP_NUM_DEF);
 #define display_img_alpha( n, a, f, x, y, c, dn, d ) display_rezoomed_img_alpha( (n), (a), (f), (x), (y), 0, (c), (dn), (d)  CLIP_NUM_DEFAULT)
 
-// display image with color (if there) and optional day and night change
+// display zoomed image
 void display_color_img(const image_id n, scr_coord_val xp, scr_coord_val yp, const signed char player_nr, scr_coord_val w=0, scr_coord_val h=0);
 
 // display unzoomed image
-void display_base_img(const image_id n, scr_coord_val xp, scr_coord_val yp, const signed char player_nr, const bool daynight, const bool dirty  CLIP_NUM_DEF CLIP_NUM_DEFAULT_ZERO);
+void display_base_img(const image_id n, scr_coord_val xp, scr_coord_val yp, const signed char player_nr, scr_coord_val w, scr_coord_val h);
+void display_base_img(const image_id n, scr_coord_val xp, scr_coord_val yp, const signed char player_nr);
 
 typedef image_id stretch_map_t[3][3];
 
@@ -177,7 +178,7 @@ void display_base_img_blend(const image_id n, scr_coord_val xp, scr_coord_val yp
 void display_base_img_alpha(const image_id n, const image_id alpha_n, const unsigned alpha_flags, scr_coord_val xp, scr_coord_val yp, const sint8 player_nr, rgba_t color_index, const bool daynight, const bool dirty  CLIP_NUM_DEF CLIP_NUM_DEFAULT_ZERO);
 
 // pointer to image display procedures
-typedef void (*display_image_proc)(const image_id n, scr_coord_val xp, scr_coord_val yp, const signed char player_nr, const bool daynight, const bool dirty  CLIP_NUM_DEF);
+typedef void (*display_image_proc)(const image_id n, scr_coord_val xp, scr_coord_val yp, const signed char player_nr);
 typedef void (*display_blend_proc)(const image_id n, scr_coord_val xp, scr_coord_val yp, const signed char player_nr, rgba_t color_index, const bool daynight, const bool dirty  CLIP_NUM_DEF);
 typedef void (*display_alpha_proc)(const image_id n, const image_id alpha_n, const unsigned alpha_flags, scr_coord_val xp, scr_coord_val yp, const signed char player_nr, rgba_t color_index, const bool daynight, const bool dirty  CLIP_NUM_DEF);
 

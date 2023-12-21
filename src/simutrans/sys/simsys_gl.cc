@@ -188,9 +188,14 @@ void sysgl_scroll_callback(GLFWwindow *, double xoffset, double yoffset)
     sys_event_t event;
 	event.type    = SIM_MOUSE_BUTTONS;
 	event.code    = yoffset > 0 ? SIM_MOUSE_WHEELUP : SIM_MOUSE_WHEELDOWN;
+    event.mx = mx;
+    event.my = my;
+    event.mb = mouse_buttons;
 	event.key_mod = 0;
 
     events.append(event);
+
+    dbg->message("sysgl_scroll_callback()", "code=%d buttons=%d yoffset = %f", sys_event.code, sys_event.mb, yoffset);
 }
 
 

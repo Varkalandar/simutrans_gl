@@ -1879,7 +1879,7 @@ void win_display_flush(double konto)
 		const image_id back_img = skinverwaltung_t::toolbar_background->get_image_id(0);
         display_set_color(RGBA_WHITE);
 		for(scr_coord_val xp=0; xp < menu_size.w; xp += env_t::iconsize.w) {
-			display_color_img(back_img, menu_pos.x+xp, menu_pos.y, 0, env_t::iconsize.w, env_t::iconsize.w);
+			display_base_img(back_img, menu_pos.x+xp, menu_pos.y, 0, env_t::iconsize.w, env_t::iconsize.w);
 		}
 	}
 	else {

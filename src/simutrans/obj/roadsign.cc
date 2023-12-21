@@ -547,11 +547,11 @@ void roadsign_t::display_after(int xpos, int ypos, bool ) const
 				display_blend(foreground_image, xpos, ypos, 0, color_idx_to_rgb(get_owner()->get_player_color1()+2), 0, get_flag(obj_t::dirty)  CLIP_NUM_PAR);
 			}
 			else {
-				display_color( foreground_image, xpos, ypos, get_owner_nr(), true, get_flag(obj_t::dirty)  CLIP_NUM_PAR);
+				display_color(foreground_image, xpos, ypos, get_owner_nr());
 			}
 		}
 		else {
-			display_normal( foreground_image, xpos, ypos, 0, true, get_flag(obj_t::dirty)  CLIP_NUM_PAR);
+			display_normal(foreground_image, xpos, ypos, 0);
 		}
 	}
 }

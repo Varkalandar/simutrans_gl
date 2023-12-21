@@ -174,6 +174,16 @@ static const rgb888_t special_pal[SPECIAL_COLOR_COUNT] =
 };
 
 
+/*
+ * Zoom factor
+ */
+#define MAX_ZOOM_FACTOR (9)
+#define ZOOM_NEUTRAL (3)
+static uint32 zoom_factor = ZOOM_NEUTRAL;
+static sint32 zoom_num[MAX_ZOOM_FACTOR+1] = { 2, 3, 4, 1, 3, 5, 1, 3, 1, 1 };
+static sint32 zoom_den[MAX_ZOOM_FACTOR+1] = { 1, 2, 3, 1, 4, 8, 2, 8, 4, 8 };
+
+
 rgba_t color_idx_to_rgb(int idx)
 {
     if(idx >= 0 && idx < SPECIAL_COLOR_COUNT) {
@@ -215,26 +225,42 @@ scr_coord_val display_set_base_raster_width(scr_coord_val new_raster)
 	const scr_coord_val old = base_tile_raster_width;
 
 	base_tile_raster_width = new_raster;
-	tile_raster_width = new_raster;
+   	tile_raster_width = (new_raster *  zoom_num[zoom_factor]) / zoom_den[zoom_factor];
     current_tile_raster_width = new_raster;
-
+    
 	return old;
 }
 
 
-void set_zoom_factor(int)
+void set_zoom_factor(int z)
 {
+	// do not zoom smaller than 4 pixels
+	if((base_tile_raster_width * zoom_num[z]) / zoom_den[z] > 4) {
+		zoom_factor = z;
+		tile_raster_width = (base_tile_raster_width * zoom_num[zoom_factor]) / zoom_den[zoom_factor];
+		dbg->message("set_zoom_factor()", "Zoom level now %d (%i/%i)", zoom_factor, zoom_num[zoom_factor], zoom_den[zoom_factor] );
+        current_tile_raster_width = tile_raster_width;
+    }
 }
 
 
 int zoom_factor_up()
 {
+	// zoom out, if size permits
+	if(zoom_factor > 0) {
+		set_zoom_factor(zoom_factor - 1);
+		return true;
+	}
 	return false;
 }
 
 
 int zoom_factor_down()
 {
+	if(zoom_factor < MAX_ZOOM_FACTOR) {
+		set_zoom_factor(zoom_factor + 1);
+		return true;
+	}
 	return false;
 }
 
@@ -746,12 +772,69 @@ void display_color_img(const image_id id, scr_coord_val x, scr_coord_val y, cons
 		// display_box_wh(clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h, rgba_t(1, 0, 0, 0.5f));
 
 		imd_t & imd = images[id];
+        int n = zoom_num[zoom_factor];
+        int d = zoom_den[zoom_factor];
 
-		x += imd.base_x;
-		y += imd.base_y;
+		x += imd.base_x * n / d;
+		y += imd.base_y * n / d;
 
 		w = (w == 0) ? imd.base_w : w;
 		h = (h == 0) ? imd.base_h : h;
+        
+        if(n == 1 && d == 1)
+        {
+            // no zoom, no scaling
+            display_tile_from_sheet(imd.texture, x, y, w, h,
+                                    imd.sheet_x, imd.sheet_y, imd.base_w, imd.base_h);
+        }
+        else
+        {
+            // zoom
+            display_tile_from_sheet(imd.texture, x, y, w * n / d, h * n / d,
+                                    imd.sheet_x, imd.sheet_y, imd.base_w, imd.base_h);
+        }
+	}
+}
+
+
+static void display_img(const image_id id, scr_coord_val x, scr_coord_val y, const sint8 player_nr)
+{
+	if(id < anz_images)
+	{
+		imd_t & imd = images[id];
+        int n = zoom_num[zoom_factor];
+        int d = zoom_den[zoom_factor];
+
+		x += imd.base_x * n / d;
+		y += imd.base_y * n / d;
+
+		int w = imd.base_w;
+		int h = imd.base_h;
+        
+        if(n == 1 && d == 1)
+        {
+            // no zoom, no scaling
+            display_tile_from_sheet(imd.texture, x, y, w, h,
+                                    imd.sheet_x, imd.sheet_y, imd.base_w, imd.base_h);
+        }
+        else
+        {
+            // zoom
+            display_tile_from_sheet(imd.texture, x, y, w * n / d, h * n / d,
+                                    imd.sheet_x, imd.sheet_y, imd.base_w, imd.base_h);            
+        }
+    }
+}
+
+
+void display_base_img(const image_id id, scr_coord_val x, scr_coord_val y, const sint8 player_nr, scr_coord_val w, scr_coord_val h)
+{
+	if(id < anz_images)
+	{
+		imd_t & imd = images[id];
+
+		x += imd.base_x;
+		y += imd.base_y;
 
 		display_tile_from_sheet(imd.texture, x, y, w, h,
 								imd.sheet_x, imd.sheet_y, imd.base_w, imd.base_h);
@@ -759,26 +842,38 @@ void display_color_img(const image_id id, scr_coord_val x, scr_coord_val y, cons
 }
 
 
-void display_base_img(const image_id id, scr_coord_val x, scr_coord_val y, const sint8 player_nr, const bool, const bool  CLIP_NUM_DEF_NOUSE)
+void display_base_img(const image_id id, scr_coord_val x, scr_coord_val y, const sint8 player_nr)
 {
-    display_color_img(id, x, y, player_nr);
+	if(id < anz_images)
+	{
+		imd_t & imd = images[id];
+
+		x += imd.base_x;
+		y += imd.base_y;
+
+		int w = imd.base_w;
+		int h = imd.base_h;
+
+		display_tile_from_sheet(imd.texture, x, y, w, h,
+								imd.sheet_x, imd.sheet_y, imd.base_w, imd.base_h);
+	}
 }
 
 
-// local helper function for tiles buttons
+// local helper function for tiled buttons
 static void display_three_image_row( image_id i1, image_id i2, image_id i3, scr_rect row)
 {
 // 	dbg->message("display_three_image_row", "%d %d %d %d", row.x, row.y, row.w, row.h);
 	if(  i1!=IMG_EMPTY  ) {
 		scr_coord_val w = images[i1].w;
-		display_color_img( i1, row.x, row.y, 0);
+		display_base_img(i1, row.x, row.y, 0);
 		row.x += w;
 		row.w -= w;
 	}
 	// right
 	if(  i3!=IMG_EMPTY  ) {
 		scr_coord_val w = images[i3].w;
-		display_color_img( i3, row.get_right()-w, row.y, 0);
+		display_base_img(i3, row.get_right()-w, row.y, 0);
 		row.w -= w;
 	}
 	// middle
@@ -786,7 +881,7 @@ static void display_three_image_row( image_id i1, image_id i2, image_id i3, scr_
 		scr_coord_val w = images[i2].w;
 		// tile it wide
 		while(  w <= row.w  ) {
-			display_color_img( i2, row.x, row.y, 0);
+			display_base_img(i2, row.x, row.y, 0);
 			row.x += w;
 			row.w -= w;
 		}
@@ -794,7 +889,7 @@ static void display_three_image_row( image_id i1, image_id i2, image_id i3, scr_
 		if(  row.w > 0  ) {
 			clip_dimension const cl = display_get_clip_wh();
 			display_set_clip_wh( cl.x, cl.y, max(0,min(row.get_right(),cl.xx)-cl.x), cl.h );
-			display_color_img( i2, row.x, row.y, 0);
+			display_base_img(i2, row.x, row.y, 0);
 			display_set_clip_wh(cl.x, cl.y, cl.w, cl.h );
 		}
 	}
@@ -887,8 +982,8 @@ void display_base_img_alpha(const image_id, const image_id, const unsigned, scr_
 }
 
 // variables for storing currently used image procedure set and tile raster width
-display_image_proc display_normal = display_base_img;
-display_image_proc display_color = display_base_img;
+display_image_proc display_normal = display_img;
+display_image_proc display_color = display_img;
 display_blend_proc display_blend = display_base_img_blend;
 display_alpha_proc display_alpha = display_base_img_alpha;
 
