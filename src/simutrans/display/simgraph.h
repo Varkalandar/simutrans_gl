@@ -94,6 +94,7 @@ inline scr_coord_val get_base_tile_raster_width(){return base_tile_raster_width;
 scr_coord_val display_set_base_raster_width(scr_coord_val new_raster);
 
 
+int set_zoom_factor(int);
 int zoom_factor_up();
 int zoom_factor_down();
 
@@ -204,6 +205,8 @@ void display_fillbox_wh_rgb(scr_coord_val xp, scr_coord_val yp, scr_coord_val w,
 void display_fillbox_wh_clip_rgb(scr_coord_val xp, scr_coord_val yp, scr_coord_val w, scr_coord_val h, rgba_t color, bool dirty  CLIP_NUM_DEF CLIP_NUM_DEFAULT_ZERO);
 
 void display_vline_wh_clip_rgb(scr_coord_val xp, scr_coord_val yp, scr_coord_val h, rgba_t color, bool dirty  CLIP_NUM_DEF CLIP_NUM_DEFAULT_ZERO);
+
+void display_flush_framebuffer_to_buffer();
 
 void display_flush_buffer();
 

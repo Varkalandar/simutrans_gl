@@ -17,6 +17,7 @@ jobs:
         sudo apt-get -ym install libfreetype6-dev
         sudo apt-get -ym install libminiupnpc-dev
         sudo apt-get -ym install libzstd-dev libglfw3-dev
+        sudo apt-get -ym install libglew-dev
 
         # We build fluidsynth with the minimum set of options we need to keep dependencies low
         sudo apt-get -ym install libsndfile1-dev
@@ -42,7 +43,7 @@ jobs:
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: build/simulinux-x64-nightly.zip
-        asset_name: simulinux-x64-nightly.zip
+        asset_name: simulinux-x64-ogl_zoom.zip
         tag: Nightly
         overwrite: true
 

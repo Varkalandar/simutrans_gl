@@ -17,8 +17,8 @@
 #include "gl_textures.h"
 #include "../dataobj/environment.h"
 
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
-
 
 static GLFWwindow* window;
 static GLint gl_max_texture_size;
@@ -32,12 +32,13 @@ static int gl_current_sheet_x;
 static int gl_current_sheet_y;
 
 // our frame buffer
-static unsigned int gl_fbo;
-
+static GLuint gl_fbo;
+static GLuint gl_texture_colorbuffer;
+static bool framebuffer_active;
 
 scr_coord_val tile_raster_width = 16; // zoomed
 scr_coord_val base_tile_raster_width = 16; // original
-scr_coord_val current_tile_raster_width = 0;
+scr_coord_val current_tile_raster_width = 16;
 
 
 static scr_coord_val display_width;
@@ -235,15 +236,20 @@ scr_coord_val display_set_base_raster_width(scr_coord_val new_raster)
 }
 
 
-void set_zoom_factor(int z)
+int set_zoom_factor(int z)
 {
+    int old_zoom = zoom_factor;
+    
 	// do not zoom smaller than 4 pixels
 	if((base_tile_raster_width * zoom_num[z]) / zoom_den[z] > 4) {
 		zoom_factor = z;
 		tile_raster_width = (base_tile_raster_width * zoom_num[zoom_factor]) / zoom_den[zoom_factor];
-		dbg->message("set_zoom_factor()", "Zoom level now %d (%i/%i)", zoom_factor, zoom_num[zoom_factor], zoom_den[zoom_factor] );
         current_tile_raster_width = tile_raster_width;
+		dbg->message("set_zoom_factor()", "Zoom level now %d (%i/%i) -> raster %d", 
+                     zoom_factor, zoom_num[zoom_factor], zoom_den[zoom_factor], current_tile_raster_width);
     }
+
+    return old_zoom;
 }
 
 
@@ -680,7 +686,17 @@ void display_set_clip_wh(scr_coord_val x, scr_coord_val y, scr_coord_val w, scr_
 	clip_rect.xx = x + w; // watch out, clips to scr_coord_val max
 	clip_rect.yy = y + h; // watch out, clips to scr_coord_val max
 
-    glScissor(clip_rect.x, display_get_height()-clip_rect.y-clip_rect.h, clip_rect.w, clip_rect.h);
+    // dbg->message("display_set_clip_wh()", "x=%d y=%d width=%d height=%d", x, y, w, h);
+    
+    
+    if(framebuffer_active)
+    {
+        glScissor(clip_rect.x,clip_rect.y, clip_rect.w, clip_rect.h);        
+    }
+    else
+    {
+        glScissor(clip_rect.x, display_get_height()-clip_rect.y-clip_rect.h, clip_rect.w, clip_rect.h);
+    }
 }
 
 
@@ -778,24 +794,14 @@ void display_color_img(const image_id id, scr_coord_val x, scr_coord_val y, cons
         int n = zoom_num[zoom_factor];
         int d = zoom_den[zoom_factor];
 
-		x += imd.base_x * n / d;
-		y += imd.base_y * n / d;
+		x = x * d / n + imd.base_x;
+		y = y * d / n + imd.base_y;
 
 		w = (w == 0) ? imd.base_w : w;
 		h = (h == 0) ? imd.base_h : h;
         
-        if(n == 1 && d == 1)
-        {
-            // no zoom, no scaling
-            display_tile_from_sheet(imd.texture, x, y, w, h,
-                                    imd.sheet_x, imd.sheet_y, imd.base_w, imd.base_h);
-        }
-        else
-        {
-            // zoom
-            display_tile_from_sheet(imd.texture, x, y, w * n / d, h * n / d,
-                                    imd.sheet_x, imd.sheet_y, imd.base_w, imd.base_h);
-        }
+        display_tile_from_sheet(imd.texture, x, y, w, h,
+                                imd.sheet_x, imd.sheet_y, imd.base_w, imd.base_h);
 	}
 }
 
@@ -808,24 +814,14 @@ static void display_img(const image_id id, scr_coord_val x, scr_coord_val y, con
         int n = zoom_num[zoom_factor];
         int d = zoom_den[zoom_factor];
 
-		x += imd.base_x * n / d;
-		y += imd.base_y * n / d;
+		x = x * d / n + imd.base_x;
+		y = y * d / n + imd.base_y;
 
 		int w = imd.base_w;
 		int h = imd.base_h;
         
-        if(n == 1 && d == 1)
-        {
-            // no zoom, no scaling
-            display_tile_from_sheet(imd.texture, x, y, w, h,
-                                    imd.sheet_x, imd.sheet_y, imd.base_w, imd.base_h);
-        }
-        else
-        {
-            // zoom
-            display_tile_from_sheet(imd.texture, x, y, w * n / d, h * n / d,
-                                    imd.sheet_x, imd.sheet_y, imd.base_w, imd.base_h);            
-        }
+        display_tile_from_sheet(imd.texture, x, y, w, h,
+                                imd.sheet_x, imd.sheet_y, imd.base_w, imd.base_h);
     }
 }
 
@@ -1110,6 +1106,43 @@ void display_ddd_box_clip_rgb(scr_coord_val, scr_coord_val, scr_coord_val, scr_c
 }
 
 
+void display_flush_framebuffer_to_buffer()
+{
+    int n = zoom_num[zoom_factor];
+    int d = zoom_den[zoom_factor];
+    
+    float x = 0; 
+    float y = (gl_max_texture_size - (display_height *d / n)) / (float)gl_max_texture_size;
+    float w = (display_width * d / n)  / (float)gl_max_texture_size;
+    float h = 1;
+    
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    framebuffer_active = false;
+
+    // framebuffer viewport
+    simgraph_resize(scr_size(display_width, display_height));
+    
+    gl_texture_t::bind(gl_texture_colorbuffer);
+    glColor4f(1, 1, 1, 1);
+
+	glBegin(GL_QUADS);
+
+    glTexCoord2f(0, h);
+	glVertex2i(0, 0);
+
+    glTexCoord2f(w, h);
+	glVertex2i(display_width, 0);
+
+    glTexCoord2f(w, y);
+	glVertex2i(display_width, display_height);
+
+    glTexCoord2f(0, y);
+	glVertex2i(0, display_height);
+
+	glEnd();    
+}
+
+
 void display_flush_buffer()
 {
     // dbg->debug("display_flush_buffer()", "Called");
@@ -1134,14 +1167,22 @@ void display_flush_buffer()
     display_tile_from_sheet(gl_texture_sheets[0], 0, 0, 0, 0, 640, 480);
 */
 
+    
 	glfwSwapBuffers(window);
 
-	// static uint32 time;
-	// uint32 now = dr_time();
+    // next will be map drawing again, so set the map buffer
+    glBindFramebuffer(GL_FRAMEBUFFER, gl_fbo);          
+    framebuffer_active = true;
 
-	// dbg->message("display_flush_buffer()", "Frame time=%dms", now - time);
-	// time = now;
-
+    // framebuffer viewport
+    // simgraph_resize(scr_size(4096, 4096));
+    scr_size size(gl_max_texture_size, gl_max_texture_size);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0, size.w, size.h, 0, 1, -1);
+    glViewport(0, 0, size.w, size.h);
+    display_set_clip_wh(0, 0, size.w, size.h);
+    
 	glClear(GL_COLOR_BUFFER_BIT);
 }
 
@@ -1184,15 +1225,22 @@ bool simgraph_init(scr_size size, sint16)
 
 	if(window)
 	{
+		glfwMakeContextCurrent(window);
+		display_set_clip_wh(0, 0, display_width, display_height, false);
+
+        GLenum err = glewInit();
+        if (GLEW_OK != err)
+        {
+          dbg->message("simgraph_init()", "GLEW Error: %s\n", glewGetErrorString(err));
+        }
+        dbg->message("simgraph_init()", "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));        
+        
+        
         int width, height;
         glfwGetWindowSize(window, &width, &height);
 
         display_width = (scr_coord_val)width;
         display_height = (scr_coord_val)height;
-
-		display_set_clip_wh(0, 0, display_width, display_height, false);
-
-		glfwMakeContextCurrent(window);
 
 		// enable vsync (1 == next frame)
 		glfwSwapInterval(1);
@@ -1228,9 +1276,27 @@ bool simgraph_init(scr_size size, sint16)
         
         // set up the frame buffer
         glGenFramebuffers(1, &gl_fbo);        
-        glBindFramebuffer(GL_FRAMEBUFFER, gl_fbo);          
+        glBindFramebuffer(GL_FRAMEBUFFER, gl_fbo);
+        framebuffer_active = true;
 
+        // generate texture
+        glGenTextures(1, &gl_texture_colorbuffer);
+        glBindTexture(GL_TEXTURE_2D, gl_texture_colorbuffer);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, gl_max_texture_size, gl_max_texture_size, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glBindTexture(GL_TEXTURE_2D, 0);
+
+        // attach it to currently bound framebuffer object
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gl_texture_colorbuffer, 0);        
+
+        int status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
         
+        if(status != GL_FRAMEBUFFER_COMPLETE)
+        {
+            dbg->message("simgraph_init()", "Frame buffer status is not complete: %x", status);
+        }
+
         // try to load the font given in the environment and if that fails,
         // try to load the standard font which is bundled with Simutrans GL
        	if(!display_load_font(env_t::fontname.c_str()) &&
@@ -1265,7 +1331,7 @@ void simgraph_exit()
 
 void simgraph_resize(scr_size size)
 {
-    dbg->message("simgraph_resize()", "width=%d height=%d", size.w, size.h);
+    // dbg->message("simgraph_resize()", "width=%d height=%d", size.w, size.h);
 
     // sanity check
 	if(size.h <= 0) {
@@ -1406,7 +1472,7 @@ void display_img_aligned(const image_id n, scr_rect area, int align, sint8 playe
 			y = area.get_bottom() - images[n].y - images[n].h;
 		}
 
-		display_color_img(n, x, y, player_nr);
+		display_base_img(n, x, y, player_nr);
 	}
 }
 

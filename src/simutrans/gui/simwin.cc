@@ -1839,12 +1839,20 @@ uint16 win_get_statusbar_height()
 }
 
 
-// finally updates the display
+/**
+ * This is called after the world itself is displayed.
+ * It needs to reset zoom to normal and display all windows and icons
+ * in normal size.
+ * 
+ * @param konto The player money to display
+ */
 void win_display_flush(double konto)
 {
+    display_flush_framebuffer_to_buffer();
+    
 	const sint16 disp_width = display_get_width();
 	const sint16 disp_height = display_get_height();
-
+    
 	// display main menu
 	tool_selector_t *main_menu = tool_t::toolbar_tool[0]->get_tool_selector();
 	scr_coord menu_pos(0,0);
@@ -2282,7 +2290,6 @@ void modal_dialogue(gui_frame_t* gui, ptrdiff_t magic, karte_t* welt, bool (*qui
 	else {
 		display_show_pointer(true);
 		display_show_load_pointer(0);
-		display_fillbox_wh_rgb(0, 0, display_get_width(), display_get_height(), color_idx_to_rgb(COL_BLACK), true);
 		while (win_is_open(gui) && !env_t::quit_simutrans && !quit()) {
 			// do not move, do not close it!
 
@@ -2292,7 +2299,10 @@ void modal_dialogue(gui_frame_t* gui, ptrdiff_t magic, karte_t* welt, bool (*qui
 			}
 
 			// dbg->message("modal_dialogue()", "gui is %s", gui->get_name());
+
 			dr_prepare_flush();
+            display_flush_framebuffer_to_buffer();
+    		display_fillbox_wh_rgb(0, 0, display_get_width(), display_get_height(), color_idx_to_rgb(COL_BLACK), true);
 			gui->draw(win_get_pos(gui), gui->get_windowsize());
 			dr_flush();
 

@@ -46,9 +46,9 @@ endif
 
 ifeq ($(BACKEND),ogl)
   ifeq ($(OSTYPE),mingw)
-    LDFLAGS += -lglfw3 -lopengl32
+    LDFLAGS += -lglfw3 -lglew32 -lopengl32
   else
-    LDFLAGS += -lglfw -lGL
+    LDFLAGS += -lglfw -lGLEW -lGL 
   endif
 endif
 

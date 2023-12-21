@@ -78,6 +78,7 @@ void loadingscreen_t::display()
 		last_bar_len = bar_len;
 
 		dr_prepare_flush();
+        display_flush_framebuffer_to_buffer();
 
 		display_set_color(RGBA_WHITE);
 		display_logo();
