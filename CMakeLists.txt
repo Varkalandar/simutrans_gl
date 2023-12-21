@@ -172,6 +172,7 @@ elseif (SIMUTRANS_BACKEND STREQUAL "gdi")
 elseif (SIMUTRANS_BACKEND STREQUAL "ogl")
 	target_sources(simutrans PRIVATE src/simutrans/display/simgraph_gl.cc src/simutrans/sys/simsys_gl.cc src/simutrans/sound/no_sound.cc src/simutrans/music/no_midi.cc)
 	target_link_libraries(simutrans PRIVATE GL)
+	target_link_libraries(simutrans PRIVATE GLEW)
 	target_link_libraries(simutrans PRIVATE glfw)
 
 	target_compile_definitions(simutrans PRIVATE COLOUR_DEPTH=16)

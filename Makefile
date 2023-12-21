@@ -46,6 +46,7 @@ endif
 
 ifeq ($(BACKEND),ogl)
   ifeq ($(OSTYPE),mingw)
+    CFLAGS += -DGLEW_STATIC
     LDFLAGS += -lglfw3 -lglew32 -lopengl32
   else
     LDFLAGS += -lglfw -lGLEW -lGL 
