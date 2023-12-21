@@ -31,6 +31,9 @@ static int gl_current_sheet;
 static int gl_current_sheet_x;
 static int gl_current_sheet_y;
 
+// our frame buffer
+static unsigned int gl_fbo;
+
 
 scr_coord_val tile_raster_width = 16; // zoomed
 scr_coord_val base_tile_raster_width = 16; // original
@@ -1223,7 +1226,12 @@ bool simgraph_init(scr_size size, sint16)
 
         dbg->message("simgraph_init()", "GLFW max texture size is %d", gl_max_texture_size);
         
-        // try to oad the font given in the environment and if that fails,
+        // set up the frame buffer
+        glGenFramebuffers(1, &gl_fbo);        
+        glBindFramebuffer(GL_FRAMEBUFFER, gl_fbo);          
+
+        
+        // try to load the font given in the environment and if that fails,
         // try to load the standard font which is bundled with Simutrans GL
        	if(!display_load_font(env_t::fontname.c_str()) &&
 	       !display_load_font(FONT_PATH_X "LiberationSans-Regular.ttf") ) {
