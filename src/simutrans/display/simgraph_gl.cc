@@ -34,6 +34,7 @@ static int gl_current_sheet_y;
 // our frame buffer
 static GLuint gl_fbo;
 static GLuint gl_texture_colorbuffer;
+static int gl_framebuffer_size;
 static bool framebuffer_active;
 
 scr_coord_val tile_raster_width = 16; // zoomed
@@ -691,7 +692,11 @@ void display_set_clip_wh(scr_coord_val x, scr_coord_val y, scr_coord_val w, scr_
     
     if(framebuffer_active)
     {
-        glScissor(clip_rect.x,clip_rect.y, clip_rect.w, clip_rect.h);        
+        int n = zoom_num[zoom_factor];
+        int d = zoom_den[zoom_factor];
+        
+        // glScissor(clip_rect.x*d/n, 0, clip_rect.w*d/n, gl_framebuffer_size);
+        glScissor(0, 0, gl_framebuffer_size, gl_framebuffer_size);                
     }
     else
     {
@@ -752,8 +757,12 @@ void display_tile_from_sheet(const gl_texture_t * gltex, int x, int y, int w, in
     const float gw = tile_w / (float)gltex->width;
     const float gh = tile_h / (float)gltex->height;
 
-    glEnable(GL_SCISSOR_TEST);
-
+    if(framebuffer_active) {
+        glDisable(GL_SCISSOR_TEST);
+    } else {            
+        glEnable(GL_SCISSOR_TEST);
+    }
+    
     gl_texture_t::bind(gltex->tex_id);
 
 	glBegin(GL_QUADS);
@@ -800,6 +809,8 @@ void display_color_img(const image_id id, scr_coord_val x, scr_coord_val y, cons
 		w = (w == 0) ? imd.base_w : w;
 		h = (h == 0) ? imd.base_h : h;
         
+        display_set_color(RGBA_WHITE);
+
         display_tile_from_sheet(imd.texture, x, y, w, h,
                                 imd.sheet_x, imd.sheet_y, imd.base_w, imd.base_h);
 	}
@@ -819,6 +830,8 @@ static void display_img(const image_id id, scr_coord_val x, scr_coord_val y, con
 
 		int w = imd.base_w;
 		int h = imd.base_h;
+        
+        display_set_color(RGBA_WHITE);
         
         display_tile_from_sheet(imd.texture, x, y, w, h,
                                 imd.sheet_x, imd.sheet_y, imd.base_w, imd.base_h);
@@ -961,13 +974,15 @@ void display_img_stretch(const stretch_map_t &imag, scr_rect area)
 }
 
 
-void display_rezoomed_img_blend(const image_id, scr_coord_val, scr_coord_val, const sint8, rgba_t, const bool, const bool  CLIP_NUM_DEF_NOUSE)
+void display_rezoomed_img_blend(const image_id id, scr_coord_val x, scr_coord_val y, const sint8 pn, rgba_t, const bool, const bool  CLIP_NUM_DEF_NOUSE)
 {
+    display_img(id, x, y, pn);
 }
 
 
-void display_rezoomed_img_alpha(const image_id, const image_id, const unsigned, scr_coord_val, scr_coord_val, const sint8, rgba_t, const bool, const bool  CLIP_NUM_DEF_NOUSE)
+void display_rezoomed_img_alpha(const image_id id1, const image_id id2, const unsigned, scr_coord_val x, scr_coord_val y, const sint8, rgba_t, const bool, const bool  CLIP_NUM_DEF_NOUSE)
 {
+    display_img(id1, x, y, 0);
 }
 
 
@@ -983,8 +998,8 @@ void display_base_img_alpha(const image_id, const image_id, const unsigned, scr_
 // variables for storing currently used image procedure set and tile raster width
 display_image_proc display_normal = display_img;
 display_image_proc display_color = display_img;
-display_blend_proc display_blend = display_base_img_blend;
-display_alpha_proc display_alpha = display_base_img_alpha;
+display_blend_proc display_blend = display_rezoomed_img_blend;
+display_alpha_proc display_alpha = display_rezoomed_img_alpha;
 
 
 rgba_t display_blend_colors(rgba_t c1, rgba_t c2, float alpha)
@@ -1111,10 +1126,16 @@ void display_flush_framebuffer_to_buffer()
     int n = zoom_num[zoom_factor];
     int d = zoom_den[zoom_factor];
     
+    /*
     float x = 0; 
-    float y = (gl_max_texture_size - (display_height *d / n)) / (float)gl_max_texture_size;
+    float y = (gl_framebuffer_size - (display_height *d / n)) / (float)gl_framebuffer_size;
     float w = (display_width * d / n)  / (float)gl_max_texture_size;
     float h = 1;
+    */
+    float x = 0; 
+    float y = 0;
+    float w = (display_width * d / n)  / (float)gl_max_texture_size;
+    float h = (display_height * d / n) / (float)gl_framebuffer_size;
     
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     framebuffer_active = false;
@@ -1127,61 +1148,43 @@ void display_flush_framebuffer_to_buffer()
 
 	glBegin(GL_QUADS);
 
-    glTexCoord2f(0, h);
+    glTexCoord2f(x, y);
 	glVertex2i(0, 0);
 
-    glTexCoord2f(w, h);
+    glTexCoord2f(w, y);
 	glVertex2i(display_width, 0);
 
-    glTexCoord2f(w, y);
+    glTexCoord2f(w, h);
 	glVertex2i(display_width, display_height);
 
-    glTexCoord2f(0, y);
+    glTexCoord2f(x, h);
 	glVertex2i(0, display_height);
 
 	glEnd();    
+
 }
 
 
 void display_flush_buffer()
 {
     // dbg->debug("display_flush_buffer()", "Called");
-/*
-    display_set_clip_wh(0, 0, 1024, 1000);
-
-    display_fillbox_wh_rgb(0, 0, 1000, 1000, RGBA_BLACK, true);
-    // debug, show all textures
-    for(int i = 0; i < anz_images; i++)
-    {
-        int x = (i % 10) * 64;
-        int y = (i / 10) * 64;
-
-        display_color_img(i, x, y, 0);
-    }
-*/
-
-/*
-    display_set_clip_wh(0, 0, 1024, 1000);
-    display_fillbox_wh_rgb(0, 0, 1000, 1000, rgba_t(0.5f, 0.5f, 0.5f, 1), true);
-    glColor4f(1, 1, 1, 1);
-    display_tile_from_sheet(gl_texture_sheets[0], 0, 0, 0, 0, 640, 480);
-*/
-
     
 	glfwSwapBuffers(window);
 
+    
     // next will be map drawing again, so set the map buffer
     glBindFramebuffer(GL_FRAMEBUFFER, gl_fbo);          
     framebuffer_active = true;
 
     // framebuffer viewport
-    // simgraph_resize(scr_size(4096, 4096));
-    scr_size size(gl_max_texture_size, gl_max_texture_size);
+    scr_size size(gl_framebuffer_size, gl_framebuffer_size);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glOrtho(0, size.w, size.h, 0, 1, -1);
+    glOrtho(0, size.w, 0, size.h, 1, -1);
     glViewport(0, 0, size.w, size.h);
     display_set_clip_wh(0, 0, size.w, size.h);
+    // glScissor(0, 0, size.w, size.h);
+    
     
 	glClear(GL_COLOR_BUFFER_BIT);
 }
@@ -1212,6 +1215,7 @@ void sysgl_character_callback(GLFWwindow* window, unsigned int codepoint);
 void sysgl_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 void sysgl_window_close_callback(GLFWwindow* window);
 void sysgl_framebuffer_size_callback(GLFWwindow* window, int width, int height);
+
 
 bool simgraph_init(scr_size size, sint16)
 {
@@ -1278,11 +1282,12 @@ bool simgraph_init(scr_size size, sint16)
         glGenFramebuffers(1, &gl_fbo);        
         glBindFramebuffer(GL_FRAMEBUFFER, gl_fbo);
         framebuffer_active = true;
-
+        gl_framebuffer_size = gl_max_texture_size;
+        
         // generate texture
         glGenTextures(1, &gl_texture_colorbuffer);
         glBindTexture(GL_TEXTURE_2D, gl_texture_colorbuffer);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, gl_max_texture_size, gl_max_texture_size, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, gl_framebuffer_size, gl_framebuffer_size, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glBindTexture(GL_TEXTURE_2D, 0);

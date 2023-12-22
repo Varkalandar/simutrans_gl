@@ -75,7 +75,7 @@ void main_view_t::display(bool force_dirty)
 		clip_rr = scr_rect(0, 0, disp_width - env_t::iconsize.w, disp_height);
 		break;
 	}
-	// display_set_clip_wh(clip_rr.x, clip_rr.y, clip_rr.w, clip_rr.h);
+	display_set_clip_wh(clip_rr.x, clip_rr.y, clip_rr.w, clip_rr.h);
 
 	// redraw everything?
 	force_dirty = force_dirty || welt->is_dirty();
