@@ -1892,7 +1892,6 @@ void win_display_flush(double konto)
 	}
 	else {
         rgba_t color = color_idx_to_rgb(MN_GREY2);
-        dbg->message("xx", "%f, %f, %f", color.red, color.green, color.blue);
 		display_fillbox_wh_rgb( menu_pos.x, menu_pos.y, menu_size.w, menu_size.h, color, false );
 	}
 

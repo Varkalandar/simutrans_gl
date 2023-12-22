@@ -278,6 +278,13 @@ int zoom_factor_down()
 }
 
 
+int get_zoom_fraction(int &n, int &d)
+{
+    n = zoom_num[zoom_factor];
+    d = zoom_den[zoom_factor];    
+}
+
+
 void mark_rect_dirty_wc(scr_coord_val, scr_coord_val, scr_coord_val, scr_coord_val)
 {
 }
@@ -698,8 +705,8 @@ void display_set_clip_wh(scr_coord_val x, scr_coord_val y, scr_coord_val w, scr_
         int n = zoom_num[zoom_factor];
         int d = zoom_den[zoom_factor];
         
-        // glScissor(clip_rect.x*d/n, 0, clip_rect.w*d/n, gl_framebuffer_size);
-        glScissor(0, 0, gl_framebuffer_size, gl_framebuffer_size);                
+        glScissor(clip_rect.x*d/n, clip_rect.y*d/n, clip_rect.w*d/n, clip_rect.h*d/n);
+        // glScissor(0, 0, gl_framebuffer_size, gl_framebuffer_size);                
     }
     else
     {
@@ -726,7 +733,8 @@ void display_swap_clip_wh()
 		clip_dimension save = clip_rect;
 		clip_rect = clip_rect_swap;
 		clip_rect_swap = save;
-        glScissor(clip_rect.x, display_get_height()-clip_rect.y-clip_rect.h, clip_rect.w, clip_rect.h);
+
+    	display_set_clip_wh(clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h);
 	}
 }
 
@@ -736,8 +744,8 @@ void display_pop_clip_wh(CLIP_NUM_DEF0)
 	if (swap_active) {
 		// swap original clipping rectangle back
 		clip_rect   = clip_rect_swap;
+    	display_set_clip_wh(clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h);
 		swap_active = false;
-        glScissor(clip_rect.x, display_get_height()-clip_rect.y-clip_rect.h, clip_rect.w, clip_rect.h);
 	}
 }
 
@@ -760,11 +768,7 @@ void display_tile_from_sheet(const gl_texture_t * gltex, int x, int y, int w, in
     const float gw = tile_w / (float)gltex->width;
     const float gh = tile_h / (float)gltex->height;
 
-    if(framebuffer_active) {
-        glDisable(GL_SCISSOR_TEST);
-    } else {            
-        glEnable(GL_SCISSOR_TEST);
-    }
+    glEnable(GL_SCISSOR_TEST);
     
     gl_texture_t::bind(gltex->tex_id);
 
@@ -1186,8 +1190,6 @@ void display_flush_buffer()
     glOrtho(0, size.w, 0, size.h, 1, -1);
     glViewport(0, 0, size.w, size.h);
     display_set_clip_wh(0, 0, size.w, size.h);
-    // glScissor(0, 0, size.w, size.h);
-    
     
 	glClear(GL_COLOR_BUFFER_BIT);
 }
