@@ -194,6 +194,9 @@ rgba_t color_idx_to_rgb(int idx)
     if(idx >= 0 && idx < SPECIAL_COLOR_COUNT) {
         return special_pal[idx];
     }
+    else if(idx >= SPECIAL_COLOR_COUNT && idx < SPECIAL_COLOR_COUNT + LIGHT_COUNT) {
+        return display_day_lights[idx - SPECIAL_COLOR_COUNT];
+    }
     else {
         return RGBA_BLACK;
     }
