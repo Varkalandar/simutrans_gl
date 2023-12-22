@@ -1986,7 +1986,7 @@ void win_display_flush(double konto)
 	}
 
 	// season color
-	display_color_img(skinverwaltung_t::seasons_icons->get_image_id(wl->get_season()), 2, status_bar_icon_y, 0);
+	display_base_img(skinverwaltung_t::seasons_icons->get_image_id(wl->get_season()), 2, status_bar_icon_y, 0);
 	if(  tooltip_check  &&  tooltip_xpos<14  ) {
 		static char const* const seasons[] = { "q2", "q3", "q4", "q1" };
 		tooltip_text = translator::translate(seasons[wl->get_season()]);
@@ -1998,7 +1998,7 @@ void win_display_flush(double konto)
 	// shown if timeline game
 	if(  wl->use_timeline()  &&  skinverwaltung_t::timelinesymbol  ) {
 		right_border -= 14;
-		display_color_img(skinverwaltung_t::timelinesymbol->get_image_id(0), right_border, status_bar_icon_y, 0);
+		display_base_img(skinverwaltung_t::timelinesymbol->get_image_id(0), right_border, status_bar_icon_y, 0);
 		if(  tooltip_check  &&  tooltip_xpos>=right_border  ) {
 			tooltip_text = translator::translate("timeline");
 			tooltip_check = false;
