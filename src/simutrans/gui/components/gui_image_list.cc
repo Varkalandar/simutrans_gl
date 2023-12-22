@@ -100,7 +100,7 @@ void gui_image_list_t::draw(scr_coord parent_pos)
 			y = -y + (grid.y-h) - 6; // align to bottom mark
 			x = -x + (grid.x-w) / 2; // align horizontally centered
 			display_set_color(RGBA_WHITE);
-			display_base_img(idata.image, xpos + x, ypos + y, player_nr, false, true);
+			display_base_img(idata.image, xpos + x, ypos + y, player_nr);
 
 			// If necessary, display a number:
 			if(idata.count > 0) {
