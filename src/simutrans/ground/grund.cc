@@ -1776,10 +1776,16 @@ void display_text_label(sint16 xpos, sint16 ypos, const char* text, const player
 }
 
 
-void grund_t::display_overlay(const sint16 xpos, const sint16 ypos)
+void grund_t::display_overlay(sint16 xpos, sint16 ypos)
 {
 	const bool dirty = get_flag(grund_t::dirty);
 
+    int n, d;
+    get_zoom_fraction(n, d);
+
+    xpos = xpos * d / n;
+    ypos = ypos * d / n;
+    
 	// marker/station text
 	if(  get_flag(has_text)  &&  env_t::show_names  ) {
 		if(  env_t::show_names&1  ) {
