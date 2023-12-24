@@ -195,11 +195,12 @@ void main_view_t::display(bool force_dirty)
 		scr_coord pointer_pos = background_pos + viewport->scale_offset(koord(zeiger->get_xoff(),zeiger->get_yoff()));
 
 		// mark the cursor position for all tools (except lower/raise)
+        
 		if(zeiger->get_yoff()==Z_PLAN) {
 			grund_t *gr = welt->lookup( zeiger->get_pos() );
 			if(gr && gr->is_visible()) {
 				rgba_t transparent = color_idx_to_rgb(env_t::cursor_overlay_color);
-				transparent.alpha = 0.5f;
+				transparent.alpha = 0.25f;
 				if(  gr->get_image()==IMG_EMPTY  ) {
 					if(  gr->hat_wege()  ) {
 						display_img_blend( gr->obj_bei(0)->get_image(), background_pos.x, background_pos.y, transparent, 0, dirty );
@@ -217,6 +218,7 @@ void main_view_t::display(bool force_dirty)
 			}
 		}
         
+          
         display_set_color(RGBA_WHITE);
 		zeiger->display( pointer_pos.x , pointer_pos.y  CLIP_NUM_DEFAULT);
 		zeiger->clear_flag( obj_t::dirty );
@@ -383,6 +385,9 @@ void main_view_t::display_region( koord lt, koord wh, sint16 y_min, sint16 y_max
 					if(  yypos - IMG_SIZE * 3 < wh.y + lt.y  &&  yypos + IMG_SIZE > lt.y  ) {
 						const koord pos(i,j);
 						if(  env_t::hide_under_cursor  &&  needs_hiding  ) {
+                            
+                            // dbg->message("display_region", "hiding");
+                            
 							// If the corresponding setting is on, then hide trees and buildings under mouse cursor
 								if(  shortest_distance( pos, cursor_pos ) <= env_t::cursor_hide_range  ) {
 									const bool saved_hide_trees = env_t::hide_trees;
