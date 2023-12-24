@@ -208,6 +208,9 @@ rgba_t color_idx_to_rgba(int idx, int transparent_percent)
     if(idx >= 0 && idx < SPECIAL_COLOR_COUNT) {
         return rgba_t(special_pal[idx], 1.0f - (transparent_percent / 100.0f));
     }
+    else if(idx >= SPECIAL_COLOR_COUNT && idx < SPECIAL_COLOR_COUNT + LIGHT_COUNT) {
+        return rgba_t(display_day_lights[idx - SPECIAL_COLOR_COUNT], 1.0f - (transparent_percent / 100.0f));
+    }
     else {
         return RGBA_BLACK;
     }
@@ -278,7 +281,7 @@ int zoom_factor_down()
 }
 
 
-int get_zoom_fraction(int &n, int &d)
+void get_zoom_fraction(int &n, int &d)
 {
     n = zoom_num[zoom_factor];
     d = zoom_den[zoom_factor];    
@@ -543,7 +546,7 @@ void register_image(image_t * image_in)
 	image = &images[anz_images];
 	anz_images++;
 
-	dbg->message("register_image()", "%d images, offset %d , %d, converting %dx%d pixels", anz_images, image_in->x, image_in->y, image_in->w, image_in->h);
+	// dbg->message("register_image()", "%d images, offset %d , %d, converting %dx%d pixels", anz_images, image_in->x, image_in->y, image_in->w, image_in->h);
 
 	uint8_t * rgba_data = (uint8_t *)calloc(image_in->w * image_in->h * 4, 1);
     uint8_t * tp = rgba_data;
@@ -989,7 +992,10 @@ void display_rezoomed_img_blend(const image_id id, scr_coord_val x, scr_coord_va
 
 void display_rezoomed_img_alpha(const image_id id1, const image_id id2, const unsigned, scr_coord_val x, scr_coord_val y, const sint8, rgba_t, const bool, const bool  CLIP_NUM_DEF_NOUSE)
 {
-    display_img(id1, x, y, 0);
+    // display_set_color(rgba_t(1, 1, 1, 0.5f));
+    // display_img(id1, x, y, 0);
+    // display_set_color(rgba_t(1, 1, 1, 1));
+    // display_img(id2, x, y, 0);
 }
 
 

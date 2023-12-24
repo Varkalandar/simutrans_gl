@@ -97,7 +97,7 @@ scr_coord_val display_set_base_raster_width(scr_coord_val new_raster);
 int set_zoom_factor(int);
 int zoom_factor_up();
 int zoom_factor_down();
-int get_zoom_fraction(int &n, int &d);
+void get_zoom_fraction(int &n, int &d);
 
 /**
  * Initialises the graphics module
