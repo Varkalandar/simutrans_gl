@@ -1300,7 +1300,6 @@ slope_t::type grund_t::get_disp_way_slope() const
  */
 void grund_t::display_obj_all_quick_and_dirty(const sint16 xpos, sint16 ypos, const sint16 raster_tile_width, const bool is_global CLIP_NUM_DEF ) const
 {
-	const bool dirty = get_flag(grund_t::dirty);
 	const uint8 start_offset=offsets[flags/has_way1];
 
 	// here: we are either ground(kartenboden) or visible
@@ -1562,8 +1561,6 @@ void grund_t::display_obj_all(const sint16 xpos, const sint16 ypos, const sint16
 
 uint8 grund_t::display_obj_bg(const sint16 xpos, const sint16 ypos, const bool is_global, const bool draw_ways, const bool visible CLIP_NUM_DEF ) const
 {
-	const bool dirty = get_flag(grund_t::dirty);
-
 	if(  visible  ) {
 		// display back part of markers
 		if(  is_global  &&  get_flag( grund_t::marked )  ) {
@@ -1607,7 +1604,6 @@ uint8 grund_t::display_obj_vh(const sint16 xpos, const sint16 ypos, const uint8 
 
 void grund_t::display_obj_fg(const sint16 xpos, const sint16 ypos, const bool is_global, const uint8 start_offset CLIP_NUM_DEF ) const
 {
-	const bool dirty = get_flag(grund_t::dirty);
 	objlist.display_obj_fg( xpos, ypos, start_offset, is_global );
 
 	// display front part of markers
@@ -1636,7 +1632,7 @@ scr_size display_themed_label(sint16 xpos, sint16 ypos, const char* text,
                               sint32 margin_left, sint32 margin_right,
                               sint32 margin_top, sint32 margin_bottom,
                               const stretch_map_t &label,
-                              rgba_t color, const player_t *player, bool dirty)
+                              rgba_t color, const player_t *player)
 {
 	sint16 text_width = proportional_string_width(text);
 	sint16 label_height = LINESPACE + margin_top + margin_bottom;
@@ -1645,18 +1641,18 @@ scr_size display_themed_label(sint16 xpos, sint16 ypos, const char* text,
 						text_width + margin_left + margin_right,
 						label_height);
 
-	const sint16 pnr = player ? player->get_player_nr() : 1;
-	display_set_color(RGBA_WHITE);
+	const sint16 idx = player ? player->get_player_color1() : 0;
+	display_set_color(color_idx_to_rgb(idx + env_t::gui_player_color_bright));
 	display_img_stretch(label, area);
 
-    display_proportional_rgb(area.x+margin_left, area.y+margin_top, text, ALIGN_LEFT, color, dirty);
+    display_proportional_rgb(area.x+margin_left, area.y+margin_top, text, ALIGN_LEFT, color, true);
 
 	return scr_size(area.w, area.h);
 }
 
 
 void display_themed_marker(sint16 xpos, sint16 ypos, const char* text,
-                               const player_t *player, bool dirty)
+                               const player_t *player)
 {
 	const sint16 yoff = get_tile_raster_width() / 2 - 54 + get_tile_raster_width() / 4;
 
@@ -1668,14 +1664,13 @@ void display_themed_marker(sint16 xpos, sint16 ypos, const char* text,
 							 gui_theme_t::gui_display_marker_label_margin_bottom,
 							 gui_theme_t::display_marker_label,
 							 gui_theme_t::gui_display_marker_label_color,
-							 player,
-							 dirty);
+							 player);
 
 	// the extra bottom part
 	const sint8 pnr = player ? player->get_player_nr() : 1;
 	const image_id iid = skinverwaltung_t::display_marker_label->get_image_id(9);
 	display_set_color(RGBA_WHITE);
-	display_img_aligned(iid, scr_rect(xpos, ypos + size.h + yoff, size.w, 16), ALIGN_CENTER_H, pnr, dirty);
+	display_img_aligned(iid, scr_rect(xpos, ypos + size.h + yoff, size.w, 16), ALIGN_CENTER_H, pnr, true);
 }
 
 
@@ -1683,7 +1678,7 @@ void display_themed_marker(sint16 xpos, sint16 ypos, const char* text,
  * Display a theme defined label with some text
  */
 void display_themed_text_label(sint16 xpos, sint16 ypos, const char* text,
-                               const player_t *player, char flag, bool dirty)
+                               const player_t *player, char flag)
 {
 	if(skinverwaltung_t::display_text_label)
 	{
@@ -1697,8 +1692,7 @@ void display_themed_text_label(sint16 xpos, sint16 ypos, const char* text,
 									 gui_theme_t::gui_display_station_label_margin_bottom,
 									 gui_theme_t::display_station_label,
 									 gui_theme_t::gui_display_station_label_color,
-									 player,
-									 dirty);
+									 player);
 					break;
 			case 'F':       // Hajo: a factory
 				display_themed_label(xpos, ypos, text,
@@ -1708,11 +1702,10 @@ void display_themed_text_label(sint16 xpos, sint16 ypos, const char* text,
 									 gui_theme_t::gui_display_factory_label_margin_bottom,
 									 gui_theme_t::display_factory_label,
 									 gui_theme_t::gui_display_factory_label_color,
-									 player,
-									 dirty);
+									 player);
 					break;
 			case 'M':       // Hajo: a marker
-			    display_themed_marker(xpos, ypos, text, player, dirty);
+			    display_themed_marker(xpos, ypos, text, player);
 				break;
 			default:
 				display_themed_label(xpos, ypos, text,
@@ -1722,8 +1715,7 @@ void display_themed_text_label(sint16 xpos, sint16 ypos, const char* text,
 										gui_theme_t::gui_display_text_label_margin_bottom,
 										gui_theme_t::display_text_label,
 										gui_theme_t::gui_display_text_label_color,
-										player,
-										dirty);
+										player);
 				break;
 		}
 	}
@@ -1733,28 +1725,28 @@ void display_themed_text_label(sint16 xpos, sint16 ypos, const char* text,
 /**
  * Display text label in player colors using different styles set by env_t::show_names
  */
-void display_text_label(sint16 xpos, sint16 ypos, const char* text, const player_t *player, char flag, bool dirty)
+void display_text_label(sint16 xpos, sint16 ypos, const char* text, const player_t *player, char flag)
 {
 	const int style = env_t::show_names >> 2;
 	switch(style) {
 		case 0:
             if(player)
             {
-                display_ddd_proportional_clip( xpos, ypos, color_idx_to_rgb(player->get_player_color1()+4), RGBA_BLACK, text, dirty );
+                display_ddd_proportional_clip( xpos, ypos, color_idx_to_rgb(player->get_player_color1()+4), RGBA_BLACK, text, true );
             }
             else
             {
-                display_ddd_proportional_clip( xpos, ypos, SYSCOL_TEXT_HIGHLIGHT, RGBA_BLACK, text, dirty );
+                display_ddd_proportional_clip( xpos, ypos, SYSCOL_TEXT_HIGHLIGHT, RGBA_BLACK, text, true );
             }
 			break;
 		case 1: {
             if(player)
             {
-                display_outline_proportional_rgb( xpos, ypos, color_idx_to_rgb(player->get_player_color1()+7), RGBA_BLACK, text, dirty );
+                display_outline_proportional_rgb( xpos, ypos, color_idx_to_rgb(player->get_player_color1()+7), RGBA_BLACK, text, true );
             }
             else
             {
-                display_ddd_proportional_clip( xpos, ypos, SYSCOL_TEXT_HIGHLIGHT, RGBA_BLACK, text, dirty );
+                display_ddd_proportional_clip( xpos, ypos, SYSCOL_TEXT_HIGHLIGHT, RGBA_BLACK, text, true );
             }
 			break;
 		}
@@ -1770,7 +1762,7 @@ void display_text_label(sint16 xpos, sint16 ypos, const char* text, const player
 			break;
 		}
 		case 3:
-			display_themed_text_label(xpos, ypos, text, player, flag, dirty);
+			display_themed_text_label(xpos, ypos, text, player, flag);
 			break;
 	}
 }
@@ -1778,8 +1770,6 @@ void display_text_label(sint16 xpos, sint16 ypos, const char* text, const player
 
 void grund_t::display_overlay(sint16 xpos, sint16 ypos)
 {
-	const bool dirty = get_flag(grund_t::dirty);
-
     int n, d;
     get_zoom_fraction(n, d);
 
@@ -1799,7 +1789,7 @@ void grund_t::display_overlay(sint16 xpos, sint16 ypos)
 
             char flag = (label) ? 'M' : (is_halt()) ? 'H' : 'T';
 
-			display_text_label(new_xpos, ypos, text, owner, flag, dirty);
+			display_text_label(new_xpos, ypos, text, owner, flag);
 		}
 
 		// display station waiting information/status
@@ -1832,7 +1822,7 @@ void grund_t::display_overlay(sint16 xpos, sint16 ypos)
 						const sint16 raster_tile_width = get_tile_raster_width();
 						const sint16 width = proportional_string_width( text )+7;
 						sint16 new_xpos = xpos - (width-raster_tile_width)/2;
-						display_text_label(new_xpos, ypos, text, fab->get_owner(), 'F', dirty);
+						display_text_label(new_xpos, ypos, text, fab->get_owner(), 'F');
 						// ... and status
 						fab->display_status(xpos, ypos);
 					}
