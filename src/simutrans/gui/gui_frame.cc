@@ -102,15 +102,18 @@ int gui_frame_t::get_player_number() const
 rgba_t gui_frame_t::get_titlecolor() const
 {
 	if(skinverwaltung_t::title_bar) {
-		// Hajo: we have themed title bars, combine the color values into one 32 bit number
-		rgba_t color = color_idx_to_rgb(env_t::default_window_title_color);
-
-		// todo
-		// if(owner) {
-		// 	color |= PLAYER_FLAG | (owner->get_player_color1() << 24) | (owner->get_player_nr() << 16);
-		// }
+		rgba_t color;
+        
+        if(owner) {
+            color = color_idx_to_rgb(owner->get_player_color1() + env_t::gui_player_color_bright);
+        }
+        else {
+            color = RGBA_WHITE;
+        }
+        
 		return color;
-	} else {
+	}
+    else {
 		// Hajo: use traditional bar colors
 		return owner ? color_idx_to_rgb(owner->get_player_color1()+env_t::gui_player_color_dark) : color_idx_to_rgb(env_t::default_window_title_color);
 	}
