@@ -326,6 +326,10 @@ static void load_language_file_body(FILE* file, stringhashtable_tpl<const char*>
 	char buffer1 [4096];
 	char buffer2 [4096];
 
+    memset(buffer1, 0, 4096);
+    memset(buffer2, 0, 4096);
+    
+    
 	bool convert_to_unicode = language_is_utf && !file_is_utf;
 
 	do {
