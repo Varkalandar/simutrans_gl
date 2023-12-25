@@ -348,10 +348,14 @@ void tool_selector_t::draw(scr_coord pos, scr_size sz)
 		if(  icon_img != IMG_EMPTY  ) {
 			bool tool_dirty = dirty  ||  (tools[i].tool->is_selected() ^ tools[i].selected);
 
-            display_set_color(tools[i].tool->is_selected() ? rgba_t(0.2f, 0.5f, 0.0f, 1.0f) : RGBA_WHITE);
+            // First, draw it opaque in original colors.
+            display_set_color(RGBA_WHITE);
 			display_base_img(icon_img, draw_pos.x, draw_pos.y, player->get_player_nr(), env_t::iconsize.w, env_t::iconsize.w);
-			tools[i].tool->draw_after( draw_pos, tool_dirty);
-			// store whether tool was selected
+            
+            // this draws an overlay is selected
+			tools[i].tool->draw_after(draw_pos, tool_dirty);
+			
+            // store whether tool was selected
 			tools[i].selected = tools[i].tool->is_selected();
 		}
 	}

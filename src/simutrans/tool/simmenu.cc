@@ -993,11 +993,15 @@ void tool_t::update_toolbars()
 void tool_t::draw_after(scr_coord pos, bool dirty) const
 {
 	// default action: grey corner if selected
-	image_id id = get_icon( welt->get_active_player() );
-	if(  id!=IMG_EMPTY  &&  is_selected()  ) {
-		display_img_blend(id, pos.x, pos.y, color_idx_to_rgb(COL_BLACK), false, dirty );
+    player_t * player = welt->get_active_player();
+	image_id id = get_icon(player);
+	if(id != IMG_EMPTY && is_selected()) {
+        // light green overlay as "activated"?
+        display_set_color(rgba_t(0.8, 1.0, 0, 1.0));
+		display_base_img(id, pos.x, pos.y, player->get_player_nr(), env_t::iconsize.w, env_t::iconsize.w);
 	}
 }
+
 
 bool tool_t::is_selected() const
 {
