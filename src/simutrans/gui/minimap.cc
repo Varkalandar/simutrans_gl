@@ -524,6 +524,9 @@ scr_coord minimap_t::map_to_screen_coord(const koord &k) const
 	scr_coord_val x = (scr_coord_val)k.x * zoom_in;
     scr_coord_val y = (scr_coord_val)k.y * zoom_in;
 	if(isometric) {
+        x -= cur_off.x * zoom_in;
+        y -= cur_off.y * zoom_in;
+        
 		// 45 rotate view
 		scr_coord_val xrot = (scr_coord_val)world->get_size().y * zoom_in + x - y - 1;
 		y = ( x + y )/2;

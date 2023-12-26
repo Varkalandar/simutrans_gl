@@ -251,8 +251,8 @@ int set_zoom_level(int level)
 		zoom_level = level;
 		tile_raster_width = (base_tile_raster_width * zoom_num[zoom_level]) / zoom_den[zoom_level];
         current_tile_raster_width = tile_raster_width;
-		dbg->message("set_zoom_level()", "Zoom level now %d (%i/%i) -> raster %d", 
-                     zoom_level, zoom_num[zoom_level], zoom_den[zoom_level], current_tile_raster_width);
+		// dbg->message("set_zoom_level()", "Zoom level now %d (%i/%i) -> raster %d", 
+        //             zoom_level, zoom_num[zoom_level], zoom_den[zoom_level], current_tile_raster_width);
     }
 
     return old_zoom;
