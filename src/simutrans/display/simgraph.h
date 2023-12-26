@@ -93,11 +93,11 @@ inline scr_coord_val get_base_tile_raster_width(){return base_tile_raster_width;
 /* changes the raster width after loading */
 scr_coord_val display_set_base_raster_width(scr_coord_val new_raster);
 
-
-int set_zoom_factor(int);
-int zoom_factor_up();
-int zoom_factor_down();
-void get_zoom_fraction(int &n, int &d);
+#define ZOOM_NEUTRAL (3)
+int set_zoom_level(int level);
+int zoom_level_up();
+int zoom_level_down();
+void get_zoom_fraction(int &numinator, int &denominator);
 
 /**
  * Initialises the graphics module

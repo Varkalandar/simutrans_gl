@@ -183,8 +183,7 @@ static const rgb888_t special_pal[SPECIAL_COLOR_COUNT] =
  * Zoom factor
  */
 #define MAX_ZOOM_FACTOR (9)
-#define ZOOM_NEUTRAL (3)
-static uint32 zoom_factor = ZOOM_NEUTRAL;
+static uint32 zoom_level = ZOOM_NEUTRAL;
 static sint32 zoom_num[MAX_ZOOM_FACTOR+1] = { 2, 3, 4, 1, 3, 5, 1, 3, 1, 1 };
 static sint32 zoom_den[MAX_ZOOM_FACTOR+1] = { 1, 2, 3, 1, 4, 8, 2, 8, 4, 8 };
 
@@ -236,45 +235,45 @@ scr_coord_val display_set_base_raster_width(scr_coord_val new_raster)
 	const scr_coord_val old = base_tile_raster_width;
 
 	base_tile_raster_width = new_raster;
-   	tile_raster_width = (new_raster *  zoom_num[zoom_factor]) / zoom_den[zoom_factor];
+   	tile_raster_width = (new_raster *  zoom_num[zoom_level]) / zoom_den[zoom_level];
     current_tile_raster_width = new_raster;
     
 	return old;
 }
 
 
-int set_zoom_factor(int z)
+int set_zoom_level(int level)
 {
-    int old_zoom = zoom_factor;
+    int old_zoom = zoom_level;
     
 	// do not zoom smaller than 4 pixels
-	if((base_tile_raster_width * zoom_num[z]) / zoom_den[z] > 4) {
-		zoom_factor = z;
-		tile_raster_width = (base_tile_raster_width * zoom_num[zoom_factor]) / zoom_den[zoom_factor];
+	if((base_tile_raster_width * zoom_num[level]) / zoom_den[level] > 4) {
+		zoom_level = level;
+		tile_raster_width = (base_tile_raster_width * zoom_num[zoom_level]) / zoom_den[zoom_level];
         current_tile_raster_width = tile_raster_width;
-		dbg->message("set_zoom_factor()", "Zoom level now %d (%i/%i) -> raster %d", 
-                     zoom_factor, zoom_num[zoom_factor], zoom_den[zoom_factor], current_tile_raster_width);
+		dbg->message("set_zoom_level()", "Zoom level now %d (%i/%i) -> raster %d", 
+                     zoom_level, zoom_num[zoom_level], zoom_den[zoom_level], current_tile_raster_width);
     }
 
     return old_zoom;
 }
 
 
-int zoom_factor_up()
+int zoom_level_up()
 {
 	// zoom out, if size permits
-	if(zoom_factor > 0) {
-		set_zoom_factor(zoom_factor - 1);
+	if(zoom_level > 0) {
+		set_zoom_level(zoom_level - 1);
 		return true;
 	}
 	return false;
 }
 
 
-int zoom_factor_down()
+int zoom_level_down()
 {
-	if(zoom_factor < MAX_ZOOM_FACTOR) {
-		set_zoom_factor(zoom_factor + 1);
+	if(zoom_level < MAX_ZOOM_FACTOR) {
+		set_zoom_level(zoom_level + 1);
 		return true;
 	}
 	return false;
@@ -283,8 +282,8 @@ int zoom_factor_down()
 
 void get_zoom_fraction(int &n, int &d)
 {
-    n = zoom_num[zoom_factor];
-    d = zoom_den[zoom_factor];    
+    n = zoom_num[zoom_level];
+    d = zoom_den[zoom_level];    
 }
 
 
@@ -705,8 +704,8 @@ void display_set_clip_wh(scr_coord_val x, scr_coord_val y, scr_coord_val w, scr_
     
     if(framebuffer_active)
     {
-        int n = zoom_num[zoom_factor];
-        int d = zoom_den[zoom_factor];
+        int n = zoom_num[zoom_level];
+        int d = zoom_den[zoom_level];
         
         glScissor(clip_rect.x*d/n, clip_rect.y*d/n, clip_rect.w*d/n, clip_rect.h*d/n);
         // glScissor(0, 0, gl_framebuffer_size, gl_framebuffer_size);                
@@ -810,8 +809,8 @@ void display_color_img(const image_id id, scr_coord_val x, scr_coord_val y, cons
 		// display_box_wh(clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h, rgba_t(1, 0, 0, 0.5f));
 
 		imd_t & imd = images[id];
-        int n = zoom_num[zoom_factor];
-        int d = zoom_den[zoom_factor];
+        int n = zoom_num[zoom_level];
+        int d = zoom_den[zoom_level];
 
 		x = x * d / n + imd.base_x;
 		y = y * d / n + imd.base_y;
@@ -832,8 +831,8 @@ static void display_img(const image_id id, scr_coord_val x, scr_coord_val y, con
 	if(id < anz_images)
 	{
 		imd_t & imd = images[id];
-        int n = zoom_num[zoom_factor];
-        int d = zoom_den[zoom_factor];
+        int n = zoom_num[zoom_level];
+        int d = zoom_den[zoom_level];
 
 		x = x * d / n + imd.base_x;
 		y = y * d / n + imd.base_y;
@@ -1138,8 +1137,8 @@ void display_ddd_box_clip_rgb(scr_coord_val, scr_coord_val, scr_coord_val, scr_c
 
 void display_flush_framebuffer_to_buffer()
 {
-    int n = zoom_num[zoom_factor];
-    int d = zoom_den[zoom_factor];
+    int n = zoom_num[zoom_level];
+    int d = zoom_den[zoom_level];
     
     /*
     float x = 0; 

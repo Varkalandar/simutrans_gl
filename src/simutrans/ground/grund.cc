@@ -1643,8 +1643,11 @@ scr_size display_themed_label(sint16 xpos, sint16 ypos, const char* text,
 
 	const sint16 idx = player ? player->get_player_color1() : 0;
 	display_set_color(color_idx_to_rgb(idx + env_t::gui_player_color_bright));
+    
+    int level = set_zoom_level(ZOOM_NEUTRAL);
 	display_img_stretch(label, area);
-
+    set_zoom_level(level);
+    
     display_proportional_rgb(area.x+margin_left, area.y+margin_top, text, ALIGN_LEFT, color, true);
 
 	return scr_size(area.w, area.h);

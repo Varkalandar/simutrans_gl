@@ -2102,7 +2102,7 @@ void win_redraw_world()
 
 bool win_change_zoom_factor(bool magnify)
 {
-	const bool result = magnify ? zoom_factor_up() : zoom_factor_down();
+	const bool result = magnify ? zoom_level_up() : zoom_level_down();
 
 	if(magnify  &&  wl->is_step_mode_normal()) {
 		wl->reset_timer();
