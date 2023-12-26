@@ -404,7 +404,7 @@ static void win_draw_window_dragger(scr_coord pos, scr_size size)
 	if(skinverwaltung_t::gadget && skinverwaltung_t::gadget->get_image_id(SKIN_WINDOW_RESIZE) != IMG_EMPTY) {
 		const image_t *dragger = skinverwaltung_t::gadget->get_image(SKIN_WINDOW_RESIZE);
 		display_set_color(RGBA_WHITE);
-        display_color_img(dragger->get_id(), pos.x-dragger->get_pic()->w, pos.y-dragger->get_pic()->h, 0);
+        display_base_img(dragger->get_id(), pos.x-dragger->get_pic()->w, pos.y-dragger->get_pic()->h, 0);
 	}
 	else {
 		int dragger_size = min(D_DRAGGER_WIDTH, D_DRAGGER_HEIGHT);
