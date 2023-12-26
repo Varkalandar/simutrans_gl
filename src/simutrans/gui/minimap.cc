@@ -524,8 +524,6 @@ scr_coord minimap_t::map_to_screen_coord(const koord &k) const
 	scr_coord_val x = (scr_coord_val)k.x * zoom_in;
     scr_coord_val y = (scr_coord_val)k.y * zoom_in;
 	if(isometric) {
-        x -= cur_off.x * zoom_in;
-        y -= cur_off.y * zoom_in;
         
 		// 45 rotate view
 		scr_coord_val xrot = (scr_coord_val)world->get_size().y * zoom_in + x - y - 1;
@@ -1419,17 +1417,8 @@ void minimap_t::draw(scr_coord pos)
 		pax_destinations_last_change = selected_city->get_pax_destinations_new_change();
 	}
 
-	if((uint16)cur_size.w > map_texture->width) {
-		display_fillbox_wh_clip_rgb( pos.x+new_off.x+map_texture->width, new_off.y+pos.y, 32767, map_texture->height, color_idx_to_rgb(COL_BLACK), true);
-	}
-
-	if((uint16)cur_size.h > map_texture->height) {
-		display_fillbox_wh_clip_rgb( pos.x+new_off.x, pos.y+new_off.y+map_texture->height, 32767, 32767, color_idx_to_rgb(COL_BLACK), true);
-	}
-
-	// display_array_wh( cur_off.x+pos.x, new_off.y+pos.y, map_texture_width, map_data->get_height(), map_data->to_array());
     display_set_color(RGBA_BLACK);
-    display_fillbox_wh(pos.x, pos.y, map_texture->width, map_texture->height);
+    display_fillbox_wh(pos.x + cur_off.x, pos.y + cur_off.y, cur_size.w, cur_size.h);
     display_set_color(RGBA_WHITE);
 	display_tile_from_sheet(map_texture, 
                             pos.x + cur_off.x, pos.y + cur_off.y, 
@@ -1806,7 +1795,7 @@ void minimap_t::draw(scr_coord pos)
 			// calculate and draw the rotated coordinates
 			scr_coord c[4];
 			for(uint i=0; i<lengthof(c); i++) {
-				c[i] = map_to_screen_coord(k[i]) + pos;
+				c[i] = map_to_screen_coord(k[i]); //  + pos;
 			}
 
 			display_direct_line_dotted_rgb( c[0].x, c[0].y, c[1].x, c[1].y, 3, 3, col );
