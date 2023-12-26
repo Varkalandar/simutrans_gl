@@ -11,7 +11,7 @@
 #include "../../obj/simobj.h"
 #include "../../obj/zeiger.h"
 #include "../../display/simgraph.h"
-#include "../../simcolor.h"
+// #include "../../simcolor.h"
 #include "../../ground/grund.h"
 
 #include "../../dataobj/environment.h"
@@ -76,6 +76,8 @@ bool world_view_t::infowin_event(const event_t* ev)
 
 void world_view_t::internal_draw(const scr_coord offset, obj_t const* const obj)
 {
+    const int old_zoom_level = set_zoom_level(ZOOM_NEUTRAL);
+    
 	const koord3d here3d    = get_location();
 	const koord   here      = here3d.get_2d();
 	scr_coord     fine_here = scr_coord(0, 0);
@@ -141,7 +143,7 @@ void world_view_t::internal_draw(const scr_coord offset, obj_t const* const obj)
 	/* Not very elegant, but works: Fill everything with black for underground
 	 * mode. */
 	if(  grund_t::underground_mode  ) {
-		display_fillbox_wh_clip_rgb(pos.x, pos.y, size.w, size.h, color_idx_to_rgb(COL_BLACK), true);
+		display_fillbox_wh_clip_rgb(pos.x, pos.y, size.w, size.h, RGBA_BLACK, true);
 	}
 	else {
 		display_fillbox_wh_clip_rgb(pos.x, pos.y, size.w, size.h, color_idx_to_rgb(env_t::background_color), true);
@@ -152,6 +154,8 @@ void world_view_t::internal_draw(const scr_coord offset, obj_t const* const obj)
 		size.h     - raster;          // align the bottom of the image
 	const scr_coord display_off = scr_coord((size.w - raster) / 2, hgt + yoff) + fine_here;
 
+    display_set_color(RGBA_WHITE);
+    
 	// display grounds
 	for(koord const& off : offsets) {
 		const koord   k     = here + off + height_offset;
@@ -218,6 +222,8 @@ void world_view_t::internal_draw(const scr_coord offset, obj_t const* const obj)
 
 	display_set_clip_wh(old_clip.x, old_clip.y, old_clip.w, old_clip.h);
 	display_ddd_box_clip_rgb(pos.x - 1, pos.y - 1, size.w + 2, size.h + 2, color_idx_to_rgb(MN_GREY0), color_idx_to_rgb(MN_GREY4));
+
+    set_zoom_level(old_zoom_level);
 }
 
 
