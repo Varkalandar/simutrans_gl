@@ -9,6 +9,7 @@
 #include "../display/simimg.h"
 #include "../simintr.h"
 #include "../simcolor.h"
+#include "../simskin.h"
 #include "../dataobj/settings.h"
 #include "../dataobj/environment.h"
 #include "../dataobj/translator.h"

@@ -5,6 +5,7 @@
 
 #include "../../simline.h"
 #include "../../simcolor.h"
+#include "../../simskin.h"
 #include "../../simintr.h"
 #include "../../simhalt.h"
 #include "../../world/simworld.h"
@@ -12,7 +13,6 @@
 #include "../../simconvoi.h"
 #include "../../display/simgraph.h"
 #include "../../display/viewport.h"
-
 #include "../../utils/simstring.h"
 #include "../../utils/cbuffer.h"
 

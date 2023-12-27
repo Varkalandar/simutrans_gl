@@ -6,6 +6,7 @@
 #include "pakselector.h"
 #include "pakinstaller.h"
 #include "components/gui_spacer.h"
+#include "../simskin.h"
 #include "../dataobj/translator.h"
 #include "../dataobj/environment.h"
 #include "../dataobj/pakset_manager.h"

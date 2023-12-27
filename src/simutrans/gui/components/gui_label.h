@@ -10,7 +10,6 @@
 #include "gui_component.h"
 #include "../../display/display.h"
 #include "../gui_theme.h"
-#include "../../simskin.h"
 #include "../../utils/cbuffer.h"
 
 
@@ -47,9 +46,9 @@ protected:
 	using gui_component_t::init;
 
 public:
-	gui_label_t(const char* text=0, rgba_t color=RGBA_BLACK, align_t align=left, font_size_t size=FS_NORMAL);
+	gui_label_t(const char* text=0, rgba_t color=gui_theme_t::gui_color_text, align_t align=left, font_size_t size=FS_NORMAL);
 
-	void init(const char* text_par, scr_coord pos_par, rgba_t color_par=RGBA_BLACK, align_t align_par=left) {
+	void init(const char* text_par, scr_coord pos_par, rgba_t color_par=gui_theme_t::gui_color_text, align_t align_par=left) {
 		set_pos  ( pos_par   );
 		set_text ( text_par  );
 		set_color( color_par );

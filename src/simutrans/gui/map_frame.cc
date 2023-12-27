@@ -17,6 +17,7 @@
 #include "../display/simgraph.h"
 #include "../display/viewport.h"
 #include "../simcolor.h"
+#include "../simskin.h"
 #include "../builder/fabrikbauer.h"
 #include "../builder/goods_manager.h"
 #include "../dataobj/environment.h"

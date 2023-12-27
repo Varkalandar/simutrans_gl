@@ -7,6 +7,7 @@
 
 #include "gui_frame.h"
 #include "../simcolor.h"
+#include "../simskin.h"
 #include "../dataobj/environment.h"
 #include "../display/simgraph.h"
 #include "simwin.h"

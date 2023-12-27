@@ -14,7 +14,6 @@
 
 #include "scr_coord.h"
 #include "alignment.h"
-#include "../simcolor.h"
 #include "rgba.h"
 
 
