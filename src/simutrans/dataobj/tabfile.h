@@ -164,6 +164,8 @@ public:
 	 */
 	int get_int(const char *key, int def);
 
+        float get_float(const char *key, float def);
+        
 	/**
 	 * Get an int value. If the value is not between @p min_value and @p max_value, a warning
 	 * is emitted and the value is clamped to either @p min_value or @p max_value.

@@ -292,24 +292,28 @@ public:
 	static scr_coord_val gui_waitingbar_width;
 
 	static rgba_t        gui_display_text_label_color;
+	static float         gui_display_text_label_alpha;
 	static scr_coord_val gui_display_text_label_margin_left;
 	static scr_coord_val gui_display_text_label_margin_top;
 	static scr_coord_val gui_display_text_label_margin_right;
 	static scr_coord_val gui_display_text_label_margin_bottom;
 
 	static rgba_t        gui_display_station_label_color;
+	static float         gui_display_station_label_alpha;
 	static scr_coord_val gui_display_station_label_margin_left;
 	static scr_coord_val gui_display_station_label_margin_top;
 	static scr_coord_val gui_display_station_label_margin_right;
 	static scr_coord_val gui_display_station_label_margin_bottom;
 
 	static rgba_t        gui_display_marker_label_color;
+	static float         gui_display_marker_label_alpha;
 	static scr_coord_val gui_display_marker_label_margin_left;
 	static scr_coord_val gui_display_marker_label_margin_top;
 	static scr_coord_val gui_display_marker_label_margin_right;
 	static scr_coord_val gui_display_marker_label_margin_bottom;
 
 	static rgba_t        gui_display_factory_label_color;
+	static float         gui_display_factory_label_alpha;
 	static scr_coord_val gui_display_factory_label_margin_left;
 	static scr_coord_val gui_display_factory_label_margin_top;
 	static scr_coord_val gui_display_factory_label_margin_right;

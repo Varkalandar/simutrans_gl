@@ -94,24 +94,28 @@ scr_size gui_theme_t::gui_indicator_size;
 scr_coord_val gui_theme_t::gui_waitingbar_width;
 
 rgba_t gui_theme_t::gui_display_text_label_color;
+float         gui_theme_t::gui_display_text_label_alpha;
 scr_coord_val gui_theme_t::gui_display_text_label_margin_left;
 scr_coord_val gui_theme_t::gui_display_text_label_margin_top;
 scr_coord_val gui_theme_t::gui_display_text_label_margin_right;
 scr_coord_val gui_theme_t::gui_display_text_label_margin_bottom;
 
 rgba_t gui_theme_t::gui_display_station_label_color;
+float         gui_theme_t::gui_display_station_label_alpha;
 scr_coord_val gui_theme_t::gui_display_station_label_margin_left;
 scr_coord_val gui_theme_t::gui_display_station_label_margin_top;
 scr_coord_val gui_theme_t::gui_display_station_label_margin_right;
 scr_coord_val gui_theme_t::gui_display_station_label_margin_bottom;
 
 rgba_t gui_theme_t::gui_display_marker_label_color;
+float         gui_theme_t::gui_display_marker_label_alpha;
 scr_coord_val gui_theme_t::gui_display_marker_label_margin_left;
 scr_coord_val gui_theme_t::gui_display_marker_label_margin_top;
 scr_coord_val gui_theme_t::gui_display_marker_label_margin_right;
 scr_coord_val gui_theme_t::gui_display_marker_label_margin_bottom;
 
 rgba_t gui_theme_t::gui_display_factory_label_color;
+float         gui_theme_t::gui_display_factory_label_alpha;
 scr_coord_val gui_theme_t::gui_display_factory_label_margin_left;
 scr_coord_val gui_theme_t::gui_display_factory_label_margin_top;
 scr_coord_val gui_theme_t::gui_display_factory_label_margin_right;
@@ -258,24 +262,28 @@ void gui_theme_t::init_gui_defaults()
 	gui_divider_size.h   = D_V_SPACE*2;
 
 	gui_display_text_label_color = RGBA_BLACK;
+    gui_display_text_label_alpha = 1.0f;
 	gui_display_text_label_margin_left = 6;
 	gui_display_text_label_margin_top = 4;
 	gui_display_text_label_margin_right = 6;
 	gui_display_text_label_margin_bottom = 4;
 
 	gui_display_station_label_color = RGBA_BLACK;
+    gui_display_station_label_alpha = 1.0f;
 	gui_display_station_label_margin_left = 6;
 	gui_display_station_label_margin_top = 4;
 	gui_display_station_label_margin_right = 6;
 	gui_display_station_label_margin_bottom = 4;
 
 	gui_display_marker_label_color = RGBA_BLACK;
+    gui_display_marker_label_alpha = 1.0f;
 	gui_display_marker_label_margin_left = 6;
 	gui_display_marker_label_margin_top = 4;
 	gui_display_marker_label_margin_right = 6;
 	gui_display_marker_label_margin_bottom = 4;
 
 	gui_display_factory_label_color = RGBA_BLACK;
+    gui_display_factory_label_alpha = 1.0f;
 	gui_display_factory_label_margin_left = 6;
 	gui_display_factory_label_margin_top = 4;
 	gui_display_factory_label_margin_right = 6;
@@ -605,6 +613,11 @@ bool gui_theme_t::themes_init(const char *file_name, bool init_fonts, bool init_
 	gui_theme_t::gui_display_marker_label_color  = decode_combined_color(contents, "gui_display_marker_label_color");
 	gui_theme_t::gui_display_factory_label_color = decode_combined_color(contents, "gui_display_factory_label_color");
 
+    gui_theme_t::gui_display_text_label_alpha = contents.get_float("gui_display_text_label_alpha", gui_display_text_label_alpha);
+    gui_theme_t::gui_display_station_label_alpha = contents.get_float("gui_display_station_label_alpha", gui_display_station_label_alpha);
+    gui_theme_t::gui_display_marker_label_alpha = contents.get_float("gui_display_marker_label_alpha", gui_display_marker_label_alpha);
+    gui_theme_t::gui_display_factory_label_alpha = contents.get_float("gui_display_text_label_alpha", gui_display_text_label_alpha);
+    
 	vector_tpl<int> display_text_label_margins = contents.get_ints("gui_display_text_label_margins");
 
 	if(display_text_label_margins.get_count() > 3) {

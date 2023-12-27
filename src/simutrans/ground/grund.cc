@@ -1632,7 +1632,9 @@ scr_size display_themed_label(sint16 xpos, sint16 ypos, const char* text,
                               sint32 margin_left, sint32 margin_right,
                               sint32 margin_top, sint32 margin_bottom,
                               const stretch_map_t &label,
-                              rgba_t color, const player_t *player)
+                              rgba_t text_color, 
+                              float label_alpha,
+                              const player_t *player)
 {
 	sint16 text_width = proportional_string_width(text);
 	sint16 label_height = LINESPACE + margin_top + margin_bottom;
@@ -1642,13 +1644,16 @@ scr_size display_themed_label(sint16 xpos, sint16 ypos, const char* text,
 						label_height);
 
 	const sint16 idx = player ? player->get_player_color1() : 0;
-	display_set_color(color_idx_to_rgb(idx + env_t::gui_player_color_bright));
+    
+    rgba_t color = color_idx_to_rgb(idx + env_t::gui_player_color_bright);
+    color.alpha = label_alpha;
+	display_set_color(color);
     
     int level = set_zoom_level(ZOOM_NEUTRAL);
 	display_img_stretch(label, area);
     set_zoom_level(level);
     
-    display_proportional_rgb(area.x+margin_left, area.y+margin_top, text, ALIGN_LEFT, color, true);
+    display_proportional_rgb(area.x+margin_left, area.y+margin_top, text, ALIGN_LEFT, text_color, true);
 
 	return scr_size(area.w, area.h);
 }
@@ -1667,6 +1672,7 @@ void display_themed_marker(sint16 xpos, sint16 ypos, const char* text,
 							 gui_theme_t::gui_display_marker_label_margin_bottom,
 							 gui_theme_t::display_marker_label,
 							 gui_theme_t::gui_display_marker_label_color,
+							 gui_theme_t::gui_display_marker_label_alpha,
 							 player);
 
 	// the extra bottom part
@@ -1695,6 +1701,7 @@ void display_themed_text_label(sint16 xpos, sint16 ypos, const char* text,
 									 gui_theme_t::gui_display_station_label_margin_bottom,
 									 gui_theme_t::display_station_label,
 									 gui_theme_t::gui_display_station_label_color,
+                                     gui_theme_t::gui_display_station_label_alpha,
 									 player);
 					break;
 			case 'F':       // Hajo: a factory
@@ -1705,6 +1712,7 @@ void display_themed_text_label(sint16 xpos, sint16 ypos, const char* text,
 									 gui_theme_t::gui_display_factory_label_margin_bottom,
 									 gui_theme_t::display_factory_label,
 									 gui_theme_t::gui_display_factory_label_color,
+                                     gui_theme_t::gui_display_factory_label_alpha,
 									 player);
 					break;
 			case 'M':       // Hajo: a marker
@@ -1712,13 +1720,14 @@ void display_themed_text_label(sint16 xpos, sint16 ypos, const char* text,
 				break;
 			default:
 				display_themed_label(xpos, ypos, text,
-										gui_theme_t::gui_display_text_label_margin_left,
-										gui_theme_t::gui_display_text_label_margin_right,
-										gui_theme_t::gui_display_text_label_margin_top,
-										gui_theme_t::gui_display_text_label_margin_bottom,
-										gui_theme_t::display_text_label,
-										gui_theme_t::gui_display_text_label_color,
-										player);
+									 gui_theme_t::gui_display_text_label_margin_left,
+									 gui_theme_t::gui_display_text_label_margin_right,
+									 gui_theme_t::gui_display_text_label_margin_top,
+									 gui_theme_t::gui_display_text_label_margin_bottom,
+									 gui_theme_t::display_text_label,
+									 gui_theme_t::gui_display_text_label_color,
+                                     gui_theme_t::gui_display_text_label_alpha,
+									 player);
 				break;
 		}
 	}

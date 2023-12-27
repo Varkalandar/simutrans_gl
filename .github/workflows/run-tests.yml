@@ -2,7 +2,9 @@
 # CI for running tests
 #
 
-on: [push]
+on:
+  workflow_dispatch:
+
 name: Automated Tests
 
 jobs:

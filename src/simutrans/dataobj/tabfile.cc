@@ -147,6 +147,23 @@ int tabfileobj_t::get_int(const char *key, int def)
 }
 
 
+float tabfileobj_t::get_float(const char *key, float def)
+{
+	const char *value = get_string(key,NULL);
+
+	if(value == NULL) {
+		return def;
+	}
+
+	// skip spaces/tabs
+	while(*value > 0 && *value <= 32) {
+		value ++;
+	}
+
+	return strtof(value, NULL);
+}
+
+
 int tabfileobj_t::get_int_clamped(const char *key, int def, int min_value, int max_value)
 {
 	const int int_value = get_int(key, def);

@@ -137,6 +137,7 @@ gui_display_text_label_margins = 6, 6, 5, 4
 # The color of the label text. Can be a number 1-7, to indicate player color
 # brightness or it cant be a RGB value like #000000.
 gui_display_text_label_color = #FFFFFF
+gui_display_text_label_alpha = 0.75;
 
 # station labels
 
@@ -145,6 +146,7 @@ gui_display_station_label_margins = 22, 6, 5, 4
 # The color of the label text. Can be a number 1-7, to indicate player color
 # brightness or it cant be a RGB value like #000000.
 gui_display_station_label_color = #FFFFFF
+gui_display_station_label_alpha = 0.75;
 
 # marker labels
 
@@ -153,6 +155,7 @@ gui_display_marker_label_margins = 12, 6, 12, 4
 # The color of the label text. Can be a number 1-7, to indicate player color
 # brightness or it cant be a RGB value like #000000.
 gui_display_marker_label_color = #FFFFFF
+gui_display_marker_label_alpha = 0.75;
 
 # factory labels
 
@@ -161,6 +164,7 @@ gui_display_factory_label_margins = 12, 7, 12, 7
 # The color of the label text. Can be a number 1-7, to indicate player color
 # brightness or it cant be a RGB value like #000000.
 gui_display_factory_label_color = #FFFFFF
+gui_display_factory_label_alpha = 0.75;
 
 # make the chat window transparent in network games
 gui_chat_window_network_transparency = 25

@@ -36,6 +36,6 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ./simuwin64-ogl-nightly.zip
-          asset_name: simuwin-x64-ogl_zoom.zip
-          tag: Nightly
+          asset_name: simuwin_gl-x64.zip
+          tag: Simutrans_GL_Nightly
           overwrite: true

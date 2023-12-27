@@ -1932,6 +1932,8 @@ void minimap_t::draw(scr_coord pos)
 			display_fillbox_wh_clip_rgb(veh_pos.x-(wd/2)+offset, veh_pos.y-(wd/2)+offset, wd, wd, color_idx_to_rgb(COL_MAGENTA), true);
 		}
 	}
+
+    display_set_color(RGBA_WHITE);
 }
 
 

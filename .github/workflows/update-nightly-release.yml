@@ -20,7 +20,7 @@ jobs:
     - name: set current head to nightly
       uses: richardsimko/update-tag@v1
       with:
-          tag_name: Nightly
+          tag_name: Simutrans_GL_Nightly
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -28,6 +28,6 @@ jobs:
       uses: meeDamian/github-release@2.0
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-        tag: Nightly
-        name: Nightly build r${{ env.revision }}
+        tag: Simutrans_GL_Nightly
+        name: Simutrans GL nightly build r${{ env.revision }}
         allow_override: true
