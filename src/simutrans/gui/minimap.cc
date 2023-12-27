@@ -669,7 +669,7 @@ void minimap_t::full_redraw()
             koord k;
             for(  k.y=0;  k.y < world->get_size().y;  k.y++  ) {
                 for(  k.x=0;  k.x < world->get_size().x;  k.x++  ) {
-                    rgb888_t color = calc_map_pixel(k);
+                    rgb888_t color = calc_map_pixel_color(k);
 
                     int x = (k.x - k.y);
                     int y = (k.x + k.y) / 2;
@@ -694,7 +694,7 @@ void minimap_t::full_redraw()
 
                     // dbg->message("minimap_t::full_redraw()", "k = %d %d", k.x, k.y);
 
-                    rgb888_t color = calc_map_pixel(k);
+                    rgb888_t color = calc_map_pixel_color(k);
                     int x = k.x - start_off.x;
                     int y = k.y - start_off.y;
 
@@ -715,6 +715,8 @@ void minimap_t::full_redraw()
  */
 void minimap_t::set_map_color_clip(sint16 x, sint16 y, rgb888_t color)
 {
+    // dbg->message("set_map_color_clip", "Setting %d %d", x, y);
+    
     uint8_t data[4];
     data[0] = color.r;
     data[1] = color.g;
@@ -759,11 +761,7 @@ void minimap_t::set_map_color(koord k_, const rgb888_t color)
 		}
 	}
 	else {
-		for(sint32 x = max(0, c.x); x < zoom_in + c.x && (uint32)x < map_texture->width; x++) {
-			for(sint32 y = max(0, c.y);  y < zoom_in + c.y && (uint32)y < map_texture->height; y++) {
-				set_map_color_clip(x, y, color);
-			}
-		}
+        set_map_color_clip(k_.x - cur_off.x/zoom_in, k_.y - cur_off.y/zoom_in, color);
 	}
 }
 
@@ -1067,7 +1065,7 @@ rgb888_t minimap_t::calc_map_pixel(const grund_t *gr)
 }
 
 
-rgb888_t minimap_t::calc_map_pixel(const koord k)
+rgb888_t minimap_t::calc_map_pixel_color(const koord k)
 {
 	// no pixels visible, so noting to calculate
 	if(!is_visible) {
@@ -1164,6 +1162,14 @@ rgb888_t minimap_t::calc_map_pixel(const koord k)
 	}
 
 	return rgb888_t(0, 0, 0);
+}
+
+
+rgb888_t minimap_t::calc_map_pixel(const koord k)
+{
+    rgb888_t color = calc_map_pixel_color(k);
+    set_map_color(k, color);
+    return color;
 }
 
 

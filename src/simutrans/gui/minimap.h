@@ -218,6 +218,8 @@ public:
 		new_size = size;
 	}
 
+	rgb888_t calc_map_pixel_color(const koord k);
+
 	/// update color with render mode (but few are ignored ... )
 	rgb888_t calc_map_pixel(const koord k);
 
