@@ -194,29 +194,42 @@ typedef struct {
 } map_button_t;
 
 
-map_button_t button_init[MAP_MAX_BUTTONS] = {
-	{ color_idx_to_rgb(COL_LIGHT_GREEN),  color_idx_to_rgb(COL_DARK_GREEN),  "Towns", "Overlay town names", minimap_t::MAP_TOWN },
-	{ color_idx_to_rgb(COL_LIGHT_GREEN),  color_idx_to_rgb(COL_DARK_GREEN),  "CityLimit", "Overlay city limits", minimap_t::MAP_CITYLIMIT },
-	{ RGBA_WHITE,        color_idx_to_rgb(COL_GREY5),       "Buildings", "Show level of city buildings", minimap_t::MAP_LEVEL },
-	{ color_idx_to_rgb(COL_LIGHT_GREEN),  color_idx_to_rgb(COL_DARK_GREEN),  "PaxDest", "Overlay passenger destinations when a town window is open", minimap_t::MAP_PAX_DEST },
-	{ color_idx_to_rgb(COL_LIGHT_GREEN),  color_idx_to_rgb(COL_DARK_GREEN),  "Tourists", "Highlite tourist attraction", minimap_t::MAP_TOURIST },
-	{ color_idx_to_rgb(COL_LIGHT_GREEN),  color_idx_to_rgb(COL_DARK_GREEN),  "Factories", "Highlite factories", minimap_t::MAP_FACTORIES },
-	{ color_idx_to_rgb(COL_LIGHT_YELLOW), color_idx_to_rgb(COL_DARK_YELLOW), "Passagiere", "Show passenger coverage/passenger network", minimap_t::MAP_PASSENGER },
-	{ color_idx_to_rgb(COL_LIGHT_YELLOW), color_idx_to_rgb(COL_DARK_YELLOW), "Post", "Show mail service coverage/mail network", minimap_t::MAP_MAIL },
-	{ color_idx_to_rgb(COL_LIGHT_YELLOW), color_idx_to_rgb(COL_DARK_YELLOW), "Fracht", "Show transported freight/freight network", minimap_t::MAP_FREIGHT },
-	{ color_idx_to_rgb(COL_LIGHT_PURPLE), color_idx_to_rgb(COL_DARK_PURPLE), "Status", "Show capacity and if halt is overcrowded", minimap_t::MAP_STATUS },
-	{ color_idx_to_rgb(COL_LIGHT_PURPLE), color_idx_to_rgb(COL_DARK_PURPLE), "hl_btn_sort_waiting", "Show how many people/much is waiting at halts", minimap_t::MAP_WAITING },
-	{ color_idx_to_rgb(COL_LIGHT_PURPLE), color_idx_to_rgb(COL_DARK_PURPLE), "Queueing", "Show the change of waiting at halts", minimap_t::MAP_WAITCHANGE },
-	{ color_idx_to_rgb(COL_LIGHT_PURPLE), color_idx_to_rgb(COL_DARK_PURPLE), "Service", "Show how many convoi reach a station", minimap_t::MAP_SERVICE },
-	{ color_idx_to_rgb(COL_LIGHT_PURPLE), color_idx_to_rgb(COL_DARK_PURPLE), "Transfers", "Sum of departure/arrivals at halts", minimap_t::MAP_TRANSFER },
-	{ color_idx_to_rgb(COL_LIGHT_PURPLE), color_idx_to_rgb(COL_DARK_PURPLE), "Origin", "Show initial passenger departure", minimap_t::MAP_ORIGIN },
-	{ RGBA_WHITE,        color_idx_to_rgb(COL_GREY5),       "Traffic", "Show usage of network", minimap_t::MAP_TRAFFIC },
-	{ RGBA_WHITE,        color_idx_to_rgb(COL_GREY5),       "Speedlimit", "Show speedlimit of ways", minimap_t::MAX_SPEEDLIMIT },
-	{ RGBA_WHITE,        color_idx_to_rgb(COL_GREY5),       "Tracks", "Highlight railroad tracks", minimap_t::MAP_TRACKS },
-	{ color_idx_to_rgb(COL_LIGHT_GREEN),  color_idx_to_rgb(COL_DARK_GREEN),  "Depots", "Highlite depots", minimap_t::MAP_DEPOT },
-	{ RGBA_WHITE,        color_idx_to_rgb(COL_GREY5),       "Powerlines", "Highlite electrical transmission lines", minimap_t::MAP_POWERLINES },
-	{ RGBA_WHITE,        color_idx_to_rgb(COL_GREY5),       "Forest", "Highlite forests", minimap_t::MAP_FOREST },
-	{ RGBA_WHITE,        color_idx_to_rgb(COL_GREY5),       "Ownership", "Show the owenership of infrastructure", minimap_t::MAP_OWNER }
+static const rgba_t RGB_LIGHT_GREEN (0.7, 1.0, 0.3, 1.0);
+static const rgba_t RGB_DARK_GREEN (0.35, 0.5, 0.15, 1.0);
+
+static const rgba_t RGB_LIGHT_YELLOW (1.0, 0.95, 0.4, 1.0);
+static const rgba_t RGB_DARK_YELLOW (0.5, 0.475, 0.2, 1.0);
+
+static const rgba_t RGB_LIGHT_PURPLE (0.7, 0.5, 1.0, 1.0);
+static const rgba_t RGB_DARK_PURPLE (0.35, 0.25, 0.5, 1.0);
+
+static const rgba_t RGB_LIGHT_BLUE (0.5, 0.8, 1.0, 1.0);
+static const rgba_t RGB_DARK_BLUE (0.25, 0.4, 0.5, 1.0);
+
+map_button_t button_init[MAP_MAX_BUTTONS] = 
+{
+	{RGB_LIGHT_GREEN,  RGB_DARK_GREEN,  "Towns", "Overlay town names", minimap_t::MAP_TOWN},
+	{RGB_LIGHT_GREEN,  RGB_DARK_GREEN,  "CityLimit", "Overlay city limits", minimap_t::MAP_CITYLIMIT},
+	{RGB_LIGHT_BLUE,   RGB_DARK_BLUE,   "Buildings", "Show level of city buildings", minimap_t::MAP_LEVEL},
+	{RGB_LIGHT_GREEN,  RGB_DARK_GREEN,  "PaxDest", "Overlay passenger destinations when a town window is open", minimap_t::MAP_PAX_DEST},
+	{RGB_LIGHT_GREEN,  RGB_DARK_GREEN,  "Tourists", "Highlite tourist attraction", minimap_t::MAP_TOURIST},
+	{RGB_LIGHT_GREEN,  RGB_DARK_GREEN,  "Factories", "Highlite factories", minimap_t::MAP_FACTORIES},
+	{RGB_LIGHT_YELLOW, RGB_DARK_YELLOW, "Passagiere", "Show passenger coverage/passenger network", minimap_t::MAP_PASSENGER},
+	{RGB_LIGHT_YELLOW, RGB_DARK_YELLOW, "Post", "Show mail service coverage/mail network", minimap_t::MAP_MAIL},
+	{RGB_LIGHT_YELLOW, RGB_DARK_YELLOW, "Fracht", "Show transported freight/freight network", minimap_t::MAP_FREIGHT},
+	{RGB_LIGHT_PURPLE, RGB_DARK_PURPLE, "Status", "Show capacity and if halt is overcrowded", minimap_t::MAP_STATUS},
+	{RGB_LIGHT_PURPLE, RGB_DARK_PURPLE, "hl_btn_sort_waiting", "Show how many people/much is waiting at halts", minimap_t::MAP_WAITING},
+	{RGB_LIGHT_PURPLE, RGB_DARK_PURPLE, "Queueing", "Show the change of waiting at halts", minimap_t::MAP_WAITCHANGE},
+	{RGB_LIGHT_PURPLE, RGB_DARK_PURPLE, "Service", "Show how many convoi reach a station", minimap_t::MAP_SERVICE},
+	{RGB_LIGHT_PURPLE, RGB_DARK_PURPLE, "Transfers", "Sum of departure/arrivals at halts", minimap_t::MAP_TRANSFER},
+	{RGB_LIGHT_PURPLE, RGB_DARK_PURPLE, "Origin", "Show initial passenger departure", minimap_t::MAP_ORIGIN},
+	{RGB_LIGHT_BLUE,   RGB_DARK_BLUE,   "Traffic", "Show usage of network", minimap_t::MAP_TRAFFIC},
+	{RGB_LIGHT_BLUE,   RGB_DARK_BLUE,   "Speedlimit", "Show speedlimit of ways", minimap_t::MAX_SPEEDLIMIT},
+	{RGB_LIGHT_BLUE,   RGB_DARK_BLUE,   "Tracks", "Highlight railroad tracks", minimap_t::MAP_TRACKS},
+	{RGB_LIGHT_GREEN,  RGB_DARK_GREEN,  "Depots", "Highlite depots", minimap_t::MAP_DEPOT},
+	{RGB_LIGHT_BLUE,   RGB_DARK_BLUE,   "Powerlines", "Highlite electrical transmission lines", minimap_t::MAP_POWERLINES},
+	{RGB_LIGHT_BLUE,   RGB_DARK_BLUE,   "Forest", "Highlite forests", minimap_t::MAP_FOREST},
+	{RGB_LIGHT_BLUE,   RGB_DARK_BLUE,   "Ownership", "Show the owenership of infrastructure", minimap_t::MAP_OWNER}
 };
 
 #define scrolly (*p_scrolly)
