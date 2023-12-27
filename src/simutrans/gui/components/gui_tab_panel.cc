@@ -257,8 +257,9 @@ void gui_tab_panel_t::draw(scr_coord parent_pos)
 			continue;
 		}
 		// set clipping
-		PUSH_CLIP_FIT(xpos, ypos, xx, required_size.h);
-		// only start drawing here ...
+		// PUSH_CLIP_FIT(xpos, ypos, xx, required_size.h);
+		
+        // only start drawing here ...
 		char const* const text = iter.title;
 
 		if (i != active_tab) {
@@ -275,8 +276,8 @@ void gui_tab_panel_t::draw(scr_coord parent_pos)
 			else {
 				scr_coord_val const y = ypos   - iter.img->get_pic()->y + required_size.h / 2 - iter.img->get_pic()->h / 2 + 1;
 				scr_coord_val const x = text_x - iter.img->get_pic()->x + iter.width / 2      - iter.img->get_pic()->w / 2;
-//					display_img_blend(iter.img->get_id(), x, y, TRANSPARENT50_FLAG, false, true);
-				display_base_img(iter.img->get_id(), x, y, 1, false, true);
+                display_set_color(rgba_t(0.5, 0.5, 0.5, 1));
+				display_base_img(iter.img->get_id(), x, y, 1);
 			}
 		}
 		else {
@@ -292,12 +293,14 @@ void gui_tab_panel_t::draw(scr_coord parent_pos)
 			else {
 				scr_coord_val const y = ypos   - iter.img->get_pic()->y + required_size.h / 2 - iter.img->get_pic()->h / 2 - 1;
 				scr_coord_val const x = text_x - iter.img->get_pic()->x + iter.width / 2      - iter.img->get_pic()->w / 2;
-				display_base_img(iter.img->get_id(), x, y, 1, false, true);
+                display_set_color(rgba_t(1, 1, 1, 1));
+				display_base_img(iter.img->get_id(), x, y, 1);
 			}
 		}
 		text_x += iter.width;
-		// reset clipping
-		POP_CLIP();
+		
+        // reset clipping
+		// POP_CLIP();
 
 		i++;
 	}
