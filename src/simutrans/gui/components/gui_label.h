@@ -123,7 +123,7 @@ class gui_label_buf_t : public gui_label_t
 	scr_coord_val min_width = 0;
 
 public:
-	gui_label_buf_t(rgba_t color=RGBA_BLACK, align_t align=left) : gui_label_t(NULL, color, align), buf_changed(true) { }
+	gui_label_buf_t(rgba_t color=gui_theme_t::gui_color_text, align_t align=left) : gui_label_t(NULL, color, align), buf_changed(true) { }
 
 	void init(rgba_t color_par, align_t align_par=left);
 
