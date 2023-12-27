@@ -30,4 +30,5 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         tag: Simutrans_GL_Nightly
         name: Simutrans GL nightly build r${{ env.revision }}
+        body: Simutrans GL is a variant of Simutrans which uses Open GL to display the map. It can display graphics in 32 bpp and use transparency effects. It's work in progress.
         allow_override: true
