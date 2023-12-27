@@ -130,6 +130,68 @@ Image[6]=> back.2.0
 Image[7]=> back.2.1
 Image[8]=> back.2.2
 --
+# text labels
+Obj=menu
+name=DisplayTextLabel
+Image[0]=> display_text_label.0.0
+Image[1]=> display_text_label.0.1
+Image[2]=> display_text_label.0.2
+Image[3]=> display_text_label.1.0
+Image[4]=> display_text_label.1.1
+Image[5]=> display_text_label.1.2
+Image[6]=> display_text_label.2.0
+Image[7]=> display_text_label.2.1
+Image[8]=> display_text_label.2.2
+--
+Obj=menu
+name=DisplayStationLabel
+Image[0]=> display_station_label.0.0
+Image[1]=> display_station_label.0.1
+Image[2]=> display_station_label.0.2
+Image[3]=> display_station_label.1.0
+Image[4]=> display_station_label.1.1
+Image[5]=> display_station_label.1.2
+Image[6]=> display_station_label.2.0
+Image[7]=> display_station_label.2.1
+Image[8]=> display_station_label.2.2
+--
+Obj=menu
+name=DisplayMarkerLabel
+Image[0]=> display_marker_label.0.0
+Image[1]=> display_marker_label.0.1
+Image[2]=> display_marker_label.0.2
+Image[3]=> display_marker_label.1.0
+Image[4]=> display_marker_label.1.1
+Image[5]=> display_marker_label.1.2
+Image[6]=> display_marker_label.2.0
+Image[7]=> display_marker_label.2.1
+Image[8]=> display_marker_label.2.2
+Image[9]=> display_marker_label.0.3
+--
+Obj=menu
+name=DisplayFactoryLabel
+Image[0]=> display_factory_label.0.0
+Image[1]=> display_factory_label.0.1
+Image[2]=> display_factory_label.0.2
+Image[3]=> display_factory_label.1.0
+Image[4]=> display_factory_label.1.1
+Image[5]=> display_factory_label.1.2
+Image[6]=> display_factory_label.2.0
+Image[7]=> display_factory_label.2.1
+Image[8]=> display_factory_label.2.2
+--
+Obj=menu
+name=TitleBar
+Image[0]=> title_bar.0.0
+Image[1]=> title_bar.0.1
+Image[2]=> title_bar.0.2
+Image[3]=> title_bar.1.0
+Image[4]=> title_bar.1.1
+Image[5]=> title_bar.1.2
+Image[6]=> title_bar.2.0
+Image[7]=> title_bar.2.1
+Image[8]=> title_bar.2.2
+--
 #################################################################
 #
 # The following control only have one (or three) images, and are not stretchable

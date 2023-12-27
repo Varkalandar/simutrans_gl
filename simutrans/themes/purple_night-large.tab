@@ -58,9 +58,9 @@ bottom_window_text_color = #B7B7B7
 
 default_window_title_color = #705726
 
-gui_color_text = #C0C0C0
+gui_color_text = #D0D0D0
 gui_color_text_highlight = #B09030
-gui_color_text_shadow = #000000
+gui_color_text_shadow = #00FF00
 gui_color_text_title = #338FCC
 gui_color_text_strong = #E46A0B
 
@@ -86,20 +86,20 @@ gui_color_list_background_selected_nofocus = #72B2DD
 gui_color_list_background_even = #424459
 gui_color_list_background_odd = #55576c
 
-gui_color_button_text = #B7B7B7
+gui_color_button_text = #C0C0C0
 gui_color_button_text_disabled = #8A8A8A
 gui_color_button_text_selected = #FAFAFA
 
 gui_color_colored_button_text = #201000
 gui_color_colored_button_text_selected = #CCCCCC
 
-gui_color_checkbox_text = #B7B7B7
+gui_color_checkbox_text = #C0C0C0
 gui_color_checkbox_text_disabled = #666666
 
 gui_color_ticker_background = #3c3c52
 gui_color_ticker_divider = #4d4d69
 
-gui_color_statusbar_text = #B7B7B7
+gui_color_statusbar_text = #C0C0C0
 gui_color_statusbar_background = #3c3c52
 gui_color_statusbar_divider = #4d4d69
 
@@ -119,7 +119,7 @@ gui_color_loadingbar_inner = #303246
 
 # Color player bright
 gui_player_color_dark = 3
-gui_player_color_bright = 1
+gui_player_color_bright = 7
 
 # text labels
 
@@ -127,7 +127,8 @@ gui_player_color_bright = 1
 gui_display_text_label_margins = 8, 6, 8, 5
 # The color of the label text. Can be a number 1-7, to indicate player color
 # brightness or it cant be a RGB value like #000000
-gui_display_text_label_color = #FFDD55
+gui_display_text_label_color = #FFFFFF
+gui_display_text_label_alpha = 0.75;
 
 # station labels
 
@@ -135,7 +136,8 @@ gui_display_text_label_color = #FFDD55
 gui_display_station_label_margins = 8, 5, 8, 5
 # The color of the label text. Can be a number 1-7, to indicate player color
 # brightness or it cant be a RGB value like #000000.
-gui_display_station_label_color = 7
+gui_display_station_label_color = #FFFFFF
+gui_display_station_label_alpha = 0.75;
 
 # marker labels
 
@@ -143,7 +145,9 @@ gui_display_station_label_color = 7
 gui_display_marker_label_margins = 12, 6, 12, 4
 # The color of the label text. Can be a number 1-7, to indicate player color
 # brightness or it cant be a RGB value like #000000.
-gui_display_marker_label_color = #000000
+gui_display_marker_label_color = #FFFFFF
+gui_display_marker_label_alpha = 0.75;
+
 
 # factory labels
 
@@ -151,7 +155,9 @@ gui_display_marker_label_color = #000000
 gui_display_factory_label_margins = 12, 7, 12, 7
 # The color of the label text. Can be a number 1-7, to indicate player color
 # brightness or it cant be a RGB value like #000000.
-gui_display_factory_label_color = #000000
+gui_display_factory_label_color = #FFFFFF
+gui_display_factory_label_alpha = 0.75;
+
 
 # make the chat window transparent in network games
 gui_chat_window_network_transparency = 25
