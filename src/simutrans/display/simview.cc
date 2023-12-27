@@ -123,10 +123,9 @@ void main_view_t::display(bool force_dirty)
 	if( grund_t::underground_mode ) {
 		display_fillbox_wh_rgb(clip_rr.x, clip_rr.y, clip_rr.w, clip_rr.h, RGBA_BLACK, force_dirty);
 	}
-	else if( welt->is_background_dirty()  &&  outside_visible  ) {
-		// we check if background will be visible, no need to clear screen if it's not.
-		display_background(clip_rr.x, clip_rr.y, clip_rr.w, clip_rr.h, force_dirty);
-		welt->unset_background_dirty();
+	else {
+        display_fillbox_wh_rgb(clip_rr.x, clip_rr.y, clip_rr.w, clip_rr.h, env_t::background_color_rgb, true);
+        welt->unset_background_dirty();
 		// reset
 		outside_visible = false;
 	}
