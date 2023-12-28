@@ -37,6 +37,7 @@ static slist_tpl<sys_event_t> events;
 static uint16 mouse_buttons = 0;
 static scr_coord_val mx = 0;
 static scr_coord_val my = 0;
+static unsigned int modifier_keys = SIM_MOD_NONE;
 
 
 static uint32_t convert_special_key(GLFWwindow* window, uint32_t key)
@@ -123,14 +124,14 @@ void sysgl_cursor_pos_callback(GLFWwindow *, double x, double y)
         event.mx = mx;
         event.my = my;
         event.mb = mouse_buttons;
-        event.key_mod = 0;
+        event.key_mod = modifier_keys;
 
         events.append(event);
     }
 }
 
 
-void sysgl_mouse_button_callback(GLFWwindow *, int button, int action, int mods)
+void sysgl_mouse_button_callback(GLFWwindow *, int button, int action, int /* mods */)
 {
     sys_event_t event;
     event.type = SIM_MOUSE_BUTTONS;
@@ -175,7 +176,7 @@ void sysgl_mouse_button_callback(GLFWwindow *, int button, int action, int mods)
     }
 
     event.mb = mouse_buttons;
-    event.key_mod = 0;
+    event.key_mod = modifier_keys;
 
     events.append(event);
 
@@ -183,7 +184,7 @@ void sysgl_mouse_button_callback(GLFWwindow *, int button, int action, int mods)
 }
 
 
-void sysgl_scroll_callback(GLFWwindow *, double xoffset, double yoffset)
+void sysgl_scroll_callback(GLFWwindow *, double /* xoffset */, double yoffset)
 {
     sys_event_t event;
 	event.type    = SIM_MOUSE_BUTTONS;
@@ -191,7 +192,7 @@ void sysgl_scroll_callback(GLFWwindow *, double xoffset, double yoffset)
     event.mx = mx;
     event.my = my;
     event.mb = mouse_buttons;
-	event.key_mod = 0;
+    event.key_mod = modifier_keys;
 
     events.append(event);
 
@@ -206,16 +207,37 @@ void sysgl_character_callback(GLFWwindow *, unsigned int codepoint)
     sys_event_t event;
 	event.type    = SIM_KEYBOARD;
 	event.code    = codepoint;	
-	event.key_mod = 0;
+    event.key_mod = modifier_keys;
 
     events.append(event);
 }
 
 
-void sysgl_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+static void trackModifierKeys(int key_def, int key_act, int action, int code)
 {
-    dbg->message("sysgl_key_callback()", "key=%d action=%d mods=%d", key, action, mods);
+    if(key_def == key_act)
+    {
+        if(action == GLFW_PRESS)
+        {
+            modifier_keys |= code;
+        }
+        else
+        {
+            modifier_keys &= ~code;
+        }
+    }
+}
 
+
+void sysgl_key_callback(GLFWwindow* window, int key, int /* scancode */, int action, int /* mods */)
+{
+    trackModifierKeys(GLFW_KEY_LEFT_SHIFT, key, action, SIM_MOD_SHIFT);
+    trackModifierKeys(GLFW_KEY_RIGHT_SHIFT, key, action, SIM_MOD_SHIFT);
+    trackModifierKeys(GLFW_KEY_LEFT_CONTROL, key, action, SIM_MOD_CTRL);
+    trackModifierKeys(GLFW_KEY_RIGHT_CONTROL, key, action, SIM_MOD_CTRL);
+
+    dbg->message("sysgl_key_callback()", "key=%d action=%d tracked mods=%d", key, action, modifier_keys);
+    
     if(action == GLFW_PRESS)
 	{
 		uint32_t code = convert_special_key(window, key);
@@ -223,8 +245,8 @@ void sysgl_key_callback(GLFWwindow* window, int key, int scancode, int action, i
 			sys_event_t event;
 			event.type    = SIM_KEYBOARD;
 			event.code    = code;	
-			event.key_mod = 0;
-			events.append(event);		
+			event.key_mod = modifier_keys;
+			events.append(event);            
 		}
 	}
 	
@@ -233,7 +255,7 @@ void sysgl_key_callback(GLFWwindow* window, int key, int scancode, int action, i
 		sys_event_t event;
 		event.type    = SIM_KEYBOARD;
 		event.code    = 0;	
-		event.key_mod = 0;
+		event.key_mod = modifier_keys;
 	    events.append(event);
 	}
 }
@@ -242,9 +264,8 @@ void sysgl_key_callback(GLFWwindow* window, int key, int scancode, int action, i
 /**
  * Quit immediately, save settings and game without visual feedback
  */
-void sysgl_window_close_callback(GLFWwindow* window)
+void sysgl_window_close_callback(GLFWwindow * /* window */)
 {
-
     // stop game processing
     intr_disable();
 
@@ -289,7 +310,7 @@ void sysgl_window_close_callback(GLFWwindow* window)
 }
 
 
-void sysgl_framebuffer_size_callback(GLFWwindow* window, int width, int height)
+void sysgl_framebuffer_size_callback(GLFWwindow * /* window */, int width, int height)
 {
     dbg->message("sysgl_framebuffer_size_callback()", "width=%d height=%d", width, height);
 
@@ -484,7 +505,7 @@ void dr_stop_textinput()
 }
 
 
-void dr_notify_input_pos(scr_coord pos)
+void dr_notify_input_pos(scr_coord /* pos */)
 {
 }
 
