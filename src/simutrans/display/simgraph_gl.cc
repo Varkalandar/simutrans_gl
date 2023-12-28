@@ -459,7 +459,7 @@ static void copy_into_texture_sheet(imd_t * image, uint8_t * tex, int scanline)
 static void convert_image(imd_t * image)
 {
 	// is this an oversized image?
-	if(image->base_w > base_tile_raster_width || image->base_h > base_tile_raster_width)
+	if(image->base_h >= base_tile_raster_width)
 	{
 		// yes, give it a texture of its own
 		image->texture = gl_texture_t::create_texture(image->base_w, image->base_h, image->base_data);
