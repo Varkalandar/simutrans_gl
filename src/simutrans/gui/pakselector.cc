@@ -129,7 +129,7 @@ void pak_set_panel_t::draw_logo(const scr_coord_val xpos, const scr_coord_val yp
     const int w = image0->w;
     const int h = image0->h + image0->y;
 
-	display_bevel_box(scr_rect(xpos-1, ypos-1, 258, 258), c, c, c, c, true);
+	display_bevel_box(scr_rect(xpos-1, ypos-1, 258, 258), c, c, c, c);
 
 	// Hajo: Logos are designed for black background
 	display_fillbox_wh_clip_rgb(xpos, ypos, 256, 256, RGBA_BLACK, true);

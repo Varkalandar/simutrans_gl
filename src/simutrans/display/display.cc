@@ -29,14 +29,13 @@ int default_font_linespace = 0;
 
 
 void display_bevel_box(scr_rect area,
-                       rgba_t top, rgba_t left, rgba_t right, rgba_t bottom,
-	                   bool dirty)
+                       rgba_t top, rgba_t left, rgba_t right, rgba_t bottom)
 {
-	display_vline_wh_clip_rgb(area.x, area.y, area.h, left, dirty);
-	display_vline_wh_clip_rgb(area.x+area.w-1, area.y+1, area.h-1, right, dirty);
+	display_vline_wh_clip_rgb(area.x, area.y, area.h, left, true);
+	display_vline_wh_clip_rgb(area.x+area.w-1, area.y+1, area.h-1, right, true);
 
-	display_fillbox_wh_clip_rgb(area.x, area.y, area.w, 1, top, dirty);
-	display_fillbox_wh_clip_rgb(area.x+1, area.y+area.h-1, area.w-1, 1, bottom, dirty);
+	display_fillbox_wh_clip_rgb(area.x, area.y, area.w, 1, top, true);
+	display_fillbox_wh_clip_rgb(area.x+1, area.y+area.h-1, area.w-1, 1, bottom, true);
 }
 
 

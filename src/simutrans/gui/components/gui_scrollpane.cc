@@ -325,8 +325,7 @@ void gui_scrollpane_t::draw(scr_coord pos)
 					  (gui_theme_t::gui_shadow_color),
 					  (gui_theme_t::gui_shadow_color),
 					  (gui_theme_t::gui_highlight_color),
-					  (gui_theme_t::gui_highlight_color),
-		              false);
+					  (gui_theme_t::gui_highlight_color));
 	}
 
 

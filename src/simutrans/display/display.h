@@ -32,11 +32,9 @@ enum font_size_t
  * @param left Left line color
  * @param right Right line color
  * @param bottom Bottom line color
- * @param dirty If true, refresh screen area
  */
 void display_bevel_box(scr_rect area,
-                       rgba_t top, rgba_t left, rgba_t right, rgba_t bottom,
-	                   bool dirty);
+                       rgba_t top, rgba_t left, rgba_t right, rgba_t bottom);
 
 
 int display_text_proportional_len_clip_rgb(scr_coord_val x, scr_coord_val y, const char* txt, control_alignment_t flags, rgba_t color, bool dirty, sint32 len, sint32 spacing, font_size_t size);
