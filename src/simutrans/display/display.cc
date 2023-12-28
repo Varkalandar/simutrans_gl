@@ -266,9 +266,11 @@ int display_multiline_text_rgb(scr_coord_val x, scr_coord_val y, const char *buf
 void display_outline_proportional_rgb(scr_coord_val xpos, scr_coord_val ypos, rgba_t text_color, rgba_t shadow_color, const char *text, int dirty, sint32 len)
 {
 	const int flags = ALIGN_LEFT | DT_CLIP;
-	display_text_proportional_len_clip_rgb(xpos - 1, ypos    , text, flags, shadow_color, dirty, len, 0, FS_NORMAL);
-	display_text_proportional_len_clip_rgb(xpos + 1, ypos + 2, text, flags, shadow_color, dirty, len, 0, FS_NORMAL);
-	display_text_proportional_len_clip_rgb(xpos, ypos + 1, text, flags, text_color, dirty, len, 0, FS_NORMAL);
+	display_text_proportional_len_clip_rgb(xpos - 1, ypos, text, flags, shadow_color, dirty, len, 0, FS_NORMAL);
+	display_text_proportional_len_clip_rgb(xpos + 1, ypos, text, flags, shadow_color, dirty, len, 0, FS_NORMAL);
+	display_text_proportional_len_clip_rgb(xpos, ypos - 1, text, flags, shadow_color, dirty, len, 0, FS_NORMAL);
+	display_text_proportional_len_clip_rgb(xpos, ypos + 1, text, flags, shadow_color, dirty, len, 0, FS_NORMAL);
+	display_text_proportional_len_clip_rgb(xpos, ypos, text, flags, text_color, dirty, len, 0, FS_NORMAL);
 }
 
 

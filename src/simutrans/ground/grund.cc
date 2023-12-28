@@ -1763,14 +1763,12 @@ void display_text_label(sint16 xpos, sint16 ypos, const char* text, const player
 			break;
 		}
 		case 2: {
-		/* todo
 			const rgba_t dark   = player ? color_idx_to_rgb(player->get_player_color1()+2) : SYSCOL_TEXT_HIGHLIGHT;
 			const rgba_t normal = player ? color_idx_to_rgb(player->get_player_color1()+4) : SYSCOL_TEXT_HIGHLIGHT;
 			const rgba_t bright = player ? color_idx_to_rgb(player->get_player_color1()+6) : SYSCOL_TEXT_HIGHLIGHT;
-			display_outline_proportional_rgb( xpos + LINESPACE + D_H_SPACE, ypos,   color_idx_to_rgb(COL_YELLOW), RGBA_BLACK, text, dirty );
-			display_ddd_box_clip_rgb(         xpos,                         ypos,   LINESPACE,   LINESPACE,   dark, PLAYER_FLAG|bright );
-			display_fillbox_wh_rgb(           xpos+1,                       ypos+1, LINESPACE-2, LINESPACE-2, normal, dirty );
-			*/
+			display_outline_proportional_rgb(xpos + LINESPACE + D_H_SPACE, ypos, color_idx_to_rgb(COL_YELLOW), RGBA_BLACK, text, true);
+			display_ddd_box_clip_rgb(xpos, ypos, LINESPACE, LINESPACE, dark, bright);
+			display_fillbox_wh_rgb(xpos+1, ypos+1, LINESPACE-2, LINESPACE-2, normal, true);
 			break;
 		}
 		case 3:
