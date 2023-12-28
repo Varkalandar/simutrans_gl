@@ -470,7 +470,7 @@ void planquadrat_t::display_obj(const sint16 xpos, const sint16 ypos, const sint
 		gr0->display_boden( xpos, ypos, raster_tile_width  CLIP_NUM_PAR );
 	}
 
-	if(  env_t::simple_drawing  ) {
+	if(  env_t::simple_drawing || true ) {
 		// ignore trees going though bridges
 		gr0->display_obj_all_quick_and_dirty( xpos, ypos, raster_tile_width, is_global  CLIP_NUM_PAR );
 	}
@@ -508,6 +508,7 @@ void planquadrat_t::display_obj(const sint16 xpos, const sint16 ypos, const sint
 			gr0->display_obj_all( xpos, ypos, raster_tile_width, is_global  CLIP_NUM_PAR );
 		}
 	}
+    
 	// above ground drawing height
 	for( ; i < ground_size; i++ ) {
 		const grund_t* gr = data.some[i];
@@ -533,7 +534,8 @@ void planquadrat_t::display_obj(const sint16 xpos, const sint16 ypos, const sint
 		if(  htop >= hmin  ) {
 			const sint16 yypos = ypos - tile_raster_scale_y( (h - h0) * TILE_HEIGHT_STEP, raster_tile_width );
 			gr->display_boden( xpos, yypos, raster_tile_width  CLIP_NUM_PAR );
-			gr->display_obj_all( xpos, yypos, raster_tile_width, is_global  CLIP_NUM_PAR );
+			// gr->display_obj_all( xpos, yypos, raster_tile_width, is_global  CLIP_NUM_PAR );
+    		gr->display_obj_all_quick_and_dirty(xpos, yypos, raster_tile_width, is_global  CLIP_NUM_PAR);
 		}
 	}
 }
