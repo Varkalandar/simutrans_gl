@@ -67,6 +67,7 @@ rgba_t gui_theme_t::gui_color_chat_window_network_transparency;
 rgba_t gui_theme_t::gui_color_empty;
 rgba_t gui_theme_t::gui_color_image_transparency;
 rgba_t gui_theme_t::gui_color_object_highlight;
+rgba_t gui_theme_t::gui_color_selected_tool;
 
 /**
  * Max Kielland
@@ -227,7 +228,8 @@ void gui_theme_t::init_gui_defaults()
 	gui_color_image_transparency           = color_idx_to_rgb(COL_BLACK);
 
 	gui_color_object_highlight            = color_idx_to_rgb(COL_RED);
-
+    gui_color_selected_tool = rgba_t(0.8, 1.0, 0, 1.0);
+            
 	env_t::gui_player_color_bright = 4;
 	env_t::gui_player_color_dark   = 1;
 

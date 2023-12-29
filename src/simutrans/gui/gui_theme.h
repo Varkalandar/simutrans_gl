@@ -256,6 +256,7 @@ public:
 	static rgba_t gui_color_chat_window_network_transparency; //@< Color if chat window is transparent in network mode
 	static rgba_t gui_color_image_transparency;               //@< Transparency color for some icons/images
 	static rgba_t gui_color_object_highlight;                 //@< Color (Red) to mark objects on the map
+	static rgba_t gui_color_selected_tool;                 // color tint for selected tool icons
 	/// @}
 
 	/// @name GUI element sizes used by gui components

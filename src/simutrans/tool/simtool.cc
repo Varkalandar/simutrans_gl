@@ -5015,10 +5015,11 @@ void tool_build_roadsign_t::get_values(player_t *player, uint8 &spacing, bool &r
 }
 
 
-void tool_build_roadsign_t::draw_after(scr_coord k, bool dirty) const
+void tool_build_roadsign_t::draw_after(scr_coord k, bool /* dirty */) const
 {
 	if(  icon!=IMG_EMPTY  &&  is_selected()  ) {
-		display_img_blend(icon, k.x, k.y, color_idx_to_rgb(COL_BLACK), false, dirty);
+        display_set_color(gui_theme_t::gui_color_selected_tool);
+		display_base_img(icon, k.x, k.y, welt->get_active_player_nr(), env_t::iconsize.w, env_t::iconsize.w);
 		char level_str[16];
 		sprintf(level_str, "%i", signal[welt->get_active_player_nr()].spacing);
 		display_proportional_rgb( k.x+4, k.y+4, level_str, ALIGN_LEFT, color_idx_to_rgb(COL_YELLOW), true );

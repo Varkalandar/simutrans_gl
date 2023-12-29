@@ -996,8 +996,7 @@ void tool_t::draw_after(scr_coord pos, bool dirty) const
     player_t * player = welt->get_active_player();
 	image_id id = get_icon(player);
 	if(id != IMG_EMPTY && is_selected()) {
-        // light green overlay as "activated"?
-        display_set_color(rgba_t(0.8, 1.0, 0, 1.0));
+        display_set_color(gui_theme_t::gui_color_selected_tool);
 		display_base_img(id, pos.x, pos.y, player->get_player_nr(), env_t::iconsize.w, env_t::iconsize.w);
 	}
 }
