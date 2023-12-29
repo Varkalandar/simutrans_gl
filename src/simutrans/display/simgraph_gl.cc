@@ -218,15 +218,15 @@ rgba_t color_idx_to_rgba(int idx, int transparent_percent)
 
 rgb888_t get_color_rgb(uint8 idx)
 {
-    if(idx >= 0 && idx < SPECIAL_COLOR_COUNT) {
+    if(idx < SPECIAL_COLOR_COUNT) {
         return special_pal[idx];
     }
-    else if(idx >= SPECIAL_COLOR_COUNT && idx < SPECIAL_COLOR_COUNT + LIGHT_COUNT) {
+    else if(idx < SPECIAL_COLOR_COUNT + LIGHT_COUNT) {
         return display_day_lights[idx - SPECIAL_COLOR_COUNT];
     }
-    else {
-        return {0, 0, 0};
-    }
+
+	// Return black for anything else
+	return rgb888_t {0,0,0};
 }
 
 
