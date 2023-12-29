@@ -117,7 +117,8 @@ enum {
 	LB_CNV_SPEED,
 	// vehicle properties
 	LB_VEH_NAME,
-	LB_VEH_COST,
+	LB_VEH_COST1,
+	LB_VEH_COST2,
 	LB_VEH_WEIGHT,
 	LB_VEH_CAPACITY,
 	LB_VEH_DATE,
@@ -352,15 +353,16 @@ void depot_frame_t::init(depot_t *dep)
 
 	cont_vehicle_labels->add_component(labels[LB_VEH_NAME],2);
 	cont_vehicle_labels->add_component(new gui_spacer_t(scr_coord(0,0), scr_size(200, 4)),2);
-	cont_vehicle_labels->add_component(labels[LB_VEH_COST]);
+	cont_vehicle_labels->add_component(labels[LB_VEH_COST1]);
 	cont_vehicle_labels->add_component(labels[LB_VEH_WEIGHT]);
-	cont_vehicle_labels->add_component(labels[LB_VEH_CAPACITY]);
+	cont_vehicle_labels->add_component(labels[LB_VEH_COST2]);
 	cont_vehicle_labels->add_component(labels[LB_VEH_LOADINGTIME]);
-	cont_vehicle_labels->add_component(labels[LB_VEH_SPEED]);
+	cont_vehicle_labels->add_component(labels[LB_VEH_CAPACITY]);
 	cont_vehicle_labels->add_component(labels[LB_VEH_DATE]);
-	cont_vehicle_labels->add_component(labels[LB_VEH_POWER]);
+	cont_vehicle_labels->add_component(labels[LB_VEH_SPEED]);
 	cont_vehicle_labels->add_component(labels[LB_VEH_VALUE]);
-	cont_vehicle_labels->add_component(new gui_spacer_t(scr_coord(0,0), scr_size(200, 2)),2);
+	cont_vehicle_labels->add_component(labels[LB_VEH_POWER]);
+	// cont_vehicle_labels->add_component(new gui_spacer_t(scr_coord(0,0), scr_size(200, 2)),2);
 	cont_vehicle_labels->add_component(labels[LB_VEH_AUTHOR]);
 
 	/*
@@ -1499,15 +1501,19 @@ void depot_frame_t::update_vehicle_info_text(scr_coord pos)
 		if(  sint64 fix_cost = welt->scale_with_month_length( veh_type->get_fixed_cost() )  ) {
 			char tmp[128];
 			money_to_string( tmp, veh_type->get_price() / 100.0, false );
-			labels[LB_VEH_COST]->buf().printf("%s%s (%.2f$/km %.2f$/%s)",
-				translator::translate("Vehicle costs:"), tmp, veh_type->get_running_cost()/100.0,
+			labels[LB_VEH_COST1]->buf().printf("%s\t%s",
+				translator::translate("Vehicle price:"), tmp);
+			labels[LB_VEH_COST2]->buf().printf("%s\t%.2f$/km %.2f$/%s",
+				translator::translate("Running costs:"), veh_type->get_running_cost()/100.0,
 				fix_cost/100.0, translator::translate("per month") );
 		}
 		else {
 			char tmp[128];
 			money_to_string(  tmp, veh_type->get_price() / 100.0, false );
-			labels[LB_VEH_COST]->buf().printf("%s%s (%.2f$/km)",
-				translator::translate("Vehicle costs:"), tmp, veh_type->get_running_cost()/100.0 );
+			labels[LB_VEH_COST1]->buf().printf("%s\t%s",
+				translator::translate("Vehicle price:"), tmp);
+			labels[LB_VEH_COST2]->buf().printf("%s\t%.2f$/km",
+				translator::translate("Running costs:"), veh_type->get_running_cost()/100.0 );
 		}
 
 		if(  veh_type->get_capacity() > 0  ) {
