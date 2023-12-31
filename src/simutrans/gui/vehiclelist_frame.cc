@@ -115,7 +115,7 @@ void vehiclelist_stats_t::draw( scr_coord offset )
 	scr_coord_val x, y, w, h;
 	const image_id image = veh->get_image_id( ribi_t::dir_south, veh->get_freight_type() );
 	display_get_base_image_offset(image, &x, &y, &w, &h );
-	display_base_img(image, offset.x - x, offset.y - y, world()->get_active_player_nr(), false, true);
+	display_base_img(image, offset.x - x, offset.y - y, world()->get_active_player_nr());
 
 	// first name
 	offset.x += img_width;

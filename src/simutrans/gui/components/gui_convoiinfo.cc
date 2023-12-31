@@ -49,7 +49,8 @@ public:
 			const image_id image = cnv->get_vehicle(i)->get_loaded_image();
 			display_get_base_image_offset(image, &x, &y, &w, &h );
 			if (display_images) {
-				display_base_img(image, p.x + s.w - x, p.y - y - h/2, cnv->get_owner()->get_player_nr(), false, true);
+                display_set_color(RGBA_WHITE);
+				display_base_img(image, p.x + s.w - x, p.y - y - h/2, cnv->get_owner()->get_player_nr());
 			}
 			s.w += (w*2)/3;
 			s.h = max(s.h, h);
