@@ -79,7 +79,7 @@ gui_convoiinfo_t::gui_convoiinfo_t(convoihandle_t cnv)
 
 	add_table(1,4);
 	{
-		label_name.fixed_min_width = 140;
+		label_name.fixed_min_width = 180;
 		add_component(&label_name);
 
 		add_table(2,1);
@@ -103,7 +103,7 @@ gui_convoiinfo_t::gui_convoiinfo_t(convoihandle_t cnv)
 
 	add_component( &label_line );
 
-	container_next_halt = add_table(2,1);
+	container_next_halt = add_table(2, 1, 2);  // columns, rows, span
 	{
 		pos_next_halt.init( button_t::posbutton_automatic, "" );
 		add_component( &pos_next_halt );

@@ -489,13 +489,13 @@ void gui_aligned_container_t::set_spacing_from_theme()
 }
 
 
-gui_aligned_container_t* gui_aligned_container_t::add_table(uint16 columns_, uint16 rows_)
+gui_aligned_container_t* gui_aligned_container_t::add_table(uint16 columns_, uint16 rows_, uint16 span)
 {
 	if (child) {
-		return child->add_table(columns_, rows_);
+		return child->add_table(columns_, rows_, span);
 	}
 	else {
-		child = new_component<gui_aligned_container_t>(columns_, rows_);
+		child = new_component_span<gui_aligned_container_t>(columns_, rows_, span);
 		child->set_margin(scr_size(0,0), scr_size(0,0));
 		return child;
 	}
