@@ -148,7 +148,7 @@ void display_tile_from_sheet(const gl_texture_t * gltex, int x, int y, int w, in
 void display_img_aligned(const image_id n, scr_rect area, int align, sint8 player_nr_raw, const bool dirty);
 
 // display image with day and night change
-void display_img_aux(const image_id n, scr_coord_val xp, scr_coord_val yp, const signed char player_nr, const bool daynight, const bool dirty  CLIP_NUM_DEF);
+// void display_img_aux(const image_id n, scr_coord_val xp, scr_coord_val yp, const signed char player_nr, const bool daynight, const bool dirty  CLIP_NUM_DEF);
 
 /**
  * draws the images with alpha, either blended or as outline
@@ -165,6 +165,8 @@ void display_rezoomed_img_alpha(const image_id n, const image_id alpha_n, const 
 
 // display zoomed image
 void display_color_img(const image_id n, scr_coord_val xp, scr_coord_val yp, const signed char player_nr, scr_coord_val w=0, scr_coord_val h=0);
+
+void display_light_img(const image_id n, scr_coord_val xp, scr_coord_val yp, scr_coord_val w, scr_coord_val h);
 
 // display unzoomed image
 void display_base_img(const image_id n, scr_coord_val xp, scr_coord_val yp, const signed char player_nr, scr_coord_val w, scr_coord_val h);

@@ -436,6 +436,35 @@ void planquadrat_t::angehoben()
 	}
 }
 
+static void display_street_lights(const grund_t * const gr, scr_coord_val xpos, scr_coord_val ypos)
+{
+    weg_t * way = gr->get_weg_nr(0);
+    if(way)
+    {
+        const way_desc_t * wd = way->get_desc();                
+        
+        if(strcmp("new_city_road", wd->get_name()) == 0)
+        {
+            rgba_t day_night_color = display_get_day_night_color();
+            if(day_night_color.red < 0.6)
+            {
+                // dark enough to turn the light on
+                // dbg->message("display_street_lights()", "wd=%s id=%d", wd->get_name(), id);
+
+                image_id id = wd->get_image_id((ribi_t::ribi) 16, 0);
+
+
+                int w = 68;
+                int h = 34;
+
+                display_set_color(rgba_t(0.2, 0.2, 0.2, 1));
+                display_light_img(id, xpos - (w - 72)/2, ypos + 54 - h/2, w, h);
+                display_set_color(day_night_color);
+            }
+        }        
+    }    
+}
+
 
 void planquadrat_t::display_obj(const sint16 xpos, const sint16 ypos, const sint16 raster_tile_width, bool is_global, const sint8 hmin, const sint8 hmax  CLIP_NUM_DEF) const
 {
@@ -473,6 +502,9 @@ void planquadrat_t::display_obj(const sint16 xpos, const sint16 ypos, const sint
 	if(  env_t::simple_drawing || true ) {
 		// ignore trees going though bridges
 		gr0->display_obj_all_quick_and_dirty( xpos, ypos, raster_tile_width, is_global  CLIP_NUM_PAR );
+        
+        // Hajo: testing street lights
+        // display_street_lights(gr0, xpos, ypos);        
 	}
 	else {
 		// clip everything at the next tile above
@@ -535,7 +567,7 @@ void planquadrat_t::display_obj(const sint16 xpos, const sint16 ypos, const sint
 			const sint16 yypos = ypos - tile_raster_scale_y( (h - h0) * TILE_HEIGHT_STEP, raster_tile_width );
 			gr->display_boden( xpos, yypos, raster_tile_width  CLIP_NUM_PAR );
 			// gr->display_obj_all( xpos, yypos, raster_tile_width, is_global  CLIP_NUM_PAR );
-    		gr->display_obj_all_quick_and_dirty(xpos, yypos, raster_tile_width, is_global  CLIP_NUM_PAR);
+    		gr->display_obj_all_quick_and_dirty(xpos, yypos, raster_tile_width, is_global  CLIP_NUM_PAR);            
 		}
 	}
 }

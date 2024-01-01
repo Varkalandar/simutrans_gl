@@ -343,7 +343,7 @@ static rgba_t day_night_color (1, 1, 1, 1);
 void display_day_night_shift(int shift)
 {
     static rgba_t color_day = RGBA_WHITE;
-    static rgba_t color_night (0.4, 0.5, 0.7, 1);
+    static rgba_t color_night (0.3, 0.4, 0.6, 1);
 
     day_night_color = display_blend_colors(color_day, color_night, shift / 6.0f);
 }
@@ -866,6 +866,25 @@ static void display_img(const image_id id, scr_coord_val x, scr_coord_val y, con
         display_tile_from_sheet(imd.texture, x, y, w, h,
                                 imd.sheet_x, imd.sheet_y, imd.base_w, imd.base_h);
     }
+}
+
+
+void display_light_img(const image_id id, scr_coord_val x, scr_coord_val y, scr_coord_val w, scr_coord_val h)
+{
+	if(id < anz_images)
+	{
+		imd_t & imd = images[id];
+
+		x += imd.base_x;
+		y += imd.base_y;
+
+        glBlendFunc(GL_SRC_ALPHA, GL_DST_ALPHA);
+
+		display_tile_from_sheet(imd.texture, x, y, w, h,
+								imd.sheet_x, imd.sheet_y, imd.base_w, imd.base_h);
+
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	}
 }
 
 
