@@ -1678,7 +1678,8 @@ void display_themed_marker(sint16 xpos, sint16 ypos, const char* text,
 	// the extra bottom part
 	const sint8 pnr = player ? player->get_player_nr() : 1;
 	const image_id iid = skinverwaltung_t::display_marker_label->get_image_id(9);
-	display_set_color(RGBA_WHITE);
+	// display_set_color(RGBA_WHITE);
+    display_set_color(display_get_day_night_color());
 	display_img_aligned(iid, scr_rect(xpos, ypos + size.h + yoff, size.w, 16), ALIGN_CENTER_H, pnr, true);
 }
 

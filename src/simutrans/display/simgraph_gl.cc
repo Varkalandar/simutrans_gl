@@ -337,8 +337,21 @@ void display_set_actual_width(scr_coord_val)
 }
 
 
-void display_day_night_shift(int)
+static rgba_t day_night_color (1, 1, 1, 1);
+
+
+void display_day_night_shift(int shift)
 {
+    static rgba_t color_day = RGBA_WHITE;
+    static rgba_t color_night (0.4, 0.5, 0.7, 1);
+
+    day_night_color = display_blend_colors(color_day, color_night, shift / 6.0f);
+}
+
+
+rgba_t display_get_day_night_color()
+{
+    return day_night_color;
 }
 
 

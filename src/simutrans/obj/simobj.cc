@@ -206,7 +206,8 @@ void obj_t::display(int xpos, int ypos  CLIP_NUM_DEF) const
 		xpos += tile_raster_scale_x(get_xoff(), raster_width);
 		ypos += tile_raster_scale_y(get_yoff(), raster_width);
 
-        display_set_color(RGBA_WHITE);
+        // display_set_color(RGBA_WHITE);
+        // display_set_color(display_get_day_night_color());
         
 		const int start_ypos = ypos;
 		for(  int j=0;  image!=IMG_EMPTY;  ) {

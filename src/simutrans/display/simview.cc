@@ -45,6 +45,38 @@ static const sint8 hours2night[] =
 };
 #endif
 
+
+static void calculate_day_night_shift_color(karte_t * welt)
+{
+	// change to night mode?
+	// images will be recalculated only, when there has been a change, so we set always
+	if(grund_t::underground_mode == grund_t::ugm_all) {
+		display_day_night_shift(0);
+	}
+	else if(!env_t::night_shift) {
+		display_day_night_shift(env_t::daynight_level);
+	}
+	else {
+		// calculate also days if desired
+		uint32 month = welt->get_last_month();
+		const uint32 ticks_this_month = welt->get_ticks() % welt->ticks_per_world_month;
+		uint32 hours2;
+		if (env_t::show_month > env_t::DATE_FMT_MONTH) {
+			static sint32 days_per_month[12]={31,28,31,30,31,30,31,31,30,31,30,31};
+			hours2 = (((sint64)ticks_this_month*days_per_month[month]) >> (welt->ticks_per_world_month_shift-17));
+			hours2 = ((hours2*3) / 8192) % 48;
+		}
+		else {
+			hours2 = ( (ticks_this_month * 3) >> (welt->ticks_per_world_month_shift-4) )%48;
+		}
+
+        const int dns = hours2night[hours2] + env_t::daynight_level;
+        // dbg->message("calculate_day_night_shift_color()", "day night=%d", dns);
+		display_day_night_shift(dns);
+	}
+}
+
+
 void main_view_t::display(bool force_dirty)
 {
 	const uint32 rs = get_random_seed();
@@ -52,7 +84,8 @@ void main_view_t::display(bool force_dirty)
 #if COLOUR_DEPTH != 0
 	DBG_DEBUG4("main_view_t::display", "starting ...");
 
-	display_set_color(RGBA_WHITE);
+	// display_set_color(RGBA_WHITE);
+    display_set_color(display_get_day_night_color());
 
 	const sint16 disp_width = display_get_width();
 	const sint16 disp_real_height = display_get_height();
@@ -94,29 +127,7 @@ void main_view_t::display(bool force_dirty)
 	const int const_x_off = viewport->get_x_off();
 	const int const_y_off = viewport->get_y_off();
 
-	// change to night mode?
-	// images will be recalculated only, when there has been a change, so we set always
-	if(grund_t::underground_mode == grund_t::ugm_all) {
-		display_day_night_shift(0);
-	}
-	else if(!env_t::night_shift) {
-		display_day_night_shift(env_t::daynight_level);
-	}
-	else {
-		// calculate also days if desired
-		uint32 month = welt->get_last_month();
-		const uint32 ticks_this_month = welt->get_ticks() % welt->ticks_per_world_month;
-		uint32 hours2;
-		if (env_t::show_month > env_t::DATE_FMT_MONTH) {
-			static sint32 days_per_month[12]={31,28,31,30,31,30,31,31,30,31,30,31};
-			hours2 = (((sint64)ticks_this_month*days_per_month[month]) >> (welt->ticks_per_world_month_shift-17));
-			hours2 = ((hours2*3) / 8192) % 48;
-		}
-		else {
-			hours2 = ( (ticks_this_month * 3) >> (welt->ticks_per_world_month_shift-4) )%48;
-		}
-		display_day_night_shift(hours2night[hours2]+env_t::daynight_level);
-	}
+    calculate_day_night_shift_color(welt);
 
 	// not very elegant, but works:
 	// fill everything with black for Underground mode ...
@@ -156,7 +167,8 @@ void main_view_t::display(bool force_dirty)
 	}
 
     // slow serial way of display
-    display_set_color(RGBA_WHITE);
+    display_set_color(display_get_day_night_color());
+    // display_set_color(rgba_t(0, 0, 1, 1));
 	display_region(koord(clip_rr.x, clip_rr.y), koord(clip_rr.w, clip_rr.h), y_min, dpy_height + 4 * 4, false );
 
 	// and finally overlays (station coverage and signs)
@@ -216,7 +228,6 @@ void main_view_t::display(bool force_dirty)
 				}
 			}
 		}
-        
           
         display_set_color(RGBA_WHITE);
 		zeiger->display( pointer_pos.x , pointer_pos.y  CLIP_NUM_DEFAULT);
