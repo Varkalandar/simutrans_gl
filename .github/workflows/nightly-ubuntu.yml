@@ -1,7 +1,9 @@
 name: Nightly build Ubuntu
 
-on: [push]
-
+on:
+  workflow_dispatch:
+#  push:
+    
 jobs:
   build:
 

@@ -3,8 +3,10 @@
 
 name: Nightly Built Windows32 GDI
 
-on: [push]
-
+on:
+  workflow_dispatch:
+#  push:
+    
 jobs:
   winGDI-32:
    runs-on: windows-latest

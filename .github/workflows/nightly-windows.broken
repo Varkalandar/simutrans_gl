@@ -1,6 +1,8 @@
 name: Nightly Build Windows
 
-on: [push]
+on:
+  workflow_dispatch:
+#  push:
 
 jobs:
   wingdi32:
