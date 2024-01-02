@@ -72,7 +72,10 @@ static void calculate_day_night_shift_color(karte_t * welt)
 
         const int dns = hours2night[hours2] + env_t::daynight_level;
         // dbg->message("calculate_day_night_shift_color()", "day night=%d", dns);
-		display_day_night_shift(dns);
+		
+        // dns value range is (0 .. 4) + daynight_level
+        // function takes 0 for day, 1.0 for darkest night       
+        display_day_night_shift(dns/(4.0f + env_t::daynight_level));
 	}
 }
 

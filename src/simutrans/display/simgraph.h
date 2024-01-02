@@ -129,7 +129,7 @@ scr_coord_val display_get_height();
 void display_set_height(scr_coord_val);
 void display_set_actual_width(scr_coord_val);
 
-void display_day_night_shift(int night);
+void display_day_night_shift(float night);
 rgba_t display_get_day_night_color();
 
 
