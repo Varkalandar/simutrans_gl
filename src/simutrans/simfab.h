@@ -8,9 +8,7 @@
 
 
 #include "dataobj/koord3d.h"
-#include "dataobj/translator.h"
 
-#include "tpl/slist_tpl.h"
 #include "tpl/vector_tpl.h"
 #include "tpl/array_tpl.h"
 #include "descriptor/factory_desc.h"
@@ -23,7 +21,7 @@ class player_t;
 class stadt_t;
 class ware_t;
 class leitung_t;
-
+template <class T> class slist_tpl;
 
 /**
  * Factory statistics

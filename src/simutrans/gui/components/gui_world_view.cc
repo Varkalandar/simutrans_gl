@@ -6,12 +6,12 @@
 #include <stdio.h>
 
 #include "gui_world_view.h"
+#include "../../simevent.h"
 #include "../../world/simworld.h"
 #include "../../display/viewport.h"
 #include "../../obj/simobj.h"
 #include "../../obj/zeiger.h"
 #include "../../display/simgraph.h"
-// #include "../../simcolor.h"
 #include "../../ground/grund.h"
 
 #include "../../dataobj/environment.h"

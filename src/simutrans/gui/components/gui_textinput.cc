@@ -6,6 +6,7 @@
 #include <string.h>
 
 #include "gui_textinput.h"
+#include "../../simevent.h"
 #include "../simwin.h"
 #include "../gui_theme.h"
 #include "../../dataobj/translator.h"

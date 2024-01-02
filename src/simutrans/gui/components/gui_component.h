@@ -8,7 +8,7 @@
 
 
 #include "../../display/scr_coord.h"
-#include "../../simevent.h"
+// #include "../../simevent.h"
 
 struct event_t;
 class karte_ptr_t;

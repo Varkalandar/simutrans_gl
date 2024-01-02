@@ -5,6 +5,7 @@
 
 #include "gui_building.h"
 #include "gui_image.h"
+#include "../../simevent.h"
 #include "../../descriptor/building_desc.h"
 #include "../../tpl/vector_tpl.h"
 #include "../../display/simgraph.h"

@@ -232,7 +232,7 @@ void freight_list_sorter_t::sort_freight(vector_tpl<ware_t> const& warray, cbuff
 			if(  sortby!=by_via_sum  ||  via_halt==halt  ) {
 				if(  is_factory_going  ) {
 					const fabrik_t *const factory = fabrik_t::get_fab( ware.get_zielpos() );
-					buf.printf("%s <%i,%i>", (factory ? factory->get_name() : "Invalid Factory"), ware.get_zielpos().x, ware.get_zielpos().y);
+					buf.printf("%s <%i, %i>", (factory ? factory->get_name() : "Invalid Factory"), ware.get_zielpos().x, ware.get_zielpos().y);
 				}
 				else {
 					buf.append(name);
