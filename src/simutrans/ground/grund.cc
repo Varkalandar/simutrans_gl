@@ -1147,7 +1147,7 @@ void grund_t::display_boden(const sint16 xpos, const sint16 ypos, const sint16 r
 				display_normal(ground_desc_t::sea->get_image(get_image(),wasser_t::stage), xpos, ypos, 0);
 			}
 			else {
-				display_blend( ground_desc_t::sea->get_image(get_image(),wasser_t::stage), xpos, ypos, 0, rgba_t(0, 0, 0, 0.5f), true, dirty|wasser_t::change_stage CLIP_NUM_PAR );
+				display_blend( ground_desc_t::sea->get_image(get_image(),wasser_t::stage), xpos, ypos, 0, rgba_t(1, 1, 1, 0.5f), true, dirty|wasser_t::change_stage CLIP_NUM_PAR );
 			}
 			return;
 		}
@@ -1680,9 +1680,10 @@ void display_themed_marker(sint16 xpos, sint16 ypos, const char* text,
 	// the extra bottom part
 	const sint8 pnr = player ? player->get_player_nr() : 1;
 	const image_id iid = skinverwaltung_t::display_marker_label->get_image_id(9);
-	// display_set_color(RGBA_WHITE);
-    display_set_color(display_get_day_night_color());
+
 	display_img_aligned(iid, scr_rect(xpos, ypos + size.h + yoff, size.w, 16), ALIGN_CENTER_H, pnr, true);
+
+    display_set_color(display_get_day_night_color());
 }
 
 

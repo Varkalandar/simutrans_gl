@@ -87,7 +87,6 @@ void main_view_t::display(bool force_dirty)
 #if COLOUR_DEPTH != 0
 	DBG_DEBUG4("main_view_t::display", "starting ...");
 
-	// display_set_color(RGBA_WHITE);
     display_set_color(display_get_day_night_color());
 
 	const sint16 disp_width = display_get_width();

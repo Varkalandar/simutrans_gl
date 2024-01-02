@@ -843,8 +843,6 @@ void display_color_img(const image_id id, scr_coord_val x, scr_coord_val y, cons
 
 		w = (w == 0) ? imd.base_w : w;
 		h = (h == 0) ? imd.base_h : h;
-        
-        // display_set_color(RGBA_WHITE);
 
         display_tile_from_sheet(imd.texture, x, y, w, h,
                                 imd.sheet_x, imd.sheet_y, imd.base_w, imd.base_h);
@@ -865,8 +863,6 @@ static void display_img(const image_id id, scr_coord_val x, scr_coord_val y, con
 
 		int w = imd.base_w;
 		int h = imd.base_h;
-        
-        // display_set_color(RGBA_WHITE);
         
         display_tile_from_sheet(imd.texture, x, y, w, h,
                                 imd.sheet_x, imd.sheet_y, imd.base_w, imd.base_h);
@@ -1032,7 +1028,6 @@ void display_rezoomed_img_blend(const image_id id, scr_coord_val x, scr_coord_va
 {
     display_set_color(color);
     display_img(id, x, y, pn);
-    display_set_color(RGBA_WHITE);
 }
 
 

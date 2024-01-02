@@ -205,9 +205,6 @@ void obj_t::display(int xpos, int ypos  CLIP_NUM_DEF) const
 		}
 		xpos += tile_raster_scale_x(get_xoff(), raster_width);
 		ypos += tile_raster_scale_y(get_yoff(), raster_width);
-
-        // display_set_color(RGBA_WHITE);
-        // display_set_color(display_get_day_night_color());
         
 		const int start_ypos = ypos;
 		for(  int j=0;  image!=IMG_EMPTY;  ) {
@@ -215,6 +212,7 @@ void obj_t::display(int xpos, int ypos  CLIP_NUM_DEF) const
 			if(  owner_n != PLAYER_UNOWNED  ) {
 				if(  obj_t::show_owner  ) {
 					display_blend( image, xpos, ypos, owner_n, color_idx_to_rgb(welt->get_player(owner_n)->get_player_color1()+2), 0, is_dirty  CLIP_NUM_PAR);
+                    display_set_color(display_get_day_night_color());
 				}
 				else {
 					display_color(image, xpos, ypos, owner_n);
@@ -244,6 +242,8 @@ void obj_t::display(int xpos, int ypos  CLIP_NUM_DEF) const
 			// highlight this tile
 			display_blend( get_image(), xpos, start_ypos, owner_n, SYSCOL_OBJECT_HIGHLIGHT, 0, is_dirty  CLIP_NUM_PAR);
 		}
+        
+        display_set_color(display_get_day_night_color());
 	}
 }
 
@@ -278,10 +278,12 @@ void obj_t::display_after(int xpos, int ypos, bool) const
 		if(  owner_n != PLAYER_UNOWNED  ) {
 			if(  obj_t::show_owner  ) {
 				display_blend( image, xpos, ypos, owner_n, color_idx_to_rgb(welt->get_player(owner_n)->get_player_color1()+2), 0, is_dirty  CLIP_NUM_PAR);
-			}
+	            display_set_color(display_get_day_night_color());
+        	}
 			else if(  obj_t::get_flag( highlight )  ) {
 				// highlight this tile
 				display_blend(image, xpos, ypos, owner_n, (SYSCOL_OBJECT_HIGHLIGHT), 0, is_dirty  CLIP_NUM_PAR);
+                display_set_color(display_get_day_night_color());
 			}
 			else {
 				display_color(image, xpos, ypos, owner_n);
@@ -290,6 +292,7 @@ void obj_t::display_after(int xpos, int ypos, bool) const
 		else if(  obj_t::get_flag( highlight )  ) {
 			// highlight this tile
 			display_blend( image, xpos, ypos, owner_n, (SYSCOL_OBJECT_HIGHLIGHT), 0, is_dirty  CLIP_NUM_PAR);
+            display_set_color(display_get_day_night_color());
 		}
 		else {
 			display_normal(image, xpos, ypos, 0);
