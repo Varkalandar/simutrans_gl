@@ -31,6 +31,11 @@ static int gl_current_sheet;
 static int gl_current_sheet_x;
 static int gl_current_sheet_y;
 
+
+// needed for display_array_wh()
+static gl_texture_t * display_array_tex_buffer;
+
+
 // our frame buffer
 static GLuint gl_fbo;
 static GLuint gl_texture_colorbuffer;
@@ -1136,8 +1141,12 @@ void display_vline_wh_clip_rgb(scr_coord_val x, scr_coord_val y, scr_coord_val h
 }
 
 
-void display_array_wh(scr_coord_val, scr_coord_val, scr_coord_val, scr_coord_val, const rgb888_t *data)
+void display_array_wh(scr_coord_val x, scr_coord_val y, scr_coord_val w, scr_coord_val h, const rgb888_t * pixels)
 {
+    display_array_tex_buffer->update_region(0, 0, w, h, pixels);
+
+    display_tile_from_sheet(display_array_tex_buffer, x, y, w, h,
+                            0, 0, w, h);
 }
 
 
@@ -1361,6 +1370,8 @@ bool simgraph_init(scr_size size, sint16)
             dr_fatal_notify("No fonts found!");
             return false;
         }
+        
+        display_array_tex_buffer = gl_texture_t::create_texture(256, 256, NULL);
 	}
 
 	return window;

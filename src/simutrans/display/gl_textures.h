@@ -1,6 +1,8 @@
 #ifndef DISPLAY_GL_TEXTURES_H
 #define DISPLAY_GL_TEXTURES_H
 
+class rgb888_t;
+
 class gl_texture_t
 {
 public:
@@ -21,7 +23,8 @@ public:
     static void bind(uint32_t tex_id);
 
     void update_texture(uint8_t * data);
-    void update_region(int x, int y, int w, int h, uint8_t *data);
+    void update_region(int x, int y, int w, int h, const uint8_t *data);
+    void update_region(int x, int y, int w, int h, const rgb888_t *data);
 };
 
 #endif

@@ -83,8 +83,7 @@ void gl_texture_t::update_texture(uint8_t * data)
 }
 
 
-
-void gl_texture_t::update_region(int x, int y, int w, int h, uint8_t *data)
+void gl_texture_t::update_region(int x, int y, int w, int h, const uint8_t * data)
 {
     bind(tex_id);
 
@@ -92,6 +91,21 @@ void gl_texture_t::update_region(int x, int y, int w, int h, uint8_t *data)
 						0, // level,
 						x, y, w, h,
 						GL_RGBA, // GLenum format,
+						GL_UNSIGNED_BYTE, // GLenum type,
+						data);
+
+    if(glGetError()) dbg->message("update_region()", "error=%x", glGetError());
+}
+
+
+void gl_texture_t::update_region(int x, int y, int w, int h, const rgb888_t * data)
+{
+    bind(tex_id);
+
+	glTexSubImage2D(GL_TEXTURE_2D,
+						0, // level,
+						x, y, w, h,
+						GL_RGB, // GLenum format,
 						GL_UNSIGNED_BYTE, // GLenum type,
 						data);
 

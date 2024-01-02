@@ -140,6 +140,7 @@ public:
 		}
 		pax_destinations_last_change = current_pax_destinations;
 
+        display_set_color(RGBA_WHITE);
 		display_array_wh(pos.x + offset.x, pos.y + offset.y, minimaps_size.w, minimaps_size.h, pax_dest_old.to_array() );
 		display_array_wh(pos.x + offset.x + minimap2_offset.x, pos.y + offset.y + minimap2_offset.y, minimaps_size.w, minimaps_size.h, pax_dest_new.to_array() );
 	}
@@ -333,7 +334,7 @@ void gui_city_minimap_t::init_pax_dest( array2d_tpl<rgb888_t> &pax_dest )
 	for(  sint16 y = 0;  y < minimaps_size.h;  y++  ) {
 		for(  sint16 x = 0;  x < minimaps_size.w;  x++  ) {
 			const grund_t *gr = welt->lookup_kartenboden( koord( (x * size_x) / minimaps_size.w, (y * size_y) / minimaps_size.h ) );
-			pax_dest.at(x,y) = 0; // todo: minimap_t::calc_ground_color(gr);
+			pax_dest.at(x,y) = minimap_t::calc_ground_color(gr);
 		}
 	}
 }
