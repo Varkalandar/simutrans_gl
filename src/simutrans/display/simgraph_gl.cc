@@ -574,44 +574,69 @@ void register_image(image_t * image_in)
 	// dbg->message("register_image()", "%d images, offset %d , %d, converting %dx%d pixels", anz_images, image_in->x, image_in->y, image_in->w, image_in->h);
 
 	uint8_t * rgba_data = (uint8_t *)calloc(image_in->w * image_in->h * 4, 1);
-    uint8_t * tp = rgba_data;
-    const uint16_t * sp = image_in->data;
-    scr_coord_val h = image_in->h;
+    
+    if(image_in->zoomable & 0x80)
+    {
+        // a 32bit image
+        image_in->zoomable &= 0x7F;
+        dbg->message("register_image()", "%d images, offset %d , %d, got %dx%d 32bpp pixels", anz_images, image_in->x, image_in->y, image_in->w, image_in->h);
 
-    do { // line decoder
-        uint16_t runlen = *sp++;
-        uint8_t *p = tp;
+        uint32 * in = (uint32 *)image_in->data;
+        
+        // convert argb to rgba
+        for(int i = 0; i < image_in->w * image_in->h; i++)
+        {
+            uint32 argb = in[i];
+            rgba_data[i*4+0] = (argb >> 16) & 0xFF;
+            rgba_data[i*4+1] = (argb >> 8) & 0xFF;
+            rgba_data[i*4+2] = (argb >> 0) & 0xFF;
+            rgba_data[i*4+3] = (argb >> 24);
 
-        // one line decoder
-        do {
-            // we start with a clear run
-            p += (runlen & ~TRANSPARENT_RUN) * 4;
+            // dbg->message("xx", "%x", rgba_data[i]);
+        }
+    }
+    else
+    {
+        // Old style 16 bit
+        uint8_t * tp = rgba_data;
+        const uint16_t * sp = image_in->data;
+        scr_coord_val h = image_in->h;
 
-//            dbg->message("register_image()", "Converting %d transparent pixels", runlen);
+        do { // line decoder
+            uint16_t runlen = *sp++;
+            uint8_t *p = tp;
 
-            // now get colored pixels
-            runlen = *sp++;
-            if(runlen & TRANSPARENT_RUN) {
-                runlen &= ~TRANSPARENT_RUN;
+            // one line decoder
+            do {
+                // we start with a clear run
+                p += (runlen & ~TRANSPARENT_RUN) * 4;
 
-//                dbg->message("register_image()", "Converting %d special color pixels", runlen);
-                convert_transparent_pixel_run(p, sp, sp+runlen);
-                p += runlen * 4;
-                sp += runlen;
-            }
-            else {
-//                dbg->message("register_image()", "Converting %d color pixels", runlen);
+    //            dbg->message("register_image()", "Converting %d transparent pixels", runlen);
 
-                p = convert_pixel_run(sp, runlen, p);
-                sp += runlen;
-            }
-            runlen = *sp++;
-        } while(runlen);
+                // now get colored pixels
+                runlen = *sp++;
+                if(runlen & TRANSPARENT_RUN) {
+                    runlen &= ~TRANSPARENT_RUN;
 
-//        dbg->message("register_image()", "-- Line converted, %d left --", h);
+    //                dbg->message("register_image()", "Converting %d special color pixels", runlen);
+                    convert_transparent_pixel_run(p, sp, sp+runlen);
+                    p += runlen * 4;
+                    sp += runlen;
+                }
+                else {
+    //                dbg->message("register_image()", "Converting %d color pixels", runlen);
 
-        tp += image_in->w * 4;
-    } while(--h > 0);
+                    p = convert_pixel_run(sp, runlen, p);
+                    sp += runlen;
+                }
+                runlen = *sp++;
+            } while(runlen);
+
+    //        dbg->message("register_image()", "-- Line converted, %d left --", h);
+
+            tp += image_in->w * 4;
+        } while(--h > 0);
+    }
 
     // debug
 /*

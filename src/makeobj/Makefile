@@ -99,7 +99,7 @@ SOLO_SOURCES += ../simutrans/descriptor/writer/get_waytype.cc
 SOLO_SOURCES += ../simutrans/descriptor/writer/good_writer.cc
 SOLO_SOURCES += ../simutrans/descriptor/writer/groundobj_writer.cc
 SOLO_SOURCES += ../simutrans/descriptor/writer/ground_writer.cc
-SOLO_SOURCES += ../simutrans/descriptor/writer/image_writer.cc
+SOLO_SOURCES += ../simutrans/descriptor/writer/image_writer_32.cc
 SOLO_SOURCES += ../simutrans/descriptor/writer/imagelist2d_writer.cc
 SOLO_SOURCES += ../simutrans/descriptor/writer/imagelist_writer.cc
 SOLO_SOURCES += ../simutrans/descriptor/writer/obj_node.cc
@@ -135,8 +135,8 @@ VARIANT_SOURCES += ../simutrans/utils/log.cc
 SOURCES ?= $(SOLO_SOURCES) $(SHARED_SOURCES) $(VARIANT_SOURCES)
 
 BUILDDIR ?= build/$(CFG)
-TOOL  = makeobj
-PROG ?= makeobj
+TOOL  = makepak
+PROG ?= makepak
 
 ifeq ($(origin MAKEOBJ_PROGDIR), undefined)
   MAKEOBJ_PROGDIR := ../../$(BUILDDIR)/$(TOOL)
