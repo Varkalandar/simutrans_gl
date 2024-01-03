@@ -20,7 +20,8 @@ jobs:
         sudo apt-get -ym install libminiupnpc-dev
         sudo apt-get -ym install libzstd-dev libglfw3-dev
         sudo apt-get -ym install libglew-dev
-
+        sudo apt-get -ym install libopenal-dev
+        
         # We build fluidsynth with the minimum set of options we need to keep dependencies low
         sudo apt-get -ym install libsndfile1-dev
         wget https://github.com/FluidSynth/fluidsynth/archive/v2.3.0.tar.gz

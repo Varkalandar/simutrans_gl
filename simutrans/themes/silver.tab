@@ -122,6 +122,9 @@ gui_color_text_unused = #555f66
 # Color of cursor overlay, which is blended over marked ground tiles
 cursor_overlay_color = #ff0000
 
+# Color for selected tool icons
+gui_color_selected_tool = #CCEE00
+
 # Color loadbar, save game, load game, server...
 gui_color_loadingbar_progress = #76b9e6
 gui_color_loadingbar_inner = #D6ECF7

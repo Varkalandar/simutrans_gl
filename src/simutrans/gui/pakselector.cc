@@ -448,7 +448,7 @@ void pakselector_t::draw(scr_coord pos, scr_size size)
     display_set_color(RGBA_WHITE);
     display_tile_from_sheet(backdrop, 
                             display_get_width()/2 - 200, display_get_height() / 2 - 360, 400, 320,
-                            0, 50, backdrop->width, backdrop->height - 40 - 40);
+                            0, 45, backdrop->width, backdrop->height - 80);
     
 	savegame_frame_t::draw(pos, size);
 
