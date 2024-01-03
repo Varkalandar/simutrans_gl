@@ -6,6 +6,7 @@
 #include "gui_frame.h"
 #include "components/gui_button.h"
 #include "components/gui_divider.h"
+#include "components/gui_spacer.h"
 #include "components/action_listener.h"
 
 #include "../world/simworld.h"
@@ -19,6 +20,7 @@
 #include "sound_frame.h"
 #include "scenario_info.h"
 #include "pakinstaller.h"
+#include "server_frame.h"
 #include "../dataobj/scenario.h"
 #include "../dataobj/translator.h"
 #include "../dataobj/environment.h"
@@ -34,6 +36,7 @@ enum BUTTONS {
 	BUTTON_DISPLAY,
 	BUTTON_LOAD_SCENARIO,
 	BUTTON_SOUND,
+	BUTTON_JOIN_GAME,
 	BUTTON_SCENARIO_INFO,
 	BUTTON_INSTALL,
 	BUTTON_QUIT
@@ -45,8 +48,10 @@ static char const *const option_buttons_text[] =
 	"Spieler(mz)", "Load game",
 	"Farbe", "Speichern",
 	"Display settings", "Load scenario",
-	"Sound", "Scenario", "Install",
-	"Beenden"
+	"Sound", "join game",
+    "Scenario", 
+    
+    "Install", "Beenden"
 };
 
 
@@ -70,6 +75,10 @@ optionen_gui_t::optionen_gui_t() :
 			if(  !welt->get_scenario()->active()  ) {
 				option_buttons[BUTTON_SCENARIO_INFO].disable();
 			}
+            
+            // pad for the missing button
+            new_component<gui_spacer_t>(scr_size(0, 0), scr_size(2, 2));
+            
 			// Squeeze in divider
 			new_component_span<gui_divider_t>(2);
 		}
@@ -141,6 +150,10 @@ bool optionen_gui_t::action_triggered( gui_action_creator_t *comp,value_t /* */)
 	else if(  comp == option_buttons + BUTTON_QUIT  ) {
 		// we call the proper tool for quitting
 		welt->set_tool(tool_t::simple_tool[TOOL_QUIT], NULL);
+	}
+	else if(  comp == option_buttons + BUTTON_JOIN_GAME  ) {
+		destroy_all_win(true);
+		create_win(new server_frame_t(), w_info, magic_server_frame_t);
 	}
 	else {
 		// not our?
