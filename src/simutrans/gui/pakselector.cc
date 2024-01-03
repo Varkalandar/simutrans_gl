@@ -14,6 +14,8 @@
 #include "../pathes.h"
 #include "../descriptor/skin_desc.h"
 #include "../display/display.h"
+#include "../display/gl_textures.h"
+#include "../io/raw_image.h"
 
 
 class pak_set_panel_t : public gui_component_t
@@ -87,34 +89,41 @@ bool pak_set_panel_t::infowin_event(const event_t *ev)
 			// so, did we hit something?
 
 			const scr_coord_val xspace = 280;
-			const scr_coord_val xstart = (size.w % xspace) / 2;
-
-			const scr_coord_val ystart = 20;
-			const scr_coord_val yspace = 256 + 42;
+			const scr_coord_val xstart = 20;
 
 			const int mx = ev->mouse_pos.x;
-			const int my = ev->mouse_pos.y;
 
-			const int index = ((my - ystart) / yspace) * (size.w / xspace) + (mx - xstart) / xspace;
+			const unsigned int index = (mx - xstart) / xspace;
 
-			int counter = 0;
-			for(savegame_frame_t::dir_entry_t &entry : *entries) {
-				if (entry.type == savegame_frame_t::LI_ENTRY) {
-					if(counter == index) {
+            // was the install button clicked?
+            
+            if(index >= pak_logos.get_count())
+            {
+            	pakinstaller_t::finish_install = true;
+                return true;
+            }
+            else
+            {
+                // no -> it must have been one of the load buttons
+                unsigned int counter = 0;
+                for(savegame_frame_t::dir_entry_t &entry : *entries) {
+                    if (entry.type == savegame_frame_t::LI_ENTRY) {
+                        if(counter == index) {
 
-						// Hajo: we must restore the logo before loading
-						skinverwaltung_t::biglogosymbol = pak_logos.at(index);
+                            // Hajo: we must restore the logo before loading
+                            skinverwaltung_t::biglogosymbol = pak_logos.at(index);
 
-						// Now we can load it ...
-						selector->item_action(entry.info);
-						return true;
-					}
+                            // Now we can load it ...
+                            selector->item_action(entry.info);
+                            return true;
+                        }
 
-					counter ++;
-				}
-			}
-		}
-	}
+                        counter ++;
+                    }
+                }
+            }
+        }
+    }
 	return false;
 }
 
@@ -156,14 +165,12 @@ void pak_set_panel_t::draw_logo(const scr_coord_val xpos, const scr_coord_val yp
 
 void pak_set_panel_t::draw(scr_coord offset)
 {
-	const rgba_t color = gui_theme_t::gui_color_chart_background;
-	display_fillbox_wh_clip_rgb(offset.x, offset.y, size.w, size.h, color, true);
+	display_fillbox_wh_clip_rgb(offset.x, offset.y, size.w, size.h, rgba_t(0, 0, 0, 0.1), true);
 
 	const scr_coord_val xspace = 280;
-	const scr_coord_val xstart = (size.w % xspace) / 2;
+	const scr_coord_val xstart = 20;
 
-	const scr_coord_val ystart = 20;
-	const scr_coord_val yspace = 256 + 42;
+	const scr_coord_val ystart = 10;
 
 	scr_coord_val x = xstart;
 	scr_coord_val y = ystart;
@@ -180,15 +187,27 @@ void pak_set_panel_t::draw(scr_coord offset)
 
 			x += xspace;
 
-			if(x > display_get_width() - xspace)
-			{
-				x = xstart;
-				y += yspace;
-			}
-
 			index ++;
 		}
 	}
+    
+    // simulate an install button
+    
+    const scr_coord_val xpos = offset.x + x;
+    const scr_coord_val ypos = offset.y + y;
+
+	const rgba_t c = gui_theme_t::gui_highlight_color;
+	display_bevel_box(scr_rect(xpos-1, ypos-1, 258, 258), c, c, c, c);
+
+	display_fillbox_wh_clip_rgb(xpos, ypos, 256, 256, rgba_t(0.7, 0.7, 0.7, 1), true);
+    
+    const char * install = "Install a new graphics set";
+    
+	const scr_coord_val title_width = display_calc_proportional_string_len_width(install, strlen(install), 0, FS_NORMAL);
+	display_text_proportional_len_clip_rgb(xpos + (xspace - title_width) / 2, ypos + xspace / 2 - LINESPACE,
+		                                   install, ALIGN_LEFT, RGBA_BLACK, false, -1, 0, FS_NORMAL);
+    
+    
 }
 
 
@@ -198,30 +217,47 @@ static pak_set_panel_t pak_set_panel;
 static void setup_pak_panel(pakselector_t * selector, int logo_count)
 {
 	pak_set_panel.set_selector(selector);
-	scr_size size (display_get_width() - 134, 0);
 
 	const scr_coord_val xspace = 280;
-	const scr_coord_val xstart = (size.w % xspace) / 2;
 
-	const scr_coord_val ystart = 20;
-	const scr_coord_val yspace = 256 + 42;
-
-	int pitch = (size.w-xstart*2) / xspace;
-	int rows = (logo_count + pitch - 1) / pitch;
-
-	size.h = ystart + rows * yspace;
-
+	scr_size size (xspace * (logo_count + 1), 280);
 	pak_set_panel.set_size(size);
 }
 
 
+static gl_texture_t *  load_backdrop_image()
+{
+    char path [5120];
+    
+    sprintf(path, "%s/%s", env_t::base_dir, "themes/simuback.png");
+
+    // dbg->message("load_backdrop_image()", "base dir is: %s", env_t::base_dir);
+    dbg->message("load_backdrop_image()", "path is: %s", path);
+
+    raw_image_t raw;
+    
+    raw.read_from_file(path);
+    
+    dbg->message("load_backdrop_image()", "type is: %d", raw.get_format());
+    gl_texture_t * tex = 0;
+    
+    if(raw.get_format() == raw_image_t::FMT_RGBA8888)
+    {
+        uint8 * data = raw.access_pixel(0, 0);
+        tex = gl_texture_t::create_texture(raw.get_width(), raw.get_height(), data);
+    }
+    
+    return tex;
+}
+
+
 pakselector_t::pakselector_t() :
-	savegame_frame_t( NULL, true, NULL, true ),
+	savegame_frame_t(NULL, true, NULL, true, false),
 	notice_label(&notice_buffer)
 {
     dbg->message("pakselector_t::pakselector_t()", "Creating %p", this);
 
-	// if true, we would call the installer afterwards
+	// if set to true, we will call the installer afterwards
 	pakinstaller_t::finish_install = false;
 
 	// remove unnecessary buttons
@@ -230,7 +266,7 @@ pakselector_t::pakselector_t() :
 	cancelbutton.set_visible(false);
 	fnlabel.set_text("", false);
 
-	top_frame.new_component<gui_spacer_t>(scr_coord(0, 0), scr_size(40, 60));
+	top_frame.new_component<gui_spacer_t>(scr_coord(0, 0), scr_size(40, 36));
 
 	setup_pak_panel(this, entries.get_count());
 	scrolly.set_show_border(true);
@@ -240,11 +276,11 @@ pakselector_t::pakselector_t() :
 	// don't show list item labels
 	label_enabled = false;
 
-	installbutton.init(button_t::roundbox, " Install a new graphics set ");
-	installbutton.add_listener( &ps );
-	add_component(&installbutton);
+	// installbutton.init(button_t::roundbox, " Install a new graphics set ");
+	// installbutton.add_listener( &ps );
+	// add_component(&installbutton);
 
-	new_component<gui_divider_t>();
+	// new_component<gui_divider_t>();
 
 	notice_buffer.printf("%s",
 		"To avoid seeing this dialogue define a path by:\n"
@@ -252,21 +288,26 @@ pakselector_t::pakselector_t() :
 		" - using '-objects pakxyz/' on the command line"
 	);
 	notice_label.recalc_size();
-	add_component(&notice_label);
+	// add_component(&notice_label);
 
-	add_path( env_t::base_dir );
-	if(  strcmp(env_t::base_dir,env_t::install_dir)  ) {
-		add_path( env_t::install_dir );
+	add_path(env_t::base_dir);
+	if(strcmp(env_t::base_dir, env_t::install_dir)) {
+		add_path(env_t::install_dir);
 	}
+    
 	dr_chdir( env_t::user_dir );
-	if(  !dr_chdir(USER_PAK_PATH)  ) {
+	if(!dr_chdir(USER_PAK_PATH)) {
 		char dummy[PATH_MAX];
 		dr_getcwd(dummy, lengthof(dummy) - 2);
 		strcat(dummy, PATH_SEPARATOR);
-		if(  strcmp(env_t::install_dir, dummy)  ) {
+		if(strcmp(env_t::install_dir, dummy)) {
 			add_path(dummy);
 		}
 	}
+
+    
+    
+    backdrop = load_backdrop_image();
 }
 
 
@@ -383,37 +424,46 @@ void pakselector_t::list_filled(void)
 	setup_pak_panel(this, entries.get_count());
 
 	const scr_coord_val margin = env_t::iconsize.w; // Hajo: this is also the toolbar height?
-	scr_size size (display_get_width()-margin*2, display_get_height()-margin*2);
+	scr_size size (display_get_width()-margin*2, 376);
 
 	set_min_windowsize(size);
 	resize(scr_coord(0, 0));
-	win_set_pos(this, scr_coord(margin, margin));
+	win_set_pos(this, scr_coord(margin, display_get_height() / 2 - 20));
 }
 
 
 void pakselector_t::draw(scr_coord pos, scr_size size)
 {
+	win_set_pos(this, scr_coord(env_t::iconsize.w, display_get_height() / 2 - 20));
+
     // dbg->message("pakselector_t::draw()", "Called, pos=%d, %d", pos.x, pos.y);
 
     display_set_clip_wh(0, 0, display_get_width(), display_get_height());
-    
-	const rgba_t background = get_system_color({64, 64, 64});
-	display_fillbox_wh_rgb(0, 0, display_get_width(), display_get_height(), background, true);
 
+    display_set_color(rgba_t(0.2, 0.25, 0.3, 1));
+    display_tile_from_sheet(backdrop, 
+                            0, 0, display_get_width(), display_get_height(),
+                            0, 0, backdrop->width, backdrop->height);
+    
+    display_set_color(RGBA_WHITE);
+    display_tile_from_sheet(backdrop, 
+                            display_get_width()/2 - 200, display_get_height() / 2 - 360, 400, 320,
+                            0, 50, backdrop->width, backdrop->height - 40 - 40);
+    
 	savegame_frame_t::draw(pos, size);
 
 	// Hajo: fake a top-left bevel border
 	display_fillbox_wh_rgb(pos.x, pos.y, size.w, 1, gui_theme_t::gui_highlight_color, true);
 	display_vline_wh_clip_rgb(pos.x, pos.y, size.h, gui_theme_t::gui_highlight_color, true);
 
-	const char * title = translator::translate("Please Choose a Graphics Set For Playing");
-	const scr_coord_val title_width = display_calc_proportional_string_len_width(title, strlen(title), 0, FS_HEADLINE);
+	const char * title = translator::translate("Please Choose a Graphics Set To Play");
+	const scr_coord_val title_width = display_calc_proportional_string_len_width(title, strlen(title), 0, FS_NORMAL);
 
-	display_fillbox_wh_rgb(pos.x + (size.w - title_width) / 2 - 40, pos.y + 14, title_width + 80, 46, RGBA_WHITE, true);
+// 	display_fillbox_wh_rgb(pos.x + (size.w - title_width) / 2 - 80, pos.y + 8, title_width + 80*2, 38, rgba_t(1, 1, 1, 0.5), true);
 
-	const scr_coord_val fh = get_font_height(FS_HEADLINE);
-	display_text_proportional_len_clip_rgb(pos.x + (size.w - title_width) / 2, pos.y + 14 + (46 - fh) / 2,
-		                                   title, ALIGN_LEFT, RGBA_BLACK, false, -1, 0, FS_HEADLINE);
+	const scr_coord_val fh = get_font_height(FS_NORMAL);
+	display_text_proportional_len_clip_rgb(pos.x + (size.w - title_width) / 2, pos.y + 2 + (46 - fh) / 2,
+		                                   title, ALIGN_LEFT, gui_theme_t::gui_highlight_color, false, -1, 0, FS_NORMAL);
 }
 
 

@@ -50,7 +50,7 @@ public:
  * @param delete_enabled    Show (true) or hide (false) the delete buttons.
  *                          This is an optional parameter with a default value of true;
  */
-savegame_frame_t::savegame_frame_t(const char *suffix, bool only_directories, const char *path, const bool delete_enabled) : gui_frame_t( translator::translate("Load/Save") ),
+savegame_frame_t::savegame_frame_t(const char *suffix, bool only_directories, const char *path, bool delete_enabled, bool show_divider) : gui_frame_t( translator::translate("Load/Save") ),
 	suffix(suffix),
 	in_action(false),
 	only_directories(only_directories),
@@ -83,8 +83,10 @@ savegame_frame_t::savegame_frame_t(const char *suffix, bool only_directories, co
 	scrolly.set_maximize(true);
 
 	// Controls below will be sized and positioned in set_windowsize()
-	new_component<gui_divider_t>();
-
+	if(show_divider) {
+        new_component<gui_divider_t>();
+    }
+    
 	add_table(3,1);
 	add_component(&bottom_left_frame);
 	bottom_left_frame.set_table_layout(1,0);
