@@ -228,7 +228,7 @@ void gui_theme_t::init_gui_defaults()
 	gui_color_image_transparency           = color_idx_to_rgb(COL_BLACK);
 
 	gui_color_object_highlight            = color_idx_to_rgb(COL_RED);
-    gui_color_selected_tool = rgba_t(0.8, 1.0, 0, 1.0);
+    gui_color_selected_tool = rgba_t(0.5, 0.5, 0.5, 1.0);
             
 	env_t::gui_player_color_bright = 4;
 	env_t::gui_player_color_dark   = 1;
@@ -717,7 +717,8 @@ bool gui_theme_t::themes_init(const char *file_name, bool init_fonts, bool init_
 	gui_theme_t::gui_color_chat_window_network_transparency = decode_color(contents, "gui_color_chat_window_network_transparency", gui_color_chat_window_network_transparency);
 	gui_theme_t::gui_color_image_transparency           = decode_color(contents, "gui_color_image_transparency", SYSCOL_IMAGE_TRANSPARENCY);
     gui_theme_t::gui_color_object_highlight             = decode_color(contents, "gui_color_object_highlight", SYSCOL_OBJECT_HIGHLIGHT);
-
+    gui_theme_t::gui_color_selected_tool                = decode_color(contents, "gui_color_selected_tool", gui_color_selected_tool);
+            
 	gui_theme_t::gui_waitingbar_width = (uint32)contents.get_int("gui_waitingbar_width", gui_theme_t::gui_waitingbar_width);
 
 	// those two may be rather an own control later on?
