@@ -41,45 +41,52 @@ int image_writer_t::img_size = 64;
 uint32 image_writer_t::block_getpix(int x, int y)
 {
 	const uint8 * pixel_data = input_img.access_pixel(x, y);
-
+    uint32 pix;
+    
 	switch (input_img.get_format()) {
 		case raw_image_t::FMT_GRAY8: {
 			const uint8 gray_level = pixel_data[0];
-			return
+			pix =
                 0xFF000000 |
 				gray_level <<  0 |
 				gray_level <<  8 |
 				gray_level << 16;
+            break;
 		}
 		case raw_image_t::FMT_RGBA8888: {
-			return 
+			pix = 
 				(pixel_data[2] <<  0) + // B
 				(pixel_data[1] <<  8) + // G
 				(pixel_data[0] << 16) + // R
 				(pixel_data[3] << 24);  // A
+            break;
 		}
 		case raw_image_t::FMT_RGB888: {
-			return
+			pix =
                 0xFF000000 |
 				(pixel_data[2] <<  0) | // B
 				(pixel_data[1] <<  8) | // G
 				(pixel_data[0] << 16);  // R
+            break;
 		}
 		default:
 			dbg->fatal("image_writer_t::block_getpix", "Unsupported input image format");
-            return 0;
+            pix = 0;
 	}
+
+    // Convert old special transparent color to transparent black 
+    if((pix & 0xFFFFFF) == SPECIAL_TRANSPARENT) {
+        pix = 0;
+    }
+    
+    return pix;
 }
-
-
-// colors with higher alpha are considered transparent
-#define ALPHA_THRESHOLD (0xF8000000u)
 
 
 // true if transparent
 inline bool is_transparent(const uint32 pix)
 {
-	return (pix >> 24) >= ALPHA_THRESHOLD;
+	return (pix >> 24) < 0x02;
 }
 
 

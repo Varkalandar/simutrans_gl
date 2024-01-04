@@ -101,6 +101,29 @@ static image_t* create_textured_tile(const image_t* image_lightmap, const image_
             {
                 uint32 * p = (uint32 *)image_dest->data;
                 p += y * w + x;
+                
+                uint32 pix = *p;
+                
+                if(pix >> 24 >= 0)
+                {
+                    // a colored pixel
+                    int r1 = (pix >> 16) & 0xFF;
+                    int g1 = (pix >> 8) & 0xFF;
+                    int b1 = (pix >> 0) & 0xFF;
+
+                    uint32 * tp = (uint32 *)image_texture->data;
+                    tp += y * w + x;
+                    uint32 tpix = * tp;
+                    
+                    int r2 = (tpix >> 16) & 0xFF;
+                    int g2 = (tpix >> 8) & 0xFF;
+                    int b2 = (tpix >> 0) & 0xFF;
+
+                    *p =    pix & 0xFF000000 |
+                            ((r1 * r2 * 2) >> 8) << 16 |
+                            ((g1 * g2 * 2) >> 8) << 8 | 
+                            ((b1 * b2 * 2) >> 8);  
+                }
             }
         }
     }
