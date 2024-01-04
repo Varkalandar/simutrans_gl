@@ -55,6 +55,7 @@ obj_desc_t *image_reader_t::read_node(FILE *fp, obj_node_info_t &node)
 		desc->imageid = IMG_EMPTY;
 		p += 2; // dummys
 		desc->zoomable = decode_uint8(p);
+        desc->bpp = 16;
 
 		skip_reading_pixels_if_no_graphics;
 		//DBG_DEBUG("image_t::read_node()","x,y=%d,%d  w,h=%d,%d, len=%i",desc->x,desc->y,desc->w,desc->h, desc->len);
@@ -82,6 +83,7 @@ obj_desc_t *image_reader_t::read_node(FILE *fp, obj_node_info_t &node)
 		desc->alloc(decode_uint16(p)); // len
 		desc->zoomable = decode_uint8(p);
 		desc->imageid = IMG_EMPTY;
+        desc->bpp = 16;
 
 		skip_reading_pixels_if_no_graphics;
 		uint16* dest = desc->data;
@@ -100,6 +102,7 @@ obj_desc_t *image_reader_t::read_node(FILE *fp, obj_node_info_t &node)
 		desc->alloc((node.size-10)/2); // len
 		desc->zoomable = decode_uint8(p);
 		desc->imageid = IMG_EMPTY;
+        desc->bpp = 16;
 
 		skip_reading_pixels_if_no_graphics;
 		uint16* dest = desc->data;
@@ -120,7 +123,7 @@ obj_desc_t *image_reader_t::read_node(FILE *fp, obj_node_info_t &node)
 		desc->imageid = IMG_EMPTY;
 
         // tell about the fact that data is actually 32bpp
-        desc->zoomable |= 0x80;
+        desc->bpp = 32;
         
         dbg->message("image_reader_t::read_node()", "dims=%d, %d, %d, %d", desc->x, desc->y, desc->w, desc->h);
         dbg->message("image_reader_t::read_node()", "Reading node version %d, node size=%d, desc len=%d", version, node.size, desc->len);

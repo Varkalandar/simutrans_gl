@@ -575,10 +575,9 @@ void register_image(image_t * image_in)
 
 	uint8_t * rgba_data = (uint8_t *)calloc(image_in->w * image_in->h * 4, 1);
     
-    if(image_in->zoomable & 0x80)
+    if(image_in->bpp == 32)
     {
         // a 32bit image
-        image_in->zoomable &= 0x7F;
         dbg->message("register_image()", "%d images, offset %d , %d, got %dx%d 32bpp pixels", anz_images, image_in->x, image_in->y, image_in->w, image_in->h);
 
         uint32 * in = (uint32 *)image_in->data;
@@ -586,13 +585,11 @@ void register_image(image_t * image_in)
         // convert argb to rgba
         for(int i = 0; i < image_in->w * image_in->h; i++)
         {
-            uint32 argb = in[i];
+            const uint32 argb = in[i];
             rgba_data[i*4+0] = (argb >> 16) & 0xFF;
             rgba_data[i*4+1] = (argb >> 8) & 0xFF;
-            rgba_data[i*4+2] = (argb >> 0) & 0xFF;
-            rgba_data[i*4+3] = (argb >> 24);
-
-            // dbg->message("xx", "%x", rgba_data[i]);
+            rgba_data[i*4+2] = argb & 0xFF;
+            rgba_data[i*4+3] = argb >> 24;
         }
     }
     else

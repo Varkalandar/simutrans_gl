@@ -47,45 +47,64 @@ static image_t* create_textured_tile(const image_t* image_lightmap, const image_
 
 	uint16 const* const texture = image_texture->get_data();
 	sint16        const x_y     = image_texture->get_pic()->w;
-	// now mix the images
-	for (int j = 0; j < image_dest->get_pic()->h; j++) {
-		sint32 x = *dest++;
-		assert(x >= 0);
-		const sint32 offset = (image_dest->get_pic()->y + j - image_texture->get_pic()->y) * (x_y + 3) + 2; // position of the pixel in a rectangular map
-		do
-		{
-			sint16 runlen = *dest++;
-			assert(runlen >= 0);
-			for(int i=0; i<runlen; i++) {
-				assert(offset+x>0);
-				uint16 mix = texture[offset+x];
+    
+    if(image_texture->bpp == 16) {
+    
+        // now mix the images
+        for (int j = 0; j < image_dest->get_pic()->h; j++) {
+            sint32 x = *dest++;
+            assert(x >= 0);
+            const sint32 offset = (image_dest->get_pic()->y + j - image_texture->get_pic()->y) * (x_y + 3) + 2; // position of the pixel in a rectangular map
+            do
+            {
+                sint16 runlen = *dest++;
+                assert(runlen >= 0);
+                for(int i=0; i<runlen; i++) {
+                    assert(offset+x>0);
+                    uint16 mix = texture[offset+x];
 
-				if (!binary) {
-					uint16 grey = *dest;
-					uint16 rc = (red_comp(grey)*red_comp(mix))/16;
-					if(rc>=32) {
-						rc = 31;
-					}
-					uint16 gc = (green_comp(grey)*green_comp(mix))/16;
-					if(gc>=32) {
-						gc = 31;
-					}
-					uint16 bc = (blue_comp(grey)*blue_comp(mix))/16;
-					if(bc>=32) {
-						bc = 31;
-					}
-					*dest++ = (rc<<10) | (gc<<5) | bc;
-				}
-				else {
-					if (*dest) { *dest = mix;}
-					dest++;
-				}
-				x ++;
-			}
-			x += *dest;
-		} while(  (*dest++)!=0 );
-	}
-	assert(dest - image_dest->get_data() == (ptrdiff_t)image_dest->get_pic()->len);
+                    if (!binary) {
+                        uint16 grey = *dest;
+                        uint16 rc = (red_comp(grey)*red_comp(mix))/16;
+                        if(rc>=32) {
+                            rc = 31;
+                        }
+                        uint16 gc = (green_comp(grey)*green_comp(mix))/16;
+                        if(gc>=32) {
+                            gc = 31;
+                        }
+                        uint16 bc = (blue_comp(grey)*blue_comp(mix))/16;
+                        if(bc>=32) {
+                            bc = 31;
+                        }
+                        *dest++ = (rc<<10) | (gc<<5) | bc;
+                    }
+                    else {
+                        if (*dest) { *dest = mix;}
+                        dest++;
+                    }
+                    x ++;
+                }
+                x += *dest;
+            } while(  (*dest++)!=0 );
+        }
+        assert(dest - image_dest->get_data() == (ptrdiff_t)image_dest->get_pic()->len);
+    }
+    else {
+        // 32 bpp
+        const int w = image_dest->w;
+        const int h = image_dest->h;
+        
+        for(int y=0; y<h; y++)
+        {
+            for(int x=0; x<w; x++)
+            {
+                uint32 * p = (uint32 *)image_dest->data;
+                p += y * w + x;
+            }
+        }
+    }
+    
 #else
 	(void)image_texture;
 	(void)binary;

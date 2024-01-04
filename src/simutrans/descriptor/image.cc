@@ -55,7 +55,7 @@ const uint32 image_t::rgbtab[SPECIAL] = {
 
 image_t* image_t::copy_image(const image_t& other)
 {
-	image_t* img = new image_t(other.len);
+	image_t* img = new image_t(other.len * other.bpp/8);
 	img->len = other.len;
 	img->x   = other.x;
 	img->y   = other.y;
@@ -63,7 +63,9 @@ image_t* image_t::copy_image(const image_t& other)
 	img->h   = other.h;
 	img->imageid  = IMG_EMPTY;
 	img->zoomable = other.zoomable;
-	memcpy(img->data, other.data, other.len * sizeof(uint16));
+    img->bpp = other.bpp;
+    
+	memcpy(img->data, other.data, other.len * other.bpp/8);
 	return img;
 }
 
@@ -99,44 +101,50 @@ image_t *image_t::copy_rotate(const sint16 angle) const
 
 	image_t* target_image = copy_image(*this);
 
-	// the format is
-	// transparent PIXELVAL number
-	// PIXEL number of pixels, data*PIXVAL
-	// repeated until zero transparent pixels
-	// in pak64 case it is 0 64 64*PIXVAL 0 for a single line, e.g. 70 bytes per line for pak64
-	// first data will have an offset of two PIXVAL
-	// now you should understand below arithmetics ...
+    if(bpp == 16) {
+        // the format is
+        // transparent PIXELVAL number
+        // PIXEL number of pixels, data*PIXVAL
+        // repeated until zero transparent pixels
+        // in pak64 case it is 0 64 64*PIXVAL 0 for a single line, e.g. 70 bytes per line for pak64
+        // first data will have an offset of two PIXVAL
+        // now you should understand below arithmetics ...
 
-	sint16        const x_y    = w;
-	uint16 const* const src    = get_data();
-	uint16*       const target = target_image->get_data();
+        sint16        const x_y    = w;
+        uint16 const* const src    = get_data();
+        uint16*       const target = target_image->get_data();
 
-	switch(angle) {
-		case 90:
-			for(int j=0; j<x_y; j++) {
-				for(int i=0; i<x_y; i++) {
-					target[j*(x_y+3)+i+2]=src[i*(x_y+3)+(x_y-j-1)+2];
-				}
-			}
-		break;
+        switch(angle) {
+            case 90:
+                for(int j=0; j<x_y; j++) {
+                    for(int i=0; i<x_y; i++) {
+                        target[j*(x_y+3)+i+2]=src[i*(x_y+3)+(x_y-j-1)+2];
+                    }
+                }
+            break;
 
-		case 180:
-			for(int j=0; j<x_y; j++) {
-				for(int i=0; i<x_y; i++) {
-					target[j*(x_y+3)+i+2]=src[(x_y-j-1)*(x_y+3)+(x_y-i-1)+2];
-				}
-			}
-		break;
-		case 270:
-			for(int j=0; j<x_y; j++) {
-				for(int i=0; i<x_y; i++) {
-					target[j*(x_y+3)+i+2]=src[(x_y-i-1)*(x_y+3)+j+2];
-				}
-			}
-		break;
-		default: // no rotation, just converts to array
-			;
-	}
+            case 180:
+                for(int j=0; j<x_y; j++) {
+                    for(int i=0; i<x_y; i++) {
+                        target[j*(x_y+3)+i+2]=src[(x_y-j-1)*(x_y+3)+(x_y-i-1)+2];
+                    }
+                }
+            break;
+            case 270:
+                for(int j=0; j<x_y; j++) {
+                    for(int i=0; i<x_y; i++) {
+                        target[j*(x_y+3)+i+2]=src[(x_y-i-1)*(x_y+3)+j+2];
+                    }
+                }
+            break;
+            default: // no rotation, just converts to array
+                ;
+        }
+    }
+    else {
+        
+    }
+    
 	return target_image;
 }
 

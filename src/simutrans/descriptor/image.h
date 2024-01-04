@@ -37,9 +37,10 @@ public:
 	scr_coord_val w;  ///< width of data[] image
 	scr_coord_val h;  ///< height of data[] image
 	image_id imageid; ///< set by register_image()
-	uint8 zoomable;   ///< some images may not be zoomed i.e. icons
 	uint16_t *data;     ///< RLE encoded image data
-
+	uint8 zoomable;   ///< some images may not be zoomed i.e. icons
+        uint8 bpp;        // can only be 16 or 32 currently
+        
 	image_t(size_t len_=0) : data(NULL)
 	{
 		if (len_) {
