@@ -333,8 +333,12 @@ void weg_t::set_images(image_type typ, uint8 ribi, bool snow, bool switch_nw)
 			set_foreground_image( desc->get_slope_image_id( (slope_t::type)ribi, snow, true ) );
 			break;
 		case image_switch:
-			set_image( desc->get_switch_image_id(ribi, snow, switch_nw) );
+        {
+            image_id id = desc->get_switch_image_id(ribi, snow, switch_nw);
+            // dbg->message("weg_t", "ribi=%d snow=%d switch_nw=%d -> id=%d", ribi, snow, switch_nw, id);
+			set_image( id );
 			set_foreground_image( desc->get_switch_image_id(ribi, snow, switch_nw, true) );
+        }
 			break;
 		case image_diagonal:
 			set_image( desc->get_diagonal_image_id(ribi, snow) );

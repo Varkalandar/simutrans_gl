@@ -27,6 +27,15 @@ void way_reader_t::register_obj(obj_desc_t *&data)
 	checksum_t *chk = new checksum_t();
 	desc->calc_checksum(chk);
 	pakset_info_t::append(desc->get_name(), get_type_name(), chk);
+/*    
+    const image_list_t * list = desc->get_child<image_list_t>(2);
+    dbg->message("way_reader_t::register_obj()", "%s has %d images", desc->get_name(), list->get_count());
+    
+    for(int i=0; i<list->get_count(); i++)
+    {
+        dbg->message("way_reader_t::register_obj()", "image %d has id %d", i, list->get_image_id(i));
+    }
+ */
 }
 
 

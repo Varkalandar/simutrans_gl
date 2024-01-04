@@ -165,13 +165,13 @@ void way_writer_t::write_obj(FILE* outfp, obj_node_t& parent, tabfileobj_t& obj)
 					string str = obj.get(buf);
 					keys.append(str);
 				}
-
+/*
                 if(obj.get("street_light"))
                 {
 					string str = obj.get("street_light");
 					keys.append(str);
                 }
-                
+*/                
 				imagelist_writer_t::instance()->write_obj(outfp, node, keys);
 
 				keys.clear();
