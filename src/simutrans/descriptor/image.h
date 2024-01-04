@@ -53,12 +53,7 @@ public:
 		delete [] data;
 	}
 
-	void alloc(size_t len_)
-	{
-		delete [] data;
-		data = new uint16_t[len_];
-		len = len_;
-	}
+	void alloc(size_t len_);
 
 	static image_t* copy_image(const image_t& other);
 

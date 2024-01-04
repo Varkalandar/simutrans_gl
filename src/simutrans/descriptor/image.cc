@@ -53,6 +53,16 @@ const uint32 image_t::rgbtab[SPECIAL] = {
 };
 
 
+void image_t::alloc(size_t len_)
+{
+    delete [] data;
+    data = new uint16_t[len_];
+    len = len_;
+
+    dbg->message("image_t::alloc()", "Allocated %d 16 bit words", len);
+}
+
+
 image_t* image_t::copy_image(const image_t& other)
 {
 	image_t* img = new image_t(other.len * other.bpp/8);

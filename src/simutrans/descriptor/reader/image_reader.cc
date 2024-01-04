@@ -118,7 +118,7 @@ obj_desc_t *image_reader_t::read_node(FILE *fp, obj_node_info_t &node)
 		desc->w = decode_sint16(p);
 		p++; // skip version information
 		desc->h = decode_sint16(p);
-		desc->alloc((node.size-10)); // len
+		desc->alloc(desc->w * desc->h * 2); // will set len, counting 16 bit words
 		desc->zoomable = decode_uint8(p);
 		desc->imageid = IMG_EMPTY;
 
@@ -131,7 +131,7 @@ obj_desc_t *image_reader_t::read_node(FILE *fp, obj_node_info_t &node)
 		skip_reading_pixels_if_no_graphics;
 		uint32 * dest = (uint32 *)desc->data;
 		if (desc->h > 0) {
-			for (uint i = 0; i < desc->len/4; i++) {
+			for (uint i = 0; i < desc->len/2; i++) {
 				*dest++ = decode_uint32(p);
 			}
 		}
@@ -218,7 +218,7 @@ adjust_image:
 		bool do_register_image = true;
 		uint32 adler = adler32(0L, NULL, 0 );
 		// remember len is sizeof(uint16)!
-		adler = adler32(adler, (const Bytef *)(desc->data), desc->len * (version <= 3 ? 2 : 1));
+		adler = adler32(adler, (const Bytef *)(desc->data), desc->len * desc->bpp / 8);
 		static inthashtable_tpl<uint32, image_t *> images_adlers;
 		image_t *same = images_adlers.get(adler);
 		if (same) {
