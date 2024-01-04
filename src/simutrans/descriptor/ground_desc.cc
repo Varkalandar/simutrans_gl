@@ -288,58 +288,64 @@ static image_t* create_texture_from_tile(const image_t* image, const image_t* re
 
 	assert(ref->w == ref->y + ref->h  &&  ref->x == 0);
 
-	const sint32 ref_w = ref->w;
-	const sint32 height= image->get_pic()->h;
+    if(ref->bpp == 16) {
+        const sint32 ref_w = ref->w;
+        const sint32 height= image->get_pic()->h;
 
-	// decode image and put it into dest
-	const uint16 * sp = image->get_data();
+        // decode image and put it into dest
+        const uint16 * sp = image->get_data();
 
-	for(int y = 0;  y < height;  y++  ) {
+        for(int y = 0;  y < height;  y++  ) {
 
-		int x = image->x;
-		uint16 runlen = *sp++;
+            int x = image->x;
+            uint16 runlen = *sp++;
 
-		do {
-			// we start with a clear run
-			x += runlen;
+            do {
+                // we start with a clear run
+                x += runlen;
 
-			// now get colored pixels
-			runlen = (*sp++);
+                // now get colored pixels
+                runlen = (*sp++);
 
-			for(uint16 i=0; i<runlen; i++) {
-				uint16 p = *sp++;
+                for(uint16 i=0; i<runlen; i++) {
+                    uint16 p = *sp++;
 
-				// macro to copy pixels into rle-encoded image, with range check
-#				define copypixel(xx, yy) \
-				if (ref->y <= (yy)  &&  (yy) < ref->h  &&  0 <= (xx)  &&  (xx) < ref_w) { \
-					size_t const index = (ref_w + 3) * (yy - ref->y) + xx + 2; \
-					assert(index < image_dest->len); \
-					sp2[index] = p; \
-				}
-				/* Put multiple copies into dest image
-				 *
-				 * image is assumed to be tile shaped,
-				 * and is copied four times to cover tiles of neighboring tiles.
-				 *
-				 * copy +   copy
-				 * | /     \  |
-				 * +  image   +
-				 * | \     /  |
-				 * copy +   copy
-				 *
-				 * ref image is assumed to be rectangular,
-				 * it is used to fill holes due to missing pixels in image.
-				 */
-				copypixel(x, y + image->y);
-				copypixel(x + ref_w/2, y + image->y + ref_w/4);
-				copypixel(x - ref_w/2, y + image->y + ref_w/4);
-				copypixel(x + ref_w/2, y + image->y - ref_w/4);
-				copypixel(x - ref_w/2, y + image->y - ref_w/4);
+                    // macro to copy pixels into rle-encoded image, with range check
+    #				define copypixel(xx, yy) \
+                    if (ref->y <= (yy)  &&  (yy) < ref->h  &&  0 <= (xx)  &&  (xx) < ref_w) { \
+                        size_t const index = (ref_w + 3) * (yy - ref->y) + xx + 2; \
+                        assert(index < image_dest->len); \
+                        sp2[index] = p; \
+                    }
+                    /* Put multiple copies into dest image
+                     *
+                     * image is assumed to be tile shaped,
+                     * and is copied four times to cover tiles of neighboring tiles.
+                     *
+                     * copy +   copy
+                     * | /     \  |
+                     * +  image   +
+                     * | \     /  |
+                     * copy +   copy
+                     *
+                     * ref image is assumed to be rectangular,
+                     * it is used to fill holes due to missing pixels in image.
+                     */
+                    copypixel(x, y + image->y);
+                    copypixel(x + ref_w/2, y + image->y + ref_w/4);
+                    copypixel(x - ref_w/2, y + image->y + ref_w/4);
+                    copypixel(x + ref_w/2, y + image->y - ref_w/4);
+                    copypixel(x - ref_w/2, y + image->y - ref_w/4);
 
-				x++;
-			}
-		} while(  (runlen = *sp++)  );
-	}
+                    x++;
+                }
+            } while(  (runlen = *sp++)  );
+        }
+    }
+    else {
+        
+    }
+        
 	// image_dest not registered
 	return image_dest;
 #undef copypixel

@@ -65,7 +65,7 @@ void image_t::alloc(size_t len_)
 
 image_t* image_t::copy_image(const image_t& other)
 {
-	image_t* img = new image_t(other.len * other.bpp/8);
+	image_t* img = new image_t(other.len);
 	img->len = other.len;
 	img->x   = other.x;
 	img->y   = other.y;
@@ -75,7 +75,7 @@ image_t* image_t::copy_image(const image_t& other)
 	img->zoomable = other.zoomable;
     img->bpp = other.bpp;
     
-	memcpy(img->data, other.data, other.len * other.bpp/8);
+	memcpy(img->data, other.data, other.len * 2);
 	return img;
 }
 

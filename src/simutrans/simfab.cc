@@ -750,6 +750,7 @@ fabrik_t::fabrik_t(loadsave_t* file)
 	consumer_active_last_month = 0;
 	pos = koord3d::invalid;
 	transformers.clear();
+    currently_producing = false;
 
 	rdwr(file);
 
@@ -784,7 +785,8 @@ fabrik_t::fabrik_t(koord3d pos_, player_t* owner, const factory_desc_t* factory_
 {
 	this->pos.z = welt->max_hgt(pos.get_2d());
 	pos_origin = pos;
-
+    currently_producing = false;
+    
 	this->owner = owner;
 	prodfactor_electric = 0;
 	prodfactor_pax = 0;
