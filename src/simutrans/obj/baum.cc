@@ -188,7 +188,7 @@ rgba_t baum_t::get_outline_colour() const
 void baum_t::recalc_outline_color()
 {
 	outline_color = (env_t::hide_trees  &&  env_t::hide_with_transparency) ?
-		color_idx_to_rgb(COL_BLACK) : RGBA_BLACK;
+		rgba_t(1, 1, 1, 0.3) : RGBA_WHITE;
 }
 
 
