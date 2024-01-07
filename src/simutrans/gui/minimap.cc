@@ -67,50 +67,42 @@ bool minimap_t::is_visible = false;
 static int map_tex_cur_width = 0;
 static int map_tex_cur_height = 0;
 
-#define MAX_MAP_TYPE_LAND 31
+#define MAX_MAP_TYPE_LAND 23
 #define MAX_MAP_TYPE_WATER 5
 
 // color for the land
 static const uint8 map_type_color[MAX_MAP_TYPE_WATER+MAX_MAP_TYPE_LAND] =
 {
 	// water level
-	97,
 	99,
+	100,
 	19,
 	21,
 	23,
 	// terrain level
-	160,
-	161,
-	162,
-	163,
-	164,
-	165,
-	166,
-	167,
-	205,
-	206,
-	207,
-	172,
-	174,
-	159,
-	COL_LIGHT_ORANGE,
-	COL_TOLL,
-	156,
-	154,
-	115,
-	114,
-	113,
-	112,
-	216,
-	217,
-	218,
-	219,
-	220,
-	COL_LILAC,
-	222,
+	26, // shore // 161,
+	204, // greens, gettiong darker// 162,
+	203, // 163,
+	202, // 164,
+	201, // 165,
+	200, // 166,
+	162,// more lush greens// 167,
+	161,// 205,
+	160, // 206,
+	193, // transition to bown // 207,
+	114, // 172,
+	178, //  174,
+	105, // violet // 159,
+	209, // rock grey now // COL_LIGHT_ORANGE,
+	210, // COL_TOLL,
+	211, // 156,
+	212, // 154,
+	213, // 115,
 	223,
-	224
+	214, // 114,
+	215, // 113,
+	215, // 112,
+	215, // 216,
 };
 
 const uint8 minimap_t::severity_color[MAX_SEVERITY_COLORS] =
@@ -717,25 +709,27 @@ void minimap_t::set_map_color_clip(sint16 x, sint16 y, rgb888_t color)
 {
     // dbg->message("set_map_color_clip", "Setting %d %d", x, y);
     
-    uint8_t data[4];
-    data[0] = color.r;
-    data[1] = color.g;
-    data[2] = color.b;
-    data[3] = 255;
-    map_texture->update_region(x, y, 1, 1, data);
+    if(x >= 0 && y >= 0 && x<cur_size.w && y<cur_size.h) {        
+        uint8_t data[4];
+        data[0] = color.r;
+        data[1] = color.g;
+        data[2] = color.b;
+        data[3] = 255;
+        map_texture->update_region(x, y, 1, 1, data);
+    }
 }
 
 
-void minimap_t::set_map_color(koord k_, const rgb888_t color)
+void minimap_t::set_map_color(koord k, const rgb888_t color)
 {
 	// if map is in normal mode, set new color for map
 	// otherwise do nothing
 	// result: convois will not "paint over" special maps
-	if(map_texture == NULL || !world->is_within_limits(k_)) {
+	if(map_texture == NULL || !world->is_within_limits(k)) {
 		return;
 	}
 
-	scr_coord c = map_to_screen_coord(k_);
+	scr_coord c = map_to_screen_coord(k);
 	c -= cur_off;
 
 	if(  isometric  ) {
@@ -761,7 +755,7 @@ void minimap_t::set_map_color(koord k_, const rgb888_t color)
 		}
 	}
 	else {
-        set_map_color_clip(k_.x - cur_off.x/zoom_in, k_.y - cur_off.y/zoom_in, color);
+        set_map_color_clip(k.x - cur_off.x/zoom_in, k.y - cur_off.y/zoom_in, color);
 	}
 }
 
@@ -773,20 +767,19 @@ void minimap_t::set_map_color(koord k_, const rgb888_t color)
  */
 rgb888_t minimap_t::calc_height_color(const sint16 hoehe, const sint16 groundwater)
 {
-	sint16 relative_index;
+	int relative_index;
 	if(  hoehe>groundwater  ) {
 		// adjust index for world_maximum_height
-		relative_index = (hoehe-groundwater)*MAX_MAP_TYPE_LAND/world->get_settings().get_maximumheight();
-		if(  (hoehe-groundwater)*MAX_MAP_TYPE_LAND%world->get_settings().get_maximumheight()!=0  ) {
-			// to avoid relative_index==0
-			relative_index += 1;
-		}
+        const settings_t & sets = world->get_settings();
+        int snow_start = sets.get_climate_borders(arctic_climate, 0);
+        
+		relative_index = (hoehe-groundwater) * (MAX_MAP_TYPE_LAND - 4) / snow_start;
 	}
 	else {
 		relative_index = hoehe-groundwater;
 	}
 
-	return get_color_rgb(map_type_color[clamp(relative_index+MAX_MAP_TYPE_WATER-1, 0, MAX_MAP_TYPE_WATER+MAX_MAP_TYPE_LAND-1)]);
+	return get_color_rgb(map_type_color[clamp(relative_index+MAX_MAP_TYPE_WATER, 0, MAX_MAP_TYPE_WATER+MAX_MAP_TYPE_LAND-1)]);
 }
 
 
