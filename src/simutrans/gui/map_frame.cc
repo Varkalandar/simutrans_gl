@@ -7,8 +7,8 @@
 #include <stdio.h>
 #include <cmath>
 
-#include "minimap.h"
 #include "map_frame.h"
+#include "minimap.h"
 
 #include "simwin.h"
 #include "../sys/simsys.h"

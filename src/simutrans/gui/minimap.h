@@ -11,8 +11,6 @@
 #include "../halthandle.h"
 #include "../simline.h"
 #include "../convoihandle.h"
-#include "../dataobj/schedule.h"
-// #include "../tpl/array2d_tpl.h"
 #include "../tpl/vector_tpl.h"
 
 
@@ -214,8 +212,9 @@ public:
 
 	// HACK! since we cannot set cleanly the current offset/size, we use this helper function
 	void set_xy_offset_size( scr_coord off, scr_size size ) {
-		new_off = off;
-		new_size = size;
+            new_off = off;
+            new_size = size;
+            needs_redraw = true;
 	}
 
 	rgb888_t calc_map_pixel_color(const koord k);

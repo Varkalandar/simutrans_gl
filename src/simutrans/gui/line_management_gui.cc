@@ -4,7 +4,6 @@
  */
 
 #include "simwin.h"
-#include "minimap.h"
 
 #include "components/gui_convoiinfo.h"
 
@@ -27,6 +26,7 @@
 
 #include "halt_list_stats.h"
 #include "line_management_gui.h"
+#include "minimap.h"
 
 #define CHART_HEIGHT (100)
 

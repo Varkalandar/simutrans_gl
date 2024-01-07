@@ -3,7 +3,6 @@
  * (see LICENSE.txt)
  */
 
-#include "minimap.h"
 #include "../simevent.h"
 #include "../simcolor.h"
 #include "../simconvoi.h"
@@ -18,6 +17,7 @@
 #include "../world/simcity.h"
 #include "fabrik_info.h"
 #include "simwin.h"
+#include "minimap.h"
 
 #include "../dataobj/translator.h"
 #include "../dataobj/settings.h"
@@ -89,11 +89,11 @@ static const uint8 map_type_color[MAX_MAP_TYPE_WATER+MAX_MAP_TYPE_LAND] =
 	162,// more lush greens// 167,
 	161,// 205,
 	160, // 206,
-	193, // transition to bown // 207,
+	81, // transition to bown // 207,
 	114, // 172,
-	178, //  174,
-	105, // violet // 159,
-	209, // rock grey now // COL_LIGHT_ORANGE,
+	64, // 174,
+	65, // 159,
+	105, // rock grey now // COL_LIGHT_ORANGE,
 	210, // COL_TOLL,
 	211, // 156,
 	212, // 154,
