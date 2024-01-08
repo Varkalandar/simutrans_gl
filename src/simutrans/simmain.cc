@@ -938,9 +938,11 @@ int simu_main(int argc, char** argv)
 		dr_chdir( env_t::base_dir );
 		dr_chdir( "themes" );
 #ifndef __ANDROID__
-		themes_ok = gui_theme_t::themes_init("themes.tab",true,false);
+		// themes_ok = gui_theme_t::themes_init("themes.tab", true, false);
+		themes_ok = gui_theme_t::themes_init("silver.tab", true, false);
 #else
-		themes_ok = gui_theme_t::themes_init("theme-large.tab", true, false);
+		// themes_ok = gui_theme_t::themes_init("theme-large.tab", true, false);
+		themes_ok = gui_theme_t::themes_init("silver-large.tab", true, false);
 #endif
 	}
 	if(  !themes_ok  ) {
