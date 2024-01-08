@@ -353,7 +353,7 @@ void image_writer_t::write_obj(FILE* outfp, obj_node_t& parent, std::string an_i
 	node.write_uint16(outfp, image.x,        0);
 	node.write_uint16(outfp, image.y,        2);
 	node.write_uint16(outfp, image.w,        4);
-	node.write_uint8 (outfp, 4,              6); // version, always at position 6!
+	node.write_uint8 (outfp, 40,             6); // version, always at position 6!
 	node.write_uint16(outfp, image.h,        7);
 	node.write_uint8 (outfp, image.zoomable, 9);
 

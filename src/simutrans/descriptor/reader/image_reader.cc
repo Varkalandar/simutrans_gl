@@ -112,7 +112,7 @@ obj_desc_t *image_reader_t::read_node(FILE *fp, obj_node_info_t &node)
 			}
 		}
 	}
-	else if(version == 4) {
+	else if(version == 40) {
 		desc->x = decode_sint16(p);
 		desc->y = decode_sint16(p);
 		desc->w = decode_sint16(p);
@@ -156,7 +156,7 @@ adjust_image:
 	desc->x = 0;
 	desc->y = 0;
 #else
-	if (version < 4 && !image_has_valid_data(desc)) {
+	if (version < 40 && !image_has_valid_data(desc)) {
 		delete desc;
 		return NULL;
 	}
