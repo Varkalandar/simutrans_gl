@@ -159,7 +159,7 @@ void pak_set_panel_t::draw_logo(const scr_coord_val xpos, const scr_coord_val yp
 	scr_coord_val pak_name_width = display_calc_proportional_string_len_width(pak_name, strlen(pak_name), 0, FS_NORMAL);
 
 	display_proportional_clip_rgb(xpos + (256 - pak_name_width)/2, ypos + 256 + 8, pak_name, ALIGN_LEFT,
-		                          gui_theme_t::gui_highlight_color, false);
+		                          gui_theme_t::gui_color_text, false);
 }
 
 
@@ -463,7 +463,7 @@ void pakselector_t::draw(scr_coord pos, scr_size size)
 
 	const scr_coord_val fh = get_font_height(FS_NORMAL);
 	display_text_proportional_len_clip_rgb(pos.x + (size.w - title_width) / 2, pos.y + 2 + (46 - fh) / 2,
-		                                   title, ALIGN_LEFT, gui_theme_t::gui_highlight_color, false, -1, 0, FS_NORMAL);
+		                                   title, ALIGN_LEFT, gui_theme_t::gui_color_text, false, -1, 0, FS_NORMAL);
 }
 
 
