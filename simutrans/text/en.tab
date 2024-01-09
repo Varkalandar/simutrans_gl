@@ -49,6 +49,8 @@ clf_btn_keine
 none
 climate area percentage
 Size single climate 
+Cost to remove:
+Cost to remove:
 CROSSING_SOUND
 crossign warnings
 FACTORY_SOUND
@@ -298,9 +300,9 @@ With a big festival,\n%s built\na new monument.\n%i citizens rejoiced.
 (%i)-
 (%i) 
 \nBauzeit bis
- until 
+ until
 \nBauzeit von
-\nAppears from 
+\nAppears from year
 \nCan't open heightfield file.\n
 \nCannot open height map.\n
 \ndirection:

@@ -15,7 +15,9 @@ obj_infowin_t::obj_infowin_t(const obj_t* obj) :
 	base_infowin_t(translator::translate( obj->get_name() ), obj->get_owner()),
 	view(obj, scr_size( max(64, get_base_tile_raster_width()), max(56, (get_base_tile_raster_width()*7)/8) ))
 {
-	textarea.set_width( textarea.get_size().w + get_base_tile_raster_width() - 64);
+    scr_coord_val width = max(textarea.get_size().w + 80, textarea.get_size().w + get_base_tile_raster_width() - 64);
+    
+	textarea.set_width(width);
 	fill_buffer();
 	set_embedded(&view);
 }

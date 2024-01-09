@@ -682,6 +682,12 @@ void gebaeude_t::info(cbuffer_t & buf) const
 		buf.append("\n");
 	}
 	else {
+		// belongs to which city?
+		if(!is_factory  &&  ptr.stadt != NULL) {
+			buf.printf(translator::translate("Town: %s\n"), ptr.stadt->get_name());
+		}
+		buf.append("\n");
+
 		const char *desc = tile->get_desc()->get_name();
 		if(desc != NULL) {
 			const char *trans_desc = translator::translate(desc);
@@ -735,28 +741,22 @@ void gebaeude_t::info(cbuffer_t & buf) const
 		}
 		buf.append( "\n\n" );
 
-		// belongs to which city?
-		if(  !is_factory  &&  ptr.stadt != NULL  ) {
-			buf.printf(translator::translate("Town: %s\n"), ptr.stadt->get_name());
-		}
-
 		if(  !get_tile()->get_desc()->is_transport_building()  ) {
-			buf.printf("%s: %d\n", translator::translate("Passagierrate"), get_passagier_level());
-			buf.printf("%s: %d\n", translator::translate("Postrate"),      get_mail_level());
+			buf.printf("%s:\t \ew%d\n", translator::translate("Passagierrate"), get_passagier_level());
+			buf.printf("%s:\t \ew%d\n", translator::translate("Postrate"),      get_mail_level());
+		}
+		if(get_owner()==NULL) {
+			const sint32 v = (sint32)( -welt->get_settings().cst_multiply_remove_haus * (tile->get_desc()->get_level() + 1) / 100 );
+			buf.printf("%s\t \ew%d$\n", translator::translate("Cost to remove:"), v);
 		}
 
 		building_desc_t const& h = *tile->get_desc();
-		buf.printf("%s%u", translator::translate("\nBauzeit von"), h.get_intro_year_month() / 12);
+		buf.printf("%s %04u", translator::translate("\nBauzeit von"), h.get_intro_year_month() / 12);
 		if (h.get_retire_year_month() != DEFAULT_RETIRE_DATE * 12) {
-			buf.printf("%s%u", translator::translate("\nBauzeit bis"), h.get_retire_year_month() / 12);
+			buf.printf("%s %04u", translator::translate("\nBauzeit bis"), h.get_retire_year_month() / 12);
 		}
 
-		buf.append("\n");
-		if(get_owner()==NULL) {
-			const sint32 v = (sint32)( -welt->get_settings().cst_multiply_remove_haus * (tile->get_desc()->get_level() + 1) / 100 );
-			buf.printf("\n%s: %d$\n", translator::translate("Wert"), v);
-		}
-
+/*
 		if (char const* const maker = tile->get_desc()->get_copyright()) {
 			buf.append("\n");
 			buf.printf(translator::translate("Constructed by %s"), maker);
@@ -768,6 +768,7 @@ void gebaeude_t::info(cbuffer_t & buf) const
 		buf.append( stadt_t::orient_city_building( get_pos().get_2d() - tile->get_offset(), tile->get_desc(), koord(3,3) ), 0 );
 		buf.append( "\n" );
 #endif
+ */
 	}
 }
 
