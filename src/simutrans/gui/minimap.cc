@@ -1058,6 +1058,15 @@ rgb888_t minimap_t::calc_map_pixel(const grund_t *gr)
 }
 
 
+void minimap_t::set_xy_offset_size(const scr_coord off, const scr_size size) 
+{
+    needs_redraw = (new_off != off) || (new_size != size);
+
+    new_off = off;
+    new_size = size;
+}
+
+
 rgb888_t minimap_t::calc_map_pixel_color(const koord k)
 {
 	// no pixels visible, so noting to calculate

@@ -211,11 +211,7 @@ public:
 	static minimap_t *get_instance();
 
 	// HACK! since we cannot set cleanly the current offset/size, we use this helper function
-	void set_xy_offset_size( scr_coord off, scr_size size ) {
-            new_off = off;
-            new_size = size;
-            needs_redraw = true;
-	}
+	void set_xy_offset_size(scr_coord off, scr_size size);
 
 	rgb888_t calc_map_pixel_color(const koord k);
 
