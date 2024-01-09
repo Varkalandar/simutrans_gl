@@ -4,6 +4,7 @@
  */
 
 #include "display_settings.h"
+#include "components/gui_spacer.h"
 #include "../simdebug.h"
 #include "../world/simworld.h"
 #include "../display/simimg.h"
@@ -530,8 +531,10 @@ color_gui_t::color_gui_t() :
 	scrolly_station(&station_settings),
 	scrolly_traffic(&traffic_settings)
 {
-	set_table_layout( 1, 0 );
+	set_table_layout(1, 2);
 
+	new_component<gui_spacer_t>(scr_coord(0, 0), scr_size(10, LINESPACE/8));
+    
 	scrolly_gui.set_scroll_amount_y(D_BUTTON_HEIGHT/2);
 	scrolly_map.set_scroll_amount_y(D_BUTTON_HEIGHT/2);
 	scrolly_transparency.set_scroll_amount_y(D_BUTTON_HEIGHT/2);
@@ -555,10 +558,17 @@ color_gui_t::color_gui_t() :
 	gui_settings.borderless.add_listener( this );
 
 	set_resizemode(diagonal_resize);
-	set_min_windowsize( gui_settings.get_min_size()+scr_size(0,D_TAB_HEADER_HEIGHT) );
-	set_windowsize( get_min_windowsize()+map_settings.get_min_size() );
-	resize( scr_coord( 0, 0 ) );
+    
+    scr_size min_size = gui_settings.get_min_size();
+	set_min_windowsize(min_size);
+    
+    scr_size map_min_size = map_settings.get_min_size();
+    scr_size win_size = (map_min_size.w > min_size.w || map_min_size.h > min_size.h) ? map_min_size : min_size;    
+	set_windowsize(win_size);
+    
+	resize(scr_coord(0, 0));
 }
+
 
 bool color_gui_t::action_triggered( gui_action_creator_t *comp, value_t)
 {
