@@ -401,21 +401,26 @@ image_id gebaeude_t::get_outline_image() const
 }
 
 
-/* gives outline colour and plots background tile if needed for transparent view */
+/**
+ * Gives outline color needed for transparent view 
+ */
 rgba_t gebaeude_t::get_outline_colour() const
 {
-	uint8 colours[] = { COL_BLACK, COL_YELLOW, COL_YELLOW, COL_PURPLE, COL_RED, COL_GREEN };
-	rgba_t disp_colour = RGBA_BLACK;
-	if(env_t::hide_buildings!=env_t::NOT_HIDE) {
+	static uint8 colors[] = {COL_BLACK, COL_YELLOW, COL_YELLOW, COL_PURPLE, COL_RED, COL_GREEN};
+	rgba_t disp_color (1, 1, 1, 0.3f);
+	
+    if(env_t::hide_buildings != env_t::NOT_HIDE) {
 		if(is_city_building()) {
-			disp_colour = color_idx_to_rgb(colours[0]);
+			disp_color = rgba_t(1, 1, 1, 0.3f);
 		}
-		else if (env_t::hide_buildings == env_t::ALL_HIDDEN_BUILDING && tile->get_desc()->get_type() < building_desc_t::others) {
+		else if(env_t::hide_buildings == env_t::ALL_HIDDEN_BUILDING && tile->get_desc()->get_type() < building_desc_t::others) {
 			// special building
-			disp_colour = color_idx_to_rgb(colours[tile->get_desc()->get_type()]);
+			disp_color = color_idx_to_rgb(colors[tile->get_desc()->get_type()]);
+            disp_color.alpha = 0.3f;
 		}
 	}
-	return disp_colour;
+
+	return disp_color;
 }
 
 
