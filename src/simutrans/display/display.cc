@@ -49,11 +49,46 @@ static rgba_t handle_color_sequences(utf32 code, rgba_t default_color)
 }
 
 
+static int handle_aligned_text(utf8_decoder_t & decoder, font_t * font, 
+                               scr_coord_val x, scr_coord_val y)
+{
+    utf32 r = decoder.next();
+    utf32 c = decoder.next();
+    utf32 d1 = decoder.next() - '0';
+    
+    // find the width of the reference letter
+    int wc = font->get_glyph_width(c);
+    int cell_width = wc * d1;
+
+    const utf8 * text = decoder.get_position();
+
+    size_t len = 0;
+    while(text[len] != '\n') len ++;
+    
+
+    int text_width = display_calc_string_len_width((const char*)text, len, 0, font);
+    
+    int xx = cell_width - text_width;
+
+    // dbg->message("handle_aligned_text()", "len=%d cell_width=%d text_with=%d", len, cell_width, text_width);
+    
+    
+    while(decoder.has_next()) {
+        c = decoder.next();
+        if(c == '\n') break;
+		const int gw = display_glyph(x + xx, y, c, font);
+		x += gw;
+    }    
+
+    return x + xx; 
+}
+
+
 /**
  * len parameter added - use -1 for previous behaviour.
  * completely renovated for unicode and 10 bit width and variable height
  */
-int display_text_proportional_len_clip_rgb(scr_coord_val x, scr_coord_val y,
+int display_text_proportional_len_clip_rgb(scr_coord_val x, const scr_coord_val y,
 	                                       const char* txt, control_alignment_t flags,
 	                                       const rgba_t default_color, bool dirty,
 	                                       sint32 len, sint32 spacing, font_size_t size)
@@ -120,6 +155,11 @@ int display_text_proportional_len_clip_rgb(scr_coord_val x, scr_coord_val y,
 			continue; // nothing to see
 		}
 
+        if(c == '\a') {
+            x = handle_aligned_text(decoder, font, x, y);
+			break;
+		}
+        
 		const int gw = display_glyph(x, y, c, font);
 		x += gw + spacing;
 	}
@@ -464,7 +504,13 @@ int display_calc_proportional_string_len_width(const char *text,
 	                                           int spacing,
 	                                           font_size_t size)
 {
-	const font_t* const fnt = (size == FS_NORMAL) ? &default_font : &headline_font;
+	const font_t* const font = (size == FS_NORMAL) ? &default_font : &headline_font;
+    return display_calc_string_len_width(text, len, spacing, font);
+}
+
+    
+int display_calc_string_len_width(const char* text, size_t len, int spacing, const font_t *font)
+{
 	unsigned int width = 0;
 
 	// decode char
@@ -482,11 +528,20 @@ int display_calc_proportional_string_len_width(const char *text,
 			continue;
 		}
 
+		if(iUnicode == '\e') {
+            text ++;
+			continue;
+		}
+
+		if(iUnicode == '\a') {
+            text += 3;
+			continue;
+		}
 
 		if(  iUnicode == UNICODE_NUL ||  iUnicode == '\n') {
 			return width;
 		}
-		width += fnt->get_glyph_advance(iUnicode) + spacing;
+		width += font->get_glyph_advance(iUnicode) + spacing;
 	}
 
 	return width;

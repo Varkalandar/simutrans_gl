@@ -16,6 +16,7 @@
 #include "alignment.h"
 #include "rgba.h"
 
+class font_t;
 
 enum font_size_t
 {
@@ -116,6 +117,9 @@ size_t display_fit_proportional( const char *text, scr_coord_val max_width, scr_
  * extended for universal font routines with unicode support
  */
 int display_calc_proportional_string_len_width(const char* text, size_t len, int spacing, font_size_t size);
+
+int display_calc_string_len_width(const char* text, size_t len, int spacing, const font_t *font);
+
 
 /**
  * display_calc_proportional_multiline_string_len_width
