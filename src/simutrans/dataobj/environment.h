@@ -516,7 +516,6 @@ public:
 	 */
 	static void rdwr(loadsave_t *file);
 
-
         /**
          * Decodes a color string like #AARRGGBB.
          * 
@@ -526,6 +525,10 @@ public:
          * @return the color
          */
         static rgba_t decode_color(const char * color_string, rgba_t def, rgb888_t *color_rgb);
+
+	/// Name of tutorial scenario for the current pakset.
+	/// Defaults to "tutorial".
+	static std::string pakset_tutorial_dir;
 };
 
 #endif

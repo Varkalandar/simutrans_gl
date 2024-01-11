@@ -8,6 +8,7 @@
 
 #include "../simdebug.h"
 #include "../world/simworld.h"
+#include "../tool/simmenu.h"
 #include "simwin.h"
 #include "../display/simimg.h"
 #include "../simmesg.h"
@@ -43,13 +44,13 @@
 
 #include "components/gui_spacer.h"
 
+
+#include "banner.h"
 #include "sprachen.h"
 #include "climates.h"
 #include "settings_frame.h"
-#include "loadsave_frame.h"
 #include "load_relief_frame.h"
 #include "messagebox.h"
-#include "scenario_frame.h"
 
 
 // Local adjustment
@@ -249,27 +250,17 @@ welt_gui_t::welt_gui_t(settings_t* const sets_par) :
 
 	new_component<gui_spacer_t>(scr_coord(0, 0), scr_size(10, LINESPACE/4));
 
-	add_table(2,2)->set_force_equal_columns(true);
+	add_table(2,0)->set_force_equal_columns(true);
 	{
-		// load game
-		load_game.init(button_t::roundbox | button_t::flexible, "Load game");
-		load_game.add_listener( this );
-		add_component( &load_game );
-
-		// load scenario
-		load_scenario.init(button_t::roundbox | button_t::flexible,"Load scenario");
-		load_scenario.add_listener( this );
-		add_component( &load_scenario );
-
 		// start game
 		start_game.init(button_t::roundbox | button_t::flexible, "Starte Spiel");
 		start_game.add_listener( this );
 		add_component( &start_game );
 
-		// quit game
-		quit_game.init(button_t::roundbox | button_t::flexible,"Beenden");
-		quit_game.add_listener( this );
-		add_component( &quit_game );
+		// return to menu
+		return_menu.init(button_t::roundbox | button_t::flexible,"Return to menu");
+		return_menu.add_listener( this );
+		add_component( &return_menu );
 	}
 	end_table();
 
@@ -523,20 +514,17 @@ bool welt_gui_t::action_triggered( gui_action_creator_t *comp,value_t v)
 			open_climate_gui.pressed = true;
 		}
 	}
-	else if(comp==&load_game) {
-		welt->get_message()->clear();
-		create_win( new loadsave_frame_t(true), w_info, magic_load_t);
-	}
-	else if(comp==&load_scenario) {
-		destroy_all_win(true);
-		welt->get_message()->clear();
-		create_win( new scenario_frame_t(), w_info, magic_load_scenario );
-	}
 	else if(comp==&start_game) {
 		destroy_all_win(true);
 		welt->get_message()->clear();
 		create_win({ 200, 100 }, new news_img("Erzeuge neue Karte.\n", skinverwaltung_t::neueweltsymbol->get_image_id(0)), w_info, magic_none);
-		if(loaded_heightfield) {
+
+        // apparently this resets/stops a running game?
+        tool_t::simple_tool[TOOL_QUIT]->set_default_param("n");
+        welt->set_tool(tool_t::simple_tool[TOOL_QUIT], NULL);
+        tool_t::simple_tool[TOOL_QUIT]->set_default_param(0);
+		
+        if(loaded_heightfield) {
 			welt->load_heightfield(&env_t::default_settings);
 		}
 		else {
@@ -554,9 +542,9 @@ bool welt_gui_t::action_triggered( gui_action_creator_t *comp,value_t v)
 			file.close();
 		}
 	}
-	else if(comp==&quit_game) {
+	else if(comp==&return_menu) {
 		destroy_all_win(true);
-		env_t::quit_simutrans = true;
+		banner_t::show_banner();
 	}
 
 	if(knr>=0) {

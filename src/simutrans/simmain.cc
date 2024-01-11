@@ -1278,8 +1278,6 @@ int simu_main(int argc, char** argv)
 	bool old_restore_UI = env_t::restore_UI;
 	if(  new_world  &&  env_t::reload_and_save_on_quit  ) {
 		// construct from pak name an autosave if requested
-		loadsave_t file;
-
 		std::string pak_name( "autosave-" );
 		pak_name.append( env_t::pak_name );
 		pak_name.erase( pak_name.length()-1 );
@@ -1567,15 +1565,13 @@ int simu_main(int argc, char** argv)
 		// play next tune?
 		check_midi();
 
-		if(  !env_t::networkmode  &&  new_world  ) {
+		if(  new_world  ) {
 			dbg->message("simu_main()", "Show banner ... no, skip to new world directly");
 			ticker::add_msg("Welcome to Simutrans", koord3d::invalid, color_idx_to_rgb(COL_SOFT_BLUE));
 			// modal_dialogue( new banner_t(), magic_none, welt, never_quit );
+
 			// only show new world, if no other dialogue is active ...
 			new_world = win_get_open_count()==0;
-		}
-		if(  env_t::quit_simutrans  ) {
-			break;
 		}
 
 		// to purge all previous old messages
@@ -1590,12 +1586,6 @@ int simu_main(int argc, char** argv)
 			pause_after_load = false;
 		}
 
-		if(  new_world  ) {
-			modal_dialogue( new welt_gui_t(&env_t::default_settings), magic_welt_gui_t, welt, never_quit );
-			if(  env_t::quit_simutrans  ) {
-				break;
-			}
-		}
 		dbg->message("simu_main()", "Running world, pause=%i, fast forward=%i ... ", welt->is_paused(), welt->is_fast_forward() );
 		loadgame = ""; // only first time
 

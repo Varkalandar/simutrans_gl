@@ -40,6 +40,7 @@ private:
 	bool        in_action;             //@< To avoid double mouse action
 	bool        only_directories;      //@< Search for directories (used in pak_selector)
 	bool        searchpath_defined;    //@< Is default path defined?
+	bool        is_back_to_menu;       //@< Open the banner menu on cancel
 
 	void add_section(std::string &name);
 
@@ -134,7 +135,7 @@ protected:
 
 public:
 
-	savegame_frame_t(const char *suffix, bool only_directorie, const char *path, bool delete_enabled = true, bool show_divider = true);
+	savegame_frame_t(const char *suffix, bool only_directorie, const char *path, const bool delete_enabled = true, bool show_divider = true, const bool back_to_menu = false );
 
 	virtual ~savegame_frame_t();
 

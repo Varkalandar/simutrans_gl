@@ -21,6 +21,7 @@
 #include "scenario_info.h"
 #include "pakinstaller.h"
 #include "server_frame.h"
+#include "welt.h"
 #include "../dataobj/scenario.h"
 #include "../dataobj/translator.h"
 #include "../dataobj/environment.h"
@@ -66,10 +67,11 @@ optionen_gui_t::optionen_gui_t() :
 
 	for(  uint i=0;  i<lengthof(option_buttons);  i++  ) {
 
-		add_component(option_buttons + i);
 		option_buttons[i].init(button_t::roundbox | button_t::flexible, option_buttons_text[i]);
 		option_buttons[i].add_listener(this);
 
+        add_component(option_buttons + i);
+        
 		if (i == BUTTON_SCENARIO_INFO) {
 			// Enable/disable scenario button
 			if(  !welt->get_scenario()->active()  ) {
@@ -136,9 +138,8 @@ bool optionen_gui_t::action_triggered( gui_action_creator_t *comp,value_t /* */)
 	}
 	else if (comp == option_buttons + BUTTON_NEW_GAME) {
 		// create new world
-		tool_t::simple_tool[TOOL_QUIT]->set_default_param("n");
-		welt->set_tool(tool_t::simple_tool[TOOL_QUIT], NULL);
-		tool_t::simple_tool[TOOL_QUIT]->set_default_param(0);
+		destroy_all_win(true);
+		create_win( new welt_gui_t(&env_t::default_settings), w_info, magic_welt_gui_t );
 	}
 	else if (comp == option_buttons + BUTTON_INSTALL) {
 #if !defined(USE_OWN_PAKINSTALL)  &&  defined(_WIN32)
