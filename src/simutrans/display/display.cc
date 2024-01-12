@@ -49,12 +49,23 @@ static rgba_t handle_color_sequences(utf32 code, rgba_t default_color)
 }
 
 
-static int handle_aligned_text(utf8_decoder_t & decoder, font_t * font, 
+/**
+ * This procedure takes a format argument like \arN5 with r being the alignment,
+ * N being the reference character for width calculations and the number being
+ * the multiplier of this width.
+ * 
+ * @param decoder The decoder will deliver the characters to be displayed
+ * @param font The font to use for display
+ * @param x X coordinate of the text on screen
+ * @param y Y coordinate of the text on screen
+ * @return The width of the produced output
+ */
+static int handle_aligned_text(utf8_decoder_t & decoder, const font_t * font, 
                                scr_coord_val x, scr_coord_val y)
 {
     utf32 r = decoder.next();
     utf32 c = decoder.next();
-    utf32 d1 = decoder.next() - '0';
+    utf32 d1 = decoder.next() - '0' + 1;
     
     // find the width of the reference letter
     int wc = font->get_glyph_width(c);
@@ -64,14 +75,12 @@ static int handle_aligned_text(utf8_decoder_t & decoder, font_t * font,
 
     size_t len = 0;
     while(text[len] != '\n') len ++;
-    
 
     int text_width = display_calc_string_len_width((const char*)text, len, 0, font);
     
     int xx = cell_width - text_width;
 
     // dbg->message("handle_aligned_text()", "len=%d cell_width=%d text_with=%d", len, cell_width, text_width);
-    
     
     while(decoder.has_next()) {
         c = decoder.next();
@@ -80,7 +89,7 @@ static int handle_aligned_text(utf8_decoder_t & decoder, font_t * font,
 		x += gw;
     }    
 
-    return x + xx; 
+    return cell_width; 
 }
 
 
@@ -120,7 +129,6 @@ int display_text_proportional_len_clip_rgb(scr_coord_val x, const scr_coord_val 
 			break;
 	}
 
-
 	// store the initial x (for dirty marking)
 	const scr_coord_val x0 = x;
 
@@ -156,7 +164,7 @@ int display_text_proportional_len_clip_rgb(scr_coord_val x, const scr_coord_val 
 		}
 
         if(c == '\a') {
-            x = handle_aligned_text(decoder, font, x, y);
+            x += handle_aligned_text(decoder, font, x, y);
 			break;
 		}
         
@@ -513,14 +521,12 @@ int display_calc_string_len_width(const char* text, size_t len, int spacing, con
 {
 	unsigned int width = 0;
 
-	// decode char
-	const char *const end = text + len;
-	while(  text < end  ) {
-		const utf8 *p = reinterpret_cast<const utf8 *>(text);
-		const utf32 iUnicode = utf8_decoder_t::decode(p);
-		text = reinterpret_cast<const char *>(p);
+    utf8_decoder_t decoder((utf8 const*)text);
+    
+	while(decoder.has_next() && len > 0) {
+		const utf32 c = decoder.next();
 
-		if(iUnicode == '\t') {
+		if(c == '\t') {
 			int tabsize = BASE_TAB_WIDTH * LINESPACE / 11;
 			// advance to next tab stop
 			int p = width % tabsize;
@@ -528,20 +534,23 @@ int display_calc_string_len_width(const char* text, size_t len, int spacing, con
 			continue;
 		}
 
-		if(iUnicode == '\e') {
-            text ++;
+		if(c == '\e') {
+            // swallow color code
+            decoder.next();
 			continue;
 		}
 
-		if(iUnicode == '\a') {
-            text += 3;
+		if(c == '\a') {
+            // display text to offscreen position, we only want the width
+            width += handle_aligned_text(decoder, font, -1000, -1000);
 			continue;
 		}
 
-		if(  iUnicode == UNICODE_NUL ||  iUnicode == '\n') {
+		if(  c == UNICODE_NUL ||  c == '\n') {
 			return width;
 		}
-		width += font->get_glyph_advance(iUnicode) + spacing;
+        
+		width += font->get_glyph_advance(c) + spacing;
 	}
 
 	return width;

@@ -747,7 +747,7 @@ void gebaeude_t::info(cbuffer_t & buf) const
 		}
 		if(get_owner()==NULL) {
 			const sint32 v = (sint32)( -welt->get_settings().cst_multiply_remove_haus * (tile->get_desc()->get_level() + 1) / 100 );
-			buf.printf("%s\t\ew\arN9%d$\n", translator::translate("Removal:"), v);
+			buf.printf("%s\t\ew\arN9$%d\n", translator::translate("Cost to remove:"), v);
 		}
 
 		building_desc_t const& h = *tile->get_desc();
