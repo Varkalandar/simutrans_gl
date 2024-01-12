@@ -109,7 +109,7 @@ void simgraph_resize(scr_size new_window_size);
 
 
 image_id get_image_count();
-void register_image(class image_t *);
+void register_image(class image_t *, void (*postprocessor)(int w, int h, uint8 * data));
 
 // delete all images above a certain number ...
 void display_free_all_images_above( image_id above );

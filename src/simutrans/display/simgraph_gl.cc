@@ -542,7 +542,7 @@ static void convert_image(imd_t * image)
 }
 
 
-void register_image(image_t * image_in)
+void register_image(image_t * image_in, void (*postprocessor)(int w, int h, uint8 * data))
 {
 	struct imd_t *image;
 
@@ -650,7 +650,12 @@ void register_image(image_t * image_in)
         }
     }
 */
+    // rgba_data is now ready to be used. Some tiles need postprocessing though
+    // e.g. shore and climate transitions
+    
+    if(postprocessor) postprocessor(image_in->w, image_in->h, rgba_data);
 
+    // Now create a new image descriptor
 	image->len = image_in->len;
 	image->x = image_in->x;
 	image->y = image_in->y;
@@ -663,6 +668,8 @@ void register_image(image_t * image_in)
 	image->base_data = rgba_data;
 
 	convert_image(image);
+    
+    image_in->base_data = rgba_data;
 }
 
 

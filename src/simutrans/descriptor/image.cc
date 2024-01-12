@@ -210,8 +210,8 @@ image_t *image_t::copy_fliphorizontal() const
 
 #ifdef MAKEOBJ
 #else
-void image_t::register_image()
+void image_t::register_image(void (*postprocessor)(int w, int h, uint8 * data))
 {
-	::register_image(this);
+	::register_image(this, postprocessor);
 }
 #endif

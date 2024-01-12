@@ -41,6 +41,8 @@ public:
 	uint8 zoomable;   ///< some images may not be zoomed i.e. icons
         uint8 bpp;        // can only be 16 or 32 currently
         
+        uint8_t * base_data; // RGBA data, set by register_image()
+        
 	image_t(size_t len_=0) : data(NULL)
 	{
 		if (len_) {
@@ -75,7 +77,7 @@ public:
 
 	static image_t* create_single_pixel();
 
-	void register_image();
+	void register_image(void (*postprocessor)(int w, int h, uint8 * data));
 
 private:
 	friend class image_reader_t;
