@@ -1372,7 +1372,7 @@ bool simgraph_init(scr_size size, sint16)
         // generate texture
         glGenTextures(1, &gl_texture_colorbuffer);
         glBindTexture(GL_TEXTURE_2D, gl_texture_colorbuffer);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, gl_framebuffer_size, gl_framebuffer_size, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, gl_framebuffer_size, gl_framebuffer_size, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glBindTexture(GL_TEXTURE_2D, 0);

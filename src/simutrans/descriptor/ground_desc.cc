@@ -108,7 +108,7 @@ static image_t* create_textured_tile(const image_t* image_lightmap, const image_
                 
                 uint32 pix = *p;
                 
-                if(pix >> 24 >= 0)
+                if(pix >> 24 > 0)
                 {
                     // a colored pixel
                     int r1 = (pix >> 16) & 0xFF;
@@ -123,7 +123,7 @@ static image_t* create_textured_tile(const image_t* image_lightmap, const image_
                     int g2 = (tpix >> 8) & 0xFF;
                     int b2 = (tpix >> 0) & 0xFF;
 
-                    *p =    pix & 0xFF000000 |
+                    *p =    (pix & 0xFF000000) |
                             ((r1 * r2 * 2) >> 8) << 16 |
                             ((g1 * g2 * 2) >> 8) << 8 | 
                             ((b1 * b2 * 2) >> 8);  
@@ -279,6 +279,29 @@ static image_t* create_alpha_tile(const image_t* image_lightmap, slope_t::type s
 }
 
 
+static void hjm_transition_postprocessor(int w, int h, uint8 * data)
+{
+    dbg->message("hjm_transition_postprocessor()", "Processing %d x %d pixel", w, h);
+
+    // const image_t * water = boden_texture->get_image_ptr(water_climate);
+    
+    // beach transitions:
+    // blue should become land, which is already drawn and we can use transparency
+    
+    for(int y=0; y<h; y++) {
+        for(int x=0; x<w; x++) {
+            uint8 * tp = data + (y * w * 4 + x * 4);
+        
+            int alpha = 255 - tp[2]; // blue must be come transparent
+            tp[0] = 0;
+            tp[1] = 0;
+            tp[2] = 0;
+            tp[3] = alpha;
+        }        
+    }
+}
+
+
 static void hjm_beach_postprocessor(int w, int h, uint8 * data)
 {
     dbg->message("hjm_beach_postprocessor()", "Processing %d x %d pixel", w, h);
@@ -310,7 +333,10 @@ static void hjm_beach_postprocessor(int w, int h, uint8 * data)
  * BEWARE: Assumes all images but image_lightmap are square!
  * BEWARE: no special colors or your will see literally blue!
  */
-static image_t* create_hjm_beach_tile(const image_t* image_lightmap, slope_t::type slope, const image_t* image_alphamap)
+static image_t* create_hjm_beach_tile(const image_t* image_lightmap, 
+                                      slope_t::type slope, 
+                                      const image_t* image_alphamap,
+                                      void (*postprocessor)(int w, int h, uint8 * data))
 {
 	if(  image_lightmap == NULL  ||  image_alphamap == NULL  ||  image_alphamap->get_pic()->w < 2  ) {
 		image_t *image_dest = image_t::create_single_pixel();
@@ -440,7 +466,7 @@ static image_t* create_hjm_beach_tile(const image_t* image_lightmap, slope_t::ty
         }
     }
     
-	image_dest->register_image(hjm_beach_postprocessor);
+	image_dest->register_image(postprocessor);
     
 	return image_dest;
 }
@@ -1094,7 +1120,8 @@ void ground_desc_t::init_ground_textures(karte_t *world)
 	for(  int dslope = 1;  dslope < totalslopes - 1;  dslope++  ) {
 		if(  doubleslope_to_imgnr[dslope] != 255  ) {
 			int slope = double_grounds ? dslope : slopetable[dslope];
-			final_tile = create_alpha_tile( light_map->get_image_ptr( slope ), dslope, all_rotations_slope[dslope] );
+			// final_tile = create_alpha_tile( light_map->get_image_ptr( slope ), dslope, all_rotations_slope[dslope] );
+			final_tile = create_hjm_beach_tile(light_map->get_image_ptr( slope ), dslope, all_rotations_slope[dslope], hjm_transition_postprocessor);
 			alpha_image[dslope] = final_tile->get_id();
 		}
 		else {
@@ -1112,14 +1139,16 @@ void ground_desc_t::init_ground_textures(karte_t *world)
 				uint8 double_corners = corners == 15 ? 80 : slope_from_slope4(slope4_t(corners), 1);
 
 				// create alpha image
-				final_tile = create_alpha_tile( light_map->get_image_ptr( slope ), dslope, all_rotations_slope[double_corners] );
-				alpha_corners_image[dslope * 15 + corners - 1] = final_tile->get_id();
+				// final_tile = create_alpha_tile( light_map->get_image_ptr( slope ), dslope, all_rotations_slope[double_corners] );
+				
+				final_tile = create_hjm_beach_tile(light_map->get_image_ptr( slope ), dslope, all_rotations_slope[double_corners], hjm_transition_postprocessor);
+                alpha_corners_image[dslope * 15 + corners - 1] = final_tile->get_id();
 
 				double_corners = corners == 15 ? 80 : slope_from_slope4(slope4_t(15-corners), 1);
 
 				if(  all_rotations_beach[double_corners]  ) {
 					// final_tile = create_alpha_tile( light_map->get_image_ptr( slope ), dslope, all_rotations_beach[double_corners] );
-					final_tile = create_hjm_beach_tile( light_map->get_image_ptr( slope ), dslope, all_rotations_beach[double_corners] );
+					final_tile = create_hjm_beach_tile(light_map->get_image_ptr( slope ), dslope, all_rotations_beach[double_corners], hjm_beach_postprocessor);
 					alpha_water_image[dslope * 15 + corners - 1] = final_tile->get_id();
 				}
 			}
