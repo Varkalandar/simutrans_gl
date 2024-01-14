@@ -160,8 +160,7 @@ void display_rezoomed_img_blend(const image_id n, scr_coord_val xp, scr_coord_va
 #define ALPHA_GREEN 0x2
 #define ALPHA_BLUE 0x4
 
-void display_rezoomed_img_alpha(const image_id n, const image_id alpha_n, const unsigned alpha_flags, scr_coord_val xp, scr_coord_val yp, const signed char player_nr, rgba_t color_index, const bool daynight, const bool dirty  CLIP_NUM_DEF);
-#define display_img_alpha( n, a, f, x, y, c, dn, d ) display_rezoomed_img_alpha( (n), (a), (f), (x), (y), 0, (c), (dn), (d)  CLIP_NUM_DEFAULT)
+void display_img_alpha(const image_id image, const image_id alpha_map, scr_coord_val xp, scr_coord_val yp);
 
 // display zoomed image
 void display_color_img(const image_id n, scr_coord_val xp, scr_coord_val yp, const signed char player_nr, scr_coord_val w=0, scr_coord_val h=0);
@@ -185,13 +184,11 @@ void display_base_img_alpha(const image_id n, const image_id alpha_n, const unsi
 // pointer to image display procedures
 typedef void (*display_image_proc)(const image_id n, scr_coord_val xp, scr_coord_val yp, const signed char player_nr);
 typedef void (*display_blend_proc)(const image_id n, scr_coord_val xp, scr_coord_val yp, const signed char player_nr, rgba_t color_index, const bool daynight, const bool dirty  CLIP_NUM_DEF);
-typedef void (*display_alpha_proc)(const image_id n, const image_id alpha_n, const unsigned alpha_flags, scr_coord_val xp, scr_coord_val yp, const signed char player_nr, rgba_t color_index, const bool daynight, const bool dirty  CLIP_NUM_DEF);
 
 // variables for storing currently used image procedure set and tile raster width
 extern display_image_proc display_normal;
 extern display_image_proc display_color;
 extern display_blend_proc display_blend;
-extern display_alpha_proc display_alpha;
 extern scr_coord_val current_tile_raster_width;
 
 // call this instead of referring to current_tile_raster_width directly

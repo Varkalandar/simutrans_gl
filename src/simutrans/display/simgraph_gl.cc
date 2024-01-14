@@ -1060,12 +1060,18 @@ void display_rezoomed_img_blend(const image_id id, scr_coord_val x, scr_coord_va
 }
 
 
-void display_rezoomed_img_alpha(const image_id id1, const image_id id2, const unsigned, scr_coord_val x, scr_coord_val y, const sint8, rgba_t, const bool, const bool  CLIP_NUM_DEF_NOUSE)
+void display_img_alpha(const image_id image, const image_id alpha_map, scr_coord_val xp, scr_coord_val yp)
 {
-    // display_set_color(rgba_t(1, 1, 1, 0.5f));
-    // display_img(id1, x, y, 0);
-    // display_set_color(rgba_t(1, 1, 1, 1));
-    // display_img(id2, x, y, 0);
+    display_set_color(rgba_t(1, 1, 1, 1));
+
+    glBlendFunc(GL_SRC_ALPHA, GL_SRC_ALPHA);
+    display_normal(alpha_map, xp, yp, 0);
+
+    glBlendFunc(GL_ONE_MINUS_DST_ALPHA, GL_DST_ALPHA);
+    display_normal(image, xp, yp, 0);
+
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    display_set_color(display_get_day_night_color());
 }
 
 
@@ -1082,7 +1088,6 @@ void display_base_img_alpha(const image_id, const image_id, const unsigned, scr_
 display_image_proc display_normal = display_img;
 display_image_proc display_color = display_img;
 display_blend_proc display_blend = display_rezoomed_img_blend;
-display_alpha_proc display_alpha = display_rezoomed_img_alpha;
 
 
 rgba_t display_blend_colors(rgba_t c1, rgba_t c2, float alpha)

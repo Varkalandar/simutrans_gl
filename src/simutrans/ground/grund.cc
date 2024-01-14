@@ -68,8 +68,6 @@
 #include "tunnelboden.h"
 #include "wasser.h"
 
-#include <GLFW/glfw3.h>
-
 
 /**
  * Pointer to the world of this ground. Static to conserve space.
@@ -1093,20 +1091,7 @@ void grund_t::display_boden(const sint16 xpos, const sint16 ypos, const sint16 r
 									}
 								}
 								// overlay transition climates
-								// display_alpha( ground_desc_t::get_climate_tile( transition_climate, slope ), ground_desc_t::get_alpha_tile( slope, overlay_corners ), ALPHA_GREEN | ALPHA_BLUE, xpos, ypos, 0, RGBA_BLACK, true, dirty CLIP_NUM_PAR );
-
-                                // display_normal(ground_desc_t::get_climate_tile( transition_climate, slope ), xpos, ypos, 0);
-
-                                display_set_color(rgba_t(1, 1, 1, 1));
-                                
-                                glBlendFunc(GL_SRC_ALPHA, GL_SRC_ALPHA);
-                                display_normal(ground_desc_t::get_alpha_tile( slope, overlay_corners ), xpos, ypos, 0);
-                                
-                                glBlendFunc(GL_ONE_MINUS_DST_ALPHA, GL_DST_ALPHA);
-                                display_normal(ground_desc_t::get_climate_tile( transition_climate, slope ), xpos, ypos, 0);
-                                
-                                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-                                display_set_color(display_get_day_night_color());
+								display_img_alpha(ground_desc_t::get_climate_tile(transition_climate, slope), ground_desc_t::get_alpha_tile(slope, overlay_corners), xpos, ypos);
 							}
 						}
 						slope_corner /= slope_t::southeast;
@@ -1116,8 +1101,6 @@ void grund_t::display_boden(const sint16 xpos, const sint16 ypos, const sint16 r
                         image_id beach = ground_desc_t::get_beach_tile(slope, water_corners);
                         
 						if(  slope  ) {
-							// display_alpha( ground_desc_t::get_water_tile(slope, wasser_t::stage), ground_desc_t::get_beach_tile( slope, water_corners ), ALPHA_RED, xpos, ypos, 0, RGBA_BLACK, true, dirty|wasser_t::change_stage CLIP_NUM_PAR );
-
                             display_normal(beach, xpos, ypos, 0);
 
 							if(  ground_desc_t::shore  ) {
@@ -1143,36 +1126,12 @@ void grund_t::display_boden(const sint16 xpos, const sint16 ypos, const sint16 r
 					// the gehweg flag is used for rail switches, but a slope has no switches ...
 					switch(  snow_transition  ) {
 						case 1: {
-							// display_alpha( ground_desc_t::get_snow_tile(slope), ground_desc_t::get_alpha_tile(slope), ALPHA_GREEN | ALPHA_BLUE, xpos, ypos, 0, RGBA_BLACK, true, dirty CLIP_NUM_PAR );
-
-                            display_set_color(rgba_t(1, 1, 1, 1));
-
-                            glBlendFunc(GL_SRC_ALPHA, GL_SRC_ALPHA);
-                            display_normal(ground_desc_t::get_alpha_tile( slope ), xpos, ypos, 0);
-
-                            glBlendFunc(GL_ONE_MINUS_DST_ALPHA, GL_DST_ALPHA);
-                            display_normal(ground_desc_t::get_snow_tile( slope ), xpos, ypos, 0);
-
-                            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-                            display_set_color(display_get_day_night_color());
-
+							display_img_alpha(ground_desc_t::get_snow_tile(slope), ground_desc_t::get_alpha_tile(slope), xpos, ypos);
 							break;
 						}
 						case 2: {
 							if(  slope_t::max_diff(slope) > 1  ) {
-								// display_alpha( ground_desc_t::get_snow_tile(slope), ground_desc_t::get_alpha_tile(slope), ALPHA_BLUE, xpos, ypos, 0, RGBA_BLACK, true, dirty CLIP_NUM_PAR );
-
-                                display_set_color(rgba_t(1, 1, 1, 1));
-
-                                glBlendFunc(GL_SRC_ALPHA, GL_SRC_ALPHA);
-                                display_normal(ground_desc_t::get_alpha_tile( slope ), xpos, ypos, 0);
-
-                                glBlendFunc(GL_ONE_MINUS_DST_ALPHA, GL_DST_ALPHA);
-                                display_normal(ground_desc_t::get_snow_tile( slope ), xpos, ypos, 0);
-
-                                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-                                display_set_color(display_get_day_night_color());
-
+								display_img_alpha(ground_desc_t::get_snow_tile(slope), ground_desc_t::get_alpha_tile(slope), xpos, ypos);
 							}
 							break;
 						}
