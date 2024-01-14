@@ -281,12 +281,7 @@ static image_t* create_alpha_tile(const image_t* image_lightmap, slope_t::type s
 
 static void hjm_transition_postprocessor(int w, int h, uint8 * data)
 {
-    dbg->message("hjm_transition_postprocessor()", "Processing %d x %d pixel", w, h);
-
-    // const image_t * water = boden_texture->get_image_ptr(water_climate);
-    
-    // beach transitions:
-    // blue should become land, which is already drawn and we can use transparency
+    // dbg->message("hjm_transition_postprocessor()", "Processing %d x %d pixel", w, h);
     
     for(int y=0; y<h; y++) {
         for(int x=0; x<w; x++) {
@@ -304,7 +299,7 @@ static void hjm_transition_postprocessor(int w, int h, uint8 * data)
 
 static void hjm_beach_postprocessor(int w, int h, uint8 * data)
 {
-    dbg->message("hjm_beach_postprocessor()", "Processing %d x %d pixel", w, h);
+    // dbg->message("hjm_beach_postprocessor()", "Processing %d x %d pixel", w, h);
 
     const image_t * water = boden_texture->get_image_ptr(water_climate);
     
