@@ -29,6 +29,9 @@ echo "VERBOSE = 1" >>config.default
 make
 
 cp -v /mingw64/bin/libopenal-1.dll simutrans
-find ./
+cp -v /mingw64/bin/libgcc_s_seh-1.dll simutrans
+cp -v /mingw64/bin/libwinpthread-1.dll simutrans
+cp -v /mingw64/bin/libstdc++-6.dll simutrans
+
 sh tools/distribute.sh
 mv simu*.zip simuwin64-ogl-nightly.zip

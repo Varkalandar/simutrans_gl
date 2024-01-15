@@ -302,7 +302,6 @@ void dr_play_sample(int key, int volume)
 }
 
 
-
 void dr_destroy_sound()
 {
     alDeleteSources(1, &source);
