@@ -9,6 +9,7 @@
 
 #include "sound.h"
 #include "../simdebug.h"
+#include "../simtypes.h"
 
 #include <AL/al.h>
 #include <AL/alc.h>
@@ -55,9 +56,9 @@ bool dr_init_sound(void)
 }
 
 
-std::int32_t convert_to_int(const char * buffer, std::size_t len)
+sint32 convert_to_int(const char * buffer, size_t len)
 {
-    std::int32_t v = 0;
+    sint32 v = 0;
     
     if(len == 2) {
         v = (buffer[1] & 0xFF) << 8 | (buffer[0] & 0xFF);
@@ -72,11 +73,11 @@ std::int32_t convert_to_int(const char * buffer, std::size_t len)
 }
 
 
-static bool load_wav_file_header(std::ifstream& file,
-                          std::uint8_t& channels,
-                          std::int32_t& sample_rate,
-                          std::uint8_t& bits_per_sample,
-                          ALsizei& size)
+static bool load_wav_file_header(std::ifstream & file,
+                                 uint8 & channels,
+                                 sint32 & sample_rate,
+                                 uint8 & bits_per_sample,
+                                 ALsizei & size)
 {
     char buffer[4];
     if(!file.is_open())
@@ -211,10 +212,10 @@ static bool load_wav_file_header(std::ifstream& file,
 
 
 static char* load_wav(const char * filename,
-               std::uint8_t& channels,
-               std::int32_t& sample_rate,
-               std::uint8_t& bits_per_sample,
-               ALsizei& size)
+                      uint8 & channels,
+                      sint32 & sample_rate,
+                      uint8 & bits_per_sample,
+                      ALsizei & size)
 {
     std::ifstream in(filename, std::ios::binary);
     if(!in.is_open())
@@ -253,9 +254,9 @@ int dr_load_sample(const char * filename)
     }
     
     ALsizei size;
-    std::uint8_t channels;
-    std::int32_t sample_rate;
-    std::uint8_t bits_per_sample;
+    uint8 channels;
+    sint32 sample_rate;
+    uint8 bits_per_sample;
 
     char * data = load_wav(filename, channels, sample_rate, bits_per_sample, size);
     
