@@ -47,9 +47,9 @@ endif
 ifeq ($(BACKEND),ogl)
   ifeq ($(OSTYPE),mingw)
     CFLAGS += -DGLEW_STATIC
-    LDFLAGS += -lglfw3 -lglew32 -lopengl32
+    LDFLAGS += -lglfw3 -lglew32 -lopengl32 -lopenal
   else
-    LDFLAGS += -lglfw -lGLEW -lGL 
+    LDFLAGS += -lglfw -lGLEW -lGL -lopenal
   endif
 endif
 
@@ -137,7 +137,7 @@ ifeq ($(BACKEND),ogl)
   SOURCES += src/simutrans/display/gl_textures.cc
   SOURCES += src/simutrans/display/font.cc
   SOURCES += src/simutrans/music/no_midi.cc
-  SOURCES += src/simutrans/sound/no_sound.cc
+  SOURCES += src/simutrans/sound/open_al.cc
 endif
 
 
