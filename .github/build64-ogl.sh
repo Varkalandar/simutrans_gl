@@ -28,5 +28,6 @@ echo "VERBOSE = 1" >>config.default
 
 make
 
+cp /mingw64/bin/libopenal-1.dll .
 sh tools/distribute.sh
 mv simu*.zip simuwin64-ogl-nightly.zip
