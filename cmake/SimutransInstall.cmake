@@ -104,7 +104,7 @@ if (OPTION_BUNDLE_LIBRARIES AND UNIX AND NOT APPLE)
 					RESOLVED_DEPENDENCIES_VAR DEPENDENCIES
 					EXECUTABLES "${CMAKE_BINARY_DIR}/simutrans/simutrans"
 					PRE_EXCLUDE_REGEXES "libSDL2*|libz.so*"
-					POST_EXCLUDE_REGEXES "-linux|ldlibGLdispatch.so|libc.so|libdl.so|libm.so|libgcc_s.so|libpthread.so|libstdc...so|libgomp.so")
+					POST_EXCLUDE_REGEXES "-linux|libc.so|libdl.so|libm.so|libgcc_s.so|libpthread.so|libstdc...so|libgomp.so")
 		]])
 	endif ()
 	install(CODE [[
