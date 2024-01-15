@@ -68,12 +68,13 @@ install_cab()
 	}
 
 	# First check if we only have a simutrans/ directory at the root.
-	files=$(echo "$files"|grep " simutrans/")
+	files=$(echo "$files" | grep "| simutrans/")
 	if [ $? -eq 0 ]; then
 		# has simutrans folder, but cabextract cannot handle unix path on windows
 		destdir="."
 	else
-		destdir="."
+		mkdir -p simutrans
+		destdir="simutrans"
 	fi
 
 	cabextract -qd "$destdir" "$pakzippath" || {
@@ -94,17 +95,20 @@ install_tgz()
 	}
 
 	# First check if we only have a simutrans/ directory at the root.
-	files=$(echo "$files"|grep "^simutrans/")
+	files=$(echo "$files"|grep "^simutrans")
 	if [ $? -eq 0 ]; then
 		# has simutrans folder
 		destdir="$(pwd)"
 		extra="--strip-components=1"
 	else
+		mkdir -p simutrans
 		destdir="$(pwd)/simutrans"
 		extra=""
 	fi
 
-	tar -zxf "$pakzippath" "$extra" C "$destdir" || {
+	# No quotes around $extra, since adding quotes breaks extraction if $extra evaluates to the empty string
+	# (This will be interpreted as the file(s) to extract and not as a command line parameter)
+	tar -xzf "$pakzippath" $extra -C "$destdir" || {
 		echo "Error: Could not extract '$pakzippath' to '$destdir'" >&2
 		return 1
 	}
@@ -183,27 +187,25 @@ download_and_install_pakset()
 # generated list of pak sets
 obsolete_start_index=10
 paksets=( \
-	"http://downloads.sourceforge.net/project/simutrans/pak64/123-0/simupak64-123-0.zip" \
+	"https://downloads.sourceforge.net/project/simutrans/pak64/123-0/simupak64-123-0.zip" \
 	"https://simutrans-germany.com/pak.german/pak64.german_0-124-0-0-1_full.zip" \
-	"http://downloads.sourceforge.net/project/simutrans/pak64.japan/123-0/simupak64.japan-123-0.zip" \
+	"https://downloads.sourceforge.net/project/simutrans/pak64.japan/123-0/simupak64.japan-123-0.zip" \
 	"https://github.com/wa-st/pak-nippon/releases/download/v0.6.2/pak.nippon-v0.6.2.zip" \
 	"https://github.com/Varkalandar/pak48.Excentrique/releases/download/v0.19_RC3/pak48.excentrique_v019rc3.zip" \
-	"http://downloads.sourceforge.net/project/simutrans/Pak128.CS/nightly%20builds/pak128.CS-r2078.zip" \
-	"http://downloads.sourceforge.net/project/simutrans/pak128.britain/pak128.Britain%20for%20120-3/pak128.Britain.1.18-120-3.zip" \
-	"http://downloads.sourceforge.net/project/simutrans/PAK128.german/PAK128.german_2.1_for_ST_123.0/PAK128.german_2.1_for_ST_123.0.zip" \
-	"http://downloads.sourceforge.net/project/simutrans/pak128/pak128%202.8.2%20for%20ST%20123up/simupak128-2.8.2-for123.zip" \
+	"https://downloads.sourceforge.net/project/simutrans/Pak128.CS/nightly%20builds/pak128.CS-r2078.zip" \
+	"https://downloads.sourceforge.net/project/simutrans/pak128.britain/pak128.Britain%20for%20120-3/pak128.Britain.1.18-120-3.zip" \
+	"https://downloads.sourceforge.net/project/simutrans/PAK128.german/PAK128.german_2.1_for_ST_123.0/PAK128.german_2.1_for_ST_123.0.zip" \
+	"https://downloads.sourceforge.net/project/simutrans/pak128/pak128%202.8.2%20for%20ST%20123up/simupak128-2.8.2-for123.zip" \
 	"https://github.com/Flemmbrav/Pak192.Comic/releases/download/V0.6/pak192.comic.zip" \
-	"http://downloads.sourceforge.net/project/simutrans/pak96.comic/pak96.comic%20for%20111-3/pak96.comic-0.4.10-plus.zip" \
+	"https://downloads.sourceforge.net/project/simutrans/pak96.comic/pak96.comic%20for%20111-3/pak96.comic-0.4.10-plus.zip" \
 	"http://pak128.jpn.org/souko/pak128.japan.120.0.cab" \
-	"http://downloads.sourceforge.net/project/simutrans/pak32.comic/pak32.comic%20for%20102-0/pak32.comic_102-0.zip" \
-	"http://downloads.sourceforge.net/project/simutrans/pak64.contrast/pak64.Contrast_910.zip" \
-	"http://hd.simutrans.com/release/PakHD_v04B_100-0.zip" \
-	"http://downloads.sourceforge.net/project/simutrans/pakHAJO/pakHAJO_102-2-2/pakHAJO_0-102-2-2.zip" \
-	"http://downloads.sourceforge.net/project/simutrans/pak64.scifi/pak64.scifi_112.x_v0.2.zip" \
+	"https://downloads.sourceforge.net/project/simutrans/pak32.comic/pak32.comic%20for%20102-0/pak32.comic_102-0.zip" \
+	"https://downloads.sourceforge.net/project/simutrans/pak64.contrast/pak64.Contrast_910.zip" \
+	"https://hd.simutrans.com/release/PakHD_v04B_100-0.zip" \
+	"https://downloads.sourceforge.net/project/simutrans/pakHAJO/pakHAJO_102-2-2/pakHAJO_0-102-2-2.zip" \
+	"https://downloads.sourceforge.net/project/simutrans/pak64.scifi/pak64.scifi_112.x_v0.2.zip" \
+	"http://simutrans.bilkinfo.de/pak64.ho-scale-latest.tar.gz" \
 )
-
-# Link is no longer available :(
-# 	"http://simutrans.bilkinfo.de/pak64.ho-scale-latest.tar.gz" \
 
 
 #
@@ -267,7 +269,7 @@ if [ "$#" -gt 0 ] && [ "$1" = '-generate_h' ]; then
 		else
 			rm -f "$zipname"
 			echo "Error: Cannot extract unknown archive format" >&2
-			return 1
+			exit 1
 		fi
 
 		size="$(du -s -Bk simutrans | sed 's/K.*$//')"
