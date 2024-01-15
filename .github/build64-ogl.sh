@@ -8,6 +8,7 @@
 #done
 
 # debug support
+pkg-config --libs openal
 find /mingw64 -name \*.a
 
 # normal build

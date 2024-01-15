@@ -47,7 +47,7 @@ endif
 ifeq ($(BACKEND),ogl)
   ifeq ($(OSTYPE),mingw)
     CFLAGS += -DGLEW_STATIC
-    LDFLAGS += -lglfw3 -lglew32 -lopengl32 -lopenal libopenal.dll.a
+    LDFLAGS += -lglfw3 -lglew32 -lopengl32 $(shell pkg-config --libs openal)
   else
     LDFLAGS += -lglfw -lGLEW -lGL -lopenal
   endif
