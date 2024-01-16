@@ -65,11 +65,12 @@ bool sound_get_mute()
 }
 
 
-void sound_play(uint16 const idx, uint8 const v, sound_type_t t)
+void sound_play(const uint16 sound_index, const uint8 vol, const sound_type_t type)
 {
-	uint32 volume = v;
-	if(  idx != (uint16)NO_SOUND  &&  !env_t::global_mute_sound  ) {
-		dr_play_sample(idx, ( (volume  * env_t::global_volume * env_t::specific_volume[t] ) >> 16) );
+	if(sound_index != (uint16)NO_SOUND && env_t::global_mute_sound == false) {
+        const uint32 type_volume = env_t::specific_volume[type];
+        const uint32 sound_volume = vol;
+		dr_play_sample(sound_index, ((sound_volume * env_t::global_volume * type_volume) >> 16));
 	}
 }
 

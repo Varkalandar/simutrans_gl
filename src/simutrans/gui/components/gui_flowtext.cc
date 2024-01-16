@@ -12,6 +12,7 @@
 #include "../../utils/simstring.h"
 #include "../../utils/unicode.h"
 #include "../gui_theme.h"
+#include "../../tpl/slist_tpl.h"
 
 #include "gui_flowtext.h"
 

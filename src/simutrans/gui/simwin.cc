@@ -14,6 +14,7 @@
 #include "../display/viewport.h"
 #include "../tool/simmenu.h"
 #include "../simskin.h"
+#include "../simsound.h"
 #include "../sys/simsys.h"
 #include "../simticker.h"
 #include "simwin.h"
@@ -1677,9 +1678,13 @@ bool check_pos_win(event_t *ev,bool modal)
 					else if(  IS_LEFTRELEASE(ev)  ) {
 						wins[i].gadget_state &= ~(1 << code);
 						if(  ev->mouse_pos.y >= wins[i].pos.y  &&  ev->mouse_pos.y < wins[i].pos.y+D_TITLEBAR_HEIGHT  &&  decode_gadget_boxes( ( & wins[i].flags ), wins[i].pos.x + (REVERSE_GADGETS?0:wins[i].gui->get_windowsize().w-D_GADGET_WIDTH), ev->mouse_pos.x )==code  ) {
+
+                            // clickety-click
+                            sound_play(SFX_SELECT, 255, TOOL_SOUND);
+
 							// do whatever needs to be done
 							switch(  code  ) {
-								case SKIN_GADGET_CLOSE :
+								case SKIN_GADGET_CLOSE:
 									destroy_win(wins[i].gui);
 									break;
 								case SKIN_GADGET_MINIMIZE: // (Mathew Hounsell)

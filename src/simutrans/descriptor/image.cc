@@ -59,7 +59,7 @@ void image_t::alloc(size_t len_)
     data = new uint16_t[len_];
     len = len_;
 
-    dbg->message("image_t::alloc()", "Allocated %d 16 bit words", len);
+    // dbg->message("image_t::alloc()", "Allocated %d 16 bit words", len);
 }
 
 

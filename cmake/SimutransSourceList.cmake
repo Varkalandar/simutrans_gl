@@ -89,6 +89,7 @@ target_sources(simutrans PRIVATE
 		src/simutrans/gui/citylist_frame.cc
 		src/simutrans/gui/citylist_stats.cc
 		src/simutrans/gui/climates.cc
+		src/simutrans/gui/components/gui_action_creator.cc
 		src/simutrans/gui/components/gui_aligned_container.cc
 		src/simutrans/gui/components/gui_building.cc
 		src/simutrans/gui/components/gui_button.cc

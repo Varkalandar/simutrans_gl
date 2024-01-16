@@ -12,6 +12,8 @@
 #include "../world/simworld.h"
 #include "../tool/simmenu.h"
 #include "../simskin.h"
+#include "../simsound.h"
+
 #include "gui_frame.h"
 #include "simwin.h"
 #include "tool_selector.h"
@@ -207,10 +209,12 @@ bool tool_selector_t::infowin_event(const event_t *ev)
 					// ->exit triggers tool_selector_t::infowin_event in the closing toolbar,
 					// which resets active tool to query tool
 					if( tool->exit( welt->get_active_player() ) ) {
+                        sound_play(SFX_SELECT, 255, TOOL_SOUND);
 						welt->set_tool( tool_t::general_tool[TOOL_QUERY], welt->get_active_player() );
 					}
 				}
 				else {
+                    sound_play(SFX_SELECT, 255, TOOL_SOUND);
 					welt->set_tool( tool, welt->get_active_player() );
 				}
 			}
@@ -220,6 +224,7 @@ bool tool_selector_t::infowin_event(const event_t *ev)
 					// ->exit triggers tool_selector_t::infowin_event in the closing toolbar,
 					// which resets active tool to query tool
 					if(  tool->exit(welt->get_active_player())  ) {
+                        sound_play(SFX_SELECT, 255, TOOL_SOUND);
 						welt->set_tool( tool_t::general_tool[TOOL_QUERY], welt->get_active_player() );
 					}
 				}
@@ -231,6 +236,7 @@ bool tool_selector_t::infowin_event(const event_t *ev)
 	else if(ev->ev_class==INFOWIN &&  ev->ev_code==WIN_CLOSE) {
 		for(tool_data_t const i : tools) {
 			if (i.tool->is_selected() && i.tool->get_id() & GENERAL_TOOL) {
+                sound_play(SFX_SELECT, 255, TOOL_SOUND);
 				welt->set_tool( tool_t::general_tool[TOOL_QUERY], welt->get_active_player() );
 				break;
 			}

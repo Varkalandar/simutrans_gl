@@ -6,10 +6,9 @@
 #ifndef GUI_COMPONENTS_GUI_ACTION_CREATOR_H
 #define GUI_COMPONENTS_GUI_ACTION_CREATOR_H
 
-
 #include "action_listener.h"
-#include "../../tpl/slist_tpl.h"
 
+template <class T> class slist_tpl;
 
 /**
  * This interface must be implemented by all classes which want to
@@ -21,23 +20,21 @@ protected:
 	/**
 	 * Our listeners.
 	 */
-	slist_tpl <action_listener_t *> listeners;
+	slist_tpl <action_listener_t *> * listeners;
 
 	/**
 	 * Inform all listeners that an action was triggered.
 	 */
-	void call_listeners(value_t v)
-	{
-		for(action_listener_t* const l : listeners) {
-			if (l->action_triggered(this, v)) break;
-		}
-	}
+	void call_listeners(value_t v);
 
 public:
-	/**
+        gui_action_creator_t();
+        virtual ~gui_action_creator_t();
+    
+        /**
 	 * Add a new listener to this text input field.
 	 */
-	void add_listener(action_listener_t * l) { listeners.insert(l); }
+	void add_listener(action_listener_t * l);
 };
 
 #endif

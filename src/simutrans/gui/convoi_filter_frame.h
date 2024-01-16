@@ -12,6 +12,7 @@
 #include "components/gui_scrollpane.h"
 #include "components/action_listener.h"
 #include "components/gui_button.h"
+#include "../tpl/slist_tpl.h"
 
 
 class convoi_frame_t;

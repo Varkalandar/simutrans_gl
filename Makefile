@@ -370,6 +370,7 @@ SOURCES += src/simutrans/gui/citybuilding_edit.cc
 SOURCES += src/simutrans/gui/citylist_frame.cc
 SOURCES += src/simutrans/gui/citylist_stats.cc
 SOURCES += src/simutrans/gui/climates.cc
+SOURCES += src/simutrans/gui/components/gui_action_creator.cc
 SOURCES += src/simutrans/gui/components/gui_aligned_container.cc
 SOURCES += src/simutrans/gui/components/gui_building.cc
 SOURCES += src/simutrans/gui/components/gui_button.cc

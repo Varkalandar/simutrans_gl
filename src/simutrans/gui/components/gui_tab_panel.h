@@ -8,7 +8,7 @@
 
 
 #include "../../display/simimg.h"
-
+#include "../../tpl/slist_tpl.h"
 #include "../../descriptor/skin_desc.h"
 
 #include "gui_action_creator.h"

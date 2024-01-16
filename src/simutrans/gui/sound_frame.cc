@@ -61,7 +61,8 @@ const char *specific_volume_names[ MAX_SOUND_TYPES ] = {
 	"AMBIENT_SOUND",
 	"FACTORY_SOUND",
 	"CROSSING_SOUND",
-	"CASH_SOUND"
+	"CASH_SOUND",
+	"UI_SOUND"
 };
 
 
