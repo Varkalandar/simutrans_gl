@@ -27,6 +27,7 @@
 #include "../dataobj/environment.h"
 #include "../world/simworld.h"
 #include "../music/music.h"
+#include "../sound/sound.h"
 
 #include <GLFW/glfw3.h>
 
@@ -302,6 +303,12 @@ void sysgl_window_close_callback(GLFWwindow * /* window */)
     // stop the music
     dr_stop_midi();
 
+    // free midi related resources
+    dr_destroy_midi();
+
+    // free sound related resources
+    dr_destroy_sound();
+    
     // leave the ship in an orderly manner
     dr_os_close();
 

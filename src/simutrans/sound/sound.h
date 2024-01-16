@@ -8,7 +8,7 @@
 
 
 /**
- * Sound initialisation routine
+ * Sound initialization routine
  */
 bool dr_init_sound();
 
@@ -23,5 +23,10 @@ int dr_load_sample(const char* filename);
  * @param key the handle for the sample to be played
  */
 void dr_play_sample(int key, int volume);
+
+/**
+ * Clean up data structures, free resources
+ */
+void dr_destroy_sound();
 
 #endif

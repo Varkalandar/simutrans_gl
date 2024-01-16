@@ -75,6 +75,15 @@ void sound_play(const uint16 sound_index, const uint8 vol, const sound_type_t ty
 }
 
 
+/**
+ * Clean up data structures, free resources
+ */
+void close_sound()
+{
+    dr_destroy_sound();
+}
+
+
 bool sound_get_shuffle_midi()
 {
 	return env_t::shuffle_midi;

@@ -1631,6 +1631,7 @@ int simu_main(int argc, char** argv)
 
 	simgraph_exit();
 
+    close_sound();
 	close_midi();
 
 #if 0

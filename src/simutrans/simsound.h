@@ -33,8 +33,12 @@ int sound_get_specific_volume( sound_type_t t );
  * @param idx    Index of the sound
  * @param volume in range 0..255
  */
-void sound_play(uint16 idx, uint8 volume, sound_type_t t );
+void sound_play(uint16 idx, uint8 volume, sound_type_t t);
 
+/**
+ * Clean up data structures, free resources
+ */
+void close_sound();
 
 /// shuffle enable/disable for midis
 bool sound_get_shuffle_midi();
