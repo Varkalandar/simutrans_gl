@@ -880,7 +880,14 @@ int simu_main(int argc, char** argv)
 		return EXIT_FAILURE;
 	}
 	DBG_MESSAGE("simu_main()", ".. results in disp_width=%d, disp_height=%d", display_get_width(), display_get_height());
-	// now that the graphics system has already started
+	
+    // after graphics, we need sound
+    if(!args.has_arg("-nosound")) {
+        bool ok = dr_init_sound();
+		sound_set_mute(!ok);
+    }
+    
+    // now that the graphics system has already started
 	// the saved colours can be converted to the system format
 	env_t_rgb_to_system_colors();
 
@@ -1098,14 +1105,14 @@ int simu_main(int argc, char** argv)
 		dbg->message("simu_main()","Multithreading not enabled: threads = %d ignored.", env_t::num_threads );
 	}
 #endif
-
+    
 	// just check before loading objects
-	if(  !args.has_arg("-nosound")  &&  dr_init_sound()  ) {
-		dbg->message("simu_main()","Reading compatibility sound data ...");
-		sound_desc_t::init(env_t::pak_dir);
+	if(args.has_arg("-nosound")) {
+		sound_set_mute(true);
 	}
 	else {
-		sound_set_mute(true);
+		dbg->message("simu_main()","Reading compatibility sound data ...");
+		sound_desc_t::init(env_t::pak_dir);
 	}
 
 	// Adam - Moved away loading from simu_main() and placed into translator for better modularization

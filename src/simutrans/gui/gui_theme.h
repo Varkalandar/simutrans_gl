@@ -351,9 +351,9 @@ public:
 	static image_id check_button_img[3];
 	static image_id pos_button_img[3];
 
+        static int click_sound;
 	static bool gui_drop_shadows;
 
-public:
 	// default dimensions and colors
 	static void init_gui_defaults();
 

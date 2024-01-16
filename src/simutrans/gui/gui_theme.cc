@@ -18,6 +18,8 @@
 #include "../descriptor/skin_desc.h"
 #include "../dataobj/pakset_manager.h"
 #include "../display/display.h"
+#include "../sound/sound.h"
+#include "../utils/cbuffer.h"
 
 
 /**
@@ -168,6 +170,7 @@ image_id gui_theme_t::arrow_button_down_img[3];
 image_id gui_theme_t::check_button_img[3];
 image_id gui_theme_t::pos_button_img[3];
 
+int  gui_theme_t::click_sound;
 bool gui_theme_t::gui_drop_shadows;
 
 /**
@@ -299,6 +302,11 @@ void gui_theme_t::init_gui_defaults()
 	skinverwaltung_t::title_bar = NULL;
 	skinverwaltung_t::title_bar_player = NULL;
 
+    cbuffer_t filepath;
+    filepath.append(env_t::base_dir);
+    filepath.append("/themes/click.wav");
+    
+    click_sound = dr_load_sample(filepath);
 	gui_drop_shadows     = false;
 
 	gui_color_chat_window_network_transparency = color_idx_to_rgb(COL_WHITE);

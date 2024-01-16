@@ -654,7 +654,7 @@ rgba_t env_t::decode_color(const char * color_string, rgba_t def, rgb888_t *colo
                 a = 0xFF;
             }
 
-            dbg->message("env_t::decode_color()", "Input %s -> %x %x %x (a=%x)", color_string, r, g, b, a);
+            // dbg->message("env_t::decode_color()", "Input %s -> %x %x %x (a=%x)", color_string, r, g, b, a);
             
 			// we save in settings as RGB888
 			if (color_rgb) {

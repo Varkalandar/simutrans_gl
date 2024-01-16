@@ -16,6 +16,7 @@
 #include "../display/display.h"
 #include "../display/gl_textures.h"
 #include "../io/raw_image.h"
+#include "../simsound.h"
 
 
 class pak_set_panel_t : public gui_component_t
@@ -110,6 +111,8 @@ bool pak_set_panel_t::infowin_event(const event_t *ev)
                     if (entry.type == savegame_frame_t::LI_ENTRY) {
                         if(counter == index) {
 
+                            sound_play(gui_theme_t::click_sound, 255, UI_SOUND);
+                            
                             // Hajo: we must restore the logo before loading
                             skinverwaltung_t::biglogosymbol = pak_logos.at(index);
 
@@ -124,6 +127,7 @@ bool pak_set_panel_t::infowin_event(const event_t *ev)
             }
         }
     }
+    
 	return false;
 }
 

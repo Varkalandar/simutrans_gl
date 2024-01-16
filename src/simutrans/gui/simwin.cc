@@ -1680,7 +1680,7 @@ bool check_pos_win(event_t *ev,bool modal)
 						if(  ev->mouse_pos.y >= wins[i].pos.y  &&  ev->mouse_pos.y < wins[i].pos.y+D_TITLEBAR_HEIGHT  &&  decode_gadget_boxes( ( & wins[i].flags ), wins[i].pos.x + (REVERSE_GADGETS?0:wins[i].gui->get_windowsize().w-D_GADGET_WIDTH), ev->mouse_pos.x )==code  ) {
 
                             // clickety-click
-                            sound_play(SFX_SELECT, 255, TOOL_SOUND);
+                            sound_play(gui_theme_t::click_sound, 255, UI_SOUND);
 
 							// do whatever needs to be done
 							switch(  code  ) {
