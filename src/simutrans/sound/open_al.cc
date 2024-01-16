@@ -290,6 +290,8 @@ int dr_load_sample(const char * filename)
 
     alBufferData(buffers[next_buffer], format, data, size, sample_rate);
     
+    delete [] data;
+    
 	return next_buffer ++;
 }
 
