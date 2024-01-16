@@ -1,7 +1,9 @@
 name: Nightly Built Windows
 
-on: [push]
-
+on:
+  push:  
+  workflow_dispatch:
+      
 jobs:
   mingw-opengl:
     runs-on: windows-latest
