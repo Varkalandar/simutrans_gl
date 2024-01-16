@@ -161,7 +161,7 @@ echo "Targeting archive $simarchiv"
 distribute()
 {
 	# pack all files of the current release
-	FILELISTE=`find simutrans -type f "(" -name "*.tab" -o -name "*.mid" -o -name "*.bdf" -o -name "*.ttf" -o -name "*.txt"  -o -name "*.dll" -o -name "*.pak" -o -name "*.nut" -o -name "*.dll"  -o -name "*.png" ")"`
+	FILELISTE=`find simutrans -type f "(" -name "*.tab" -o -name "*.mid" -o -name "*.bdf" -o -name "*.ttf" -o -name "*.txt"  -o -name "*.dll" -o -name "*.pak" -o -name "*.nut" -o -name "*.wav"  -o -name "*.png" ")"`
 	zip -9 $simarchiv.zip $FILELISTE simutrans/simutrans$simexe simutrans/$updater
 }
 
