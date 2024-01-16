@@ -522,10 +522,10 @@ static void convert_image(imd_t * image)
 			gl_current_sheet_y = 0;
 
 			gl_texture_sheets[gl_current_sheet] =
-				gl_texture_t::create_texture(gl_max_texture_size, gl_max_texture_size,
-											 (uint8_t *)calloc(gl_max_texture_size * gl_max_texture_size * 4, 1));
+				gl_texture_t::create_texture(gl_max_texture_size, gl_max_texture_size, 0);
+			//								 (uint8_t *)calloc(gl_max_texture_size * gl_max_texture_size * 4, 1));
 
-            free(gl_texture_sheets[gl_current_sheet]->data);
+            // free(gl_texture_sheets[gl_current_sheet]->data);
             gl_texture_sheets[gl_current_sheet]->data = 0;
 		}
 
