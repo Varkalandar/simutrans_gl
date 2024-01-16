@@ -16,10 +16,13 @@
 
 static ALCdevice *device;
 static ALCcontext *context;
-static ALuint source;
 
 static ALuint buffers[1024];
 static int next_buffer = 0;
+
+#define MAX_SOURCES 4
+static ALuint sources[MAX_SOURCES];
+static int next_source = 0;
 
 
 bool dr_init_sound(void)
@@ -39,19 +42,21 @@ bool dr_init_sound(void)
     	return false;
     }
 
-    alGenSources((ALuint)1, &source);
-    // check for errors
+    for(int i=0; i<MAX_SOURCES; i++) {
+        alGenSources((ALuint)1, &sources[i]);
+        // check for errors
 
-    alSourcef(source, AL_PITCH, 1);
-    // check for errors
-    alSourcef(source, AL_GAIN, 1);
-    // check for errors
-    alSource3f(source, AL_POSITION, 0, 0, 0);
-    // check for errors
-    alSource3f(source, AL_VELOCITY, 0, 0, 0);
-    // check for errors
-    alSourcei(source, AL_LOOPING, AL_FALSE);
-
+        alSourcef(sources[i], AL_PITCH, 1);
+        // check for errors
+        alSourcef(sources[i], AL_GAIN, 1);
+        // check for errors
+        alSource3f(sources[i], AL_POSITION, 0, 0, 0);
+        // check for errors
+        alSource3f(sources[i], AL_VELOCITY, 0, 0, 0);
+        // check for errors
+        alSourcei(sources[i], AL_LOOPING, AL_FALSE);
+    }
+    
 	return true;
 }
 
@@ -229,7 +234,7 @@ static char* load_wav(const char * filename,
         return nullptr;
     }
 
-    char* data = new char[size];
+    char * data = new char[size];
 
     in.read(data, size);
 
@@ -250,7 +255,7 @@ int dr_load_sample(const char * filename)
     
     if((error = alGetError()) != AL_NO_ERROR) {
         dbg->error("dr_load_sample()", "Could not create audio buffer. Error=%d", error);
-    	return false;
+    	return -1;
     }
     
     ALsizei size;
@@ -262,7 +267,7 @@ int dr_load_sample(const char * filename)
     
     if(data == nullptr) {
         dbg->error("dr_load_sample()", "Could not read audio file.");
-    	return false;
+    	return -1;
     }
 
     ALenum format;
@@ -296,15 +301,24 @@ int dr_load_sample(const char * filename)
 void dr_play_sample(int key, int volume)
 {
     dbg->message("dr_play_sample()", "playing sample %d at volume %d", key, volume);
-    alSourcef(source, AL_GAIN, volume / 255.0 );
-    alSourcei(source, AL_BUFFER, buffers[key]);    
-    alSourcePlay(source);    
+        
+    alSourcef(sources[next_source], AL_GAIN, volume / 255.0 );
+    alSourcei(sources[next_source], AL_BUFFER, buffers[key]);    
+    alSourcePlay(sources[next_source]);    
+
+    next_source++;
+    if(next_source >= MAX_SOURCES) next_source = 0;
 }
 
 
+/**
+ * Clean up Open AL data structures, free resources
+ */
 void dr_destroy_sound()
 {
-    alDeleteSources(1, &source);
+    for(int i=0; i<MAX_SOURCES; i++) {
+        alDeleteSources(1, &sources[i]);
+    }
     
     for(int i=0; i<next_buffer; i++) {
         alDeleteBuffers(1, &buffers[i]);
