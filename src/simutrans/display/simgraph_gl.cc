@@ -1313,7 +1313,7 @@ bool simgraph_init(scr_size size, sint16)
 	// glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
 	// glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
 
-	window = glfwCreateWindow(size.w, size.h, "Simutrans GL v0.04", NULL, NULL);
+	window = glfwCreateWindow(size.w, size.h, "Simutrans GL v0.05", NULL, NULL);
 
 	dbg->message("simgraph_init()", "GLFW %d,%d -> window: %p", size.w, size.h, window);
 
