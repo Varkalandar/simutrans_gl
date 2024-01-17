@@ -129,7 +129,7 @@ void gui_label_t::draw(scr_coord offset)
 		}
 
 		// bounding box for debugging
-		// display_fillbox_wh_clip_rgb(offset.x + pos.x, offset.y + pos.y, size.w, size.h, 0xFFFF, false);
+		// display_fillbox_wh_clip_rgb(offset.x + pos.x, offset.y + pos.y, size.w, size.h, RGBA_WHITE, false);
 
 		const scr_rect area(offset+pos+scr_coord(0, top), size);
 

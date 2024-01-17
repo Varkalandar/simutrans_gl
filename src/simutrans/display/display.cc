@@ -210,14 +210,18 @@ void display_proportional_ellipsis_rgb(scr_rect r, const char *text, int align, 
 
 	// now check if the text would fit completely
 	if(  ellipsis_width  &&  pixel_width > 0  ) {
+        
 		// only when while above failed because of exceeding length
 		current_offset += pixel_width;
 		max_idx += byte_length;
 		// check the rest ...
 		while(  get_next_char_with_metrics(tmp_text, byte_length, pixel_width)  &&  max_screen_width >= (current_offset+pixel_width)  ) {
-			current_offset += pixel_width;
+            current_offset += pixel_width;
 			max_idx += byte_length;
-		}
+        }
+
+        dbg->message("display_proportional_ellipsis_rgb()", "Width: available=%d required=%d", max_screen_width, current_offset+pixel_width);        
+
 		// if it does not fit
 		if(  max_screen_width < (current_offset+pixel_width)  ) {
 			scr_coord_val w = 0;
@@ -419,7 +423,7 @@ utf32 get_next_char_with_metrics(const char* &text, unsigned char &byte_length, 
 	size_t len = 0;
 	utf32 const char_code = utf8_decoder_t::decode((utf8 const *)text, len);
 
-	if(  char_code==0  ||  char_code == '\n') {
+	if(char_code==0 || char_code == '\n') {
 		// case : end of text reached -> do not advance text pointer
 		// also stop at linebreaks
 		byte_length = 0;
@@ -427,10 +431,23 @@ utf32 get_next_char_with_metrics(const char* &text, unsigned char &byte_length, 
 		return 0;
 	}
 	else {
-		text += len;
-		byte_length = (uint8)len;
-		pixel_width = default_font.get_glyph_advance(char_code);
-	}
+        // Hajo: handle additional escape sequences)
+        if(char_code == '\e') {
+            text += len;
+            byte_length = (uint8)len;
+            // consume color marker
+            utf8_decoder_t::decode((utf8 const *)text, len);
+            text += len;
+            byte_length = (uint8)len;
+            
+            pixel_width = 0;
+        }
+        else {    
+            text += len;
+            byte_length = (uint8)len;
+            pixel_width = default_font.get_glyph_advance(char_code);
+        }
+    }
 	return char_code;
 }
 

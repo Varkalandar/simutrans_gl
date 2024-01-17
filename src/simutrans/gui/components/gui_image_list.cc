@@ -24,7 +24,6 @@ gui_image_list_t::gui_image_list_t(vector_tpl<image_data_t*> *images, int sel_so
 }
 
 
-
 /**
  * Events are notified to GUI components via this method
  */
