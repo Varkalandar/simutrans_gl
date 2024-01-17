@@ -5,13 +5,14 @@
 
 #include "../../simdebug.h"
 #include "gui_image_list.h"
+#include "../gui_theme.h"
 #include "../../display/simgraph.h"
 #include "../../display/display.h"
 #include "../../simevent.h"
 #include "../../simcolor.h"
 
 
-gui_image_list_t::gui_image_list_t(vector_tpl<image_data_t*> *images) :
+gui_image_list_t::gui_image_list_t(vector_tpl<image_data_t*> *images, int sel_sound) :
 	grid(16, 16),
 	placement(16, 16)
 {
@@ -19,6 +20,7 @@ gui_image_list_t::gui_image_list_t(vector_tpl<image_data_t*> *images) :
 	player_nr = 0;
 	max_rows = -1;
 	max_width = -1;
+    selection_sound = sel_sound;
 }
 
 
@@ -32,7 +34,7 @@ bool gui_image_list_t::infowin_event(const event_t *ev)
 	if(  sel_index != -1  &&  (IS_LEFTDBLCLK(ev)  ||  IS_LEFTRELEASE(ev))  ) {
 		value_t p;
 		p.i = sel_index;
-		call_listeners( p );
+		call_listeners(p, selection_sound);
 		return true;
 	}
 	return false;

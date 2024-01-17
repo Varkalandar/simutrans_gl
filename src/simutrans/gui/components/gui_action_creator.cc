@@ -29,11 +29,13 @@ void gui_action_creator_t::add_listener(action_listener_t * l)
 
 /**
  * Inform all listeners that an action was triggered.
+ * @param v The value to pass to the listeners
+ * @param sound Pass -1 for no sound, sound index otherwise
  */
-void gui_action_creator_t::call_listeners(value_t v)
+void gui_action_creator_t::call_listeners(value_t v, int sound)
 {
-    if(v.i == 0) {
-        sound_play(gui_theme_t::click_sound, 255, UI_SOUND);
+    if(sound >= 0) {
+        sound_play(sound, 255, UI_SOUND);
     }
     
     for(action_listener_t * const l : *listeners) {

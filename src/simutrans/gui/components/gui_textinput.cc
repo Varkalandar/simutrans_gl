@@ -125,7 +125,7 @@ bool gui_textinput_t::infowin_event(const event_t *ev)
 				case SIM_KEY_ENTER:
 					if(  text_dirty  ) {
 						text_dirty = false;
-						call_listeners((long)1);
+						call_listeners((long)1, gui_theme_t::click_sound);
 					}
 					/* FALLTHROUGH */
 				case SIM_KEY_TAB:
@@ -482,7 +482,7 @@ bool gui_textinput_t::infowin_event(const event_t *ev)
 	}
 	else if(  ev->ev_class==INFOWIN  &&  ev->ev_code==WIN_UNTOP  ) {
 		if(  text_dirty  ) {
-			call_listeners((long)0);
+			call_listeners((long)0, -1);
 		}
 		return true;
 	}

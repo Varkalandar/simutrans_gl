@@ -273,7 +273,7 @@ bool button_t::infowin_event(const event_t *ev)
 	if(  ev->ev_class==EVENT_KEYBOARD  ) {
 		if(  ev->ev_code==32  &&  get_focus()  ) {
 			// space toggles button
-			call_listeners( (long)0 );
+			call_listeners((long)0, gui_theme_t::click_sound);
 			return true;
 		}
 		return false;
@@ -300,7 +300,7 @@ bool button_t::infowin_event(const event_t *ev)
 
 	if(IS_LEFTRELEASE(ev)) {
 		if(  (type & TYPE_MASK)==posbutton  ) {
-			call_listeners( &targetpos );
+			call_listeners(&targetpos, gui_theme_t::click_sound);
 			if (type == posbutton_automatic) {
 				welt->get_viewport()->change_world_position( targetpos );
 				welt->get_zeiger()->change_pos( targetpos );
@@ -311,7 +311,7 @@ bool button_t::infowin_event(const event_t *ev)
 			if(  type & AUTOMATIC_BIT  ) {
 				pressed = !pressed;
 			}
-			call_listeners( (long)0 );
+			call_listeners((long)0, gui_theme_t::click_sound);
 			return true;
 		}
 	}
@@ -322,7 +322,7 @@ bool button_t::infowin_event(const event_t *ev)
 		}
 		else if(cur_time - button_click_time > 100) {
 			// call listerner every 100 ms
-			call_listeners( (long)1 );
+			call_listeners((long)1, -1);
 			button_click_time = cur_time;
 			return true;
 		}

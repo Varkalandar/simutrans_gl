@@ -529,7 +529,7 @@ bool gui_flowtext_intern_t::infowin_event(const event_t* ev)
 		for(hyperlink_t const& link : links) {
 			if(  link.tl.y+LINESPACE == link.br.y  ) {
 				if(  link.tl.x <= evpos.x  &&  evpos.x < link.br.x  &&  link.tl.y <= evpos.y  &&  evpos.y < link.br.y  ) {
-					call_listeners((void const*)link.param.c_str());
+					call_listeners((void const*)link.param.c_str(), gui_theme_t::click_sound);
 					return true;
 				}
 			}
@@ -537,20 +537,19 @@ bool gui_flowtext_intern_t::infowin_event(const event_t* ev)
 				//  multi lined box => more difficult
 				if(  link.tl.x <= evpos.x  &&  evpos.x < get_size().w  &&  link.tl.y <= evpos.y  &&  evpos.y < link.tl.y+LINESPACE  ) {
 					// in top line
-					call_listeners((void const*)link.param.c_str());
+					call_listeners((void const*)link.param.c_str(), gui_theme_t::click_sound);
 					return true;
 				}
 				else if(  0 <= evpos.x  &&  evpos.x < link.br.x  &&  link.br.y-LINESPACE <= evpos.y  &&  evpos.y < link.br.y  ) {
 					// in last line
-					call_listeners((void const*)link.param.c_str());
+					call_listeners((void const*)link.param.c_str(), gui_theme_t::click_sound);
 					return true;
 				}
 				else if(  0 <= evpos.x  &&  evpos.x < get_size().w  &&  link.tl.y+LINESPACE <= evpos.y  &&  evpos.y < link.br.y-LINESPACE  ) {
 					// line in between
-					call_listeners((void const*)link.param.c_str());
+					call_listeners((void const*)link.param.c_str(), gui_theme_t::click_sound);
 					return true;
 				}
-
 			}
 		}
 	}
@@ -606,6 +605,6 @@ scr_size gui_flowtext_t::get_preferred_size()
 
 bool gui_flowtext_t::action_triggered(gui_action_creator_t*, value_t extra)
 {
-	call_listeners(extra);
+	call_listeners(extra, -1);
 	return true;
 }

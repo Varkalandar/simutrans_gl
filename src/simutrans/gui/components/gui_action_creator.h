@@ -24,8 +24,10 @@ protected:
 
 	/**
 	 * Inform all listeners that an action was triggered.
+         * @param v The value to pass to the listeners
+         * @param sound Pass -1 for no sound, sound index otherwise
 	 */
-	void call_listeners(value_t v);
+	void call_listeners(value_t v, int sound);
 
 public:
         gui_action_creator_t();

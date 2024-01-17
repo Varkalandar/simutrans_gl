@@ -229,7 +229,7 @@ bool gui_scrolled_list_t::infowin_event(const event_t *ev)
 	if (  focus != new_focus  ||  (new_focus  &&  IS_LEFTRELEASE(&ev2)  &&  new_focus->getroffen(ev2.mouse_pos))  ) {
 		calc_selection(focus, new_focus, *ev);
 		const int new_selection = get_selection();
-		call_listeners((long)new_selection);
+		call_listeners((long)new_selection, gui_theme_t::click_sound);
 		swallowed = true;
 	}
 

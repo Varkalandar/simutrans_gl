@@ -146,7 +146,7 @@ void scrollbar_t::scroll(sint32 updown)
 	sint32 new_knob_offset = clamp( knob_offset+updown, 0, total_size-knob_size );
 	if(  new_knob_offset != knob_offset  ) {
 		knob_offset = new_knob_offset;
-		call_listeners((long)knob_offset);
+		call_listeners((long)knob_offset, -1);
 		reposition_buttons();
 	}
 }

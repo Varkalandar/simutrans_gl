@@ -72,7 +72,7 @@ DBG_MESSAGE("event","HOWDY!");
 				bt_prev.pressed = false;
 				set_selection( droplist.get_selection() > 0 ? droplist.get_selection() - 1 : wrapping ? droplist.get_count() - 1 : 0 );
 				p.i = droplist.get_selection();
-				call_listeners( p );
+				call_listeners(p, gui_theme_t::click_sound);
 			}
 			return true;
 		}
@@ -83,7 +83,7 @@ DBG_MESSAGE("event","HOWDY!");
 				value_t p;
 				set_selection( droplist.get_selection() < droplist.get_count() - 1 ? droplist.get_selection() + 1 : wrapping ? 0 : droplist.get_count() - 1 );
 				p.i = droplist.get_selection();
-				call_listeners(p);
+				call_listeners(p, gui_theme_t::click_sound);
 			}
 			return true;
 		}
@@ -108,7 +108,7 @@ DBG_MESSAGE("event","HOWDY!");
 		}
 		value_t p;
 		p.i = droplist.get_selection();
-		call_listeners( p );
+		call_listeners(p, gui_theme_t::click_sound);
 		return true;
 	}
 
@@ -171,7 +171,7 @@ DBG_MESSAGE("event","HOWDY!");
 						// close box will anyway call
 						if( !IS_LEFTRELEASE( ev ) ) {
 							// in case of LEFTRELEASE, close_box will call it again
-							call_listeners( droplist.get_selection() );
+							call_listeners(droplist.get_selection(), gui_theme_t::click_sound);
 						}
 						finish = true;
 					}
@@ -334,7 +334,7 @@ void gui_combobox_t::close_box()
 	if(finish) {
 		value_t p;
 		p.i = droplist.get_selection();
-		call_listeners(p);
+		call_listeners(p, -1);
 		finish = false;
 	}
 	droplist.set_visible(false);

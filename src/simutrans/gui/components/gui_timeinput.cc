@@ -76,7 +76,7 @@ void gui_timeinput_t::set_ticks(uint16 t,bool absolute)
 bool gui_timeinput_t::action_triggered(gui_action_creator_t*, value_t)
 {
 	uint16 t = get_ticks();
-	call_listeners(t);
+	call_listeners(t, -1);
 	return false;
 }
 

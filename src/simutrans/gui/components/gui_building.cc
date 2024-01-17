@@ -74,7 +74,7 @@ void gui_building_t::draw(scr_coord offset)
 
 bool gui_building_t::infowin_event(const event_t *ev) {
 	if (IS_LEFTRELEASE(ev)) {
-		call_listeners( (value_t)layout);
+		call_listeners( (value_t)layout, -1);
 	}
 	return false;
 }

@@ -45,6 +45,13 @@ public:
 	 * Creates a new cbuffer with capacity cap
 	 */
 	cbuffer_t();
+
+	/**
+	 * Creates a new cbuffer with the given text
+         * @param text The text to initialize the buffer 
+	 */
+	cbuffer_t(const char * text);
+
 	~cbuffer_t();
 
 	/**
@@ -63,6 +70,12 @@ public:
 	void clear();
 
 
+        /**
+         * Sets the buffer to the given text 
+         * @param text The new text
+         */
+        void set(const char * text);
+        
 	/**
 	 * Appends text. Buffer will be extended if it does not have enough capacity.
 	 */

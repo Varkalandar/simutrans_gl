@@ -148,15 +148,15 @@ public:
 	bool action_triggered( gui_action_creator_t *c, value_t ) OVERRIDE
 	{
 		if( c == &up ) {
-			call_listeners( UP_FLAG | number );
+			call_listeners(UP_FLAG | number, gui_theme_t::click_sound);
 			return true;
 		}
 		if( c == &down ) {
-			call_listeners( DOWN_FLAG | number );
+			call_listeners(DOWN_FLAG | number, gui_theme_t::click_sound);
 			return true;
 		}
 		if( c == &del ) {
-			call_listeners( DELETE_FLAG | number );
+			call_listeners(DELETE_FLAG | number, gui_theme_t::click_sound);
 			return true;
 		}
 		return false;
@@ -173,7 +173,7 @@ public:
 			set_focus( this );
 			if( !gui_aligned_container_t::infowin_event( ev ) && stop.getroffen( ev->click_pos ) ) {
 				// not handled, so we make i aktive
-				call_listeners( number );
+				call_listeners(number, -1);
 			}
 			return true;
 		}
@@ -316,7 +316,7 @@ public:
 			}
 			set_size(get_min_size());
 
-			call_listeners( schedule->get_current_stop() );
+			call_listeners(schedule->get_current_stop(), gui_theme_t::click_sound);
 		}
 		if (highlight) {
 			highlight_schedule(true);
@@ -339,20 +339,20 @@ public:
 			highlight_schedule( false );
 			schedule->remove_entry( delete_stop );
 			highlight_schedule( true );
-			call_listeners( schedule->get_current_stop() );
+			call_listeners(schedule->get_current_stop(), gui_theme_t::click_sound);
 		}
 		else if( v.i & UP_FLAG ) {
 			uint8 up_stop = v.i & 0x00FF;
 			schedule->move_entry_backward( up_stop );
-			call_listeners( schedule->get_current_stop() );
+			call_listeners(schedule->get_current_stop(), gui_theme_t::click_sound);
 		}
 		else if( v.i & DOWN_FLAG ) {
 			uint8 down_stop = v.i & 0x00FF;
 			schedule->move_entry_forward( down_stop );
-			call_listeners( schedule->get_current_stop() );
+			call_listeners(schedule->get_current_stop(), gui_theme_t::click_sound);
 		}
 		else {
-			call_listeners(v);
+			call_listeners(v, -1);
 		}
 		return true;
 	}
@@ -614,7 +614,7 @@ bool gui_schedule_t::action_triggered( gui_action_creator_t *comp, value_t p)
 		update_selection();
 		value_t v;
 		v.p = NULL;
-		call_listeners(v);
+		call_listeners(v, -1);
 	}
 	else if( comp == &bt_remove_double) {
 		schedule->remove_double_entries();

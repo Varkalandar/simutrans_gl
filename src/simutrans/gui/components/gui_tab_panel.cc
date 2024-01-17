@@ -178,7 +178,7 @@ bool gui_tab_panel_t::infowin_event(const event_t *ev)
 			if (text_x <= ev->mouse_pos.x && text_x + i.width > ev->mouse_pos.x) {
 				// either tooltip or change
 				active_tab = k;
-				call_listeners((long)active_tab);
+				call_listeners((long)active_tab, gui_theme_t::click_sound);
 				return true;
 			}
 			k++;
@@ -199,7 +199,7 @@ bool gui_tab_panel_t::infowin_event(const event_t *ev)
 			const int next_tab_idx = (active_tab + tabs.get_count() + di*i) % tabs.get_count();
 			if (tabs.at(next_tab_idx).component->is_visible()) {
 				active_tab = next_tab_idx;
-				call_listeners((long)active_tab);
+				call_listeners((long)active_tab, gui_theme_t::click_sound);
 				break;
 			}
 		}

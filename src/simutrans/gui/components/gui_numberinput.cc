@@ -151,7 +151,7 @@ bool gui_numberinput_t::action_triggered( gui_action_creator_t *comp, value_t /*
 		// .. if enter / esc pressed
 		set_value( get_text_value() );
 		if(check_value(value)) {
-			call_listeners(value_t(value));
+			call_listeners(value_t(value), -1);
 		}
 	}
 	else if(  comp == &bt_left  ||  comp == &bt_right  ) {
@@ -161,7 +161,7 @@ bool gui_numberinput_t::action_triggered( gui_action_creator_t *comp, value_t /*
 			set_value( new_value );
 			if(check_value(new_value)) {
 				// check for valid change - call listeners
-				call_listeners(value_t(value));
+				call_listeners(value_t(value), -1);
 			}
 		}
 	}
@@ -292,7 +292,7 @@ bool gui_numberinput_t::infowin_event(const event_t *ev)
 		// losing focus
 		set_value( get_text_value() );
 		// just to be sure, value may be the same
-		call_listeners(value_t(value));
+		call_listeners(value_t(value), -1);
 		return false;
 	}
 	else {
@@ -362,7 +362,7 @@ bool gui_numberinput_t::infowin_event(const event_t *ev)
 			set_value( new_value );
 			if(check_value(new_value)) {
 				// check for valid change - call listeners
-				call_listeners(value_t(value));
+				call_listeners(value_t(value), -1);
 				result = true;
 			}
 		}

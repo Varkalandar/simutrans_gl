@@ -25,6 +25,16 @@ cbuffer_t::cbuffer_t() :
 }
 
 
+cbuffer_t::cbuffer_t(const char * text) :
+	capacity(256),
+	size(0),
+	buf(new char[capacity])
+{
+	buf[0] = '\0';
+    append(text);
+}
+
+
 cbuffer_t::~cbuffer_t()
 {
 	free();
@@ -68,6 +78,14 @@ void cbuffer_t::copy (const cbuffer_t& cbx)
 void cbuffer_t::free ()
 {
 	delete [] buf;
+}
+
+
+void cbuffer_t::set(const char * text)
+{
+	buf[0] = '\0';
+	size = 0;
+    append(text);
 }
 
 
