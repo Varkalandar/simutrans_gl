@@ -536,8 +536,8 @@ static void convert_image(imd_t * image)
 		// copy_into_texture_sheet(image, image->texture->data, gl_max_texture_size);
 		image->texture->update_region(image->sheet_x, image->sheet_y, image->base_w, image->base_h, image->base_data);
 
-        // advance in row
-		gl_current_sheet_x += image->base_w;
+        // advance in row, leave 1 pixel space to reduce artifacts in zooming.
+		gl_current_sheet_x += image->base_w + 1;
 	}
 }
 
@@ -893,6 +893,17 @@ static void display_img(const image_id id, scr_coord_val x, scr_coord_val y, con
 		int w = imd.base_w;
 		int h = imd.base_h;
         
+        display_tile_from_sheet(imd.texture, x, y, w, h,
+                                imd.sheet_x, imd.sheet_y, imd.base_w, imd.base_h);
+    }
+}
+
+
+void display_img(const image_id id, scr_coord_val x, scr_coord_val y, scr_coord_val w, scr_coord_val h)
+{
+	if(id < anz_images)
+	{
+		imd_t & imd = images[id];
         display_tile_from_sheet(imd.texture, x, y, w, h,
                                 imd.sheet_x, imd.sheet_y, imd.base_w, imd.base_h);
     }
