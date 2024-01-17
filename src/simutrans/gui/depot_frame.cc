@@ -42,17 +42,16 @@
 #include "../dataobj/schedule.h"
 #include "../dataobj/translator.h"
 #include "../dataobj/environment.h"
-
 #include "../player/simplay.h"
-
 #include "../utils/simstring.h"
 #include "../utils/cbuffer.h"
-
 #include "../builder/goods_manager.h"
-
 #include "../obj/way/weg.h"
-
 #include "../utils/unicode.h"
+
+
+#define VEHICLE_DISPLAY_SIZE (96)
+
 
 char depot_frame_t::name_filter_value[64] = "";
 
@@ -140,12 +139,12 @@ depot_frame_t::depot_frame_t(depot_t* depot) :
 	gui_frame_t("", NULL),
 	depot(depot),
 	icnv(-1),
-	convoi(&convoi_pics, gui_theme_t::click_sound),
+	convoi(&convoi_pics, VEHICLE_DISPLAY_SIZE, gui_theme_t::click_sound),
 	scrolly_convoi(&cont_convoi, true, false),
-	pas(&pas_vec, gui_theme_t::cash_sound),
-	electrics(&electrics_vec, gui_theme_t::cash_sound),
-	loks(&loks_vec, gui_theme_t::cash_sound),
-	waggons(&waggons_vec, gui_theme_t::cash_sound),
+	pas(&pas_vec, VEHICLE_DISPLAY_SIZE, gui_theme_t::cash_sound),
+	electrics(&electrics_vec, VEHICLE_DISPLAY_SIZE, gui_theme_t::cash_sound),
+	loks(&loks_vec, VEHICLE_DISPLAY_SIZE, gui_theme_t::cash_sound),
+	waggons(&waggons_vec, VEHICLE_DISPLAY_SIZE, gui_theme_t::cash_sound),
 	scrolly_pas(&pas),
 	scrolly_electrics(&electrics),
 	scrolly_loks(&loks),
@@ -377,12 +376,24 @@ void depot_frame_t::init(depot_t *dep)
 		 */
 		scr_coord placement;
 		scr_coord grid;
-		grid.x = depot->get_x_grid() * get_base_tile_raster_width() / 64 + 4;
+		
+        /*
+        grid.x = depot->get_x_grid() * get_base_tile_raster_width() / 64 + 4;
 		grid.y = depot->get_y_grid() * get_base_tile_raster_width() / 64 + 6;
 		placement.x = depot->get_x_placement() * get_base_tile_raster_width() / 64 + 2;
 		placement.y = depot->get_y_placement() * get_base_tile_raster_width() / 64 + 2;
-		scr_coord_val grid_dx = depot->get_x_grid() * get_base_tile_raster_width() / 64 / 2;
+        
+        scr_coord_val grid_dx = depot->get_x_grid() * get_base_tile_raster_width() / 64 / 2;
 		scr_coord_val placement_dx = depot->get_x_grid() * get_base_tile_raster_width() / 64 / 4;
+        */
+        
+        grid.x = depot->get_x_grid() * VEHICLE_DISPLAY_SIZE * 1.0/64.0 + 4;
+		grid.y = depot->get_y_grid() * VEHICLE_DISPLAY_SIZE * 1.0/64.0 + 6;
+		placement.x = depot->get_x_placement() * VEHICLE_DISPLAY_SIZE * 1.0/64.0 + 2;
+		placement.y = depot->get_y_placement() * VEHICLE_DISPLAY_SIZE * 1.0/64.0 + 2;
+        
+        scr_coord_val grid_dx = depot->get_x_grid() * VEHICLE_DISPLAY_SIZE * 1.0/64.0 / 2.0;
+		scr_coord_val placement_dx = depot->get_x_grid() * VEHICLE_DISPLAY_SIZE * 1.0/64.0 / 4.0;
 
 		sb_convoi_length.set_width(depot->get_max_convoi_length() * (grid.x - grid_dx));
 

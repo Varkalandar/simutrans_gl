@@ -65,14 +65,16 @@ private:
 	sint32 max_rows;
         
         int selection_sound;
+        int image_size;
 
 public:
 	/**
 	 * Constructor: takes pointer to vector with image_data_t
 	 * @param images pointer to vector of pointers to image_data_t
+         * @param image_size The image raster or 0 to use the natural image size
          * @param selection_sound the sound to play upon selection
 	 */
-	gui_image_list_t(vector_tpl<image_data_t*> *images, int selection_sound);
+	gui_image_list_t(vector_tpl<image_data_t*> *images, int image_size, int selection_sound);
 
 	/**
 	 * This set horizontal and vertical spacing for the images.

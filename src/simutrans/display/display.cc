@@ -220,7 +220,7 @@ void display_proportional_ellipsis_rgb(scr_rect r, const char *text, int align, 
 			max_idx += byte_length;
         }
 
-        dbg->message("display_proportional_ellipsis_rgb()", "Width: available=%d required=%d", max_screen_width, current_offset+pixel_width);        
+        // dbg->message("display_proportional_ellipsis_rgb()", "Width: available=%d required=%d", max_screen_width, current_offset+pixel_width);        
 
 		// if it does not fit
 		if(  max_screen_width < (current_offset+pixel_width)  ) {

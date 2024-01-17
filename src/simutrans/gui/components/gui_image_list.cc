@@ -12,7 +12,7 @@
 #include "../../simcolor.h"
 
 
-gui_image_list_t::gui_image_list_t(vector_tpl<image_data_t*> *images, int sel_sound) :
+gui_image_list_t::gui_image_list_t(vector_tpl<image_data_t*> *images, int image_size, int selection_sound) :
 	grid(16, 16),
 	placement(16, 16)
 {
@@ -20,7 +20,9 @@ gui_image_list_t::gui_image_list_t(vector_tpl<image_data_t*> *images, int sel_so
 	player_nr = 0;
 	max_rows = -1;
 	max_width = -1;
-    selection_sound = sel_sound;
+    
+    this->selection_sound = selection_sound;
+    this->image_size = image_size; 
 }
 
 
@@ -84,10 +86,10 @@ void gui_image_list_t::draw(scr_coord parent_pos)
 
 			// display mark
 			if(idata.lcolor.alpha > 0) {
-				display_fillbox_wh_clip_rgb( xpos + 1, ypos + grid.y - 5, grid.x/2 - 1, 4, idata.lcolor, true);
+				display_fillbox_wh_clip_rgb( xpos + 1, ypos + grid.y - 1, grid.x/2 - 1, 4, idata.lcolor, true);
 			}
 			if(idata.rcolor.alpha > 0) {
-				display_fillbox_wh_clip_rgb( xpos + grid.x/2, ypos + grid.y - 5, grid.x - grid.x/2 - 1, 4, idata.rcolor, true);
+				display_fillbox_wh_clip_rgb( xpos + grid.x/2, ypos + grid.y - 1, grid.x - grid.x/2 - 1, 4, idata.rcolor, true);
 			}
 			if (sel_index-- == 0) {
 				display_ddd_box_clip_rgb(xpos, ypos, grid.x, grid.y, color_idx_to_rgb(MN_GREY4), color_idx_to_rgb(MN_GREY0));
@@ -97,12 +99,29 @@ void gui_image_list_t::draw(scr_coord parent_pos)
 			scr_coord_val x,y,w,h;
 			display_get_base_image_offset( idata.image, &x, &y, &w, &h );
 
-			// calculate image offsets
-			y = -y + (grid.y-h) - 6; // align to bottom mark
-			x = -x + (grid.x-w) / 2; // align horizontally centered
 			display_set_color(RGBA_WHITE);
-			display_base_img(idata.image, xpos + x, ypos + y, player_nr);
+            
+            if(image_size == 0) {
+                // calculate image offsets
+                y = -y + (grid.y-h) - 6; // align to bottom mark
+                x = -x + (grid.x-w) / 2; // align horizontally centered
+                display_base_img(idata.image, xpos + x, ypos + y, player_nr);
+            }
+            else {
+                // zoom to desired size
 
+                // the default size
+                double raster = get_base_tile_raster_width();                
+                double factor = image_size / raster;
+                
+                x = (int)(x * factor + 0.5);
+                y = (int)(y * factor + 0.5);
+                w = (int)(w * factor + 0.5);
+                h = (int)(h * factor + 0.5);
+                
+                display_img(idata.image, xpos + (grid.x-w)/2, ypos + (grid.y-h) - 6, w, h);
+            }
+                
 			// If necessary, display a number:
 			if(idata.count > 0) {
 				char text[20];
