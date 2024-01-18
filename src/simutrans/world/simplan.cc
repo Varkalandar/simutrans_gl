@@ -630,7 +630,8 @@ void planquadrat_t::display_overlay(const sint16 xpos, const sint16 ypos) const
 					}
 				}
 				status.alpha = 0.5f;
-				display_img_blend(overlay_img(gr), xpos, ypos, status, 0, true);
+                display_set_color(status);
+				display_color_img(overlay_img(gr), xpos, ypos, -1);
 			}
 		}
 	}
@@ -646,7 +647,8 @@ void planquadrat_t::display_overlay(const sint16 xpos, const sint16 ypos) const
 			for(int halt_count = 0; halt_count < halt_list_count; halt_count++) {
 				rgba_t transparent = color_idx_to_rgb(halt_list[halt_count]->get_owner()->get_player_color1() + 4);
 				transparent.alpha = 0.5f;
-				display_img_blend(img, xpos, ypos, transparent, 0, 0);
+                display_set_color(transparent);
+				display_color_img(img, xpos, ypos, -1);
 			}
 /*
 // unfortunately, too expensive for display

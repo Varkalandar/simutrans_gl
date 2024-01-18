@@ -212,21 +212,24 @@ void main_view_t::display(bool force_dirty)
 		if(zeiger->get_yoff()==Z_PLAN) {
 			grund_t *gr = welt->lookup( zeiger->get_pos() );
 			if(gr && gr->is_visible()) {
-				rgba_t transparent = color_idx_to_rgb(env_t::cursor_overlay_color);
+				
+                rgba_t transparent = color_idx_to_rgb(env_t::cursor_overlay_color);
 				transparent.alpha = 0.25f;
+                display_set_color(transparent);
+                
 				if(  gr->get_image()==IMG_EMPTY  ) {
-					if(  gr->hat_wege()  ) {
-						display_img_blend( gr->obj_bei(0)->get_image(), background_pos.x, background_pos.y, transparent, 0, dirty );
+					if(  gr->hat_wege()  ) {                        
+						display_color_img(gr->obj_bei(0)->get_image(), background_pos.x, background_pos.y, 0);
 					}
 					else {
-						display_img_blend( ground_desc_t::get_ground_tile(gr), background_pos.x, background_pos.y, transparent, 0, dirty );
+						display_color_img(ground_desc_t::get_ground_tile(gr), background_pos.x, background_pos.y, 0);
 					}
 				}
 				else if(  gr->get_typ()==grund_t::wasser  ) {
-					display_img_blend( ground_desc_t::sea->get_image(gr->get_image(),wasser_t::stage), background_pos.x, background_pos.y, transparent, 0, dirty );
+					display_color_img(ground_desc_t::sea->get_image(gr->get_image(),wasser_t::stage), background_pos.x, background_pos.y, 0);
 				}
 				else {
-					display_img_blend( gr->get_image(), background_pos.x, background_pos.y, transparent, 0, dirty );
+					display_color_img(gr->get_image(), background_pos.x, background_pos.y, 0);
 				}
 			}
 		}

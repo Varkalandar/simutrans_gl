@@ -1152,7 +1152,8 @@ void grund_t::display_boden(const sint16 xpos, const sint16 ypos, const sint16 r
 				display_normal(ground_desc_t::sea->get_image(get_image(),wasser_t::stage), xpos, ypos, 0);
 			}
 			else {
-				display_blend( ground_desc_t::sea->get_image(get_image(),wasser_t::stage), xpos, ypos, 0, rgba_t(1, 1, 1, 0.5f), true, dirty|wasser_t::change_stage CLIP_NUM_PAR );
+                display_set_color(rgba_t(1, 1, 1, 0.5f));
+				display_color_img(ground_desc_t::sea->get_image(get_image(),wasser_t::stage), xpos, ypos, -1);
 			}
 			return;
 		}

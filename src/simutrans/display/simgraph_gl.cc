@@ -1064,13 +1064,6 @@ void display_img_stretch(const stretch_map_t &imag, scr_rect area)
 }
 
 
-void display_rezoomed_img_blend(const image_id id, scr_coord_val x, scr_coord_val y, const sint8 pn, rgba_t color, const bool, const bool  CLIP_NUM_DEF_NOUSE)
-{
-    display_set_color(color);
-    display_img(id, x, y, pn);
-}
-
-
 void display_img_alpha(const image_id image, const image_id alpha_map, scr_coord_val xp, scr_coord_val yp)
 {
     display_set_color(rgba_t(1, 1, 1, 1));
@@ -1086,19 +1079,9 @@ void display_img_alpha(const image_id image, const image_id alpha_map, scr_coord
 }
 
 
-void display_base_img_blend(const image_id, scr_coord_val, scr_coord_val, const sint8, rgba_t, const bool, const bool  CLIP_NUM_DEF_NOUSE)
-{
-}
-
-
-void display_base_img_alpha(const image_id, const image_id, const unsigned, scr_coord_val, scr_coord_val, const sint8, rgba_t, const bool, bool  CLIP_NUM_DEF_NOUSE)
-{
-}
-
 // variables for storing currently used image procedure set and tile raster width
 display_image_proc display_normal = display_img;
 display_image_proc display_color = display_img;
-display_blend_proc display_blend = display_rezoomed_img_blend;
 
 
 rgba_t display_blend_colors(rgba_t c1, rgba_t c2, float alpha)

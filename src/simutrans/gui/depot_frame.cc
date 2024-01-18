@@ -1336,13 +1336,11 @@ static void draw_vehicle_info_popup(scr_coord pos, scr_size size, gui_aligned_co
 {
     scr_coord_val height = LINESPACE * 7 + 12;
     scr_coord popup_pos(pos.x + 0, pos.y + size.h - height - 1);
-    display_set_color(RGBA_WHITE);
+    display_set_color(rgba_t(0.9, 0.9, 0.9, 1.0));
     display_img_stretch(gui_theme_t::windowback, scr_rect(popup_pos + scr_coord(0, 1), size.w, height));
 
-    // display_fillbox_wh_rgb(popup_pos.x, popup_pos.y, size.w, height, gui_theme_t::gui_color_list_background_even, false);
     display_fillbox_wh_clip_rgb(popup_pos.x+1, popup_pos.y, size.w-2, 1, (SYSCOL_TEXT_SHADOW), false);
 
-    // cont_vehicle_labels->set_size(size);
     cont_vehicle_labels->draw(popup_pos);
 }
 

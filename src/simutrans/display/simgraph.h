@@ -147,11 +147,6 @@ void display_tile_from_sheet(const gl_texture_t * gltex, int x, int y, int w, in
 // only used for GUI, display image inside a rect
 void display_img_aligned(const image_id n, scr_rect area, int align, sint8 player_nr_raw, const bool dirty);
 
-/**
- * draws the images with alpha, either blended or as outline
- */
-void display_rezoomed_img_blend(const image_id n, scr_coord_val xp, scr_coord_val yp, const signed char player_nr, rgba_t color_index, const bool daynight, const bool dirty  CLIP_NUM_DEF);
-#define display_img_blend( n, x, y, c, dn, d ) display_rezoomed_img_blend( (n), (x), (y), 0, (c), (dn), (d)  CLIP_NUM_DEFAULT)
 
 #define ALPHA_RED 0x1
 #define ALPHA_GREEN 0x2
@@ -179,18 +174,13 @@ typedef image_id stretch_map_t[3][3];
 // Hajo: color is a player color index here.
 void display_img_stretch(const stretch_map_t &imag, scr_rect area);
 
-// display unzoomed image with alpha, either blended or as outline
-void display_base_img_blend(const image_id n, scr_coord_val xp, scr_coord_val yp, const signed char player_nr, rgba_t color_index, const bool daynight, const bool dirty  CLIP_NUM_DEF CLIP_NUM_DEFAULT_ZERO);
-void display_base_img_alpha(const image_id n, const image_id alpha_n, const unsigned alpha_flags, scr_coord_val xp, scr_coord_val yp, const sint8 player_nr, rgba_t color_index, const bool daynight, const bool dirty  CLIP_NUM_DEF CLIP_NUM_DEFAULT_ZERO);
 
 // pointer to image display procedures
 typedef void (*display_image_proc)(const image_id n, scr_coord_val xp, scr_coord_val yp, const signed char player_nr);
-typedef void (*display_blend_proc)(const image_id n, scr_coord_val xp, scr_coord_val yp, const signed char player_nr, rgba_t color_index, const bool daynight, const bool dirty  CLIP_NUM_DEF);
 
 // variables for storing currently used image procedure set and tile raster width
 extern display_image_proc display_normal;
 extern display_image_proc display_color;
-extern display_blend_proc display_blend;
 extern scr_coord_val current_tile_raster_width;
 
 // call this instead of referring to current_tile_raster_width directly

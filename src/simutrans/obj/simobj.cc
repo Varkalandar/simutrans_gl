@@ -211,7 +211,8 @@ void obj_t::display(int xpos, int ypos  CLIP_NUM_DEF) const
 
 			if(  owner_n != PLAYER_UNOWNED  ) {
 				if(  obj_t::show_owner  ) {
-					display_blend( image, xpos, ypos, owner_n, color_idx_to_rgb(welt->get_player(owner_n)->get_player_color1()+2), 0, is_dirty  CLIP_NUM_PAR);
+                    display_set_color(color_idx_to_rgb(welt->get_player(owner_n)->get_player_color1()+2));
+					display_color_img(image, xpos, ypos, owner_n);
                     display_set_color(display_get_day_night_color());
 				}
 				else {
@@ -231,16 +232,19 @@ void obj_t::display(int xpos, int ypos  CLIP_NUM_DEF) const
 			const rgba_t transparent = get_outline_colour();
 			if(transparent.alpha < 1.0) {
 				// only transparent outline
-				display_blend( get_outline_image(), xpos, start_ypos, owner_n, transparent, 0, is_dirty  CLIP_NUM_PAR);
+                display_set_color(transparent);
+				display_color_img(get_outline_image(), xpos, start_ypos, owner_n);
 			}
 			else if(  obj_t::get_flag( highlight )  ) {
 				// highlight this tile
-				display_blend( get_image(), xpos, start_ypos, owner_n, SYSCOL_OBJECT_HIGHLIGHT, 0, is_dirty  CLIP_NUM_PAR);
+                display_set_color(SYSCOL_OBJECT_HIGHLIGHT);
+				display_color_img(get_image(), xpos, start_ypos, owner_n);
 			}
 		}
 		else if(  obj_t::get_flag( highlight )  ) {
 			// highlight this tile
-			display_blend( get_image(), xpos, start_ypos, owner_n, SYSCOL_OBJECT_HIGHLIGHT, 0, is_dirty  CLIP_NUM_PAR);
+            display_set_color(SYSCOL_OBJECT_HIGHLIGHT);
+			display_color_img(get_image(), xpos, start_ypos, owner_n);
 		}
         
         display_set_color(display_get_day_night_color());
@@ -277,21 +281,24 @@ void obj_t::display_after(int xpos, int ypos, bool) const
 
 		if(  owner_n != PLAYER_UNOWNED  ) {
 			if(  obj_t::show_owner  ) {
-				display_blend( image, xpos, ypos, owner_n, color_idx_to_rgb(welt->get_player(owner_n)->get_player_color1()+2), 0, is_dirty  CLIP_NUM_PAR);
+                display_set_color(color_idx_to_rgb(welt->get_player(owner_n)->get_player_color1()+2));
+				display_color_img(image, xpos, ypos, owner_n);
 	            display_set_color(display_get_day_night_color());
         	}
 			else if(  obj_t::get_flag( highlight )  ) {
 				// highlight this tile
-				display_blend(image, xpos, ypos, owner_n, (SYSCOL_OBJECT_HIGHLIGHT), 0, is_dirty  CLIP_NUM_PAR);
+				display_set_color(SYSCOL_OBJECT_HIGHLIGHT);
+                display_color_img(image, xpos, ypos, owner_n);
                 display_set_color(display_get_day_night_color());
 			}
 			else {
-				display_color(image, xpos, ypos, owner_n);
+				display_color_img(image, xpos, ypos, owner_n);
 			}
 		}
 		else if(  obj_t::get_flag( highlight )  ) {
 			// highlight this tile
-			display_blend( image, xpos, ypos, owner_n, (SYSCOL_OBJECT_HIGHLIGHT), 0, is_dirty  CLIP_NUM_PAR);
+            display_set_color(SYSCOL_OBJECT_HIGHLIGHT);
+			display_color_img(image, xpos, ypos, owner_n);
             display_set_color(display_get_day_night_color());
 		}
 		else {

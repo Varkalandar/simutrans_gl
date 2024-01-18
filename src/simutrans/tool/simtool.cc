@@ -7087,7 +7087,8 @@ bool tool_show_underground_t::is_selected() const
 void tool_show_underground_t::draw_after(scr_coord k, bool dirty) const
 {
 	if(  icon!=IMG_EMPTY  &&  is_selected()  ) {
-		display_img_blend(icon, k.x, k.y, RGBA_WHITE, false, dirty);
+        display_set_color(RGBA_WHITE);
+        display_color_img(icon, k.x, k.y, -1);
 		// additionally show level in sliced mode
 		if(  default_param!=NULL  &&  grund_t::underground_mode==grund_t::ugm_level  ) {
 			char level_str[16];
