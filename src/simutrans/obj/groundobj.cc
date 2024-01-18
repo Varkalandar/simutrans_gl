@@ -274,15 +274,18 @@ void groundobj_t::info(cbuffer_t & buf) const
 	obj_t::info(buf);
 
 	buf.append(translator::translate(get_desc()->get_name()));
+	buf.append("\n");
+	buf.append(translator::translate("Cost to remove:"));
+    buf.append("\t\ew\arN9");
+
+    char buffer[128];
+	money_to_string( buffer, get_desc()->get_price()/100.0 );
+	buf.append( buffer );
+
 	if (char const* const maker = get_desc()->get_copyright()) {
 		buf.append("\n");
 		buf.printf(translator::translate("Constructed by %s"), maker);
 	}
-	buf.append("\n");
-	buf.append(translator::translate("cost for removal"));
-	char buffer[128];
-	money_to_string( buffer, get_desc()->get_price()/100.0 );
-	buf.append( buffer );
 }
 
 

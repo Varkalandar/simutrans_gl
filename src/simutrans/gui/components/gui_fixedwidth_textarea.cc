@@ -70,18 +70,21 @@ scr_size gui_fixedwidth_textarea_t::get_max_size() const
  */
 scr_size gui_fixedwidth_textarea_t::calc_display_text(const scr_coord offset, const bool draw) const
 {
-	scr_coord_val x=0, word_x=0, y = 0, new_width=get_size().w;
+	scr_coord_val new_width = get_size().w;
+    scr_coord_val y = offset.y;
+    
+	const char * text = buf->get_str();
 
-	const char* text(*buf);
-	const utf8 *p = (const utf8 *)text;
-	const utf8 *line_start = p;
-	const utf8 *word_start = p;
-	const utf8 *line_end  = p;
-
+    //
 	// pass 1 (and not drawing): find out if we can shrink width
+    //
+    // In the height of the restricted area, the widest text line will
+    // determine the total width of the area. below that, the rest of
+    // the text will flow.
+    //
 	if(*text  &&  !draw  &&   reserved_area.w > 0   ) {
 		scr_coord_val new_lines = 0;
-		scr_coord_val x_size = 0;
+		scr_coord_val x_size = 200; 
 
 		if ((text != NULL) && (*text != '\0')) {
 			const char* buf = text;
@@ -91,9 +94,10 @@ scr_size gui_fixedwidth_textarea_t::calc_display_text(const scr_coord offset, co
 				next = strchr(buf, '\n');
 				const size_t len = next ? next - buf : 99999;
 				// we are in the image area
-				const int px_len = display_calc_proportional_string_len_width(buf, len, 0, FS_NORMAL) + reserved_area.w;
+				const int px_len = display_calc_proportional_string_len_width(buf, len, 0, FS_NORMAL);
 
 				if (px_len > x_size) {
+                    dbg->message("", "line was too wide, expanding: %d -> %d, reserved %d, '%s'", x_size, px_len, reserved_area.w, buf);
 					x_size = px_len;
 				}
 
@@ -101,69 +105,89 @@ scr_size gui_fixedwidth_textarea_t::calc_display_text(const scr_coord offset, co
 			} while (new_lines<reserved_area.h  &&  next != NULL && ((void)(buf = next + 1), *buf != 0));
 		}
 		if (x_size < new_width) {
-			new_width = x_size;
+			new_width = x_size + reserved_area.w;
 		}
 	}
 
+    // 
 	// pass 2: height calculation and drawing (if requested)
+    //
+    // Here text will flow, automatically broken if the width of a line
+    // exceeds new_width
+    //
+	while(*text) {
 
-	// also in unicode *c==0 is end
-	while(  *p!= UNICODE_NUL  ||  p!=line_end  ) {
+        // lets see if the line would fit naturally
+        int line_width = display_calc_proportional_string_len_width(text, -1, 0, FS_NORMAL);
 
-		// force at end of text or newline
-		const scr_coord_val max_width = ( y < reserved_area.h ) ? new_width-reserved_area.w : new_width;
-
-		// smaller than the allowed width?
-		do {
-			// end of line?
-			utf32 next_char = utf8_decoder_t::decode(p);
-
-			if(next_char==0  ||  next_char=='\n') {
-				line_end = p-1;
-				if(  next_char == 0  ) {
-					p--;
-				}
-				word_start = p;
-				word_x = 0;
-				break;
-			}
-			// Space: Maybe break here
-			else if(  next_char==' '  ||  (next_char >= 0x3000  &&   next_char<0xFE70)  ) {
-				// ignore space at start of line
-				if(next_char!=' '  ||  x>0) {
-					x += (scr_coord_val)display_get_char_width( next_char );
-				}
-				word_start = p;
-				word_x = 0;
-			}
-			else {
-				// normal char: retrieve and calculate width
-				int ch_width = display_get_char_width( next_char );
-				x += ch_width;
-				word_x += ch_width;
-			}
-		} while(  x<=max_width  );
-
-		// spaces at the end can be omitted
-		line_end = word_start;
-		if(line_end==line_start) {
-			// too long word for a single line => break the word
-			word_start = line_end = p;
-			word_x = 0;
-		}
-		else if(word_start[-1]==' '  ||  word_start[-1]=='\n') {
-			line_end --;
-		}
-
-		// start of new line or end of text
-		if(draw  &&  (line_end-line_start)!=0) {
-			display_text_proportional_len_clip_rgb(offset.x, offset.y+y, (const char *)line_start, ALIGN_LEFT | DT_CLIP, (gui_theme_t::gui_color_text), true, (size_t)(line_end - line_start), 0, FS_NORMAL);
-		}
-		y += LINESPACE;
-		// back to start of new line
-		line_start = word_start;
-		x = word_x;
-		word_x = 0;
+        if(line_width < new_width) {
+            
+            // dbg->message("calc_display_text", "Found a line that fits: '%s'", text);
+            
+            // yes, it fits. Just draw it.
+            display_text_proportional_len_clip_rgb(offset.x, y,
+                                                   text, 0, (gui_theme_t::gui_color_text),
+                                                   false,
+                                                   -1, 0, FS_NORMAL);
+            y += LINESPACE;
+            const char * end = strchr(text, '\n');
+            if(end == 0) {
+                // no more newlines, and we had space to draw everything,
+                // we must have reached the end of the text
+                break;
+            }
+            else {
+                // more text, advance to new line. Skip the newline.
+                text = (end + 1);
+            }    
+        }
+		else {
+            // line too long, we must wrap
+            
+            const char * word_start = text; 
+            const char * next_break = strchr(text, '\n');
+            const char * next_space = strchr(text, ' ');
+            int cur_x = offset.x;
+            
+            if(next_space) {
+                // we've got a word
+                int ww = display_calc_proportional_string_len_width(text, next_space-word_start, 0, FS_NORMAL);
+                if(cur_x + ww > new_width) {
+                    // need a new line
+                    y += LINESPACE;
+                    cur_x = offset.x;
+                }
+                
+                display_text_proportional_len_clip_rgb(cur_x, y, word_start, 0, 
+                                                       (gui_theme_t::gui_color_text), false,  
+                                                       next_space-word_start, 0, FS_NORMAL); 
+                cur_x += ww;
+                word_start = next_space;
+            }
+            else if(next_break) {
+                // we've got a word
+                int ww = display_calc_proportional_string_len_width(text, next_break-word_start, 0, FS_NORMAL);
+                if(cur_x + ww > new_width) {
+                    // need a new line
+                    y += LINESPACE;
+                    cur_x = offset.x;
+                }
+                
+                display_text_proportional_len_clip_rgb(cur_x, y, word_start, 0, 
+                                                       (gui_theme_t::gui_color_text), false,  
+                                                       next_break-word_start, 0, FS_NORMAL); 
+                cur_x += ww;
+                word_start = next_break;
+            }
+            else {
+                // last word
+                display_text_proportional_len_clip_rgb(cur_x, y, word_start, 0, 
+                                                       (gui_theme_t::gui_color_text), false,  
+                                                       -1, 0, FS_NORMAL); 
+            }
+            
+            break;
+        }
 	}
 
 	// reset component height where necessary

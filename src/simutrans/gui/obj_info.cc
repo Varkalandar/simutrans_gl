@@ -15,7 +15,7 @@ obj_infowin_t::obj_infowin_t(const obj_t* obj) :
 	base_infowin_t(translator::translate( obj->get_name() ), obj->get_owner()),
 	view(obj, scr_size( max(64, get_base_tile_raster_width()), max(56, (get_base_tile_raster_width()*7)/8) ))
 {
-    scr_coord_val width = max(textarea.get_size().w + 90, textarea.get_size().w + get_base_tile_raster_width() - 64);
+    scr_coord_val width = textarea.get_size().w + get_base_tile_raster_width() - 64;
     
     dbg->message("obj_infowin_t", "width = %d", width);
     

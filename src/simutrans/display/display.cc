@@ -63,13 +63,13 @@ static rgba_t handle_color_sequences(utf32 code, rgba_t default_color)
 static int handle_aligned_text(utf8_decoder_t & decoder, const font_t * font, 
                                scr_coord_val x, scr_coord_val y)
 {
-    utf32 r = decoder.next();
+    const utf32 r = decoder.next();
     utf32 c = decoder.next();
-    utf32 d1 = decoder.next() - '0' + 1;
+    const utf32 d1 = decoder.next() - '0' + 1;
     
     // find the width of the reference letter
-    int wc = font->get_glyph_width(c);
-    int cell_width = wc * d1;
+    const int wc = font->get_glyph_width(c);
+    const int cell_width = wc * d1;
 
     const utf8 * text = decoder.get_position();
 
@@ -80,7 +80,8 @@ static int handle_aligned_text(utf8_decoder_t & decoder, const font_t * font,
     
     int xx = cell_width - text_width;
 
-    // dbg->message("handle_aligned_text()", "len=%d cell_width=%d text_with=%d", len, cell_width, text_width);
+    // dbg->message("handle_aligned_text()", "len=%d cell_width=%d text_with=%d", len, cell_width, text_width);    
+    // display_fillbox_wh(x, y, cell_width, 2);
     
     while(decoder.has_next()) {
         c = decoder.next();
@@ -538,38 +539,40 @@ int display_calc_string_len_width(const char* text, size_t len, int spacing, con
 {
 	unsigned int width = 0;
 
+    // bool debug = text[0] == 'R' && text[1] == 'e';
+    
     utf8_decoder_t decoder((utf8 const*)text);
     
 	while(decoder.has_next() && len > 0) {
 		const utf32 c = decoder.next();
 
 		if(c == '\t') {
-			int tabsize = BASE_TAB_WIDTH * LINESPACE / 11;
+			int tabsize = BASE_TAB_WIDTH  * LINESPACE / 11;
 			// advance to next tab stop
 			int p = width % tabsize;
-			width = (width - p) + tabsize;
-			continue;
+			width = width - p + tabsize;
+            // if(debug) dbg->message("XX", "Tab w=%d", width);
 		}
-
-		if(c == '\e') {
+        else if(c == '\e') {
             // swallow color code
             decoder.next();
-			continue;
 		}
-
-		if(c == '\a') {
+        else if(c == '\a') {
             // display text to offscreen position, we only want the width
             width += handle_aligned_text(decoder, font, -1000, -1000);
-			continue;
+            // if(debug) dbg->message("XX", "Cell w=%d", width);
+            break;
 		}
-
-		if(  c == UNICODE_NUL ||  c == '\n') {
-			return width;
+        else if(c == UNICODE_NUL || c == '\n') {
+			break;
 		}
-        
-		width += font->get_glyph_advance(c) + spacing;
+        else {
+    		width += font->get_glyph_advance(c) + spacing;
+            // if(debug) dbg->message("XX", "Glyph w=%d", width);
+            len --;
+        }
 	}
-
+    
 	return width;
 }
 
@@ -581,23 +584,35 @@ int display_calc_string_len_width(const char* text, size_t len, int spacing, con
  */
 void display_calc_proportional_multiline_string_len_width(int &xw, int &yh, const char *text)
 {
-	const font_t* const fnt = &default_font;
+	const font_t * const font = &default_font;
 	int width = 0;
 
 	xw = yh = 0;
 
-	const utf8 *p = reinterpret_cast<const utf8 *>(text);
-	while (const utf32 iUnicode = utf8_decoder_t::decode(p)) {
-
-		if(  iUnicode == '\n'  ) {
+    int len = 0;
+    
+	const utf8 * start = reinterpret_cast<const utf8 *>(text);
+	const utf8 * p = reinterpret_cast<const utf8 *>(text);
+	
+    while (const utf32 c = utf8_decoder_t::decode(p)) {
+		if(c == '\n') {
 			// new line: record max width
-			xw = max( xw, width );
+            width = display_calc_string_len_width((const char *)start, len, 0, font);
+            xw = max(xw, width);
 			yh += LINESPACE;
-			width = 0;
-			continue;
+            start = p;
 		}
-		width += fnt->get_glyph_advance(iUnicode);
+        else {
+            len ++;
+        }
 	}
+    
+    // in case there was no trailing newline
+    if(p != start)
+    {
+        width = display_calc_string_len_width((const char *)start, len, 0, font);
+    }
+    
 	xw = max( xw, width );
 	yh += LINESPACE;
 }

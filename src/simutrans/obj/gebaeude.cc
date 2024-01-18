@@ -739,12 +739,13 @@ void gebaeude_t::info(cbuffer_t & buf) const
 				delete [] text;
 			}
 		}
-		buf.append( "\n\n\n" );
+		buf.append("\n\n");
 
-		if(  !get_tile()->get_desc()->is_transport_building()  ) {
+		if(get_tile()->get_desc()->is_transport_building() == false) {
 			buf.printf("%s:\t\ew\arN9%s %d\n", translator::translate("Passagierrate"), translator::translate("Level"), get_passagier_level());
 			buf.printf("%s:\t\ew\arN9%s %d\n", translator::translate("Postrate"), translator::translate("Level"), get_mail_level());
 		}
+        
 		if(get_owner()==NULL) {
 			const sint32 v = (sint32)( -welt->get_settings().cst_multiply_remove_haus * (tile->get_desc()->get_level() + 1) / 100 );
 			buf.printf("%s\t\ew\arN9$%d\n", translator::translate("Cost to remove:"), v);

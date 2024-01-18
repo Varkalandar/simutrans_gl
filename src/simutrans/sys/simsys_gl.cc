@@ -181,7 +181,7 @@ void sysgl_mouse_button_callback(GLFWwindow *, int button, int action, int /* mo
 
     events.append(event);
 
-    dbg->message("sysgl_mouse_button_callback()", "code=%d buttons=%d", sys_event.code, sys_event.mb);
+    dbg->message("sysgl_mouse_button_callback()", "code=%d buttons=%d mx=%d my=%d", sys_event.code, sys_event.mb, mx, my);
 }
 
 
