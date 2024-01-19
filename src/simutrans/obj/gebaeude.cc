@@ -30,7 +30,6 @@ static pthread_mutex_t add_to_city_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 #include "../ground/grund.h"
 
-
 #include "../descriptor/building_desc.h"
 #include "../descriptor/intro_dates.h"
 
@@ -38,6 +37,7 @@ static pthread_mutex_t add_to_city_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 #include "../utils/cbuffer.h"
 #include "../utils/simrandom.h"
+#include "../utils/simstring.h"
 
 #include "../dataobj/loadsave.h"
 #include "../dataobj/translator.h"
@@ -747,8 +747,11 @@ void gebaeude_t::info(cbuffer_t & buf) const
 		}
         
 		if(get_owner()==NULL) {
-			const sint32 v = (sint32)( -welt->get_settings().cst_multiply_remove_haus * (tile->get_desc()->get_level() + 1) / 100 );
-			buf.printf("%s\t\ew\arN9$%d\n", translator::translate("Cost to remove:"), v);
+			const sint32 cost = (sint32)(-welt->get_settings().cst_multiply_remove_haus * (tile->get_desc()->get_level() + 1));
+            char cost_string[128];
+            money_to_string(cost_string, cost/100.0);
+
+			buf.printf("%s\t\ew\arN9%s\n", translator::translate("Cost to remove:"), cost_string);
 		}
 
 		building_desc_t const& h = *tile->get_desc();

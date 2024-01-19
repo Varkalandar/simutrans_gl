@@ -21,6 +21,7 @@
 #include "../world/simworld.h"
 #include "../utils/cbuffer.h"
 #include "../utils/simrandom.h"
+#include "../utils/simstring.h"
 
 #include <cmath>
 #include <cstdio>
@@ -302,13 +303,21 @@ void baum_t::info(cbuffer_t &buf) const
 	obj_t::info(buf);
 
 	buf.append( translator::translate(get_desc()->get_name()) );
-	buf.append( "\n" );
+	buf.append("\n");
+	buf.append("\n");
 
 	const int age = (int)get_age();
 	buf.printf( translator::translate("%i years %i months old."), age/12, (age%12) );
+    buf.append("\n");
+    
+    const sint32 cost = -welt->get_settings().cst_remove_tree;
+    char cost_string[128];
+    money_to_string(cost_string, cost/100.0);
 
+    buf.printf("%s\t\ew\arN9%s\n\n", translator::translate("Cost to remove:"), cost_string);
+            
 	if (char const* const maker = get_desc()->get_copyright()) {
-		buf.append("\n\n");
+		buf.append("\n");
 		buf.printf(translator::translate("Constructed by %s"), maker);
 	}
 }

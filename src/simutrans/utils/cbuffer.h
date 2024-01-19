@@ -6,9 +6,9 @@
 #ifndef UTILS_CBUFFER_H
 #define UTILS_CBUFFER_H
 
-
 #include <stdarg.h>
 #include <stdlib.h>
+
 /**
  * A character buffer. Main operation is 'append'
  */
