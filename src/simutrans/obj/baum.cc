@@ -304,17 +304,15 @@ void baum_t::info(cbuffer_t &buf) const
 
 	buf.append( translator::translate(get_desc()->get_name()) );
 	buf.append("\n");
-	buf.append("\n");
 
 	const int age = (int)get_age();
-	buf.printf( translator::translate("%i years %i months old."), age/12, (age%12) );
-    buf.append("\n");
+    buf.printf("%s\t\t\ew\arN9%d %s\n", "Age:", age/12, "years");
     
     const sint32 cost = -welt->get_settings().cst_remove_tree;
     char cost_string[128];
     money_to_string(cost_string, cost/100.0);
 
-    buf.printf("%s\t\ew\arN9%s\n\n", translator::translate("Cost to remove:"), cost_string);
+    buf.printf("%s\t\ew\arN9%s\n", translator::translate("Cost to remove:"), cost_string);
             
 	if (char const* const maker = get_desc()->get_copyright()) {
 		buf.append("\n");
