@@ -259,8 +259,8 @@ int set_zoom_level(int level)
 {
     int old_zoom = zoom_level;
     
-	// do not zoom smaller than 4 pixels
-	if((base_tile_raster_width * zoom_num[level]) / zoom_den[level] > 4) {
+	// limit zoom so the render buffer can still cover the whole display
+	if((gl_framebuffer_size * zoom_num[level]) / zoom_den[level] > display_width) {
 		zoom_level = level;
 		tile_raster_width = (base_tile_raster_width * zoom_num[zoom_level]) / zoom_den[zoom_level];
         current_tile_raster_width = tile_raster_width;
