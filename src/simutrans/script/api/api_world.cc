@@ -7,6 +7,8 @@
 
 /** @file api_world.cc exports world-map functions. */
 
+#include "../../descriptor/building_desc.h"
+#include "../../descriptor/ground_desc.h"
 #include "api_obj_desc_base.h"
 #include "api_simple.h"
 #include "get_next.h"
@@ -17,7 +19,6 @@
 #include "../../player/simplay.h"
 #include "../../obj/gebaeude.h"
 #include "../../obj/label.h"
-#include "../../descriptor/ground_desc.h"
 #include "../../simware.h"
 #include "../../builder/goods_manager.h"
 #include "../../simhalt.h"

@@ -3,6 +3,7 @@
  * (see LICENSE.txt)
  */
 
+#include "../descriptor/building_desc.h"
 #include "../simevent.h"
 #include "../simcolor.h"
 #include "../simconvoi.h"

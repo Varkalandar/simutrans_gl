@@ -3,6 +3,10 @@
  * (see LICENSE.txt)
  */
 
+#include "../descriptor/skin_desc.h"
+#include "../descriptor/goods_desc.h"
+#include "../descriptor/building_desc.h"
+
 #include "fabrik_info.h"
 
 #include "components/gui_label.h"

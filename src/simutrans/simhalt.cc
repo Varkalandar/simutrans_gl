@@ -5,6 +5,10 @@
 
 #include <algorithm>
 
+#include "descriptor/goods_desc.h"
+#include "descriptor/tunnel_desc.h"
+#include "descriptor/building_desc.h"
+
 #include "freight_list_sorter.h"
 
 #include "world/simcity.h"
@@ -25,9 +29,6 @@
 
 #include "builder/hausbauer.h"
 #include "builder/goods_manager.h"
-
-#include "descriptor/goods_desc.h"
-#include "descriptor/tunnel_desc.h"
 
 #include "ground/boden.h"
 #include "ground/grund.h"

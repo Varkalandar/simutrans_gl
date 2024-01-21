@@ -8,11 +8,13 @@
 #include "../world/simworld.h"
 #include "../tool/simtool.h"
 
-#include "../builder/fabrikbauer.h"
-
 #include "../descriptor/ground_desc.h"
 #include "../descriptor/intro_dates.h"
+#include "../descriptor/goods_desc.h"
+#include "../descriptor/building_desc.h"
 #include "../descriptor/factory_desc.h"
+
+#include "../builder/fabrikbauer.h"
 
 #include "../dataobj/translator.h"
 

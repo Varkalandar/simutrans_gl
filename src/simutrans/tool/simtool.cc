@@ -7,6 +7,11 @@
 #include <string.h>
 #include <math.h>
 
+#include "../descriptor/ground_desc.h"
+#include "../descriptor/building_desc.h"
+#include "../descriptor/roadsign_desc.h"
+#include "../descriptor/tunnel_desc.h"
+
 #include "../simdebug.h"
 #include "../simevent.h"
 #include "../world/simcity.h"
@@ -31,11 +36,6 @@
 #include "../simintr.h"
 #include "../simhalt.h"
 #include "../simskin.h"
-
-#include "../descriptor/ground_desc.h"
-#include "../descriptor/building_desc.h"
-#include "../descriptor/roadsign_desc.h"
-#include "../descriptor/tunnel_desc.h"
 
 #include "../vehicle/air_vehicle.h"
 #include "../vehicle/simroadtraffic.h"

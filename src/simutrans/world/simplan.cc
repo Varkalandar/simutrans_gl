@@ -3,6 +3,9 @@
  * (see LICENSE.txt)
  */
 
+#include "../descriptor/building_desc.h"
+#include "../descriptor/ground_desc.h"
+
 #include "../simdebug.h"
 #include "../obj/simobj.h"
 #include "../simfab.h"
@@ -14,7 +17,6 @@
 #include "../player/simplay.h"
 #include "../simconst.h"
 #include "../macros.h"
-#include "../descriptor/ground_desc.h"
 #include "../ground/grund.h"
 #include "../ground/boden.h"
 #include "../ground/fundament.h"

@@ -5,6 +5,7 @@
 
 #include "vehicle.h"
 
+#include "../descriptor/building_desc.h"
 #include "../simintr.h"
 #include "../world/simworld.h"
 #include "../simware.h"

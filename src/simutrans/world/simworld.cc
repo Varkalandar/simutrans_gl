@@ -12,6 +12,10 @@
 
 #include <sys/stat.h>
 
+#include "../descriptor/ground_desc.h"
+#include "../descriptor/intro_dates.h"
+#include "../descriptor/building_desc.h"
+
 #include "simcity.h"
 #include "../simcolor.h"
 #include "../simconvoi.h"
@@ -97,9 +101,6 @@
 #include "../builder/wegbauer.h"
 #include "../builder/hausbauer.h"
 #include "../builder/vehikelbauer.h"
-
-#include "../descriptor/ground_desc.h"
-#include "../descriptor/intro_dates.h"
 
 #include "../player/simplay.h"
 #include "../player/finance.h"

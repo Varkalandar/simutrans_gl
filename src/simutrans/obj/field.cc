@@ -7,6 +7,8 @@
 
 #include "../world/simworld.h"
 #include "simobj.h"
+#include "../descriptor/goods_desc.h"
+#include "../descriptor/building_desc.h"
 #include "../simfab.h"
 #include "../display/simimg.h"
 

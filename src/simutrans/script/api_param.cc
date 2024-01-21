@@ -6,6 +6,8 @@
 #include "api_param.h"
 #include "api_class.h"
 
+#include "../descriptor/goods_desc.h"
+#include "../descriptor/building_desc.h"
 #include "../world/simcity.h"
 #include "../simfab.h"
 #include "../builder/goods_manager.h"

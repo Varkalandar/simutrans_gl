@@ -5,6 +5,9 @@
 
 #include "../obj/leitung2.h"
 #include "../dataobj/translator.h"
+#include "../descriptor/skin_desc.h"
+#include "../descriptor/goods_desc.h"
+#include "../descriptor/building_desc.h"
 
 #include "factory_chart.h"
 

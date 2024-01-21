@@ -3,8 +3,10 @@
  * (see LICENSE.txt)
  */
 
+#include "building_desc.h"
 #include "factory_desc.h"
 #include "xref_desc.h"
+#include "goods_desc.h"
 #include "../network/checksum.h"
 #include "../display/simgraph.h"
 

@@ -7,6 +7,7 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include "../descriptor/building_desc.h"
 #include "../simcolor.h"
 #include "../simevent.h"
 #include "../display/simgraph.h"

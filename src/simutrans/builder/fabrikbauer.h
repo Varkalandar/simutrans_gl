@@ -17,7 +17,6 @@ class karte_ptr_t;
 class player_t;
 class fabrik_t;
 
-
 /**
  * This class builds factories. Never construct factories directly
  * but always by calling factory_builder_t::build() (for a single factory)

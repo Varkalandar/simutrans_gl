@@ -16,6 +16,8 @@ static pthread_mutex_t calc_image_mutex = PTHREAD_MUTEX_INITIALIZER;
 #include "simobj.h"
 #include "../player/simplay.h"
 #include "../display/simimg.h"
+#include "../descriptor/goods_desc.h"
+#include "../descriptor/building_desc.h"
 #include "../simfab.h"
 #include "../simskin.h"
 

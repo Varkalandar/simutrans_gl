@@ -3,6 +3,9 @@
  * (see LICENSE.txt)
  */
 
+#include "../descriptor/skin_desc.h"
+#include "../descriptor/goods_desc.h"
+#include "../descriptor/building_desc.h"
 #include "factorylist_frame.h"
 #include "gui_theme.h"
 #include "../dataobj/translator.h"

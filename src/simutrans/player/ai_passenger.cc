@@ -3,6 +3,7 @@
  * (see LICENSE.txt)
  */
 
+#include "../descriptor/building_desc.h"
 #include "../world/simcity.h"
 #include "../simconvoi.h"
 #include "../simfab.h"

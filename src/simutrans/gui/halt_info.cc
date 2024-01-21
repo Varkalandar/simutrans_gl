@@ -5,6 +5,9 @@
 
 #include <algorithm>
 
+#include "../descriptor/skin_desc.h"
+#include "../descriptor/building_desc.h"
+
 #include "halt_info.h"
 #include "components/gui_button_to_chart.h"
 
@@ -33,8 +36,6 @@
 
 #include "../utils/simstring.h"
 #include "../utils/unicode.h"
-
-#include "../descriptor/skin_desc.h"
 
 
 #define CHART_HEIGHT (100)

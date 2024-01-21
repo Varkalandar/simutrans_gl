@@ -5,6 +5,7 @@
 
 #include <algorithm>
 #include "../simdebug.h"
+#include "../descriptor/building_desc.h"
 #include "fabrikbauer.h"
 #include "hausbauer.h"
 #include "../world/simworld.h"

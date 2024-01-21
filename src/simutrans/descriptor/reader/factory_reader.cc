@@ -4,6 +4,7 @@
  */
 
 #include <stdio.h>
+#include "../building_desc.h"
 #include "../../simfab.h"
 #include "../../builder/fabrikbauer.h"
 #include "../../simdebug.h"
@@ -11,6 +12,7 @@
 #include "../sound_desc.h"
 #include "../factory_desc.h"
 #include "../xref_desc.h"
+#include "../goods_desc.h"
 #include "../../network/pakset_info.h"
 #include "../../tpl/array_tpl.h"
 

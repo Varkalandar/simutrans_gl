@@ -7,6 +7,10 @@
 #include <stdio.h>
 #include <cmath>
 
+#include "../descriptor/goods_desc.h"
+#include "../descriptor/building_desc.h"
+#include "../descriptor/factory_desc.h"
+
 #include "map_frame.h"
 #include "minimap.h"
 
@@ -24,7 +28,6 @@
 #include "../dataobj/translator.h"
 #include "../dataobj/koord.h"
 #include "../dataobj/loadsave.h"
-#include "../descriptor/factory_desc.h"
 #include "../simfab.h"
 #include "../player/finance.h"
 

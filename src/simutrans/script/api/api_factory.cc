@@ -12,8 +12,10 @@
 #include "../api_class.h"
 #include "../api_function.h"
 #include "../../dataobj/scenario.h"
-#include "../../simfab.h"
+#include "../../descriptor/goods_desc.h"
+#include "../../descriptor/building_desc.h"
 #include "../../descriptor/factory_desc.h"
+#include "../../simfab.h"
 
 using namespace script_api;
 

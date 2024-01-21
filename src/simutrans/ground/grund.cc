@@ -18,15 +18,15 @@
 #include "../player/simplay.h"
 #include "../gui/simwin.h"
 #include "../world/simworld.h"
-#include "../simfab.h"
-
-#include "../builder/wegbauer.h"
 
 #include "../descriptor/ground_desc.h"
 #include "../descriptor/building_desc.h"
 #include "../descriptor/crossing_desc.h"
 #include "../descriptor/tunnel_desc.h"
 #include "../descriptor/way_desc.h"
+
+#include "../simfab.h"
+#include "../builder/wegbauer.h"
 
 #include "../dataobj/freelist.h"
 #include "../dataobj/loadsave.h"

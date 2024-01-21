@@ -6,6 +6,10 @@
 #include <string>
 #include <algorithm>
 
+#include "../descriptor/building_desc.h"
+#include "../descriptor/bridge_desc.h"
+#include "../descriptor/tunnel_desc.h"
+
 #include "../utils/unicode.h"
 
 #include "../simevent.h"
@@ -24,10 +28,6 @@
 #include "../builder/brueckenbauer.h"
 #include "../builder/tunnelbauer.h"
 #include "../script/script_tool_manager.h"
-
-#include "../descriptor/building_desc.h"
-#include "../descriptor/bridge_desc.h"
-#include "../descriptor/tunnel_desc.h"
 
 #include "../ground/grund.h"
 #include "../obj/way/strasse.h"

@@ -9,6 +9,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "descriptor/building_desc.h"
+#include "descriptor/goods_desc.h"
+#include "descriptor/sound_desc.h"
 #include "simdebug.h"
 #include "display/simimg.h"
 #include "simcolor.h"
@@ -20,9 +23,6 @@
 #include "simhalt.h"
 #include "simware.h"
 #include "world/simworld.h"
-#include "descriptor/building_desc.h"
-#include "descriptor/goods_desc.h"
-#include "descriptor/sound_desc.h"
 #include "player/simplay.h"
 
 #include "simintr.h"

@@ -3,6 +3,8 @@
  * (see LICENSE.txt)
  */
 
+#include "../descriptor/goods_desc.h"
+#include "../descriptor/building_desc.h"
 #include "factorylist_stats.h"
 #include "../simskin.h"
 #include "../simfab.h"

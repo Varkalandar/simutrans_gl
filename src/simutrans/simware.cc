@@ -6,6 +6,9 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "descriptor/goods_desc.h"
+#include "descriptor/building_desc.h"
+
 #include "simmem.h"
 #include "simdebug.h"
 #include "simfab.h"
@@ -16,7 +19,6 @@
 #include "dataobj/loadsave.h"
 #include "dataobj/koord.h"
 
-#include "descriptor/goods_desc.h"
 #include "builder/goods_manager.h"
 
 

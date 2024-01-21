@@ -8,9 +8,6 @@
 
 
 #include "obj_desc.h"
-#include "building_desc.h"
-#include "goods_desc.h"
-#include "../display/rgba.h"
 #include "../dataobj/koord.h"
 #include "../tpl/weighted_vector_tpl.h"
 
@@ -19,7 +16,9 @@
 #define DEFAULT_SMOKE_UPLIFT (16)
 #define LEGACY_SMOKE_YOFFSET (8)
 
-
+class skin_desc_t;
+class building_desc_t;
+class goods_desc_t;
 class checksum_t;
 
 /**

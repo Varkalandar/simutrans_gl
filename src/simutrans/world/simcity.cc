@@ -9,6 +9,8 @@
 #include <string.h>
 #include <math.h>
 
+#include "../descriptor/building_desc.h"
+
 #include "../ground/grund.h"
 #include "../ground/boden.h"
 #include "../gui/simwin.h"
@@ -25,8 +27,6 @@
 
 #include "../gui/minimap.h"
 #include "../gui/city_info.h"
-
-#include "../descriptor/building_desc.h"
 
 #include "../simintr.h"
 #include "../simdebug.h"

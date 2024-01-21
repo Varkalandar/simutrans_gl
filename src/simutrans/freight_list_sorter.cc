@@ -6,6 +6,7 @@
 #include <algorithm>
 
 #include "freight_list_sorter.h"
+#include "descriptor/building_desc.h"
 #include "simhalt.h"
 #include "simtypes.h"
 #include "simware.h"
