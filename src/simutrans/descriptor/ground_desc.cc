@@ -141,145 +141,7 @@ static image_t* create_textured_tile(const image_t* image_lightmap, const image_
 }
 
 
-/* combines a texture and a lightmap
- * does a very simple stretching of the texture and the mix images
- * BEWARE: Assumes all images but image_lightmap are square!
- * BEWARE: no special colors or your will see literally blue!
- */
-static image_t* create_alpha_tile(const image_t* image_lightmap, slope_t::type slope, const image_t* image_alphamap)
-{
-	if(  image_lightmap == NULL  ||  image_alphamap == NULL  ||  image_alphamap->get_pic()->w < 2  ) {
-		image_t *image_dest = image_t::create_single_pixel();
-		image_dest->register_image(NULL);
-		return image_dest;
-	}
-	assert( image_alphamap->get_pic()->w == image_alphamap->get_pic()->h);
-
-	image_t *image_dest = image_lightmap->copy_rotate(0);
-
-	uint16 const* const alphamap  = image_alphamap->get_data();
-	const sint32 x_y     = image_dest->get_pic()->w;
-	const sint32 mix_x_y = image_alphamap->get_pic()->w;
-	sint16 tile_x, tile_y;
-
-    if(image_dest->bpp == 16) {
-
-        /*
-        * to go from mixmap xy to tile xy is simple:
-        * (x,y)_tile = (mixmap_x+mixmap_y)/2 , (mixmap_y-mixmap_x)/4+(3/4)*tilesize
-        * This is easily inverted to
-        * (x,y)mixmap = x_tile-2*y_tile+(3/2)*tilesize, x_tile+2*y_tile-(3/2)*tilesize
-        * tricky are slopes. There we have to add an extra distortion
-        * /4\
-        * 1+3
-        * \2/
-        * Luckily this distortion is only for the y direction.
-        * for corner 1: max(0,(tilesize-(x+y))*HEIGHT_STEP)/tilesize )
-        * for corner 2: max(0,((y-x)*HEIGHT_STEP)/tilesize )
-        * for corner 3: max(0,((x+y)-tilesize)*HEIGHT_STEP)/tilesize )
-        * for corner 4: max(0,((x-y)*HEIGHT_STEP)/tilesize )
-        * the maximum operators make the inversion of the above equation nearly impossible.
-        */
-
-        // we will need them very often ...
-        const sint16 corner_sw_y = (3 * x_y) / 4 - corner_sw(slope) * tile_raster_scale_y( TILE_HEIGHT_STEP, x_y );
-        const sint16 corner_se_y = x_y - corner_se(slope) * tile_raster_scale_y( TILE_HEIGHT_STEP, x_y );
-        const sint16 corner_ne_y = (3 * x_y) / 4 - corner_ne(slope) * tile_raster_scale_y( TILE_HEIGHT_STEP, x_y );
-        const sint16 corner_nw_y = (x_y / 2) - corner_nw(slope) * tile_raster_scale_y( TILE_HEIGHT_STEP, x_y );
-        const sint16 middle_y = (corner_se_y + corner_nw_y) / 2;
-        // now mix the images
-        uint16* dest = image_dest->get_data();
-        for(  int j = 0;  j < image_dest->get_pic()->h;  j++  ) {
-            tile_y = image_dest->get_pic()->y + j;
-            tile_x = *dest++;
-            do {
-                sint16 runlen = *dest++;
-                for(  int i = 0;  i < runlen;  i++  ) {
-                    // now we must calculate the target pixel
-                    // after the upper explanation, you will understand this is longish:
-                    sint16 tile_y_corrected;
-
-                    // first; check, if we are front or back half
-                    // back half means, we are above a line from the left_y (corner_sw), middle_y, right_y (corner_se)
-                    const sint16 back_y = (x_y < 2) ? 0 : ( (tile_x < x_y / 2) ? corner_sw_y + ((middle_y - corner_sw_y) * tile_x) / (x_y / 2) : middle_y + ((corner_ne_y - middle_y) * (tile_x - (x_y / 2))) / (x_y / 2) );
-                    // in the middle? then it is just the diagonal in the mixmap
-                    if(  back_y == tile_y  ) {
-                        tile_y_corrected = 0;
-                    }
-                    else if(  back_y > tile_y  ) {
-                        // left quadrant calulation: mirror of right quadrat
-                        sint16 x = tile_x;
-                        if(  x >= x_y / 2  ) {
-                            x = x_y - tile_x;
-                        }
-                        // we are in the back tile => calculate border y
-                        sint16 backborder_y;
-                        if(  tile_x > x_y / 2  ) {
-                            backborder_y = corner_nw_y + ((corner_ne_y - corner_nw_y) * (x_y / 2 - x)) / (x_y / 2);
-                        }
-                        else {
-                            backborder_y = corner_sw_y + ((corner_nw_y - corner_sw_y) * x) / (x_y / 2);
-                        }
-                        // ok, now we have to calculate the y coordinate ...
-                        if(  backborder_y < tile_y  ) {
-                            tile_y_corrected = -((back_y - tile_y) * x) / (back_y - backborder_y);
-                        }
-                        else {
-                            tile_y_corrected = -x;
-                        }
-                    }
-                    else {
-                        // left quadrant calulation: mirror of right quadrat
-                        sint16 x = tile_x;
-                        // put condition this way, testing (x >= x_y) breaks if x_y == 1.
-                        if(  2*x >= x_y ) {
-                            x = x_y - tile_x;
-                        }
-                        // we are in the front tile => calculate border y
-                        sint16 frontborder_y = 0;
-                        if(  tile_x > x_y / 2  ) {
-                            frontborder_y = corner_se_y + ((corner_ne_y - corner_se_y) * (x_y / 2 - x)) / (x_y / 2);
-                        }
-                        else if(  x_y >=2  ) {
-                            frontborder_y = corner_sw_y + ((corner_se_y - corner_sw_y) * x) / (x_y / 2);
-                        }
-                        // ok, now we have to calculate the y coordinate ...
-                        if(  frontborder_y > tile_y  ) {
-                            tile_y_corrected = -((back_y - tile_y) * x) / (frontborder_y - back_y);
-                        }
-                        else {
-                            tile_y_corrected = x;
-                        }
-                    }
-
-                    // now we have calulated the y_t of square tile that is rotated by 45 degree
-                    // so we just have to do a 45 deg backtransform ...
-                    // (and do not forget: tile_y_corrected middle = 0!
-                    sint32 x_t = tile_x - tile_y_corrected;
-                    sint32 y_t = tile_y_corrected + tile_x;
-                    // due to some inexactness of integer arithmethics, we have to take care of overflow and underflow
-                    x_t = clamp(x_t, 0, x_y-1);
-                    y_t = clamp(y_t, 0, x_y-1);
-                    sint32 alphamap_offset = ((y_t * mix_x_y) / x_y) * (mix_x_y + 3) + 2 + (x_t * mix_x_y) / x_y;
-
-                    // see only the mixmap for mixing
-                    //
-                    // clear 0x8000 bit as it has special meaning,
-                    // confuses rezoom_img() and crashes later
-                    *dest++ = alphamap[alphamap_offset] & 0x7fff;
-                    tile_x++;
-                }
-                tile_x += *dest;
-            } while(  *dest++ != 0  );
-        }
-    }
-    
-	image_dest->register_image(NULL);
-	return image_dest;
-}
-
-
-static void hjm_transition_postprocessor(int w, int h, uint8 * data)
+static void climate_transition_postprocessor(int w, int h, uint8 * data)
 {
     // dbg->message("hjm_transition_postprocessor()", "Processing %d x %d pixel", w, h);
     
@@ -297,7 +159,7 @@ static void hjm_transition_postprocessor(int w, int h, uint8 * data)
 }
 
 
-static void hjm_beach_postprocessor(int w, int h, uint8 * data)
+static void beach_transition_postprocessor(int w, int h, uint8 * data)
 {
     // dbg->message("hjm_beach_postprocessor()", "Processing %d x %d pixel", w, h);
 
@@ -328,10 +190,10 @@ static void hjm_beach_postprocessor(int w, int h, uint8 * data)
  * BEWARE: Assumes all images but image_lightmap are square!
  * BEWARE: no special colors or your will see literally blue!
  */
-static image_t* create_hjm_beach_tile(const image_t* image_lightmap, 
-                                      slope_t::type slope, 
-                                      const image_t* image_alphamap,
-                                      void (*postprocessor)(int w, int h, uint8 * data))
+static image_t* create_transition_tile(const image_t* image_lightmap, 
+                                       slope_t::type slope, 
+                                       const image_t* image_alphamap,
+                                       void (*postprocessor)(int w, int h, uint8 * data))
 {
 	if(  image_lightmap == NULL  ||  image_alphamap == NULL  ||  image_alphamap->get_pic()->w < 2  ) {
 		image_t *image_dest = image_t::create_single_pixel();
@@ -1116,7 +978,7 @@ void ground_desc_t::init_ground_textures(karte_t *world)
 		if(  doubleslope_to_imgnr[dslope] != 255  ) {
 			int slope = double_grounds ? dslope : slopetable[dslope];
 			// final_tile = create_alpha_tile( light_map->get_image_ptr( slope ), dslope, all_rotations_slope[dslope] );
-			final_tile = create_hjm_beach_tile(light_map->get_image_ptr( slope ), dslope, all_rotations_slope[dslope], hjm_transition_postprocessor);
+			final_tile = create_transition_tile(light_map->get_image_ptr( slope ), dslope, all_rotations_slope[dslope], climate_transition_postprocessor);
 			alpha_image[dslope] = final_tile->get_id();
 		}
 		else {
@@ -1136,14 +998,14 @@ void ground_desc_t::init_ground_textures(karte_t *world)
 				// create alpha image
 				// final_tile = create_alpha_tile( light_map->get_image_ptr( slope ), dslope, all_rotations_slope[double_corners] );
 				
-				final_tile = create_hjm_beach_tile(light_map->get_image_ptr( slope ), dslope, all_rotations_slope[double_corners], hjm_transition_postprocessor);
+				final_tile = create_transition_tile(light_map->get_image_ptr( slope ), dslope, all_rotations_slope[double_corners], climate_transition_postprocessor);
                 alpha_corners_image[dslope * 15 + corners - 1] = final_tile->get_id();
 
 				double_corners = corners == 15 ? 80 : slope_from_slope4(slope4_t(15-corners), 1);
 
 				if(  all_rotations_beach[double_corners]  ) {
 					// final_tile = create_alpha_tile( light_map->get_image_ptr( slope ), dslope, all_rotations_beach[double_corners] );
-					final_tile = create_hjm_beach_tile(light_map->get_image_ptr( slope ), dslope, all_rotations_beach[double_corners], hjm_beach_postprocessor);
+					final_tile = create_transition_tile(light_map->get_image_ptr( slope ), dslope, all_rotations_beach[double_corners], beach_transition_postprocessor);
 					alpha_water_image[dslope * 15 + corners - 1] = final_tile->get_id();
 				}
 			}
