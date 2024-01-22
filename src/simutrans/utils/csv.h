@@ -61,7 +61,7 @@ Field1 Header,Field2 Header
 field1 data,"field2, data"
 
  */
-class CSV_t {
+class csv_t {
 	// The raw data itself (stored encoded)
 	cbuffer_t contents;
 
@@ -94,8 +94,8 @@ class CSV_t {
 
 public:
 	/* Constructors */
-	CSV_t() : lines(1), offset(0), first_field(true) {}
-	CSV_t( const char * );
+	csv_t() : lines(1), offset(0), first_field(true) {}
+	csv_t( const char * );
 
 
 	/* Methods for reading */

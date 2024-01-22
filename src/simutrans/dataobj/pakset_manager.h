@@ -15,6 +15,7 @@
 
 class obj_desc_t;
 class obj_reader_t;
+class cbuffer_t;
 
 
 /// Missing things during loading:
@@ -93,8 +94,15 @@ public:
 	//  Open a window to display the full warning
 	static void open_doubled_warning_window();
 
+        /**
+         * Accesses additional pakset configuration daat for Simutrans GL
+         * @param key The key used for data lookup.
+         */
+        static const char * get_extra_info_string(const cbuffer_t & key);
+
 private:
-	/**
+
+        /**
 	 * Loads all pak files from a directory and its subdirectories, displaying a progress bar if the display is initialized.
 	 * @param path Directory to be scanned for PAK files
 	 * @param load_addons true to also load paks from subdirectories named "addons"

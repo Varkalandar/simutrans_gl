@@ -285,7 +285,7 @@ bool server_frame_t::update_serverlist ()
 	}
 
 	// Parse listing into CSV_t object
-	CSV_t csvdata( buf.get_str() );
+	csv_t csvdata( buf.get_str() );
 	int ret;
 
 	dbg->message( "server_frame_t::update_serverlist", "CSV_t: %s", csvdata.get_str() );

@@ -202,7 +202,7 @@ void nwc_nick_t::server_tools(karte_t *welt, uint32 client_id, uint8 what, const
 				   info.nickname.c_str());
 
 			// Log chat message - please don't change order of fields
-			CSV_t csv;
+			csv_t csv;
 			csv.add_field( "connect" );
 			csv.add_field( client_id );
 			csv.add_field( info.address.get_str() );
@@ -229,7 +229,7 @@ void nwc_nick_t::server_tools(karte_t *welt, uint32 client_id, uint8 what, const
 			}
 
 			// Log chat message - please don't change order of fields
-			CSV_t csv;
+			csv_t csv;
 			csv.add_field( "namechange" );
 			csv.add_field( client_id );
 			csv.add_field( info.address.get_str() );
@@ -255,7 +255,7 @@ void nwc_nick_t::server_tools(karte_t *welt, uint32 client_id, uint8 what, const
 				   info.nickname.c_str());
 
 			// Log chat message - please don't change order of fields
-			CSV_t csv;
+			csv_t csv;
 			csv.add_field( "disconnect" );
 			csv.add_field( client_id );
 			csv.add_field( info.address.get_str() );
@@ -359,7 +359,7 @@ bool nwc_chat_t::execute (karte_t* welt)
 			add_message(welt);
 
 			// Log chat message - please don't change order of fields
-			CSV_t csv;
+			csv_t csv;
 			csv.add_field( "chat" );
 			csv.add_field( client_id );
 			csv.add_field( info.address.get_str() );
@@ -390,7 +390,7 @@ bool nwc_chat_t::execute (karte_t* welt)
 			delete nwchat;
 
 			// Log chat message - please don't change order of fields
-			CSV_t csv;
+			csv_t csv;
 			csv.add_field( "private" );
 			csv.add_field( client_id );
 			csv.add_field( info.address.get_str() );
@@ -1359,7 +1359,7 @@ bool nwc_service_t::execute(karte_t *welt)
 				network_send_all( nwchat, false );
 
 				// Log chat message - please don't change order of fields
-				CSV_t csv;
+				csv_t csv;
 				csv.add_field( "adminmsg" );
 				csv.add_field( text );
 				dbg->warning( "__ChatLog__", "%s", csv.get_str() );

@@ -21,6 +21,7 @@
 #include "../dataobj/environment.h"
 #include "../network/pakset_info.h"
 
+#include "tabfile.h"
 
 pakset_manager_t::obj_map_t*                                  pakset_manager_t::registered_readers;
 inthashtable_tpl<obj_type, stringhashtable_tpl<obj_desc_t*> > pakset_manager_t::loaded;
@@ -30,6 +31,7 @@ std::string                                                   pakset_manager_t::
 stringhashtable_tpl<missing_level_t>                          pakset_manager_t::missing_pak_names;
 std::string                                                   pakset_manager_t::overlaid_warning;
 
+static tabfileobj_t pak_gl_extra_info;
 
 void pakset_manager_t::register_reader(obj_reader_t *reader)
 {
@@ -85,6 +87,19 @@ void pakset_manager_t::load_pakset(bool load_addons)
 		dbg->fatal("pakset_manager_t::load_pakset", "Failed to load pakset. Please re-download or select another pakset.");
 	}
 
+    // Try to read optional extra pak set info for Simutrans GL
+    cbuffer_t extra_info_tab_file_name (env_t::pak_dir.c_str());
+    extra_info_tab_file_name.append("config/extra_gl_info.tab");
+    
+    dbg->message("pakset_manager_t::load_pakset", "Trying to open %s", extra_info_tab_file_name.get_str());
+
+    tabfile_t reader;
+    if(reader.open(extra_info_tab_file_name.get_str())) {
+        dbg->message("pakset_manager_t::load_pakset", "reading %s", extra_info_tab_file_name.get_str());
+        reader.read(pak_gl_extra_info);
+        reader.close();
+    }
+    
 	pakset_info_t::calculate_checksum();
 
 	if(  env_t::verbose_debug >= log_t::LEVEL_DEBUG  ) {
@@ -92,11 +107,22 @@ void pakset_manager_t::load_pakset(bool load_addons)
 	}
 }
 
+
 void pakset_manager_t::open_doubled_warning_window()
 {
 	help_frame_t *win = new help_frame_t();
 	win->set_text( overlaid_warning.c_str() );
 	create_win(win, w_info, magic_none);
+}
+
+
+/**
+ * Accesses additional pakset configuration daat for Simutrans GL
+ * @param key The key used for data lookup.
+ */
+const char * pakset_manager_t::get_extra_info_string(const cbuffer_t & key) 
+{
+    return pak_gl_extra_info.get_string(key.get_str(), 0);
 }
 
 

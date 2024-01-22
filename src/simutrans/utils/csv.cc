@@ -14,7 +14,7 @@
 #include "../simtypes.h"
 
 
-CSV_t::CSV_t (const char *csvdata) :
+csv_t::csv_t(const char * csvdata) :
 	lines(1),
 	offset(0),
 	first_field(true)
@@ -52,7 +52,7 @@ CSV_t::CSV_t (const char *csvdata) :
 }
 
 
-int CSV_t::get_next_field (cbuffer_t& buf)
+int csv_t::get_next_field (cbuffer_t& buf)
 {
 	// Sanity check - offset must be less than or equal to the length of contents string
 	if (  strlen( contents.get_str() ) < offset  ) {
@@ -74,7 +74,7 @@ int CSV_t::get_next_field (cbuffer_t& buf)
 }
 
 
-bool CSV_t::next_line ()
+bool csv_t::next_line ()
 {
 	// Call get_next_field until EOL, then move forward to next field past newline
 	int r;
@@ -89,29 +89,29 @@ bool CSV_t::next_line ()
 	return true;
 }
 
-void CSV_t::reset ()
+void csv_t::reset ()
 {
 	offset = 0;
 }
 
-const char *CSV_t::get_str () const
+const char *csv_t::get_str () const
 {
 	return contents.get_str();
 }
 
-int CSV_t::get_lines () const
+int csv_t::get_lines () const
 {
 	return lines;
 }
 
-void CSV_t::add_field (int newfield)
+void csv_t::add_field (int newfield)
 {
 	char tmp[32];
 	sprintf( tmp, "%i", newfield );
 	add_field( tmp );
 }
 
-void CSV_t::add_field (const char *newfield)
+void csv_t::add_field (const char *newfield)
 {
 	// Add comma if this isn't the first field on a line
 	if (  !first_field  ) {
@@ -138,7 +138,7 @@ void CSV_t::add_field (const char *newfield)
 
 }
 
-void CSV_t::new_line ()
+void csv_t::new_line ()
 {
 	// Add newline to buffer
 	contents.append( "\n" );
@@ -147,7 +147,7 @@ void CSV_t::new_line ()
 }
 
 
-int CSV_t::encode( const char *text, cbuffer_t& output )
+int csv_t::encode( const char *text, cbuffer_t& output )
 {
 	char *n;
 	bool wrap = false;
@@ -190,7 +190,7 @@ int CSV_t::encode( const char *text, cbuffer_t& output )
 }
 
 
-int CSV_t::decode (const char *start, cbuffer_t& output)
+int csv_t::decode (const char *start, cbuffer_t& output)
 {
 	const char *s = start;
 
@@ -268,8 +268,8 @@ int CSV_t::decode (const char *start, cbuffer_t& output)
 				output.append( s, (comma - s) );
 				return (int)((comma - s) + 1);
 			}
+
 			return -9;
 		}
-
 	}
 }

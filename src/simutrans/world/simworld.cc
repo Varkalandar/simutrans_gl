@@ -90,6 +90,7 @@
 #include "../dataobj/pakset_manager.h"
 
 #include "../utils/cbuffer.h"
+#include "../utils/csv.h"
 #include "../utils/simrandom.h"
 #include "../utils/simstring.h"
 
@@ -1115,6 +1116,73 @@ void karte_t::distribute_cities(int new_city_count, sint32 new_mean_citizen_coun
 }
 
 
+/**
+ * Place a group of related ground objects.
+ * 
+ * @param gr The ground tile to start with
+ * @param besch Ground object description
+ */
+static void place_new_ground_object(karte_t * welt, grund_t * gr, const groundobj_desc_t * desc)
+{
+    gr->obj_add(new groundobj_t(gr->get_pos(), desc));
+	
+    cbuffer_t key;
+	
+    key.append(desc->get_name());
+    key.append(".friends");
+    
+    const char * friends = pakset_manager_t::get_extra_info_string(key);
+	
+	const koord3d center = gr->get_pos();
+	
+	// dbg->debug("karte_t::place_new_ground_object()", "friends for '%s' are '%s'", key.get_str(), friends);
+	
+	if(friends)
+	{
+		csv_t csv (friends);
+		cbuffer_t buffer;
+
+		while(csv.get_next_field(buffer) >= 0)
+		{
+			// DBG_DEBUG("karte_t::place_new_ground_object()", "current csv field=%s", buffer.to_string());
+			
+			const groundobj_desc_t * friend_obj = groundobj_t::find_groundobj(ltrim(buffer.get_str()));
+
+			if(friend_obj)
+			{
+				// DBG_DEBUG("karte_t::place_new_ground_object()", "got deco besch=%p", deco_besch);
+
+				const koord k = center.get_2d() + koord::nesw[simrand(4)];
+				grund_t * gr = welt->lookup_kartenboden(k);
+
+				if(gr && gr->get_typ() == grund_t::boden && !gr->hat_wege() && gr->first_obj() == 0)
+				{
+					if(gr->get_grund_hang() == slope_t::flat)
+					{
+						// recurse friend gathering a few times?
+						
+						if(simrand(1000) < 300)
+						{
+							place_new_ground_object(welt, gr, friend_obj);
+						}
+						else
+						{
+							gr->obj_add(new groundobj_t(gr->get_pos(), friend_obj));
+						}
+					}
+				}
+			}
+			else
+			{
+				dbg->error("karte_t::place_new_ground_object()", "got no deco desc for '%s'", buffer.get_str());
+			}
+			
+			buffer.clear();
+		}
+	}
+}
+
+
 void karte_t::distribute_groundobjs(sint16 old_x, sint16 old_y)
 {
 DBG_DEBUG("karte_t::distribute_groundobj()","distributing groundobjs");
@@ -1140,7 +1208,8 @@ DBG_DEBUG("karte_t::distribute_groundobj()","distributing groundobjs");
 						const groundobj_desc_t *desc = groundobj_t::random_groundobj_for_climate( cl, gr->get_grund_hang() );
 						queried = simrand(env_t::ground_object_probability*2-1);
 						if(desc) {
-							gr->obj_add( new groundobj_t( gr->get_pos(), desc ) );
+							// gr->obj_add( new groundobj_t( gr->get_pos(), desc ) );
+                            place_new_ground_object(this, gr, desc);
 						}
 					}
 				}
