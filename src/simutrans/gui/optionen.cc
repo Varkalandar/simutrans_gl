@@ -139,7 +139,12 @@ bool optionen_gui_t::action_triggered( gui_action_creator_t *comp,value_t /* */)
 	else if (comp == option_buttons + BUTTON_NEW_GAME) {
 		// create new world
 		destroy_all_win(true);
-		create_win( new welt_gui_t(&env_t::default_settings), w_info, magic_welt_gui_t );
+		// create_win( new welt_gui_t(&env_t::default_settings), w_info, magic_welt_gui_t );
+
+        // apparently this resets/stops a running game?
+        tool_t::simple_tool[TOOL_QUIT]->set_default_param("n");
+        welt->set_tool(tool_t::simple_tool[TOOL_QUIT], NULL);
+        tool_t::simple_tool[TOOL_QUIT]->set_default_param(0);
 	}
 	else if (comp == option_buttons + BUTTON_INSTALL) {
 #if !defined(USE_OWN_PAKINSTALL)  &&  defined(_WIN32)
