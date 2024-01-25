@@ -51,7 +51,7 @@
 
 #include "simversion.h"
 
-#include "gui/banner.h"
+#include "gui/welt.h"
 #include "gui/pakselector.h"
 #include "gui/pakinstaller.h"
 #include "gui/welt.h"
@@ -1573,11 +1573,13 @@ int simu_main(int argc, char** argv)
 		check_midi();
 
 		if(  new_world  ) {
-			dbg->message("simu_main()", "Show banner ... no, skip to new world directly");
+			dbg->message("simu_main()", "Show banner ... no show new world");
 			ticker::add_msg("Welcome to Simutrans", koord3d::invalid, color_idx_to_rgb(COL_SOFT_BLUE));
 			// modal_dialogue( new banner_t(), magic_none, welt, never_quit );
-
-			// only show new world, if no other dialogue is active ...
+            
+            modal_dialogue(new welt_gui_t(&env_t::default_settings), magic_none, welt, never_quit);
+			
+            // only show new world, if no other dialogue is active ...
 			new_world = win_get_open_count()==0;
 		}
 

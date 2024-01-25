@@ -518,11 +518,6 @@ bool welt_gui_t::action_triggered( gui_action_creator_t *comp,value_t v)
 		destroy_all_win(true);
 		welt->get_message()->clear();
 		create_win({ 200, 100 }, new news_img("Erzeuge neue Karte.\n", skinverwaltung_t::neueweltsymbol->get_image_id(0)), w_info, magic_none);
-
-        // apparently this resets/stops a running game?
-        tool_t::simple_tool[TOOL_QUIT]->set_default_param("n");
-        welt->set_tool(tool_t::simple_tool[TOOL_QUIT], NULL);
-        tool_t::simple_tool[TOOL_QUIT]->set_default_param(0);
 		
         if(loaded_heightfield) {
 			welt->load_heightfield(&env_t::default_settings);
