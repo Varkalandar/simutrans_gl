@@ -373,15 +373,6 @@ static uint8_t * rgb343to888(const uint16_t c, const uint8_t alpha, uint8_t *tp)
     *tp++ = (c << 5) & 0xE0; // blue
     *tp++ = alpha;           // alpha
 
-
-/*
-    *tp++ = 255; // red
-    *tp++ = 255; // green
-    *tp++ = 0; // blue
-    *tp++ = 255;           // alpha
-
-	dbg->message("rgb343to888", "343 input %x, alpha=%d -> %d %d %d", c, alpha, *(tp-4), *(tp-3), *(tp-2));
-*/
     return tp;
 }
 
@@ -399,36 +390,54 @@ static uint8_t * rgb555to888(const uint16_t c, const uint8_t alpha, uint8_t *tp)
 
 static uint8_t * special_rgb_to_rgba(const uint16_t c, const uint8_t alpha, uint8_t *tp)
 {
-    uint32 rgb = image_t::rgbtab[c & 255];
+    uint32 rgb = image_t::rgbtab[c & 31];
+    
     *tp ++ = (rgb >> 16) & 0xFF;
     *tp ++ = (rgb >> 8) & 0xFF;
     *tp ++ = (rgb >> 0) & 0xFF;
     *tp ++ = alpha;
-
+    
+    /*
+    *tp ++ = 0;
+    *tp ++ = 255;
+    *tp ++ = 0;
+    *tp ++ = 255;
+    */
+    
     return tp;
 }
 
 
 static void convert_transparent_pixel_run(uint8_t * dest, const uint16_t * src, const uint16_t * const end)
 {
-    if(*src < 0x8000) dbg->message("convert_transparent_pixel_run()", "Found suspicious pixel %x", *src);
+    // if(*src < 0x8000) dbg->message("convert_transparent_pixel_run()", "Found suspicious pixel %x", *src);
 
 
-	// player color or transparent rgb?
-	if (*src < 0x8020) {
-		// player or special color
+    if(*src < 0x8020 + 31 * SPECIAL) {
+        // expand transparent player color
 		while (src < end) {
-			dest = special_rgb_to_rgba(*src++, 255, dest);;
+            assert(*src >= 0x8020);
+
+            const uint16 v = (*src++) - 0x8020;
+            const uint16 trans = v % 31;    
+			const uint16 pix = v / 31;
+            
+            dest = special_rgb_to_rgba(pix, (trans + 1) * 8, dest);;
+            // dbg->message("convert_transparent_pixel_run()", "Found player color alpha %x", alpha);
 		}
-	}
+    }
 	else {
 		while (src < end) {
+            assert(*src >= 0x8020);
+
 			// a semi-transparent pixel
 
 			// v = 0x8020 + 31*31 + pix*31 + alpha;
-			uint16 aux   = *src++ - 0x8020 - 31*31;
-			uint16 alpha = ((aux % 31) + 1);
-			dest = rgb343to888((aux / 31) & 0x3FF, alpha << 3, dest);
+			const uint16 v = *src++ - 0x8020 - 31*31;
+			const uint16 trans = v % 31;
+			const uint16 pix = v / 31;
+            
+			dest = rgb343to888(pix, (trans + 1) * 8, dest);
 		}
 	}
 }
