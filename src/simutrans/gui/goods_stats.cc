@@ -25,6 +25,16 @@ void goods_stats_t::update_goodslist(vector_tpl<const goods_desc_t*>goods, int b
 	remove_all();
 	set_table_layout(6,0);
 
+    // build header
+    
+    new_component_span<gui_label_t>("GLName", 2)->fixed_min_height = LINESPACE * 3 / 2;
+    new_component<gui_label_t>("GLRevenue")->set_align(gui_label_t::right);
+    new_component<gui_label_t>("GLBonus")->set_align(gui_label_t::right);
+    new_component<gui_label_t>("GLCategory");
+    new_component<gui_label_t>("GLWeight")->set_align(gui_label_t::right);
+    
+    // build list
+    
 	for(const goods_desc_t* wtyp : goods) {
 
 		new_component<gui_colorbox_t>(wtyp->get_color())->set_max_size(scr_size(D_INDICATOR_WIDTH, D_INDICATOR_HEIGHT));
@@ -45,7 +55,7 @@ void goods_stats_t::update_goodslist(vector_tpl<const goods_desc_t*>goods, int b
 		new_component<gui_label_t>(wtyp->get_catg_name());
 
 		lb = new_component<gui_label_buf_t>((gui_theme_t::gui_color_text), gui_label_t::right);
-		lb->buf().printf("%dKg", wtyp->get_weight_per_unit());
+		lb->buf().printf("%dkg", wtyp->get_weight_per_unit());
 		lb->update();
 	}
 

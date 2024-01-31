@@ -65,6 +65,16 @@ gl_btn_sort_revenue
 nach Erlös
 gl_btn_unsort
 unsortiert
+GLName
+Ware
+GLRevenue
+Transportpreis
+GLBonus
+Bonus
+GLCategory
+Kategorie
+GLWeight
+Gewicht
 height based
 Klima nach Höhe
 hl_btn_filter_disable

@@ -231,7 +231,7 @@ void goods_frame_t::sort_list()
 	speed_message.printf(translator::translate("Bonus Speed: %i km/h"),
 		average_speed
 	);
-	speed_message.append("\n");
+	speed_message.append("\t");
 	speed_message.printf(translator::translate("Bonus Multiplier: %i%%"),
 		(int)(100.0 * 10.0 * (((double)selected_speed / (double)average_speed) - 1.0))
 	);
