@@ -761,10 +761,65 @@ void win_clamp_xywh_position( scr_coord &pos, scr_size wh, bool move_topleft )
 	pos.y = max(pos.y, clip_rr.y);
 }
 
+
+/**
+ * Try to find a position so that the area does not overlap any window
+ * with the w_no_overlap flag.
+ * 
+ * @param me Ignore this one window in comparing. Pass NULL to compare with all windows
+ * @param size The area size to fit in.
+ * @return The found position for the given area size
+ */
+static scr_coord find_no_overlap_location(const gui_frame_t * const me, scr_size size)
+{
+    scr_coord desired_pos(0, 0); 
+            
+    win_clamp_xywh_position(desired_pos, size, true);
+    
+    scr_rect area (desired_pos, size);
+        
+    // for some reason, overlap considers one pixel too much
+    area.h -= 1;
+    
+    const uint32 count = wins.get_count();    
+    bool retry;
+    
+    // shift window till free location is found
+    do
+    {
+        retry = false;
+        for(uint32 i=0; i<count; i++)
+        {
+            if(wins[i].wt & w_no_overlap && wins[i].gui != me) {
+                // we shall not overlap with such one
+                scr_rect blocked_area (wins[i].pos, wins[i].gui->get_windowsize());
+                // for some reason, ovcerlap considers one pixel too much
+                blocked_area.h -= 1;
+                
+                if(area.is_overlapping(blocked_area)) {
+                    dbg->message("find_no_overlap_location()", "Blocking gui is %s", wins[i].gui->get_name());
+                    dbg->message("find_no_overlap_location()", "Blocked area is %d, %d, %d, %d", blocked_area.x, blocked_area.y, blocked_area.w, blocked_area.h);
+                    // we must move
+                    area.y = blocked_area.y + blocked_area.h + 1;
+                    dbg->message("find_no_overlap_location()", "-> moving to %d, %d", area.x, area.y);
+                    retry = true;
+                }
+            }
+        }
+    } while (retry);
+
+    desired_pos = scr_coord(area.x, area.y);
+    win_clamp_xywh_position(desired_pos, size, true);
+    
+    return desired_pos;
+}
+
+
 int create_win(gui_frame_t* const gui, wintype const wt, ptrdiff_t const magic)
 {
 	return create_win({ -1, -1 }, gui, wt, magic);
 }
+
 
 int create_win(scr_coord pos, gui_frame_t *const gui, wintype const wt, ptrdiff_t const magic, bool move_to_full_view)
 {
@@ -806,7 +861,8 @@ int create_win(scr_coord pos, gui_frame_t *const gui, wintype const wt, ptrdiff_
 	}
 
 	if(  wins.get_count() < MAX_WIN  ) {
-
+        const scr_size window_size = gui->get_windowsize();
+        
 		if (!wins.empty()) {
 			// mark old dirty
 			const scr_size size = wins.back().gui->get_windowsize();
@@ -857,7 +913,7 @@ int create_win(scr_coord pos, gui_frame_t *const gui, wintype const wt, ptrdiff_
 
 		if (stored == scr_size()) {
 			// not stored, take current
-			stored = gui->get_windowsize();
+			stored = window_size;
 		}
 
 		// use default width
@@ -865,9 +921,9 @@ int create_win(scr_coord pos, gui_frame_t *const gui, wintype const wt, ptrdiff_
 		// clip to display size
 		stored.clip_rightbottom( scr_size(display_get_width(), display_get_height() - env_t::iconsize.h - win_get_statusbar_height() ) );
 
-		if (stored != gui->get_windowsize()) {
+		if (stored != window_size) {
 			// send tailored resize event
-			scr_size delta = stored - gui->get_windowsize();
+			scr_size delta = stored - window_size;
 			event_t wev;
 			wev.ev_class = WINDOW_RESIZE;
 			wev.ev_code = 0;
@@ -882,13 +938,17 @@ int create_win(scr_coord pos, gui_frame_t *const gui, wintype const wt, ptrdiff_
 		// try to go next to mouse bar
 		if (pos.x == -1) {
 			move_to_full_view = true;
-			pos.x = get_mouse_pos().x - gui->get_windowsize().w / 2;
-			pos.y = get_mouse_pos().y - gui->get_windowsize().h - get_tile_raster_width()/4;
+			pos.x = get_mouse_pos().x - window_size.w / 2;
+			pos.y = get_mouse_pos().y - window_size.h - get_tile_raster_width()/4;
 		}
 
+        // try to stack no_overlap windows
+        if(wt & w_no_overlap) {
+            pos = find_no_overlap_location(gui, window_size);
+        }
+        
 		// make sure window is on screen
-		win_clamp_xywh_position(pos, gui->get_windowsize(), move_to_full_view);
-
+		win_clamp_xywh_position(pos, window_size, move_to_full_view);
 
 		win.pos = pos;
 		win.dirty = true;
