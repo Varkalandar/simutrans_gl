@@ -1593,7 +1593,7 @@ class industry_manager_t extends manager_t
         }
 
         // build convoy
-        local stations_list = cnv.get_schedule().entries
+        local stations_list = line.get_schedule().entries
         local depot = null //cnv.get_home_depot()
 
         for (local i=0; i<stations_list.len(); i++) {
@@ -1682,7 +1682,7 @@ class industry_manager_t extends manager_t
             gui.add_message_at(our_player, "Line: " + line.get_name() + " ==> build additional convoy", world.get_time())
           }
 
-            //gui.add_message_at(our_player, "####### expand_station.len() " + expand_station.len(), world.get_time())
+          //if ( wt == wt_rail ) gui.add_message_at(our_player, "####### expand_station.len() " + expand_station.len(), world.get_time())
           if ( wt == wt_rail && expand_station.len() > 0 ) {
             // tiles for convoy
             local a = c.p_convoy.length
@@ -2064,7 +2064,7 @@ class industry_manager_t extends manager_t
           if ( print_message_box == 2 ) {
                   gui.add_message_at(our_player, "###---- check tile direction : " + coord3d_to_string(t1), t1)
           }
-          if ( (t1.z == nexttile[station_exist-1].z && !t1.is_bridge() && !t1.is_tunnel() && t1.get_slope() == 0 && !t1.has_two_ways()) || (t1.z < nexttile[station_exist-1].z && t1.is_bridge()) ) {
+          if ( (t1.z == nexttile[station_exist-1].z && !t1.is_bridge() && !t1.is_tunnel() && test_tile_is_empty(t1) && !t1.has_two_ways()) || (t1.z < nexttile[station_exist-1].z && t1.is_bridge()) ) { //t1.get_slope() == 0
             // dest
             if ( print_message_box == 2 ) {
               gui.add_message_at(our_player, "###---- check tile t1 z : " + t1.z, t1)
@@ -2082,7 +2082,7 @@ class industry_manager_t extends manager_t
           if ( print_message_box == 2 ) {
             gui.add_message_at(our_player, "###---- check tile direction : " + coord3d_to_string(t2), t2)
           }
-          if ( (t2.z == nexttile[(nexttile.len()-1)-(station_exist-1)].z && !t2.is_bridge() && !t2.is_tunnel() && t2.get_slope() == 0 && !t2.has_two_ways()) || (t2.z < nexttile[(nexttile.len()-1)-(station_exist-1)].z && t2.is_bridge()) ) {
+          if ( (t2.z == nexttile[(nexttile.len()-1)-(station_exist-1)].z && !t2.is_bridge() && !t2.is_tunnel() && test_tile_is_empty(t2) && !t2.has_two_ways()) || (t2.z < nexttile[(nexttile.len()-1)-(station_exist-1)].z && t2.is_bridge()) ) { //t2.get_slope() == 0
             // src
             if ( print_message_box == 2 ) {
               gui.add_message_at(our_player, "###---- check tile t2 z : " + t2.z, t2)
@@ -2167,6 +2167,7 @@ class industry_manager_t extends manager_t
     // 3
     local print_message_box = 0
 
+    local wt = line.get_waytype()
 
     local start_l = nexttile[nexttile.len()-1]
     local end_l = nexttile[0]
@@ -2179,7 +2180,7 @@ class industry_manager_t extends manager_t
       }
     }
 
-    local station_list = building_desc_x.get_available_stations(building_desc_x.station, wt_rail, good_desc_x(freight))
+    local station_list = building_desc_x.get_available_stations(building_desc_x.station, wt, good_desc_x(freight))
 
     local station_s_obj = nexttile[nexttile.len()-1].find_object(mo_building).get_desc()
     if ( !station_s_obj.is_available(world.get_time()) ) {
@@ -2210,7 +2211,18 @@ class industry_manager_t extends manager_t
 
     local way_obj = start_l.find_object(mo_way).get_desc() //way_list[0]
     if ( !way_obj.is_available(world.get_time()) ) {
-      way_obj = find_object("way", wt_rail, way_obj.get_topspeed())
+      way_obj = find_object("way", wt, way_obj.get_topspeed())
+    }
+
+    local catenary_obj = null //find_object("catenary", wt, 100)
+    local build_catenary = false
+    if ( start_l.find_object(mo_wayobj) != null ) {
+      catenary_obj = start_l.find_object(mo_wayobj).get_desc()
+      if ( catenary_obj != null && !catenary_obj.is_available(world.get_time()) && !catenary_obj.is_overhead_line() ) {
+        catenary_obj = find_object("catenary", wt, way_obj.get_topspeed())
+      }
+    } else {
+      catenary_obj = find_object("catenary", wt, way_obj.get_topspeed())
     }
 
     if ( print_message_box == 1 ) {
@@ -2222,13 +2234,38 @@ class industry_manager_t extends manager_t
       local sched = schedule_x(wt_rail, [])
       local sched_start = start_l
       local sched_end = end_l
-      for ( local i = 0; i <= (st_lenght - station_exist); i++ ) {
+
+      local b_count = st_lenght - station_exist
+      switch(b_count) {
+        case 2:
+          b_count++
+          break
+        case 3:
+          b_count += 2
+          break
+        case 4:
+          b_count += 3
+          break
+        case 5:
+          b_count += 4
+          break
+      }
+
+
+      for ( local i = 0; i <= b_count; i++ ) {
         local station_obj = (i % 2) ? station_s_obj : station_e_obj
+        if ( print_message_box == 1 ) {
+          gui.add_message_at(our_player, "####### [i] " + i, expand_station[i])
+        }
+
         if ( expand_station[i].find_object(mo_way) == null ) {
           local build_tile = (i % 2) ? start_l : end_l
           if ( terraform_tile(expand_station[i], build_tile.z) ) {
             command_x.build_way(our_player, build_tile, expand_station[i], way_obj, true)
             command_x.build_station(our_player, expand_station[i], station_obj)
+            if ( catenary_obj != null ) {
+              command_x.build_wayobj(our_player, build_tile, expand_station[i], catenary_obj)
+            }
 
             local entries = line.get_schedule().entries
             if ( build_tile == start_l ) {
@@ -2250,7 +2287,7 @@ class industry_manager_t extends manager_t
           command_x.build_station(our_player, expand_station[i], station_obj)
         }
         if ( print_message_box == 1 ) {
-          gui.add_message_at(our_player, "####### expand stations tile " + coord3d_to_string(expand_station[i]), expand_station[0])
+          gui.add_message_at(our_player, "####### expand stations tile " + coord3d_to_string(expand_station[i]), expand_station[i])
         }
       }
 
