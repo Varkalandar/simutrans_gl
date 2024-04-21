@@ -121,14 +121,17 @@ void gui_numberinput_t::set_limits(sint32 _min, sint32 _max)
 	if (min_value < 0  &&  (uint32) (-min_value) > max_abs) {
 		max_abs = -min_value;
 	}
+
+    scr_coord_val def_number_width = display_get_char_width('0');
+
 	// width of digits
 	while (max_abs) {
-		max_numbertext_width += display_get_number_width();
+		max_numbertext_width += def_number_width;
 		max_abs /= 10;
 	}
 	// enforce a min width of 5 digits
-	if (max_numbertext_width < 5 * display_get_number_width()) {
-		max_numbertext_width = 5 * display_get_number_width();
+	if (max_numbertext_width < 5 * def_number_width) {
+		max_numbertext_width = 5 * def_number_width;
 	}
 }
 

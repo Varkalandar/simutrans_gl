@@ -325,14 +325,13 @@ bool display_load_font(const char *fname, bool reload)
  */
 bool has_character(utf32 char_code)
 {
-	if(  char_code >= default_font.glyphs.size()  ) {
+	if(!default_font.is_loaded() || char_code >= default_font.get_glyph_count()) {
 		// or we crash when accessing the non-existing char ...
 		return false;
 	}
-	bool b1 = default_font.is_loaded();
-	font_t::glyph_t& gl = default_font.glyphs[char_code];
-	uint8  ad = gl.advance;
-	return b1 && ad != 0xFF;
+    
+	const font_t::glyph_t & gl = default_font.get_glyph(char_code);
+	return gl.advance != 0xFF;
 
 	// this return false for some reason on CJK for valid characters ?!?
 	// return default_font.is_valid_glyph(char_code);
