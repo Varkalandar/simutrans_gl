@@ -12,7 +12,7 @@
 ; untgz
 ; ShellLink
 
-!define VERSION "0.123.0.1"
+!define VERSION "0.124.0.0"
 
 VIProductVersion "${VERSION}"
 VIFileVersion "${VERSION}"
@@ -106,19 +106,6 @@ Section /o "Executable (SDL2 64bit)" SDL64exe
   Call PostExeInstall
 SectionEnd
 
-Section "Chinese Font" wenquanyi_font
-  AddSize 3169
-  IfFileExists $INSTDIR\font\wenquanyi_9pt.bdf no_chinese_needed
-  StrCpy $downloadlink "http://downloads.sourceforge.net/project/simutrans/simutrans/wenquanyi_9pt-font-bdf.zip"
-  StrCpy $archievename "wenquanyi_9pt-font-bdf.zip"
-  StrCpy $downloadname "wenquanyi_9pt"
-  SetOutPath $INSTDIR
-  Call DownloadInstallZipWithoutSimutrans
-  Rename $INSTDIR\wenquanyi_9pt.bdf $INSTDIR\font\wenquanyi_9pt.bdf
-  Delete $INSTDIR\wenquanyi_9pt.bdf
-no_chinese_needed:
-SectionEnd
-
 SectionGroupEnd
 
 
@@ -129,7 +116,13 @@ Section "Uninstall"
   Delete "$SMPROGRAMS\Simutrans\Simutrans (Debug).lnk"
   Delete $INSTDIR\Uninst.exe ; delete self (see explanation below why this works)
   RMDir /r $INSTDIR
+
+  SetShellVarContext all
+  StrCpy $PAKDIR "$LOCALAPPDATA\simutrans"
+  SetShellVarContext current
+  MessageBox MB_YESNO "Remove global paksets from $PAKDIR?" /SD IDYES IDNO +2
   RMDir /r $PAKDIR
+  
   DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Simutrans"
 SectionEnd
 

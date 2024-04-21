@@ -8,6 +8,7 @@
 #include "../simdebug.h"
 #include "../world/simworld.h"
 #include "../tool/simtool.h"
+#include "../simhalt.h"
 #include "../simmesg.h"
 #include "../simintr.h"
 #include "../player/simplay.h"
@@ -471,6 +472,12 @@ bool way_builder_t::check_building( const grund_t *to, const koord dir ) const
 		return true;
 	}
 
+	// check for other player stops
+	halthandle_t halt = to->get_halt();
+	if(halt.is_bound() && !check_owner(halt->get_owner(), player_builder)){
+		return false;
+	}
+
 	// first find all kind of buildings
 	gebaeude_t *building = to->find<gebaeude_t>();
 	if(building==NULL) {
@@ -646,6 +653,7 @@ bool way_builder_t::is_allowed_step(const grund_t *from, const grund_t *to, sint
 
 	// universal check for depots/stops/...
 	if(  !check_building( from, zv )  ||  !check_building( to, -zv )  ) {
+		warn_fail = translator::translate("A building blocks the construction");
 		return false;
 	}
 
@@ -2127,7 +2135,7 @@ bool way_builder_t::intern_calc_route_runways(koord3d start3d, const koord3d zie
 	// now we can build here
 	route.clear();
 	terraform_index.clear();
-	route.resize(dist + 2);
+	route.reserve(dist + 2);
 
 	for(  int i=0;  i<=dist;  i++  ) {
 		route.append(welt->lookup_kartenboden(start + zv * i)->get_pos());
@@ -2609,9 +2617,9 @@ void way_builder_t::build_road()
 			if(weg->get_desc()==desc  ||  keep_existing_ways
 				||  (keep_existing_city_roads  &&  weg->hat_gehweg())
 				||  (keep_existing_faster_ways  &&  weg->get_desc()->get_topspeed()>desc->get_topspeed())
-				||  (player_builder!=NULL  &&  weg->is_deletable(player_builder)!=NULL)
+				||  (player_builder!=NULL  &&  weg->get_removal_error(player_builder)!=NULL)
 				||  (gr->get_typ()==grund_t::monorailboden && (bautyp&elevated_flag)==0)
-				||  (gr->has_two_ways()  &&  gr->get_weg_nr(1)->is_deletable(player_builder)!=NULL) // do not replace public roads crossing rails of other players
+				||  (gr->has_two_ways()  &&  gr->get_weg_nr(1)->get_removal_error(player_builder)!=NULL) // do not replace public roads crossing rails of other players
 			) {
 				//nothing to be done
 			}

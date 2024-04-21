@@ -1633,6 +1633,7 @@ bool check_pos_win(event_t *ev,bool modal)
 								case SKIN_GADGET_MINIMIZE: // (Mathew Hounsell)
 									ev->ev_class = WINDOW_MAKE_MIN_SIZE;
 									ev->ev_code = 0;
+									wl->set_background_dirty();
 									wins[i].gui->infowin_event( ev );
 									break;
 								case SKIN_GADGET_HELP :
@@ -2154,12 +2155,13 @@ void modal_dialogue(gui_frame_t* gui, ptrdiff_t magic, karte_t* welt, bool (*qui
 	env_t::autosave = 0;
 
 	event_t ev;
+	create_win(scr_coord(0,0), gui, w_info, magic);
 	scr_coord pos{
-		(display_get_width()  - gui->get_windowsize().w) / 2,
+		(display_get_width() - gui->get_windowsize().w) / 2,
 		(display_get_height() - gui->get_windowsize().h) / 2
 	};
 	win_clamp_xywh_position(pos, gui->get_windowsize(), true);
-	create_win(pos, gui, w_info, magic);
+	wins[wins[0].gui!=gui].pos = pos;
 
 	if (welt) {
 		welt->set_pause(false);
@@ -2179,6 +2181,11 @@ void modal_dialogue(gui_frame_t* gui, ptrdiff_t magic, karte_t* welt, bool (*qui
 				DBG_DEBUG4("modal_dialogue", "calling win_poll_event");
 				win_poll_event(&ev);
 
+				if (ev.ev_class == EVENT_SYSTEM && ev.ev_code == SYSTEM_QUIT) {
+					welt->stop(true);
+					break;
+				}
+
 				win_clamp_xywh_position(ev.mouse_pos, scr_size(1, 1), false);
 				win_clamp_xywh_position(ev.mouse_pos, scr_size(1, 1), false);
 
@@ -2190,7 +2197,7 @@ void modal_dialogue(gui_frame_t* gui, ptrdiff_t magic, karte_t* welt, bool (*qui
 						}
 					}
 				}
-				
+
 				if(dismissible){
 					if (
 						(ev.ev_class == EVENT_KEYBOARD) ||
