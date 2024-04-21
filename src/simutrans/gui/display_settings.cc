@@ -40,7 +40,8 @@ enum {
 	IDBTN_SHOW_STATION_COVERAGE,
 	IDBTN_UNDERGROUND_VIEW,
 	IDBTN_SHOW_GRID,
-	IDBTN_SHOW_STATION_NAMES_ARROW,
+	IDBTN_HIDE_LABELS,
+	IDBTN_LABEL_STYLE_ARROW,
 	IDBTN_SHOW_WAITING_BARS,
 	IDBTN_SHOW_SLICE_MAP_VIEW,
 	IDBTN_HIDE_BUILDINGS,
@@ -415,13 +416,17 @@ station_settings_t::station_settings_t()
 	buttons[ IDBTN_SHOW_STATION_COVERAGE ].init( button_t::square_state, "show station coverage" );
 	add_component( buttons + IDBTN_SHOW_STATION_COVERAGE, 2 );
 
+	// Show station coverage
+	buttons[IDBTN_HIDE_LABELS].init(button_t::square_state, "Hide labels");
+	add_component(buttons + IDBTN_HIDE_LABELS, 2);
+
 	// Show station names arrow
 	add_table( 2, 1 );
 	{
-		buttons[ IDBTN_SHOW_STATION_NAMES_ARROW ].set_typ( button_t::arrowright );
-		buttons[ IDBTN_SHOW_STATION_NAMES_ARROW ].set_tooltip( "show station names" );
-		add_component( buttons + IDBTN_SHOW_STATION_NAMES_ARROW );
-		new_component<gui_label_stationname_t>( "show station names" );
+		buttons[ IDBTN_LABEL_STYLE_ARROW ].set_typ( button_t::arrowright );
+		buttons[ IDBTN_LABEL_STYLE_ARROW ].set_tooltip( "Change label style" );
+		add_component( buttons + IDBTN_LABEL_STYLE_ARROW );
+		new_component<gui_label_stationname_t>( "Change label style" );
 	}
 	end_table();
 	new_component<gui_empty_t>();
@@ -656,33 +661,35 @@ bool color_gui_t::action_triggered( gui_action_creator_t *comp, value_t)
 	case IDBTN_SHOW_GRID:
 		grund_t::toggle_grid();
 		break;
-	case IDBTN_SHOW_STATION_NAMES_ARROW:
+	case IDBTN_LABEL_STYLE_ARROW:
                 
-                // Hajo: first check the "show" bit ... do we show names at all?                
-                if(env_t::show_names & 1) {
-                        // Yes ... so cycle the styles
-                        
-                        int style = env_t::show_names >> 2;
-                        style ++;
-                        
-                        // if we reach the end of the cycle, we must also 
-                        // turn off showing the names
-                        int limit = 3 + (skinverwaltung_t::display_text_label != 0);
-                        if(style >= limit) {
-                                style = 0;
-                                env_t::show_names &= 2;
-                        }
-                        
-                        env_t::show_names &= 0xFFF3;
-                        env_t::show_names |= (style << 2);    
-                } else {
-                        // name display was off. Now turn it on with style 0
-                        env_t::show_names |= 1;
-                }
-                                        
+        // Hajo: first check the "show" bit ... do we show names at all?                
+        if(env_t::show_names & 1) {
+            // Yes ... so cycle the styles
+
+            int style = env_t::show_names >> 2;
+            style ++;
+
+            // if we reach the end of the cycle, we must also 
+            // turn off showing the names
+            int limit = 3 + (skinverwaltung_t::display_text_label != 0);
+            if(style >= limit) {
+                style = 0;
+                env_t::show_names &= 2;
+            }
+
+            env_t::show_names &= 0xFFF3;
+            env_t::show_names |= (style << 2);    
+        } else {
+            // name display was off. Now turn it on with style 0
+            env_t::show_names |= 1;
+        }
 		break;
 	case IDBTN_SHOW_WAITING_BARS:
 		env_t::show_names ^= 2;
+		break;
+	case IDBTN_HIDE_LABELS:
+		env_t::show_names ^= 1;
 		break;
 	case IDBTN_SHOW_SLICE_MAP_VIEW:
 		// see tool/simtool.cc::tool_show_underground_t::init
@@ -734,6 +741,7 @@ void color_gui_t::draw(scr_coord pos, scr_size size)
 	buttons[IDBTN_UNDERGROUND_VIEW].pressed = grund_t::underground_mode == grund_t::ugm_all;
 	buttons[IDBTN_SHOW_GRID].pressed = grund_t::show_grid;
 	buttons[IDBTN_SHOW_WAITING_BARS].pressed = (env_t::show_names&2)!=0;
+	buttons[IDBTN_HIDE_LABELS].pressed = (env_t::show_names & 1) == 0;
 	buttons[IDBTN_SHOW_SLICE_MAP_VIEW].pressed = grund_t::underground_mode == grund_t::ugm_level;
 	buttons[IDBTN_SHOW_SCHEDULES_STOP].pressed = env_t::visualize_schedule;
 	buttons[IDBTN_SIMPLE_DRAWING].pressed = env_t::simple_drawing;

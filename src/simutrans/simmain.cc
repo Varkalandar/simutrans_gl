@@ -60,6 +60,7 @@
 #include "gui/climates.h"
 #include "gui/messagebox.h"
 #include "gui/loadsave_frame.h"
+#include "gui/loadfont_frame.h"
 #include "gui/load_relief_frame.h"
 #include "gui/scenario_frame.h"
 
@@ -88,6 +89,7 @@
 
 #include "utils/cbuffer.h"
 #include "utils/simrandom.h"
+#include "utils/unicode.h"
 
 #include "builder/vehikelbauer.h"
 #include "script/script_tool_manager.h"
@@ -227,6 +229,8 @@ static void show_times(karte_t *welt, main_view_t *view)
 // some routines for the modal display
 static bool never_quit() { return false; }
 static bool no_language() { return translator::get_language()!=-1; }
+static utf16 testfor_this_character = 0;
+static bool no_font() { return has_character(testfor_this_character); }
 #if COLOUR_DEPTH != 0
 static bool empty_objfilename() { return !env_t::pak_name.empty() ||  pakinstaller_t::finish_install; }
 static bool finish_install() { return pakinstaller_t::finish_install; }
@@ -515,6 +519,13 @@ int simu_main(int argc, char** argv)
 	std::set_new_handler(sim_new_handler);
 
 	args_t args(argc, argv);
+#ifdef DEBUG
+	if (args.has_arg("-debug")) {
+		// debug init messages
+		env_t::verbose_debug = log_t::LEVEL_DEBUG;
+		init_logging("stderr", true, true, "Preinit", NULL);
+	}
+#endif
 	env_t::init();
 
 	// you really want help with this?
@@ -1197,6 +1208,22 @@ int simu_main(int argc, char** argv)
 			sprachengui_t::init_font_from_lang();
 		}
 	}
+
+#if COLOUR_DEPTH != 0
+	// now find out if there is a valid font
+	{
+		const utf8 *new_world = (const utf8 *)translator::translate("Beenden");
+		size_t len;
+		testfor_this_character = utf8_decoder_t::decode(new_world,len);
+		if (!has_character(testfor_this_character)) {
+			// not valid => show font selector
+			loadfont_frame_t* sel = new loadfont_frame_t();
+			destroy_all_win(true); // since eventually the successful load message is still there ....
+			modal_dialogue(sel, magic_none, NULL, no_font);
+			destroy_win(sel);
+		}
+	}
+#endif
 
 	bool new_world = true;
 	std::string loadgame;

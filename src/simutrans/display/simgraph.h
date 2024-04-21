@@ -18,7 +18,8 @@ class font_t;
 
 #if COLOUR_DEPTH != 0
 
-extern int default_font_linespace;
+extern scr_coord_val default_font_ascent;
+extern scr_coord_val default_font_linespace;
 
 #  define LINESPACE  (default_font_linespace)
 #else
@@ -30,7 +31,7 @@ extern int default_font_linespace;
 
 
 struct clip_dimension {
-	scr_coord_val x, xx, w, y, yy, h;
+    scr_coord_val x, xx, w, y, yy, h;
 };
 
 // helper macros

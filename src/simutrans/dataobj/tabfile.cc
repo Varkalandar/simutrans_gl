@@ -245,7 +245,7 @@ vector_tpl<int> tabfileobj_t::get_ints(const char *key)
 	}
 
 	// Create result vector and fill
-	result.resize(count);
+	result.reserve(count);
 	result.append(strtol( value, NULL, 0 ));
 
 	for(tmp = value; *tmp; tmp++) {
@@ -282,7 +282,7 @@ vector_tpl<sint64> tabfileobj_t::get_sint64s(const char *key)
 	}
 
 	// Create result vector and fill
-	result.resize(count);
+	result.reserve(count);
 	result.append(atosint64(value));
 
 	for(tmp = value; *tmp; tmp++) {
@@ -471,7 +471,7 @@ bool tabfile_t::read(tabfileobj_t &objinfo, FILE *fp)
 							strcpy(delim_expand, delim);
 						}
 
-						dbg->message("tabfile_t::read", "Parameter expansion %s = %s\n", line_expand, delim_expand);
+						dbg->message("tabfile_t::read", "Parameter expansion: %s = %s", line_expand, delim_expand);
 						objinfo.put(line_expand, delim_expand);
 						if (fp != NULL) {
 							fprintf(fp, "%s=%s\n", line_expand, delim_expand);

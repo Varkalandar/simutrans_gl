@@ -70,7 +70,7 @@ banner_t::banner_t() : gui_frame_t("")
 		continue_game.enable(!last_save.empty());
 
 		if (!last_save.empty()) {
-			continue_tooltip.printf("Load '%s'", (last_save.c_str() + 5));
+			continue_tooltip.printf(translator::translate("Load '%s'"), (last_save.c_str() + 5));
 			continue_game.set_tooltip(continue_tooltip.get_str());
 		}
 
@@ -145,7 +145,7 @@ banner_t::banner_t() : gui_frame_t("")
 					new_component<gui_fill_t>();
 					add_table(1,0);
 						new_component<gui_label_t>("Developed by the Simutrans Team", SYSCOL_TEXT_HIGHLIGHT, gui_label_t::left)->set_shadow(SYSCOL_TEXT_SHADOW, true);
-						new_component<gui_label_t>("under the Artistic Licence ", SYSCOL_TEXT_HIGHLIGHT, gui_label_t::left)->set_shadow(SYSCOL_TEXT_SHADOW, true);
+						new_component<gui_label_t>("under the Artistic License", SYSCOL_TEXT_HIGHLIGHT, gui_label_t::left)->set_shadow(SYSCOL_TEXT_SHADOW, true);
 						new_component<gui_label_t>("based on Simutrans 84.22.1", SYSCOL_TEXT_HIGHLIGHT, gui_label_t::left)->set_shadow(SYSCOL_TEXT_SHADOW, true);
 					end_table();
 					new_component<gui_fill_t>();
@@ -194,6 +194,9 @@ bool banner_t::infowin_event(const event_t *ev)
 {
 	if(  gui_frame_t::is_hit( ev->click_pos.x, ev->click_pos.y  )  ) {
 		gui_frame_t::infowin_event( ev );
+	}
+	if (ev->ev_class == EVENT_SYSTEM && ev->ev_code == SYSTEM_QUIT) {
+		env_t::quit_simutrans = true;
 	}
 	return false;
 }
@@ -246,7 +249,8 @@ bool banner_t::action_triggered( gui_action_creator_t *comp, value_t)
 	return true;
 }
 
-void banner_t::show_banner() {
+void banner_t::show_banner()
+{
 	tool_t::simple_tool[TOOL_QUIT]->set_default_param("n");
 	welt->set_tool(tool_t::simple_tool[TOOL_QUIT], NULL);
 	tool_t::simple_tool[TOOL_QUIT]->set_default_param(0);
