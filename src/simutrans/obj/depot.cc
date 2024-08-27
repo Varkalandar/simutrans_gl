@@ -16,8 +16,10 @@
 #include "../simlinemgmt.h"
 #include "../tool/simmenu.h"
 
+#include "../gui/depotlist_frame.h"
 #include "../gui/depot_frame.h"
 #include "../gui/messagebox.h"
+#include "../gui/simwin.h"
 
 #include "../dataobj/schedule.h"
 #include "../dataobj/loadsave.h"
@@ -52,7 +54,7 @@ depot_t::depot_t(loadsave_t *file) : gebaeude_t()
 	selected_sort_by = SORT_BY_DEFAULT;
 	last_selected_line = linehandle_t();
 	command_pending = false;
-}
+	}
 
 
 depot_t::depot_t(koord3d pos, player_t *player, const building_tile_desc_t *t) :
@@ -63,6 +65,9 @@ depot_t::depot_t(koord3d pos, player_t *player, const building_tile_desc_t *t) :
 	selected_sort_by = SORT_BY_DEFAULT;
 	last_selected_line = linehandle_t();
 	command_pending = false;
+	if (depotlist_frame_t* f = (depotlist_frame_t*)win_get_magic(magic_depotlist + player->get_player_nr())) {
+		f->fill_list();
+	}
 }
 
 
@@ -567,7 +572,7 @@ void depot_t::rdwr_vehikel(slist_tpl<vehicle_t *> &list, loadsave_t *file)
 /**
  * @return NULL when OK, otherwise an error message
  */
-const char * depot_t::is_deletable(const player_t *player)
+const char *depot_t::get_removal_error(const player_t *player)
 {
 	if(player!=get_owner()  &&  player!=welt->get_public_player()) {
 		return "Das Feld gehoert\neinem anderen Spieler\n";

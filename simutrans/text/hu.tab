@@ -12,7 +12,7 @@ cyr.bdf
 #                              Language: hu Magyar                             #
 #                                Encoding: UTF-8                               #
 #                                 Font: cyr.bdf                                #
-#                           Date Created: 25.02 2023                           #
+#                            Date Created: 2.06 2024                           #
 #                                                                              #
 ################################################################################
 #__________________________________button_text__________________________________
@@ -79,20 +79,30 @@ hlf_btn_invers
 fordít
 hlf_btn_keine
 semmi
+Install
+Telepít
 Lake
 Tó
+Lake height
+tavak max. magassága
 Networks
 Hálózat
 Num pad keys always move map
 A numerikus billentyűkkel mindig mozdul a térkép
+Open Sea
+Nyílt Tenger
 Queueing
 Várakozók
+rainfall
+páratartalom
 Reselect closes tools
 Újbóli kiválasztás bezárja az eszközt
 Road toll
 Útdíjak
 Scenario
 Forgatókönyv
+sea
+tengeri éghajlat
 Sound range:
 Hangterjedelem
 Start this as a server
@@ -115,6 +125,10 @@ rocky
 Sziklás/köves
 temperate
 Mérsékelt éghajlat
+tropic
+Trópusi éghajlat
+tundra
+Tundra éghajlat
 #__________________________________error_text___________________________________
 #__________________________________error_text___________________________________
  Loading scenario script failed
@@ -940,7 +954,7 @@ Termelés: %.0f MW\n
 Gewicht
 Súly
 Gewinn
-Bevétel:
+Bevétel: 
 Give the selected vehicle(s) an individual schedule
 A járműhöz rendelt vonal vagy egyedi menetrend megadása
 gl_btn_sort_catg
@@ -1761,14 +1775,10 @@ Transported
 Szállítmányok
 TrolleyBus_tab
 Trolibuszok
-tropic
-Trópusi éghajlat
 Truck
 Közúti jármű
 tt_Other
 Egyebek
-tundra
-Tundra éghajlat
 Tunnel muss an\neinfachem\nHang beginnen!\n
 Az alagút csakis egyenes emelkedőn építhető!
 Tunnel must start on single way!

@@ -1,4 +1,4 @@
-# This workflow sets up and runs MSBuild and VSTest 
+# This workflow sets up and runs MSBuild and VSTest
 # to build and test a Visual Studio solution.
 
 name: Nightly Built Windows64 SDL2
@@ -12,10 +12,10 @@ jobs:
    runs-on: windows-latest
    steps:
     - name: Setup MSBuild and add to PATH
-      uses: microsoft/setup-msbuild@v1.0.2
+      uses: microsoft/setup-msbuild@v2
 
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       id: checkout_code
 
     - name: Make NSIS
@@ -27,11 +27,7 @@ jobs:
       shell: pwsh
       working-directory: ${{env.GITHUB_WORKSPACE}}
       run: |
-        git clone --depth 1 https://github.com/Microsoft/vcpkg.git
-        cd vcpkg
-        ./bootstrap-vcpkg.bat
-        ./vcpkg integrate install
-        cd ..
+        vcpkg integrate install
         msbuild /m .\Simutrans-SDL2.vcxproj -p:Configuration=Release /p:platform=x64
 
     - name: Build zipfile

@@ -29,10 +29,12 @@ std::string env_t::pak_name;
 sint16 env_t::menupos = MENU_TOP;
 bool env_t::single_toolbar_mode = false;
 sint16 env_t::dpi_scale = 100;
+bool env_t::single_info = 1;
 #else
 sint16 env_t::menupos = MENU_BOTTOM;
 bool env_t::single_toolbar_mode = true;
 sint16 env_t::dpi_scale = -1;
+bool env_t::single_info = 0;
 #endif
 sint16 env_t::fullscreen = WINDOWED;
 sint16 env_t::display_scale_percent = 100;
@@ -76,7 +78,11 @@ std::string env_t::server_pakurl;
 std::string env_t::server_infurl;
 std::string env_t::server_admin_pw;
 std::string env_t::server_motd_filename;
-vector_tpl<std::string> * env_t::listen = new vector_tpl<std::string>();
+uint8 env_t::chat_unread_public = 0;
+uint8 env_t::chat_unread_company = 0;
+uint8 env_t::chat_unread_whisper = 0;
+
+vector_tpl<std::string> env_t::listen;
 bool env_t::server_save_game_on_quit = false;
 bool env_t::reload_and_save_on_quit = true;
 uint8 env_t::network_heavy_mode = 0;
@@ -110,6 +116,7 @@ uint8 env_t::chat_window_transparency = 75;
 bool env_t::hide_rail_return_ticket = true;
 
 bool env_t::numpad_always_moves_map = true;
+bool env_t::leftdrag_in_minimap = true;
 
 // only used internally => do not touch further
 bool env_t::quit_simutrans = false;
@@ -139,7 +146,6 @@ bool env_t::tree_info;
 bool env_t::ground_info;
 uint8 env_t::show_factory_storage_bar;
 bool env_t::townhall_info;
-bool env_t::single_info;
 bool env_t::single_line_gui;
 bool env_t::window_buttons_right;
 bool env_t::second_open_closes_win;
@@ -292,7 +298,7 @@ void env_t::init()
 	max_acceleration=50;
 
 #ifdef MULTI_THREAD
-	num_threads = dr_get_max_threads();
+	num_threads = min(MAX_THREADS,dr_get_max_threads());
 #else
 	num_threads = 1;
 #endif
@@ -344,9 +350,26 @@ void env_t::init()
 	compass_screen_position = 0; // disbale, other could be ALIGN_RIGHT|ALIGN_BOTTOM;
 
 	// Listen on all addresses by default
-	listen->append_unique("::");
-	listen->append_unique("0.0.0.0");
+	listen.append_unique("::");
+	listen.append_unique("0.0.0.0");
 	show_money_message = 0;
+
+#ifndef __ANDROID__
+	env_t::menupos = MENU_TOP;
+	env_t::single_toolbar_mode = false;
+	env_t::dpi_scale = 100;
+	env_t::single_info = 1;
+	env_t::hide_keyboard = false;
+
+#else
+	// here for Android
+	env_t::menupos = MENU_BOTTOM;
+	env_t::single_toolbar_mode = true;
+	env_t::dpi_scale = -1;
+	env_t::single_info = 0;
+	// autoshow keyboard on textinput
+	env_t::hide_keyboard = true;
+#endif
 }
 
 
@@ -616,6 +639,9 @@ void env_t::rdwr(loadsave_t *file)
 		}
 		file->rdwr_bool(random_pedestrians);
 		file->rdwr_bool(stop_pedestrians);
+	}
+	if (file->is_version_atleast(124, 2)) {
+		file->rdwr_bool(leftdrag_in_minimap);
 	}
 
 	// server settings are not saved, since they are server specific

@@ -20,8 +20,7 @@ news_window::news_window(const char* text, rgba_t title_color) :
 {
 	buf.clear();
 	buf.append(translator::translate(text));
-
-	// adjust positions, sizes, and window-size
+	textarea.set_size(scr_size(textarea.get_size().w + 1, 0));
 	recalc_size();
 }
 
@@ -76,6 +75,7 @@ void news_img::init(image_id id)
 		image.set_image(id, true);
 		image.enable_offset_removal(true);
 		image.set_size(image.get_min_size());
+		textarea.set_size(scr_size(textarea.get_size().w + image.get_size().w + D_H_SPACE + 1,0));
 		set_embedded(&image);
 	}
 }
@@ -85,6 +85,7 @@ news_loc::news_loc(const char* text, koord3d k, rgba_t color) :
 	news_window(text, color),
 	view(k, scr_size( max(64, get_base_tile_raster_width()), max(56, (get_base_tile_raster_width()*7)/8) ))
 {
+	textarea.set_size(scr_size(textarea.get_size().w + view.get_size().w + D_H_SPACE + 1, 0));
 	set_embedded(&view);
 }
 

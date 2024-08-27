@@ -27,6 +27,7 @@ static pthread_mutex_t add_to_city_mutex = PTHREAD_MUTEX_INITIALIZER;
 #include "../simdebug.h"
 #include "../simintr.h"
 #include "../simskin.h"
+#include "../simachievements.h"
 
 #include "../ground/grund.h"
 
@@ -596,6 +597,7 @@ void gebaeude_t::show_info()
 			}
 			// open info window for the first tile of our building (not relying on presence of (0,0) tile)
 			first_tile->obj_t::show_info();
+			simachievements_t::check_query_ach(tile->get_desc()->get_name());
 		}
 	}
 }
@@ -658,7 +660,7 @@ gebaeude_t* gebaeude_t::get_first_tile()
 	for( k.y = 0; k.y < size.y; k.y++ ) {
 		for( k.x = 0; k.x < size.x; k.x++ ) {
 			if( grund_t* gr = welt->lookup( pos0+k ) ) {
-				if( gebaeude_t* const add_gb = obj_cast<gebaeude_t>(gr->first_obj()) ) {
+				if( gebaeude_t* const add_gb = obj_cast<gebaeude_t>(gr->first_no_way_obj()) ) {
 					if( is_same_building( add_gb ) ) {
 						return add_gb;
 					}
@@ -672,7 +674,7 @@ gebaeude_t* gebaeude_t::get_first_tile()
 
 void gebaeude_t::info(cbuffer_t & buf) const
 {
-	obj_t::info(buf);
+	const char* name=tile->get_desc()->get_name();
 
 	if(is_factory  &&  ptr.fab != NULL) {
 		buf.append((char *)0);

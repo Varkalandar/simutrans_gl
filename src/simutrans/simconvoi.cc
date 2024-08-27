@@ -248,6 +248,12 @@ bool convoi_t::is_waypoint( koord3d ziel ) const
 		}
 		// so we are on a taxiway/runway here ...
 	}
+	if (grund_t* gr = welt->lookup(ziel)) {
+		if (depot_t* dp = gr->get_depot()) {
+			// don't stop in other peoples depot
+			return !(dp->get_owner() == get_owner()  &&  fahr[0]  &&  dp->get_waytype() == fahr[0]->get_waytype());
+		}
+	}
 	return !haltestelle_t::get_halt(ziel,get_owner()).is_bound();
 }
 
@@ -476,7 +482,7 @@ DBG_MESSAGE("convoi_t::finish_rd()","next_stop_index=%d", next_stop_index );
 		else {
 			// since start may have been changed
 			route_t::index_t start_index = max(1,fahr[vehicle_count-1]->get_route_index())-1;
-			if (start_index > route.get_count()) {
+			if (start_index >= route.get_count()) {
 				dbg->error( "convoi_t::finish_rd()", "Routeindex of last vehicle of (%s) too large (%hu > %hu)!", get_name(), start_index, route.get_count() );
 				start_index = 0;
 			}
@@ -489,10 +495,10 @@ DBG_MESSAGE("convoi_t::finish_rd()","next_stop_index=%d", next_stop_index );
 			for(unsigned i=0; i<vehicle_count; i++) {
 				vehicle_t* v = fahr[i];
 
-				v->get_smoke(false);
+				v->set_smoke_enabled(false);
 				fahr[i]->do_drive( (VEHICLE_STEPS_PER_CARUNIT*train_length)<<YARDS_PER_VEHICLE_STEP_SHIFT );
 				train_length -= v->get_desc()->get_length();
-				v->get_smoke(true);
+				v->set_smoke_enabled(true);
 
 				// eventually reserve this again
 				grund_t *gr=welt->lookup(v->get_pos());
@@ -652,7 +658,7 @@ void convoi_t::add_running_cost( const weg_t *weg )
 			if(  weg->is_electrified()  &&  needs_electrification()  ) {
 				// toll for using electricity
 				grund_t *gr = welt->lookup(weg->get_pos());
-				for(  int i=1;  i<gr->get_top();  i++  ) {
+				for(  int i=1;  i<gr->obj_count();  i++  ) {
 					obj_t *d=gr->obj_bei(i);
 					if(  wayobj_t const* const wo = obj_cast<wayobj_t>(d)  )  {
 						if(  wo->get_waytype()==weg->get_waytype()  ) {
@@ -1188,7 +1194,7 @@ void convoi_t::step()
 	}
 
 	if( state==LOADING ) {
-		// handled seperately, since otherwise departues are delayed
+		// handled seperately, since otherwise departures are delayed
 		laden();
 	}
 
@@ -2079,13 +2085,13 @@ void convoi_t::vorfahren()
 		// just advances the first vehicle
 		vehicle_t* v0 = fahr[0];
 		v0->set_leading(false); // switches off signal checks ...
-		v0->get_smoke(false);
+		v0->set_smoke_enabled(false);
 		steps_driven = 0;
 		// drive half a tile:
 		for(int i=0; i<vehicle_count; i++) {
 			fahr[i]->do_drive( (VEHICLE_STEPS_PER_TILE/2)<<YARDS_PER_VEHICLE_STEP_SHIFT );
 		}
-		v0->get_smoke(true);
+		v0->set_smoke_enabled(true);
 		v0->set_leading(true); // switches on signal checks to reserve the next route
 
 		// until all other are on the track
@@ -2123,14 +2129,14 @@ void convoi_t::vorfahren()
 			for(unsigned i=0; i<vehicle_count; i++) {
 				vehicle_t* v = fahr[i];
 
-				v->get_smoke(false);
+				v->set_smoke_enabled(false);
 				uint32 const driven = fahr[i]->do_drive( dist );
 				if (i==0  &&  driven < dist) {
 					// we are already at our destination
 					at_dest = true;
 				}
 				// this gives the length in carunits, 1/CARUNITS_PER_TILE of a full tile => all cars closely coupled!
-				v->get_smoke(true);
+				v->set_smoke_enabled(true);
 
 				uint32 const vlen = (VEHICLE_STEPS_PER_CARUNIT*v->get_desc()->get_length()) << YARDS_PER_VEHICLE_STEP_SHIFT;
 				if (vlen > dist) {
@@ -2385,7 +2391,7 @@ void convoi_t::rdwr(loadsave_t *file)
 						gr->find<crossing_t>()->add_to_crossing(v);
 					}
 				}
-				if(  gr->get_top()>253  ) {
+				if(  gr->obj_count()>253  ) {
 					dbg->warning( "convoi_t::rdwr()", "cannot put vehicle on ground at (%s)", gr->get_pos().get_str() );
 				}
 				gr->obj_add(v);
@@ -2951,24 +2957,33 @@ station_tile_search_ready: ;
 	// next stop in schedule will be a depot
 	bool next_depot = false;
 
+	// check if there is a convoi infront of us
+	bool all_served_this_stop = true;
+	// drive on, if all stops are overcrowded to reduce overcrowding
+	bool all_overcrowded = true;
+
 	// prepare a list of all destination halts in the schedule
 	vector_tpl<halthandle_t> destination_halts(schedule->get_count());
 	if (!no_load) {
 		const uint8 count = schedule->get_count();
+		bool first_entry = true;
 		for(  uint8 i=1;  i<count;  i++  ) {
 			const uint8 wrap_i = (i + schedule->get_current_stop()) % count;
 
 			const halthandle_t plan_halt = haltestelle_t::get_halt(schedule->entries[wrap_i].pos, owner);
 			if(plan_halt == halt) {
 				// we will come later here again ...
+				// the following halt is the same => there will never be a halt to serve
+				all_served_this_stop &= first_entry;
 				break;
 			}
 			else if(  !plan_halt.is_bound()  ) {
 				if(  grund_t *gr = welt->lookup( schedule->entries[wrap_i].pos )  ) {
 					if(  gr->get_depot()  ) {
-
-						next_depot = i==1;
-						// do not load for stops after a depot
+						// on our way to depot => there will never be a halt to serve
+						all_served_this_stop &= !first_entry;
+						next_depot = first_entry;
+						// otherwise do not load for stops after a depot
 						break;
 					}
 				}
@@ -2976,10 +2991,18 @@ station_tile_search_ready: ;
 			}
 			for( uint8 const idx : goods_catg_index ) {
 				if(  !halt->get_halt_served_this_step()[idx].is_contained(plan_halt)  ) {
-					// not somebody loaded before us in the queue
-					destination_halts.append(plan_halt);
-					break;
+					// if overcroding mode, do add overcrowded steps
+					if (!welt->get_settings().is_avoid_overcrowding()  ||  !plan_halt->is_overcrowded(idx)) {
+						// not somebody loaded before us in the queue
+						destination_halts.append(plan_halt);
+						all_served_this_stop = false;
+						break;
+					}
 				}
+				else if (!plan_halt->is_overcrowded(idx)) {
+					all_overcrowded = false;
+				}
+				first_entry = false;
 			}
 		}
 	}
@@ -3020,8 +3043,8 @@ station_tile_search_ready: ;
 			cargo_type_prev = NULL;
 		}
 
-		if(  max_amount > amount  &&  !no_load  &&  !next_depot  &&  v->get_total_cargo() < v->get_cargo_max()  ) {
-			// load if: not unloaded something first or not filled and not forbidden (no_load or next is depot)
+		if(  !all_served_this_stop  &&  max_amount > amount  &&  v->get_total_cargo() < v->get_cargo_max()  ) {
+			// load if: not unloaded something first or not filled and not forbidden (no_load or next is depot) or that stop has been served already
 			if(cargo_type_prev==NULL  ||  !cargo_type_prev->is_interchangeable(v->get_cargo_type())) {
 				// load
 				amount += v->load_cargo(halt, destination_halts, max_amount-amount);
@@ -3068,6 +3091,9 @@ station_tile_search_ready: ;
 		if(  ticks_until_departure <= 0  ) {
 			// depart if nothing to load (wants_more==false)
 			departure_time_reached = !wants_more;
+			if (departure_time_reached) {
+				all_served_this_stop = false;
+			}
 		}
 		else {
 			// else continue loading (even if full) until departure time reached
@@ -3086,13 +3112,19 @@ station_tile_search_ready: ;
 	}
 
 	// loading is finished => maybe drive on
+	bool max_wait = schedule->get_current_entry().waiting_time > 0  &&  (welt->get_ticks() - arrived_time) > schedule->get_current_entry().get_waiting_ticks();
 	if(  loading_level >= loading_limit  ||  no_load
 		||  departure_time_reached
-		||  (schedule->get_current_entry().waiting_time > 0  &&  (welt->get_ticks() - arrived_time) > schedule->get_current_entry().get_waiting_ticks()  )  ) {
+		||  max_wait  ) {
 
 		if(  withdraw  &&  (loading_level == 0  ||  goods_catg_index.empty())  ) {
 			// destroy when empty
 			self_destruct();
+			return;
+		}
+
+		if(all_served_this_stop  &&  !max_wait  &&  !(destination_halts.empty()  &&  all_overcrowded)) {
+			// continue loading
 			return;
 		}
 
@@ -3387,12 +3419,25 @@ DBG_DEBUG("convoi_t::unset_line()", "removing old destinations from line=%d, sch
 }
 
 
+void convoi_t::set_update_line(linehandle_t l)
+{
+	line_update_pending = l;
+	if (state == EDIT_SCHEDULE) {
+		// save, since it is in a step only mode
+		check_pending_updates();
+	}
+}
+
+
+
+
 // matches two halts; if the pos is not identical, maybe the halt still is the same
 bool convoi_t::matches_halt( const koord3d pos1, const koord3d pos2 )
 {
 	halthandle_t halt1 = haltestelle_t::get_halt(pos1, owner );
 	return pos1==pos2  ||  (halt1.is_bound()  &&  halt1==haltestelle_t::get_halt( pos2, owner ));
 }
+
 
 
 // updates a line schedule and tries to find the best next station to go
@@ -3500,6 +3545,12 @@ void convoi_t::check_pending_updates()
 			// next was depot. restore it
 			schedule->insert(welt->lookup(depot));
 			schedule->set_current_stop( (schedule->get_current_stop()+schedule->get_count()-1)%schedule->get_count() );
+		}
+
+		if (state == EDIT_SCHEDULE) {
+			if (convoi_info_t* info = dynamic_cast<convoi_info_t*>(win_get_magic(magic_convoi_info + self.get_id()))) {
+				info->update_schedule();
+			}
 		}
 
 		if (state != INITIAL) {
@@ -3712,7 +3763,7 @@ bool convoi_t::can_overtake(overtaker_t *other_overtaker, sint32 other_speed, si
 				return false;
 			}
 			// Check for other vehicles on the next tile
-			const uint8 top = gr->get_top();
+			const uint8 top = gr->obj_count();
 			for(  uint8 j=1;  j<top;  j++  ) {
 				if(  vehicle_base_t* const v = obj_cast<vehicle_base_t>(gr->obj_bei(j))  ) {
 					// check for other traffic on the road
@@ -3796,7 +3847,7 @@ bool convoi_t::can_overtake(overtaker_t *other_overtaker, sint32 other_speed, si
 		time_overtaking += d;
 
 		// Check for other vehicles
-		const uint8 top = gr->get_top();
+		const uint8 top = gr->obj_count();
 		for(  uint8 j=1;  j<top;  j++ ) {
 			if (vehicle_base_t* const v = obj_cast<vehicle_base_t>(gr->obj_bei(j))) {
 				// check for other traffic on the road
@@ -3860,7 +3911,7 @@ bool convoi_t::can_overtake(overtaker_t *other_overtaker, sint32 other_speed, si
 
 		// Check for other vehicles in facing direction
 		ribi_t::ribi their_direction = ribi_t::backward( fahr[0]->calc_direction(pos_prev, pos_next) );
-		const uint8 top = gr->get_top();
+		const uint8 top = gr->obj_count();
 		for(  uint8 j=1;  j<top;  j++ ) {
 			vehicle_base_t* const v = obj_cast<vehicle_base_t>(gr->obj_bei(j));
 			if(  v  &&  v->get_direction() == their_direction  &&  v->get_overtaker()  ) {

@@ -12,7 +12,7 @@ wenquanyi_9pt.bdf
 #                           Language: cn Sim. Chinese                          #
 #                                Encoding: UTF-8                               #
 #                            Font: wenquanyi_9pt.bdf                           #
-#                           Date Created: 25.02 2023                           #
+#                           Date Created: 20.07 2024                           #
 #                                                                              #
 ################################################################################
 #__________________________________button_text__________________________________
@@ -91,6 +91,10 @@ rocky
 高山气候
 temperate
 温带气候
+tropic
+热带气候
+tundra
+苔原气候
 #__________________________________error_text___________________________________
 #__________________________________error_text___________________________________
  Loading scenario script failed
@@ -624,9 +628,9 @@ Connected stops
 Connected with server
 已连接到伺服器
 Constructed by
-上色于:
+绘画者：
 Constructed by %s
-上色于: %s 
+绘画者：%s 
 Construction_Btn
 建设开支
 convoi %d of %d
@@ -671,8 +675,6 @@ December
 12月
 decrease underground view level
 将切面推落一层
-Default.sve
-预设值
 Del Stop
 删除
 Delete Line
@@ -1659,12 +1661,8 @@ Transported
 路程
 TrolleyBus_tab
 无轨电车
-tropic
-热带气候
 Truck
 货车
-tundra
-苔原气候
 Tunnel muss an\neinfachem\nHang beginnen!\n
 隧道入口必须建造在斜坡上
 Tunnel must start on single way!

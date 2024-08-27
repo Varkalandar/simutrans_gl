@@ -322,7 +322,7 @@ error:
 /// Optionally: Receive response to file localname
 const char *network_http_post( const char *address, const char *name, const char *poststr, const char *localname )
 {
-	DBG_MESSAGE("network_http_post", "");
+	DBG_MESSAGE("network_http_post", address);
 	// Open socket
 	const char *err = NULL;
 	SOCKET const my_client_socket = network_open_address(address, err);
@@ -403,6 +403,9 @@ const char *network_http_post( const char *address, const char *name, const char
 			err = network_receive_file( my_client_socket, localname, length );
 		}
 		network_close_socket( my_client_socket );
+	}
+	else {
+		dbg->warning("network_http_post()", "failed with %s", err);
 	}
 	return err;
 }
@@ -541,7 +544,7 @@ const char *network_http_get_file( const char* address, const char* name, const 
 
 			char new_ip[1024];
 			char new_path[1024];
-			if(char *c=strstr(line,"\nLocation: http://")) {
+			if(char *c= tstrcasestr(line,"\nLocation: http://")) {
 				tstrncpy(new_ip, c + 18, lengthof(new_ip));
 				if(char *c = strchr(new_ip, '/')) {
 					tstrncpy(new_path, c, lengthof(new_path));
@@ -551,7 +554,7 @@ const char *network_http_get_file( const char* address, const char* name, const 
 					return network_http_get_file(new_ip, new_path, filename);
 				}
 			}
-			if (strstr(line, "Location: https://")) {
+			if (tstrcasestr(line, "\nLocation: https://")) {
 				return "Cannot handle https.";
 			}
 			return "Unknown redirect.";

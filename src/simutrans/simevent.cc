@@ -78,15 +78,17 @@ static void fill_event(event_t* const ev)
 	// variables for detecting double-clicks and triple-clicks
 	const  uint32        interval = 400;
 	static unsigned int  prev_ev_class = EVENT_NONE;
-	static unsigned int  prev_ev_code = 0;
-	static uint32        prev_ev_time = 0;
-	static unsigned char repeat_count = 0; // number of consecutive sequences of click-release
+	static uint16  prev_ev_code = 0;
+	static uint32  prev_ev_time = 0;
+	static uint8   repeat_count = 0; // number of consecutive sequences of click-release
 
 	// for autorepeat buttons we track button state, press time and a repeat time
 
 	static int  pressed_buttons = 0; // assume: at startup no button pressed (needed for some backends)
 
 	ev->ev_class = EVENT_NONE;
+
+	static scr_coord last_mpos;
 
 	ev->mouse_pos.x = sys_event.mx;
 	ev->mouse_pos.y = sys_event.my;
@@ -99,6 +101,10 @@ static void fill_event(event_t* const ev)
 	control_shift_state = sys_event.key_mod;
 
 	switch (sys_event.type) {
+		case SIM_NOEVENT:
+		case SIM_IGNORE_EVENT:
+			break;
+
 		case SIM_KEYBOARD:
 			ev->ev_class = EVENT_KEYBOARD;
 			ev->ev_code  = sys_event.code;
@@ -178,6 +184,11 @@ static void fill_event(event_t* const ev)
 			break;
 
 		case SIM_MOUSE_MOVE:
+			if (last_mpos == ev->mouse_pos) {
+				ev->ev_class = EVENT_NONE;
+				ev->ev_code = 0;
+				break;
+			}
 			if (sys_event.mb) { // drag
 				ev->ev_class = EVENT_DRAG;
 				ev->ev_code  = sys_event.mb;
@@ -246,6 +257,7 @@ static void fill_event(event_t* const ev)
 	}
 
 	ev->button_state = pressed_buttons;
+	last_mpos = ev->mouse_pos;
 }
 
 
@@ -256,10 +268,9 @@ void display_poll_event(event_t* const ev)
 		event_t *elem = queued_events.remove_first();
 		*ev = *elem;
 		delete elem;
-		return ;
 	}
-	// if there is any pending meta-event, consume it instead of fetching a new event from the system
-	if(  meta_event.ev_class!=EVENT_NONE  ) {
+	else if(  meta_event.ev_class!=EVENT_NONE  ) {
+		// if there is any pending meta-event, consume it instead of fetching a new event from the system
 		*ev = meta_event;
 		last_meta_class = meta_event.ev_class;
 		meta_event.ev_class = EVENT_NONE;

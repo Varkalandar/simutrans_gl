@@ -4,8 +4,8 @@
  */
 
 #include <ctype.h>
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -52,6 +52,10 @@
 #	ifdef __ANDROID__
 #		include <SDL.h>
 #	endif
+#endif
+
+#ifdef USE_FONTCONFIG
+#include <fontconfig/fontconfig.h>
 #endif
 
 #ifdef MULTI_THREAD
@@ -162,9 +166,28 @@ uint8 dr_get_max_threads()
 // create a directory with all subdirectories needed
 int dr_mkdir(char const* const path)
 {
+	if (path == 0  ||  path[0]==0) {
+		// always succed on empty string (should never happen)
+		return 0;
+	}
+
 #ifdef _WIN32
-	// Perform operation.
-	int const result = SHCreateDirectory(NULL, U16View(path)) ? 0 : -1;
+	const char* new_dir_with_path = path;
+
+	// Perform operation needs absolute path
+	if (path[1] != ':'  &&  path[1] !=  '\\') {
+		// so let get the absolute path
+		char abs_buf[MAX_PATH];
+		dr_getcwd(abs_buf, MAX_PATH);
+		if (strlen(abs_buf) + strlen(path) + 2 >= MAX_PATH) {
+			return -1;
+		}
+		strcat(abs_buf, "\\");
+		strcat(abs_buf, path);
+		new_dir_with_path = abs_buf;
+	}
+
+	int result = SHCreateDirectory(NULL, U16View(new_dir_with_path)) ? 0 : -1;
 
 	// Translate error.
 	if (result != ERROR_SUCCESS) {
@@ -186,6 +209,7 @@ int dr_mkdir(char const* const path)
 
 	// remove trailing director separator
 	len = strnlen(tmp, sizeof(tmp));
+
 	if (tmp[len - 1] == *PATH_SEPARATOR) {
 		tmp[len - 1] = 0;
 	}
@@ -284,7 +308,8 @@ int dr_rename(const char *existing_utf8, const char *new_utf8)
 		DWORD error = GetLastError();
 		if (error == ERROR_FILE_NOT_FOUND) {
 			errno = ENOENT;
-		} else if(error == ERROR_ACCESS_DENIED) {
+		}
+		else if(error == ERROR_ACCESS_DENIED) {
 			errno = EACCES;
 		}
 	}
@@ -375,13 +400,21 @@ bool check_and_set_dir( const char *path, const char *info, char *result, const 
 {
 	if(  path  &&  *path  ) {
 		bool ok = !dr_chdir(path);
-		FILE * testf = NULL;
-		ok &=  ok  &&  testfile  &&  (testf = fopen(testfile,"r"));
+		// Attempt to create it (if we aren't testing for an existing directory containing a file).
+		if(!ok && !testfile) {
+			dr_mkdir(path);
+			ok = !dr_chdir(path);
+		} else if(testfile) {
+			FILE* testf = fopen(testfile,"r");
+			ok = ok && testf;
+			if(testf) {
+				fclose(testf);
+			}
+		}
 		if(!ok) {
 			printf("WARNING: Objects not found in %s \"%s\" (checking %s)!\n",  info, path, testfile);
 		}
 		else {
-			fclose(testf);
 			dr_getcwd( result, PATH_MAX-1 );
 			strcat( result, PATH_SEPARATOR );
 			return true;
@@ -528,8 +561,6 @@ char const *dr_query_homedir()
 	}
 #endif
 
-	// create directory and subdirectories
-	dr_mkdir(buffer);
 	strcat(buffer, PATH_SEPARATOR);
 	return buffer;
 }
@@ -574,8 +605,6 @@ char const *dr_query_installdir()
 	}
 #endif
 
-	// create directory and subdirectories
-	dr_mkdir(buffer);
 	strcat(buffer, PATH_SEPARATOR);
 	return buffer;
 }
@@ -638,26 +667,27 @@ std::string dr_get_system_font()
 {
 #if COLOUR_DEPTH != 0
 #ifdef WIN32
-	NONCLIENTMETRICS ncm;
-	ncm.cbSize = sizeof(NONCLIENTMETRICS);
-	SystemParametersInfo(SPI_GETNONCLIENTMETRICS, sizeof(NONCLIENTMETRICS), &ncm, 0);
-	std::string faceName(ncm.lfMessageFont.lfFaceName);
+#define DEFAULT_FONT "arial.ttf"
 
-	const LPWSTR fontRegistryPath = L"Software\\Microsoft\\Windows NT\\CurrentVersion\\Fonts";
+	NONCLIENTMETRICSW ncm;
+	ncm.cbSize = sizeof(NONCLIENTMETRICSW);
+	SystemParametersInfoW(SPI_GETNONCLIENTMETRICS, sizeof(NONCLIENTMETRICSW), &ncm, 0);
+	std::wstring wsFaceName = ncm.lfMessageFont.lfFaceName;
+
+	LPCWSTR fontRegistryPath = L"Software\\Microsoft\\Windows NT\\CurrentVersion\\Fonts";
 	HKEY hKey;
 	LONG result;
-	std::wstring wsFaceName(faceName.begin(), faceName.end());
 
 	// Open Windows font registry key
 	result = RegOpenKeyExW(HKEY_LOCAL_MACHINE, fontRegistryPath, 0, KEY_READ, &hKey);
 	if (result != ERROR_SUCCESS) {
-		return "";
+		return DEFAULT_FONT;
 	}
 
 	DWORD maxValueNameSize, maxValueDataSize;
 	result = RegQueryInfoKeyW(hKey, 0, 0, 0, 0, 0, 0, 0, &maxValueNameSize, &maxValueDataSize, 0, 0);
 	if (result != ERROR_SUCCESS) {
-		return "";
+		return DEFAULT_FONT;
 	}
 
 	DWORD valueIndex = 0;
@@ -665,8 +695,9 @@ std::string dr_get_system_font()
 	LPBYTE valueData = new BYTE[maxValueDataSize];
 	DWORD valueNameSize, valueDataSize, valueType;
 	std::wstring wsFontFile;
+	// So far best matching font name
+	std::wstring wsBestMatch;
 
-	// Look for a matching font name
 	do {
 
 		wsFontFile.clear();
@@ -685,9 +716,14 @@ std::string dr_get_system_font()
 
 		// Found a match
 		if (_wcsnicmp(wsFaceName.c_str(), wsValueName.c_str(), wsFaceName.length()) == 0) {
-
-			wsFontFile.assign((LPWSTR)valueData, valueDataSize);
+			// full match
+			wsFontFile.assign((LPWSTR)valueData, valueDataSize/2);
 			break;
+		}
+
+		// Sometimes the face name is a family name; then only a partial match will be possible
+		if (wcsstr(wsValueName.c_str(), wsFaceName.c_str())) {
+			wsBestMatch.assign((LPWSTR)valueData, valueDataSize/2);
 		}
 	} while (result != ERROR_NO_MORE_ITEMS);
 
@@ -697,16 +733,46 @@ std::string dr_get_system_font()
 	RegCloseKey(hKey);
 
 	if (wsFontFile.empty()) {
-		return "";
+		if (wsBestMatch.empty()) {
+			dbg->warning("dr_get_system_font()", "%s not found!", std::string(wsFaceName.begin(), wsFaceName.end()).c_str());
+			return DEFAULT_FONT;
+		}
+		wsFontFile = wsBestMatch;
+		dbg->warning("dr_get_system_font()", "Using %s for %s", std::string(wsFontFile.begin(), wsFontFile.end()).c_str(), std::string(wsFaceName.begin(), wsFaceName.end()).c_str());
 	}
 
 	// Build full font file path
 	CHAR winDir[MAX_PATH];
 	GetWindowsDirectoryA(winDir, MAX_PATH);
 	strcat(winDir, "\\Fonts\\");
+	// luckily any TTF font in windows has an ASCII name ...
+	DBG_MESSAGE("dr_get_system_font()", "Using %s", std::string(wsFontFile.begin(), wsFontFile.end()).c_str());
 	return (std::string)winDir + std::string(wsFontFile.begin(), wsFontFile.end());
 #elif defined(ANDROID)
 	return FONT_PATH_X "Roboto-Regular.ttf";
+#elif defined(USE_FONTCONFIG)
+	std::string fontFile = FONT_PATH_X "cyr.bdf";
+	FcInit();
+	FcConfig* config = FcInitLoadConfigAndFonts();
+	FcPattern* pat = FcNameParse((const FcChar8*)"Sans");
+	FcConfigSubstitute(config, pat, FcMatchPattern);
+	FcDefaultSubstitute(pat);
+
+	FcResult result;
+	FcPattern* font = FcFontMatch(config, pat, &result);
+
+	if (font) {
+		FcChar8* file = NULL; 
+
+		if (  FcPatternGetString(font, FC_FILE, 0, &file) == FcResultMatch  ) {
+			fontFile = (char*)file;
+		}
+	}
+	FcPatternDestroy(font);
+	FcPatternDestroy(pat);
+	FcConfigDestroy(config);
+	FcFini();
+	return fontFile;
 #else
 	return FONT_PATH_X "LiberationSans-Regular.ttf";
 #endif
@@ -1259,7 +1325,8 @@ bool dr_download_pakset( const char *data_dir, bool portable )
 	 * Otherwise the waiting for installation will fail!
 	 * (no idea how this works on XP though)
 	 */
-	shExInfo.lpVerb = L"runas";
+//	shExInfo.lpVerb = L"runas"; we do not need afmin rights any more
+	shExInfo.lpVerb = L"open";
 	shExInfo.lpFile = L"download-paksets.exe";
 	shExInfo.lpParameters = wparam;
 	shExInfo.lpDirectory = wpath_to_program;

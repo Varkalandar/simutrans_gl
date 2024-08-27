@@ -54,6 +54,18 @@ cbuffer_t::cbuffer_t (const cbuffer_t& cbx)
 }
 
 
+cbuffer_t::cbuffer_t(const char *txt)
+{
+	capacity = (txt ? strlen(txt)+1 : 256);
+	buf = new char[capacity];
+	size = 0;
+	if (txt) {
+		size = capacity-1;
+		strcpy(buf, txt);
+	}
+}
+
+
 cbuffer_t& cbuffer_t::operator= (const cbuffer_t& cbx)
 {
 	if (  this != &cbx  )
@@ -121,6 +133,16 @@ void cbuffer_t::append_money(double money)
 	money_to_string(tmp, money, true);
 	append(tmp);
 }
+
+
+void cbuffer_t::rtrim()
+{
+	// remove all trailing whichspaces, i.e. ASCII <= 32
+	while (size > 0 && buf[size - 1] <= ' ') {
+		size--;
+	}
+}
+
 
 const char* cbuffer_t::get_str() const
 {

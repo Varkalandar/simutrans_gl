@@ -244,7 +244,7 @@ bool air_vehicle_t::calc_route(koord3d start, koord3d ziel, sint32 max_speed, ro
 	target_halt = halthandle_t(); // no block reserved
 
 	const weg_t *w=welt->lookup(start)->get_weg(air_wt);
-	bool start_in_the_air = (w==NULL);
+	bool start_in_the_air = (w==NULL)  ||  state==flying  ||  flying_height>0;
 	bool end_in_air=false;
 
 	search_for_stop = takeoff = touchdown = 0x7ffffffful;
@@ -549,7 +549,7 @@ bool air_vehicle_t::can_enter_tile(const grund_t *gr, sint32 &restart_speed, uin
 	restart_speed = -1;
 
 	assert(gr);
-	if(gr->get_top()>250) {
+	if(gr->obj_count()>250) {
 		// too many objects here
 		return false;
 	}
@@ -560,7 +560,7 @@ bool air_vehicle_t::can_enter_tile(const grund_t *gr, sint32 &restart_speed, uin
 	if(  route_index < takeoff  &&  route_index > 1  &&  takeoff<cnv->get_route()->get_count()-1  ) {
 		// check, if tile occupied by a plane on ground
 		if(  route_index > 1  ) {
-			for(  uint8 i = 1;  i<gr->get_top();  i++  ) {
+			for(  uint8 i = 1;  i<gr->obj_count();  i++  ) {
 				obj_t *obj = gr->obj_bei(i);
 				// we drive through non leading vehicels for now ...
 				if(  obj->get_typ() == obj_t::air_vehicle  &&  ((air_vehicle_t*)obj)->get_convoi()!=cnv  ) {
@@ -1053,10 +1053,7 @@ void air_vehicle_t::display_overlay(int xpos_org, int ypos_org) const
 }
 
 
-const char *air_vehicle_t::is_deletable(const player_t *player)
+const char *air_vehicle_t::get_removal_error(const player_t *player)
 {
-	if (is_on_ground()) {
-		return vehicle_t::is_deletable(player);
-	}
-	return NULL;
+	return is_on_ground() ? vehicle_t::get_removal_error(player) : NULL;
 }

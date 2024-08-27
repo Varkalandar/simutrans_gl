@@ -4,7 +4,7 @@
 /out
 /Debug
 /Release
-/build
+build
 /vcpkg*
 /config.*
 /configure
@@ -24,7 +24,6 @@
 /simutrans/text
 *.bdf
 *.zip
-*.vcxproj
 *.vcxproj.*
 /ipch/*
 *.*sdf
@@ -39,4 +38,6 @@ revision.h
 *.res
 /autom4te.cache
 *.exe
-.ccls-cache
+*.kdev4
+vcpkg_installed/
+UpgradeLog.htm

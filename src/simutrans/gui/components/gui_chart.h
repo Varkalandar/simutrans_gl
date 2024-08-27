@@ -12,10 +12,6 @@
 #include "gui_component.h"
 #include "../../tpl/slist_tpl.h"
 
-// CURVE TYPES
-#define STANDARD 0
-#define MONEY 1
-#define PERCENT 2
 
 /**
  * Draws a group of curves.
@@ -23,6 +19,9 @@
 class gui_chart_t : public gui_component_t
 {
 public:
+	// chart type
+	enum { STANDARD, MONEY, PERCENT };
+
 	/**
 	 * Set background color. -1 means no background
 	 */

@@ -35,9 +35,14 @@ void gui_fixedwidth_textarea_t::set_width(const scr_coord_val width)
 	if(  width>0  ) {
 		// height is simply reset to 0 as it requires recalculation anyway
 		size = scr_size(width,0);
+		set_visible(true);
 
 		scr_size newsize = calc_display_text(scr_coord::invalid, false);
 		gui_component_t::set_size( newsize );
+	}
+	else {
+		set_visible(false);
+		size = scr_size(0, 0);
 	}
 }
 
@@ -90,41 +95,48 @@ scr_size gui_fixedwidth_textarea_t::calc_display_text(const scr_coord offset, co
     
 	const char * text = buf->get_str();
 
-    //
-	// pass 1 (and not drawing): find out if we can shrink width
-    //
-    // In the height of the restricted area, the widest text line will
-    // determine the total width of the area. below that, the rest of
-    // the text will flow.
-    //
-	if(*text  &&  !draw  &&   reserved_area.w > 0   ) {
-		scr_coord_val new_lines = 0;
-		scr_coord_val x_size = 200; 
-
-		if ((text != NULL) && (*text != '\0')) {
-			const char* buf = text;
-			const char* next;
-
-			do {
-				next = strchr(buf, '\n');
-				const size_t len = next ? next - buf : 99999;
-				// we are in the image area
-				const int px_len = display_calc_proportional_string_len_width(buf, len, 0, FS_NORMAL);
-
-				if (px_len > x_size) {
-                    // dbg->message("", "line was too wide, expanding: %d -> %d, reserved %d, '%s'", x_size, px_len, reserved_area.w, buf);
-					x_size = px_len;
-				}
-
-				new_lines += LINESPACE;
-			} while (new_lines<reserved_area.h  &&  next != NULL && ((void)(buf = next + 1), *buf != 0));
+	if (!text || !*text) {
+		if (!draw) {
+			// never had text => too early to guess minimum size
+			return scr_size(max(new_width, reserved_area.w), reserved_area.h);
 		}
+		else {
+			// still nothing => then empty ...
+			return scr_size(max(1, reserved_area.w), reserved_area.h);
+		}
+	}
 
-        // dbg->message("", "new width= %d y_size=%d", new_width, x_size + reserved_area.w);
+	// pass 1 (and not drawing): find out if we can shrink width
+	if(!draw) {
+		scr_coord_val new_height = 0;
+		scr_coord_val x_size = 0;
+
+		// find the width needed for word next to the reserved text area
+		const char* next = text-1;
+		do {
+			const char* buf = next+1;
+			next = strchr(buf, '\n');
+
+			const size_t len = next ? next - buf : 999;
+			// we are in the image area
+			scr_coord_val px_len = display_calc_proportional_string_len_width(buf, len, 0, FS_NORMAL);
+			if (new_height <= reserved_area.h) {
+				px_len += reserved_area.w;
+			}
+			if (px_len > x_size) {
+				x_size = px_len;
+			}
+
+			new_height += LINESPACE;
+
+		} while (next  &&  next[1]); // ignore trailing \n
 
 		if (x_size < new_width) {
-			new_width = x_size + reserved_area.w;
+			// shrink if smaller and return new width
+			new_width = x_size;
+			return scr_size(new_width, max(new_height, reserved_area.h));
 		}
+		// else we need pass 2
 	}
 
     // 
@@ -183,3 +195,4 @@ void gui_fixedwidth_textarea_t::draw(scr_coord offset)
 {
 	size = calc_display_text(offset + get_pos(), true);
 }
+

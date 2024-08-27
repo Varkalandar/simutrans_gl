@@ -82,12 +82,12 @@ roadsign_t::roadsign_t(player_t *player, koord3d pos, ribi_t::ribi dir, const ro
 	set_owner( player );
 	if(  desc->is_private_way()  ) {
 		// init ownership of private ways
-		ticks_ns = ticks_ow = 0;
+		ticks_offset = ticks_ow = 0;
 		if(  player->get_player_nr() >= 8  ) {
 			ticks_ow = 1 << (player->get_player_nr()-8);
 		}
 		else {
-			ticks_ns = 1 << player->get_player_nr();
+			ticks_offset = 1 << player->get_player_nr();
 		}
 	}
 	/* if more than one state, we will switch direction and phase for traffic lights
@@ -178,8 +178,6 @@ void roadsign_t::show_info()
 
 void roadsign_t::info(cbuffer_t & buf) const
 {
-	obj_t::info( buf );
-
 	if(  !desc->is_private_way()  ) {
 		buf.append(translator::translate("Roadsign"));
 		buf.append("\n");
@@ -464,6 +462,17 @@ sync_result roadsign_t::sync_step(uint32 /*delta_t*/)
 		set_image( desc->get_image_id(image) );
 	}
 	else {
+		if (grund_t* gr = welt->lookup(get_pos())) {
+			ribi_t::ribi r = gr->get_weg_ribi_unmasked(road_wt);
+			if (  ribi_t::none==r  ||  ribi_t::is_single(r)  ||  (ribi_t::is_twoway(r)  &&  !ribi_t::is_straight(r))  ) {
+				// not at least a straight road => remove the lights
+				return SYNC_DELETE;
+			}
+		}
+		else {
+			return SYNC_DELETE;
+		}
+
 		// Must not overflow if ticks_ns+ticks_ow+ticks_yellow_ns+ticks_yellow_ow=256
         uint32 ticks = ((welt->get_ticks()>>10)+ticks_offset) % ((uint32)ticks_ns+(uint32)ticks_ow+(uint32)ticks_yellow_ns+(uint32)ticks_yellow_ow);
 
@@ -624,9 +633,13 @@ void roadsign_t::rdwr(loadsave_t *file)
 			}
 		}
 		// init ownership of private ways signs
-		if(  file->is_version_less(110, 7)  &&  desc  &&  desc->is_private_way()  ) {
+		if(  desc  &&  desc->is_private_way()  ) {
 			ticks_ns = 0xFD;
 			ticks_ow = 0xFF;
+			if(  file->is_version_less(124, 2)  ) {
+				// private sign mask now in ticks_ow and ticks_offset
+				ticks_ns = ticks_offset;
+			}
 		}
 	}
 }
@@ -724,6 +737,7 @@ void roadsign_t::fill_menu(tool_selector_t *tool_selector, waytype_t wtyp, sint1
 	if (!welt->get_scenario()->is_tool_allowed(welt->get_active_player(), TOOL_BUILD_ROADSIGN | GENERAL_TOOL, wtyp)) {
 		return;
 	}
+	bool enable = welt->get_scenario()->is_tool_enabled(welt->get_active_player(), TOOL_BUILD_ROADSIGN | GENERAL_TOOL, wtyp);
 
 	const uint16 time = welt->get_timeline_year_month();
 
@@ -737,6 +751,7 @@ void roadsign_t::fill_menu(tool_selector_t *tool_selector, waytype_t wtyp, sint1
 		}
 	}
 	for(roadsign_desc_t const* const i : matching) {
+		i->get_builder()->enabled = enable;
 		tool_selector->add_tool_selector(i->get_builder());
 	}
 }

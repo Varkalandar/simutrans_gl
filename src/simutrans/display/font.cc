@@ -175,6 +175,11 @@ bool font_t::load_from_freetype(const char *fname, int pixel_height)
 		glyphs[0x3000].advance = glyphs[0x3001].advance;
 		glyphs[0x3000].width = 0;
 		glyphs[0x3000].top = 0;
+    }
+    
+	// Hajo: how to get proper space width?
+	if (glyphs[' '].advance == 0xFF) {
+		glyphs[' '].advance = glyphs['n'].advance;
 	}
 
 	// Use only needed amount
@@ -225,7 +230,7 @@ bool font_t::load_from_freetype(const char *fname, int pixel_height)
 
 void font_t::print_debug() const
 {
-	dbg->debug("font_t::print_debug", "Loaded font %s with %i glyphs\n", get_fname(), get_num_glyphs());
+	dbg->debug("font_t::print_debug", "Loaded font %s with %i glyphs\n", get_fname(), get_glyph_count());
 	dbg->debug("font_t::print_debug", "height: %i, descent: %i", linespace, descent );
 }
 
@@ -244,13 +249,12 @@ bool font_t::load_from_file(const char *srcfilename, int size)
 	return ok;
 }
 
-
 uint8 font_t::get_glyph_advance(utf32 c) const
 {
-	if(  !is_loaded()  ) {
+	if(!is_loaded()) {
 		return 0;
 	}
-	else if(  c >= get_num_glyphs()  ||  glyphs[c].advance == 0xFF  ) {
+	else if(c >= get_glyph_count()  ||  glyphs[c].advance == 0xFF) {
 		return glyphs[0].advance;
 	}
 
@@ -258,12 +262,29 @@ uint8 font_t::get_glyph_advance(utf32 c) const
 }
 
 
+const font_t::glyph_t& font_t::get_glyph(utf32 c) const
+{
+	static glyph_t dummy;
+	
+    if (is_loaded()) {
+		if (c < get_glyph_count()  &&  glyphs[c].advance < 0xFF) {
+			return glyphs[c];
+		}
+		else {
+			return glyphs[0];
+		}
+	}
+    
+    return dummy;
+}
+
+
 uint8 font_t::get_glyph_width(utf32 c) const
 {
-	if(  !is_loaded()  ) {
+	if(!is_loaded()) {
 		return 0;
 	}
-	else if(  c >= get_num_glyphs()  ) {
+	else if(c >= get_glyph_count()) {
 		c = 0;
 	}
 
@@ -273,10 +294,10 @@ uint8 font_t::get_glyph_width(utf32 c) const
 
 uint8 font_t::get_glyph_height(utf32 c) const
 {
-	if(  !is_loaded()  ) {
+	if(!is_loaded()) {
 		return 0;
 	}
-	else if(  c >= get_num_glyphs()  ) {
+	else if(c >= get_glyph_count()) {
 		c = 0;
 	}
 
@@ -286,10 +307,10 @@ uint8 font_t::get_glyph_height(utf32 c) const
 
 uint8 font_t::get_glyph_top(uint32 c) const
 {
-	if(  !is_loaded()  ) {
+	if(!is_loaded()) {
 		return 0;
 	}
-	else if(  c >= get_num_glyphs()  ) {
+	else if(c >= get_glyph_count()) {
 		c = 0;
 	}
 
@@ -299,10 +320,10 @@ uint8 font_t::get_glyph_top(uint32 c) const
 
 const uint8 *font_t::get_glyph_bitmap(utf32 c) const
 {
-	if(  !is_loaded()  ) {
+	if(!is_loaded()) {
 		return NULL;
 	}
-	else if(  c >= get_num_glyphs()  ) {
+	else if(c >= get_glyph_count()) {
 		c = 0;
 	}
 

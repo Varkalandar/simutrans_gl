@@ -300,11 +300,7 @@ SOCKET network_open_address(char const* cp, char const*& err)
 				u_long block = 1;
 				if(  ioctlsocket(my_client_socket, FIONBIO, &block) != 0  )	{
 					my_client_socket = INVALID_SOCKET;
-					continue;
-				}
-#else
-				if (fcntl(my_client_socket, F_SETFL, fcntl(my_client_socket, F_GETFL, 0) | O_NONBLOCK) != 0) {
-					my_client_socket = INVALID_SOCKET;
+					DBG_MESSAGE("network_open_address()", "Failed to make unblocking socket.");
 					continue;
 				}
 #endif
@@ -349,18 +345,13 @@ SOCKET network_open_address(char const* cp, char const*& err)
 #ifdef WIN32
 					block = 0;
 					bool blocking_mode = ioctlsocket(my_client_socket, FIONBIO, &block) == 0;
-#else
-					// on linux clear O_NONBLOCK flag
-					const int flags = fcntl(my_client_socket, F_GETFL, 0);
-					bool blocking_mode = fcntl(my_client_socket, F_SETFL, flags & (~O_NONBLOCK)) == 0;
-#endif
 					if (!blocking_mode) {
 						DBG_MESSAGE("network_open_address()", "Could not reset to non-blocking.");
 						network_close_socket(my_client_socket);
 						continue;
 					}
-
-
+					// linux non-blocking sockets seems to not work at all!
+#endif
 				}
 
 				connected = true;
@@ -990,7 +981,12 @@ bool prepare_for_server( char *externalIPAddress, char *externalAltIPAddress, in
 		struct UPNPUrls urls;
 		struct IGDdatas data;
 
+#if MINIUPNPC_API_VERSION <= 17
 		UPNP_GetValidIGD( devlist, &urls, &data, lanaddr, sizeof(lanaddr) );
+#else
+		char wanaddr[64] = "uset";
+		UPNP_GetValidIGD(devlist, &urls, &data, lanaddr, sizeof(lanaddr), wanaddr, sizeof(lanaddr));
+#endif
 		// we must know our IP address first
 		if(  UPNP_GetExternalIPAddress(urls.controlURL, data.first.servicetype, externalIPAddress) ==  UPNPCOMMAND_SUCCESS  ) {
 			// this is our ID (at least the routes tells us this)
@@ -1049,7 +1045,13 @@ void remove_port_forwarding( int port )
 		struct UPNPUrls urls;
 		struct IGDdatas data;
 
-		UPNP_GetValidIGD( devlist, &urls, &data, lanaddr, sizeof(lanaddr) );
+#if MINIUPNPC_API_VERSION <= 17
+		UPNP_GetValidIGD(devlist, &urls, &data, lanaddr, sizeof(lanaddr));
+#else
+		char wanaddr[64] = "uset";
+		UPNP_GetValidIGD(devlist, &urls, &data, lanaddr, sizeof(lanaddr), wanaddr, sizeof(lanaddr));
+#endif
+
 		// we must know our IP address first
 		if(  UPNP_GetExternalIPAddress(urls.controlURL, data.first.servicetype, externalIPAddress) ==  UPNPCOMMAND_SUCCESS  ) {
 			// this is our ID (at least the routes tells us this)
@@ -1064,7 +1066,7 @@ void remove_port_forwarding( int port )
 #else
 // or we just get only our IP and hope we are not behind a router ...
 
-bool prepare_for_server(char* externalIPAddress, char* externalAltIPAddress, int port)
+bool prepare_for_server(char* externalIPAddress, char* externalAltIPAddress, int /*port*/)
 {
 	externalAltIPAddress[0] = 0;
 	// use the same routine as later the announce routine, otherwise update with dynamic IP fails

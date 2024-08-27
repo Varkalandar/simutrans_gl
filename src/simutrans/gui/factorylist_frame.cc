@@ -32,6 +32,7 @@ public:
 	playername_const_scroll_item_t( player_t *pl ) : gui_scrolled_list_t::const_text_scrollitem_t( pl->get_name(), color_idx_to_rgb(pl->get_player_color1()+env_t::gui_player_color_dark) ), player_nr(pl->get_player_nr()) { }
 };
 
+
 factorylist_frame_t::factorylist_frame_t() :
 	gui_frame_t( translator::translate("fl_title") ),
 	scrolly(gui_scrolled_list_t::windowskin, factorylist_stats_t::compare)
@@ -91,7 +92,6 @@ factorylist_frame_t::factorylist_frame_t() :
 	reset_min_windowsize();
 }
 
-
 /**
  * This method is called if an action is triggered
  */
@@ -111,7 +111,10 @@ bool factorylist_frame_t::action_triggered( gui_action_creator_t *comp,value_t v
 			fill_list();
 		}
 	}
-	else if( comp == &filter_by_owner ) {
+	else if (comp == &filter_by_owner) {
+		fill_list();
+	}
+	else if (comp == &name_filter_input) {
 		fill_list();
 	}
 	return true;
@@ -149,18 +152,7 @@ void factorylist_frame_t::fill_list()
 		}
 	}
 	scrolly.sort(0);
-	scrolly.set_size(scrolly.get_size());
-}
-
-
-void factorylist_frame_t::draw(scr_coord pos, scr_size size)
-{
-	if(  world()->get_fab_list().get_count() != old_factories_count  ||  strcmp(last_name_filter, name_filter)  ) {
-		strcpy(last_name_filter, name_filter);
-		fill_list();
-	}
-
-	gui_frame_t::draw(pos,size);
+	scrolly.set_size(scr_size(get_windowsize().w, scrolly.get_size().h));
 }
 
 

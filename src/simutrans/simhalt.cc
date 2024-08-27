@@ -100,39 +100,57 @@ void haltestelle_t::step_all()
 		}
 	}
 
-	static vector_tpl<halthandle_t>::iterator iter( alle_haltestellen.begin() );
+	static uint32 next_halt_to_step=0;
 	if (alle_haltestellen.empty()) {
+		next_halt_to_step = 0;
+		status_step = 0;
 		return;
 	}
-	const uint8 schedule_counter = welt->get_schedule_counter();
-	if (reconnect_counter != schedule_counter) {
-		// always start with reconnection, re-routing will happen after complete reconnection
-		status_step = RECONNECTING;
-		reconnect_counter = schedule_counter;
-		iter = alle_haltestellen.begin();
+
+	// reset served stops of all halts
+	for (auto halt : alle_haltestellen) {
+		for (int i = 0; i < goods_manager_t::get_max_catg_index(); i++) {
+			halt->halt_served_this_step[i].clear();
+		}
 	}
 
-	sint16 units_remaining = 128;
-	for (; iter != alle_haltestellen.end(); ++iter) {
-		if (units_remaining <= 0) return;
-
-		// iterate until the specified number of units were handled
-		if(  !(*iter)->step(status_step, units_remaining)  ) {
-			// too much rerouted => needs to continue at next round!
+	// currently no reconnection/rerouting in progress?
+	if (status_step == 0) {
+		// than maybe start a reconnection (we start only when finished to avoid an eternal reconenction loop without ever rerouting)
+		const uint8 schedule_counter = welt->get_schedule_counter();
+		if (reconnect_counter != schedule_counter) {
+			// start with reconnection, re-routing will happen after complete reconnection
+			status_step = RECONNECTING;
+			reconnect_counter = schedule_counter;
+		}
+		else {
+			// nothing to step if there is no rerouting/reconnection
 			return;
 		}
 	}
 
-	if (status_step == RECONNECTING) {
-		// reconnecting finished, compute connected components in one sweep
-		rebuild_connected_components();
-		// reroute in next call
-		status_step = REROUTING;
+	// we iterate in charges
+	sint16 units_remaining = 1024;
+	while (units_remaining > 0  &&  next_halt_to_step < alle_haltestellen.get_count()) {
+		halthandle_t halt = alle_haltestellen[next_halt_to_step++];
+		halt->step(status_step, units_remaining);
 	}
-	else if (status_step == REROUTING) {
-		status_step = 0;
+
+	// finished iteration, so we can proceed to next step
+	if(next_halt_to_step >= alle_haltestellen.get_count()) {
+		next_halt_to_step = 0;
+
+		if(  status_step == RECONNECTING  ) {
+			// reconnecting finished, compute connected components in one sweep
+			rebuild_connected_components();
+			// reroute in next call
+			status_step = REROUTING;
+		}
+		else if(  status_step == REROUTING  ) {
+			// rerouting finished
+			status_step = 0;
+		}
 	}
-	iter = alle_haltestellen.begin();
 }
 
 
@@ -580,14 +598,15 @@ void haltestelle_t::set_name(const char *new_name)
 {
 	grund_t *gr = welt->lookup(get_basis_pos3d());
 	if(gr) {
-		if(gr->get_flag(grund_t::has_text)) {
-			halthandle_t h = all_names.remove(gr->get_text());
+		if (gr->get_flag(grund_t::has_text)) {
+			const char* old_name = gr->get_text();
+			halthandle_t h = all_names.remove(old_name);
 			if(h!=self) {
 				DBG_MESSAGE("haltestelle_t::set_name()","removing name %s already used!",gr->get_text());
 			}
 		}
 		if(!gr->find<label_t>()) {
-			gr->set_text( new_name );
+			gr->set_text(new_name);
 			if(new_name  &&  all_names.set(gr->get_text(),self).is_bound() ) {
 				DBG_MESSAGE("haltestelle_t::set_name()","name %s already used!",new_name);
 			}
@@ -919,8 +938,8 @@ void haltestelle_t::request_loading( convoihandle_t cnv )
 	if(  last_loading_step != welt->get_steps()  ) {
 		last_loading_step = welt->get_steps();
 		// now iterate over all convois
-		for(  vector_tpl<convoihandle_t>::iterator i = loading_here.begin(); i != loading_here.end();  ) {
-			convoihandle_t const c = *i;
+		for (uint32 i = 0;  i<loading_here.get_count();  ) {
+			convoihandle_t const c = loading_here[i];
 			if (c.is_bound() && c->get_state() == convoi_t::LOADING) {
 				// now we load into convoi
 				c->hat_gehalten(self);
@@ -929,7 +948,7 @@ void haltestelle_t::request_loading( convoihandle_t cnv )
 				++i;
 			}
 			else {
-				i = loading_here.erase( i );
+				loading_here.remove_at(i);
 			}
 		}
 	}
@@ -972,25 +991,20 @@ bool haltestelle_t::has_available_network(const player_t* player, uint8 catg_ind
 
 
 
-
+// steps is currently only called during reconnectiong and reoruting
+// any change need to change step_all()
 bool haltestelle_t::step(uint8 what, sint16 &units_remaining)
 {
-	// reset served stops
-	for(  int i=0;  i < goods_manager_t::get_max_catg_index();  i++  ) {
-		halt_served_this_step[i].clear();
-	}
-
 	switch(what) {
 		case RECONNECTING:
 			units_remaining -= (rebuild_connections()/256)+2;
 			break;
 		case REROUTING:
-			if(  !reroute_goods(units_remaining)  ) {
-				return false;
-			}
+			reroute_goods(units_remaining);
 			recalc_status();
 			break;
 		default:
+			dbg->fatal("haltestelle_t::step()","Unknown step mode %i",what);
 			break;
 	}
 	return true;
@@ -1006,7 +1020,7 @@ void haltestelle_t::new_month()
 	if(  welt->get_active_player()==owner  &&  status_color==color_idx_to_rgb(COL_RED)  ) {
 		cbuffer_t buf;
 		buf.printf( translator::translate("%s\nis crowded."), get_name() );
-		welt->get_message()->add_message(buf, get_basis_pos3d(),message_t::full|message_t::expire_after_one_month_flag, color_idx_to_rgb(owner->get_player_color1()), IMG_EMPTY );
+		welt->get_message()->add_message(buf, get_basis_pos3d(),message_t::full|message_t::EXPIRE_AFTER_ONE_MONTH_MSG, color_idx_to_rgb(owner->get_player_color1()), IMG_EMPTY );
 		enables &= (PAX|POST|WARE);
 	}
 
@@ -1026,19 +1040,14 @@ void haltestelle_t::new_month()
 /**
  * Called after schedule calculation of all stations is finished
  * will distribute the goods to changed routes (if there are any)
- * returns true upon completion
  */
-bool haltestelle_t::reroute_goods(sint16 &units_remaining)
+void haltestelle_t::reroute_goods(sint16 &units_remaining)
 {
 	if(  last_catg_index==255  ) {
 		last_catg_index = 0;
 	}
 
 	for(  ; last_catg_index<goods_manager_t::get_max_catg_index(); last_catg_index++) {
-
-		if(  units_remaining<=0  ) {
-			return false;
-		}
 
 		if(cargo[last_catg_index]) {
 
@@ -1104,7 +1113,6 @@ bool haltestelle_t::reroute_goods(sint16 &units_remaining)
 	// likely the display must be updated after this
 	resort_freight_info = true;
 	last_catg_index = 255; // all categories are rerouted
-	return true; // all updated ...
 }
 
 
@@ -2486,7 +2494,7 @@ void haltestelle_t::change_owner( player_t *player )
 		}
 
 		// make way object public if any suitable
-		for(  uint8 i = 1;  i < gr->get_top();  i++  ) {
+		for(  uint8 i = 1;  i < gr->obj_count();  i++  ) {
 			if(  wayobj_t *const wo = obj_cast<wayobj_t>(gr->obj_bei(i))  ) {
 				player_t *woplayer = wo->get_owner();
 				if(  owner==woplayer  ) {
@@ -2526,6 +2534,14 @@ void haltestelle_t::merge_halt( halthandle_t halt_merged )
 	}
 
 	halt_merged->change_owner( owner );
+
+	// take the name from the larger halt
+	if (get_capacity(0) + get_capacity(1) + get_capacity(2) < halt_merged->get_capacity(0) + halt_merged->get_capacity(1) + halt_merged->get_capacity(2)) {
+		// the other halt was bigger => keep the old name
+		plainstring bigger_name = halt_merged->get_name();
+		halt_merged->set_name(" ");
+		set_name(bigger_name);
+	}
 
 	// add statistics
 	for(  int month=0;  month<MAX_MONTHS;  month++  ) {
@@ -3097,7 +3113,7 @@ void haltestelle_t::display_status(sint16 xpos, sint16 ypos)
 
 		// reset bar heights for new count
 		last_bar_height.clear();
-		last_bar_height.resize( count );
+		last_bar_height.reserve( count );
 		for(  sint16 i = 0;  i < count;  i++  ) {
 			last_bar_height.append(0);
 		}

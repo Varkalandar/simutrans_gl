@@ -12,7 +12,7 @@ Prop-Latin1.bdf
 #                             Language: de Deutsch                             #
 #                             Encoding: ISO-8859-1                             #
 #                             Font: Prop-Latin1.bdf                            #
-#                           Date Created: 25.02 2023                           #
+#                           Date Created: 20.07 2024                           #
 #                                                                              #
 ################################################################################
 #__________________________________button_text__________________________________
@@ -51,6 +51,8 @@ climate area percentage
 Größe Klimaregion
 Cost to remove:
 Abrißkosten:
+Continue Game
+Weiterspielen
 CROSSING_SOUND
 Bahnübergänge
 FACTORY_SOUND
@@ -101,6 +103,8 @@ hlf_btn_keine
 keine
 humidities
 Feuchtigkeitgrenzen
+Install
+Installiere Paks
 Lake
 See
 Lake height
@@ -123,6 +127,8 @@ rainfall
 Luftfeuchte
 Reselect closes tools
 Werkzeug abwählen durch erneute Auswahl
+Return to menu
+Neues Spiel
 Road toll
 Maut
 Scenario
@@ -134,7 +140,7 @@ Einfenstermodus
 Sound range:
 Reichweite:
 Start this as a server
-Diese Spiel als Server starten.
+Dieses Spiel als Server starten.
 temperature borders
 Temperaturgrenzen
 temperature-humidity based
@@ -157,10 +163,16 @@ rocky
 Alpines Klima
 temperate
 gemäßigtes Klima
+tropic
+Tropenklima
+tundra
+Tundra
 #__________________________________error_text___________________________________
 #__________________________________error_text___________________________________
  Loading scenario script failed
-Doppelhaus\n\nNach langer Diskussion über die Inneneinrichtung entschied sich Familie Brenz das Haus zu teilen. Vater und Sohn sind Herr über die linke Hälfte, Mutter und Tochter haben das Sagen in der rechten Hälfte.
+ Das Laden des Szenarioskripts ist fehlgeschlagen
+A building blocks the construction
+Ein Gebäude ist im Weg!
 Bridge blocked by way below or above.
 Die Höhe der Brücke über dem Weg darunter reicht nicht aus.
 Can't buy obsolete vehicles!
@@ -173,6 +185,8 @@ Cannot built depot here!
 Hier kann kein Depot gebaut werden!\n\nEin Depot kann nur auf einem Wegende\n\nmit dem passenden Typ gebaut werden.\n
 Cannot built this station/building\nin underground mode here.
 Dieses Gebäude / Haltestelle kann nicht\nim Untergrund gebaut werden.
+Cannot connect to the\ncenter of a double slope!
+Eine Brücke kann nicht in der Mitte eine steilen Kachel enden!\nEvt. kann man dies mit den Erdbewegungswerkezugen ändern.
 Cannot create generic line!\nSelect line type by\nusing filter tabs.
 Kann keine Linie vom Typ\n'Alle' erzeugen.\n\nWählen Sie einen\nanderen Linientyp aus
 Cannot create socket
@@ -189,6 +203,10 @@ Could not open file
 Konnte die Datei nicht öffnen.
 Das Feld gehoert\neinem anderen Spieler\n
 Das Grundstück\ngehört einem\nanderen Spieler!\n
+Depots cannot be built on runways!
+Ein Hangar kann nicht auf Landebahnen gebaut werden!
+Depots must be built on flat dead-end way tiles!
+Ein Depot kann nur auf einem flachen Wegenden gebaut werden!
 Der Besitzer erlaubt das Entfernen nicht
 Der Besitzer\nerlaubt das\nEntfernen nicht.\n
 Diese Zusammenstellung kann nicht fahren!\n
@@ -247,6 +265,8 @@ Server busy
 Server antwortet nicht!
 Server version too new
 Der Server benutzt eine neuere Programmversion.
+Ship depots must be built on water!
+Eine Werft muss auf dem Wasser gebaut werden!
 Show all revenue messages
 Alle Buchungen an Halten
 Show no revenue messages
@@ -441,6 +461,8 @@ Strg
 Ende
 [HOME]
 Pos1
+/month
+/Monat
 \nBauzeit bis
  bis 
 \nBauzeit von
@@ -456,7 +478,7 @@ Pos1
 \nis reserved by:
 \nreserviert von Zug: \n
 \nminimum speed:
-\nMindestgeschwin-\ndigkeit: 
+\nMindestgeschwindigkeit: 
 \nnot elektrified
 \nnicht elektrifiziert\n
 \nRibi (masked)
@@ -493,8 +515,12 @@ Keine Einfahrt!
 %s %s Betriebshof
 %s has entered a depot.
 %s\nhat das Depot erreicht.
+%s has left.
+%s hat den Server verlassen.
 %s land %d %s
 %s %d Land %s
+%s now known as %s.
+%s heißt jetzt %s.
 %s wasted\nyour money with a\nnew townhall\nwhen it reached\n%i inhabitants.
 Bürgermeister will\nnicht mehr frieren:\n%s\nbaut ein neues Rathaus.\n
 %s\nis crowded.
@@ -505,8 +531,16 @@ Bürgermeister will\nnicht mehr frieren:\n%s\nbaut ein neues Rathaus.\n
 %s is bankrott gegangen.\nDie Firma wurde aufgelöst,\nund alles verkauft.
 %u Client(s)\n
 %i Mitspieler\n
+%u days ago
+vor %u Tagen
+%u hours ago
+vor %u Stunden
+%u minutes ago
+vor %u Minuten
 %u Player (%u locked)\n
 %i Unternehmen (%i mit Passwort)\n
+%u years ago
+vor %u Jahren
 <clear schedule>
 <Fahrplan löschen>
 <create new line>
@@ -525,18 +559,36 @@ Bürgermeister will\nnicht mehr frieren:\n%s\nbaut ein neues Rathaus.\n
 <Fahrplan zu Linie>
 1 convoi
 1 Fahrzeugverband
+1 minute ago
+gerade eben
+1 year ago
+vor einem Jahr
 100 km/h = %i tiles/month
 100 km/h = %i Felder/Monat
 1LIGHT_CHOOSE
 Helligkeit:
+1th
+1.
 1WORLD_CHOOSE
 Einstellungen für neue Karte:
+21th
+21.
+22th
+22.
+23th
+23.
 2LIGHT_CHOOSE
 Farbigkeit:
+2th
+2.
 2WORLD_CHOOSE
 Kartennummer:
+31th
+31.
 3LIGHT_CHOOSE
 Scrollgeschwindigkeit:
+3th
+3.
 4LIGHT_CHOOSE
 Inverses Kartenscrolling
 5LIGHT_CHOOSE
@@ -607,6 +659,8 @@ allowed climates:\n
 Klimazonen\n
 Alters a schedule.
 Fahrplan verändern
+and arranged by
+und arrangiert von
 Angenommene Waren
 -- Waren, die hier angeliefert werden können
 anhaengen
@@ -639,6 +693,8 @@ Available
 Verfügbar
 Available at custom date
 Verfügbar nach
+based on Simutrans 84.22.1
+aufbauend auf Simutrans 84.22.1
 battery
 Akkumulator
 baum builder
@@ -655,6 +711,10 @@ Blockstrecke ist\nbelegt\n
 \nBlockstrecke ist\nbelegt!\n
 Boden
 Land
+Bonus Multiplier: %i%%
+Bonus-Multiplikator: %i%%
+Bonus Speed: %i km/h
+Bonus-Geschwindigkeit: %i km/h
 Bonusspeed: %i km/h
 Referenzgeschwindigkeit: %i km/h (für Speedbonus)
 Boost (%%)
@@ -739,6 +799,10 @@ cars.\nstate
  Fahrzeugen\n
 Cash
 Kontostand
+Category
+Warenart
+Change label style
+Stil der Orts- und Haltsnamen
 Change player
 Spielerwechsel
 Chart
@@ -753,6 +817,8 @@ chooses a random map
 Wählt eine Zufallskarte aus
 citicens
 Einwohner
+Cities can only be built on flat empty ground!
+Eine Stadt kann nur auf flachen Boden gegründet werden!
 City attraction
 Stadtattraktionen
 City industries
@@ -817,10 +883,14 @@ clf_chk_waren
 Waren filtern:
 clf_title
 Fahrzeugliste - Einstellungen
+Click to open the finance dialog.
+Anlicken öffnet die Finanzen des Spielers
 Climate
 Klimazone
 Climate Control
 Einstellungen Landschaft
+Climates
+Klimazonen
 closed
 Geschlossen
 Closes topmost line window when new line selected.
@@ -829,16 +899,22 @@ COLOR_CHOOSE\n
 Bitte wählen Sie\nzwei Kennfarbe\ndurch Anklicken:\n
 Company bankrupt
 Die Firma ist pleite!
+company_chat
+Firmeninterner Chat
 Company_msg
 Konkurrenz
 Comparing pak files ...
 Abgleich der pak-Dateien läuft ...
+Composed by
+Komponiert von
 Configure AI
 KI-Einstellungen
 Configure AI setttings
 Parameter für Computergegner anpassen
 Congratulation\nScenario was complete in\n%i months %i years.
 Glückwünsche\n\nDas Spielziel wurde in\n\n%i Monat(en) und %i Jahr(en)\n\nerreicht!\n
+Connect factory
+Industrieanlagen mit Verträgen verbinden
 Connected stops
 Haltestelle (mit dieser Fabrik verbunden):
 Connected with server
@@ -901,6 +977,8 @@ curiosity builder
 Sehenswürdigkeiten bauen
 curlist_title
 Touristenziele
+Current game
+Spiel in Hintergrund
 Currently playing:
 Gerade abgespielt wird:
 Customers live in:
@@ -917,8 +995,6 @@ December
 Dezember
 decrease underground view level
 Ebene durch Karte tiefer
-Default.sve
-Default
 Del Stop
 Löschen
 Delete Line
@@ -953,10 +1029,14 @@ Destination
 Zielort
 Destroying map ...
 Kartenspeicher wird freigegeben ...
+Developed by the Simutrans Team
+Entwickelts von dem Simutrans-Team
 Die Bruecke ist nicht frei!\n
 Die Brücke ist nicht frei!\n
 diesel
 Diesel
+direct_chat_to:
+Direktnachricht an
 directmail
 Wurfsendung
 Direkt erreichbare Haltestellen
@@ -1059,6 +1139,8 @@ Follow the convoi on the map.
 Dem Fahrzeug folgen.
 font size
 Zeichengröße
+For questions and support please visit:
+Fragen und Support gibt es via
 Forest
 Wälder
 Found new city
@@ -1071,6 +1153,8 @@ Free Capacity
 Freie Kapazität
 freeplay mode
 Ohne Bankrott
+Freight
+Fracht
 Friction:
 Momentaner Bremswert:
 fuel_cell
@@ -1097,6 +1181,8 @@ Generated
 Erzeugt
 Generation: %.0f MW
 Erzeugung: %.0f MW
+Gewinn
+Gewinn 
 Give the selected vehicle(s) an individual schedule
 Gib dem ausgewählten Fahrzeug einen eigenen Fahrplan.
 gl_btn_sort_catg
@@ -1139,6 +1225,8 @@ hide all building
 alle Gebäude minimieren
 hide city building
 Stadtgebäude minimieren
+Hide labels
+Ort- und Haltnamen nicht anzeigen
 hide objects under cursor
 Dinge im Umkreis um den Mauszeiger minimieren.
 hide station names
@@ -1227,8 +1315,6 @@ Ins Stop
 Einfügen
 Insert stop before the current stop
 Halt vor aktueller Fahrplanposition einfügen
-Install
-Installiere Paks
 Install graphics
 Grafikset hinzufügen
 Install paks
@@ -1259,6 +1345,8 @@ Jump to
 Zentrieren auf
 June
 Juni
+just now
+jetzt
 Kann Spielstand\nnicht laden.\n
 Kann Spielstand\nnicht laden!\n
 Kann Spielstand\nnicht speichern.\n
@@ -1295,6 +1383,8 @@ Last Year
 Vorjahr
 Leaving depot!
 Verlässt Depot!
+Left button drags minimap too
+Linke Maustaste bewegt auch Reliefkartenausschnitt
 legacy (large heights)
 Alter Modus (Doppelte Höhen)
 legacy (small heights)
@@ -1331,12 +1421,20 @@ Load mode:
 Höheberechnungä
 Load scenario
 Wähle Mission
+Load script tool
+Skript-Werkzeug laden
+Load Scripted AI
+Skript-KI laden
+Load settings from
+Einstellungen übernehmen von
 loaded
 geladen.
 loaded passenger/freight
 Sortiere Passagiere/Güter nach
 Loading (%i->%i%%)!
 Beladen (%i->%i%%)
+Loading (%i%%) departure %s!
+Lädt (%i%%), Abfahrt %s!
 Loading (%i%%)!
 Beladen (%i%%)
 Loading addon paks ...
@@ -1349,6 +1447,8 @@ Loading skins ...
 eigene Skins laden ...
 Loading time:
 Voll Beladen in: 
+Lock Control key
+Steurungstaste einrasten
 Lock game
 Karte gegen weiteren Spielerwechsel schützen.
 Lokomotive_tab
@@ -1509,12 +1609,16 @@ No stop here!
 Werkzeug wirkt nur auf Haltestellen!
 No suitable ground!
 Dieser Boden ist ungeeignet.
+No suitable townhall available for this climate!
+Kein Rathaus für dieses Klima vorhanden!
 No terminal station here!
 Ein Endhalt kann nur\nauf einem Endstück\ngebaut werden!\n
 no timeline
 alle Epochen
 no tree
 ohne Wälder
+No vehicles are available for purchase.
+Keine Fahrzeuge zum Kauf verfügbar.
 No. of Factories
 Fabriken und Geschäfte
 Noch kein Fahrzeug\nmit Fahrplan\nvorhanden\n
@@ -1533,6 +1637,8 @@ Not allowed!\nThe convoi's schedule can\nnot be changed currently.\nTry again la
 Nicht möglich!\nDer Fahrplan kann zur Zeit\nnicht geändert werden.\nVersuchen Sie es später\nnoch einmal!
 Not enough fields would remain.
 Um jeden Hof muss eine\nMindestanzahl von Feldern\nübrigbleiben.
+Not online
+Nicht Online
 now
 jetzt
 Now active as %s.\n
@@ -1621,6 +1727,8 @@ PaxDest
 Reiseziele
 Percent Electricity
 Anteil Kraftwerke (%%)
+personal_chat
+Direktnachrichten
 Planes are not available yet!
 Noch keine Fluggeräte erfunden!
 Plant tree
@@ -1657,6 +1765,8 @@ player 8
 Spieler 8
 player 9
 Spieler 9
+Player ranking
+Spielerrangfolge
 Please choose vehicles first\n
 Bitte wählen sie zuerst einen Fahrzeugverband aus.
 Postrate
@@ -1685,6 +1795,8 @@ Production/Boost
 Produktionskennzahlen
 promote to line
 Neue Linie
+public_chat
+Allgemeiner Chat
 q1
 Frühling
 q2
@@ -1753,6 +1865,8 @@ return ticket
 Rückfahrkarte
 Revenue
 Einnahmen
+Revenue/unit/100 tiles
+Gewinn pro 100 Kacheln
 Revert schedule
 Änderungen verwerfen
 Revision:
@@ -1775,6 +1889,8 @@ sack
  Sack
 sail
 Wind
+Save
+Spiel speichern
 Saving map ...
 Speichere Karte ...
 Scenario complete: %i%%
@@ -1801,6 +1917,8 @@ Schiff_tab
 Schiffe
 Schleppkahn_tab
 Schleppkähne
+Screen scale:
+Bildschirmskalierung:
 Screenshot
 Bildschirmfoto
 Scroll threshold
@@ -1823,6 +1941,8 @@ Select soundfont
 Wähle MIDI Soundfont
 Sell the selected vehicle(s)
 Verkaufe das ausgewählte Fahrzeug.
+Selling of the program is forbidden.
+Simutrans darf nicht verkauft werden.
 sended
 abgeschickt
 SEP_FRACTION
@@ -1933,6 +2053,8 @@ Sim:
 Simloops:
 Similar view as the main window
 Kippt die Ansicht analog zur großen Ansicht.
+Single toolbar only
+Nur eine Werkzeugleiste anzeigen
 Size (%d MB):
 Größe (%d MB):
 Size (area)
@@ -1957,6 +2079,8 @@ Soundfonts are located in the music directory.
 Soundfonts die sich im Musikverzeichnis befinden: 
 special freight
 Sonderfracht
+Speed Bonus
+Expressbonus
 Speedbonus\nroad %i km/h, rail %i km/h\nships %i km/h, planes %i km/h.
 Bonus in Prozent:\nMindestgeschwindigkeit Straße %i km/h,\nSchiene %i km/h, Wasser %i km/h, Luft %i km/h.\n
 Speedlimit
@@ -2031,6 +2155,8 @@ To attract more tourists\n%s built\na %s\nwith the aid of\n%i tax payers.
 Der Verkehr in %1$s nimmt zu:\n%3$i waren bei der Eröffnung\nvon %2$s.
 To heavy traffic\nresults in traffic jam.\n
 Verkehrsmeldung:\nStau seit Monaten.\n
+To: %s
+An: %s
 Toggle day/night view
 Tag/Nachtmodus umschalten
 Toggle vehicle tooltips
@@ -2040,7 +2166,7 @@ t
 Toolbar position:
 Position der Menüleiste:
 Total inhabitants:
-Gesamtbevölkerung:
+Gesamtbevölkerung: 
 Tourist attractions
 Touristenattraktionen
 Tourists
@@ -2081,6 +2207,8 @@ Translation
 Übersetzung
 transparencies
 Sichtbarkeit
+transparent background
+transparenter Hintergrund
 transparent station coverage
 transparente Stationsabdeckung
 Transported
@@ -2089,20 +2217,18 @@ Trees disabled!
 Bäume ausgeschalten!
 TrolleyBus_tab
 Trolleybusse
-tropic
-Tropenklima
 Truck
 Straße
 tt_Other
 Sonstige
-tundra
-Tundra
 Tunnel muss an\neinfachem\nHang beginnen!\n
 Der Tunnel muss an\neinem Hang beginnen!\n
 Tunnel must start on single way!
 Der Tunnel muss an\n einem Gleis oder\ einer Straße beginnen
 Tunnelboden
 Tunnel
+under the Artistic License
+OS unter der Artisitc License
 underground mode
 Untergrundansicht
 UNDO failed!
@@ -2133,6 +2259,8 @@ Vehicle %s can't find a route!
 %s\nfindet keinen Weg\nmehr!
 Vehicle %s is stucked!
 %s\nsteckt fest!\n
+Vehicle count:
+Anzahl Fahrzeuge:
 Vehicle details
 Fahrzeugdetails
 Vehicle Name
@@ -2193,6 +2321,12 @@ Weight
 Gewicht
 Weight:
 Gewicht:
+Weight/unit
+Gewicht
+Welcome to Simutrans
+Willkommen zu Simutrans
+Welcome, %s!
+Willkommen %s!
 west
 West
 Wind direction
@@ -2259,12 +2393,16 @@ Fahrzeuge der Linie %s wurden ausgemustert
 #_________________________________tooltip_text__________________________________
 Add convois with similar schedule to this line.
 Finde Fahrzeuge mit gleichen Zielen und füge sie hinzu.
+Attach current coordinate to the comment
+Hefte die aktuelle Position auf der Karte an die Nachtricht an.
 Enter intervall in days, hours, minutes
 Zeitspanne in Tagen, Stunden und Minuten eingeben.
 Mirrors order of stops
 Reihenfolge der Halte invertieren.
 Revert to original schedule
 Alle Änderung des Fahrplans zurücknehmen.
+Tutorial not available for this pakset. Please try loading Pak128.
+Es gibt kein Tutorial für dieses Pakset. Pak, Pak128 und pak192 und vielleicht schon mehr haben ein Tutorial.
 #_______________________________unnecessary_text________________________________
 #_______________________________unnecessary_text________________________________
 &0_CITY_SYLL

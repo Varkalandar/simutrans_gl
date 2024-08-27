@@ -55,7 +55,7 @@ bool groundobj_t::plant_groundobj_on_coordinate(koord pos, const groundobj_desc_
 	grund_t *gr = welt->lookup_kartenboden(pos);
 	if(  gr  ) {
 		if(  gr->ist_natur()  &&  (!check_climate  ||  desc->is_allowed_climate( welt->get_climate(pos) ))  ) {
-			if(  gr->get_top() > 0  ) {
+			if(  gr->obj_count() > 0  ) {
 				switch(gr->obj_bei(0)->get_typ()) {
 					case obj_t::cloud:
 					case obj_t::air_vehicle:
@@ -86,7 +86,7 @@ bool groundobj_t::plant_groundobj_on_coordinate(koord pos, const groundobj_desc_
 
 bool groundobj_t::successfully_loaded()
 {
-	groundobj_typen.resize(desc_table.get_count());
+	groundobj_typen.reserve(desc_table.get_count());
 	for(auto const& i : desc_table) {
 		groundobj_typen.insert_ordered(i.value, compare_groundobj_desc);
 	}
@@ -271,7 +271,7 @@ void groundobj_t::show_info()
 
 void groundobj_t::info(cbuffer_t & buf) const
 {
-	obj_t::info(buf);
+	translator::get_obj_info(buf, get_desc()->get_name());
 
 	buf.append(translator::translate(get_desc()->get_name()));
 	buf.append("\n");

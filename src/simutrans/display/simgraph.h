@@ -21,7 +21,8 @@ class gl_texture_t;
 
 #if COLOUR_DEPTH != 0
 
-extern int default_font_linespace;
+extern scr_coord_val default_font_ascent;
+extern scr_coord_val default_font_linespace;
 
 #  define LINESPACE  (default_font_linespace)
 #else
@@ -33,7 +34,7 @@ extern int default_font_linespace;
 
 
 struct clip_dimension {
-	scr_coord_val x, xx, w, y, yy, h;
+    scr_coord_val x, xx, w, y, yy, h;
 };
 
 // helper macros
@@ -217,7 +218,6 @@ void display_ddd_box_clip_rgb(scr_coord_val x1, scr_coord_val y1, scr_coord_val 
 
 // #ifdef MULTI_THREAD
 int display_glyph(scr_coord_val x, scr_coord_val y, utf32 c, const font_t * font);
-
 
 // line drawing primitives
 void display_direct_line_rgb(const scr_coord_val x, const scr_coord_val y, const scr_coord_val xx, const scr_coord_val yy, rgba_t color);

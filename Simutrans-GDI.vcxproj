@@ -44,6 +44,9 @@
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <EnableASAN>true</EnableASAN>
   </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <EnableASAN>true</EnableASAN>
+  </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="Shared">
     <Import Project="Simutrans-Main.vcxitems" Label="Shared" />
@@ -83,8 +86,24 @@
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <VcpkgUseStatic>true</VcpkgUseStatic>
+    <VcpkgHostTriplet>
+    </VcpkgHostTriplet>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Stable|Win32'">
+    <VcpkgUseStatic>true</VcpkgUseStatic>
+    <VcpkgHostTriplet>
+    </VcpkgHostTriplet>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <VcpkgHostTriplet>x64-windows-static</VcpkgHostTriplet>
+    <VcpkgUseStatic>true</VcpkgUseStatic>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <VcpkgHostTriplet>x64-windows-static</VcpkgHostTriplet>
+    <VcpkgUseStatic>true</VcpkgUseStatic>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Stable|x64'">
+    <VcpkgHostTriplet>x64-windows-static</VcpkgHostTriplet>
     <VcpkgUseStatic>true</VcpkgUseStatic>
   </PropertyGroup>
   <ItemDefinitionGroup>
@@ -111,7 +130,7 @@
     <ClCompile>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>USE_ZSTD;USE_UPNP;USE_FREETYPE;COLOUR_DEPTH=16;MULTI_THREAD=1;MSG_LEVEL=3;DEBUG=3;REVISION_FROM_FILE;NOMINMAX;WIN32_LEAN_AND_MEAN;WINVER=_WIN32_WINNT_WINXP</PreprocessorDefinitions>
+      <PreprocessorDefinitions>USE_ZSTD;USE_UPNP;COLOUR_DEPTH=16;MULTI_THREAD=1;MSG_LEVEL=3;DEBUG=3;REVISION_FROM_FILE;NOMINMAX;WIN32_LEAN_AND_MEAN;WINVER=_WIN32_WINNT_WINXP</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
     </ClCompile>
@@ -129,12 +148,12 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
     <ClCompile>
-      <PreprocessorDefinitions>USE_ZSTD;USE_UPNP;USE_FREETYPE;COLOUR_DEPTH=16;MULTI_THREAD=1;MSG_LEVEL=3;NDEBUG;REVISION_FROM_FILE;NOMINMAX;WIN32_LEAN_AND_MEAN;WINVER=_WIN32_WINNT_WINXP</PreprocessorDefinitions>
+      <PreprocessorDefinitions>USE_ZSTD;USE_UPNP;COLOUR_DEPTH=16;MULTI_THREAD=1;MSG_LEVEL=3;NDEBUG;REVISION_FROM_FILE;NOMINMAX;WIN32_LEAN_AND_MEAN;WINVER=_WIN32_WINNT_WINXP</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Stable'">
     <ClCompile>
-      <PreprocessorDefinitions>USE_ZSTD;USE_UPNP;USE_FREETYPE;COLOUR_DEPTH=16;MULTI_THREAD=1;MSG_LEVEL=3;NDEBUG;NOMINMAX;WIN32_LEAN_AND_MEAN;WINVER=_WIN32_WINNT_WINXP</PreprocessorDefinitions>
+      <PreprocessorDefinitions>USE_ZSTD;USE_UPNP;COLOUR_DEPTH=16;MULTI_THREAD=1;MSG_LEVEL=3;NDEBUG;NOMINMAX;WIN32_LEAN_AND_MEAN;WINVER=_WIN32_WINNT_WINXP</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='Release'">
@@ -152,7 +171,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='Stable'">
     <ClCompile>
-      <DebugInformationFormat />
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>

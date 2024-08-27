@@ -6,10 +6,12 @@
 # Define variables here to force them as simple flavor. -> Faster parallel builds.
 FLAGS :=
 CFLAGS ?=
-LDFLAGS ?=
+LDFLAGS ?= -v
 LIBS :=
 SOURCES :=
 STATIC := 0
+
+USE_FREETYPE = 1
 
 DYNAMICSTART =
 DYNAMICEND =
@@ -366,6 +368,7 @@ SOURCES += src/simutrans/gui/banner.cc
 SOURCES += src/simutrans/gui/base_info.cc
 SOURCES += src/simutrans/gui/baum_edit.cc
 SOURCES += src/simutrans/gui/city_info.cc
+SOURCES += src/simutrans/gui/chat_frame.cc
 SOURCES += src/simutrans/gui/citybuilding_edit.cc
 SOURCES += src/simutrans/gui/citylist_frame.cc
 SOURCES += src/simutrans/gui/citylist_stats.cc
@@ -455,6 +458,7 @@ SOURCES += src/simutrans/gui/pakinstaller.cc
 SOURCES += src/simutrans/gui/pakselector.cc
 SOURCES += src/simutrans/gui/password_frame.cc
 SOURCES += src/simutrans/gui/player_frame.cc
+SOURCES += src/simutrans/gui/player_ranking_frame.cc
 SOURCES += src/simutrans/gui/privatesign_info.cc
 SOURCES += src/simutrans/gui/savegame_frame.cc
 SOURCES += src/simutrans/gui/scenario_frame.cc
@@ -561,6 +565,7 @@ SOURCES += src/simutrans/script/export_objs.cc
 SOURCES += src/simutrans/script/script.cc
 SOURCES += src/simutrans/script/script_loader.cc
 SOURCES += src/simutrans/script/script_tool_manager.cc
+SOURCES += src/simutrans/simachievements.cc
 SOURCES += src/simutrans/simconvoi.cc
 SOURCES += src/simutrans/simdebug.cc
 SOURCES += src/simutrans/simevent.cc

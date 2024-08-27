@@ -8,6 +8,8 @@
 #include "message_option.h"
 #include "message_stats.h"
 
+#include "chat_frame.h"
+
 #include "../world/simworld.h"
 #include "../tool/simmenu.h"
 #include "../simmesg.h"
@@ -25,7 +27,7 @@
 
 static sint32 categories[MAX_MESG_TABS] =
 {
-	(1 << message_t::chat),
+	(1 << message_t::chat), // obsolete!!
 	(1 << message_t::scenario),
 	(1 << message_t::problems),
 	(1 << message_t::traffic_jams) | (1 << message_t::warnings),
@@ -37,7 +39,7 @@ static sint32 categories[MAX_MESG_TABS] =
 
 static char const* const tab_strings[]=
 {
-	"Chat_msg",
+	"Chat_msg", // obsolete!!
 	"Scenario_msg",
 	"Problems_msg",
 	"Warnings_msg",
@@ -53,38 +55,29 @@ message_frame_t::message_frame_t() :
 	gui_frame_t( translator::translate("Mailbox") ),
 	scrolly(gui_scrolled_list_t::windowskin, message_stats_t::compare)
 {
-	ibuf[0] = 0;
 	last_count = 0;
 	message_type = -1;
 
 	set_table_layout(1,0);
 
-	add_table(4,0);
+	add_table(0,1);
 	{
-		option_bt.init(button_t::roundbox, translator::translate("Optionen"));
-		option_bt.add_listener(this);
-		add_component(&option_bt);
+		opaque_bt.init(button_t::roundbox, translator::translate("Optionen"));
+		opaque_bt.add_listener(this);
+		add_component(&opaque_bt);
 
 		copy_bt.init(button_t::roundbox, translator::translate("Copy to clipboard"));
 		copy_bt.add_listener(this);
 		add_component(&copy_bt);
 
-		if(  env_t::networkmode  && env_t::chat_window_transparency!=100  ) {
-			opaque_bt.init(button_t::square_state, translator::translate("transparent background"));
-			opaque_bt.add_listener(this);
-			add_component(&opaque_bt);
+		if (env_t::networkmode || !welt->get_chat_message()->get_list().empty()) {
+			open_chat_bt.init(button_t::roundbox, translator::translate("Chat"));
+			open_chat_bt.set_size(D_BUTTON_SIZE);
+			open_chat_bt.add_listener(this);
+			add_component(&open_chat_bt);
+		}
 
-			new_component<gui_fill_t>();
-		}
-		else {
-			new_component_span<gui_fill_t>(2);
-		}
-		if(  env_t::networkmode  ) {
-			input.set_text(ibuf, lengthof(ibuf) );
-			input.add_listener(this);
-			add_component(&input,4);
-			set_focus( &input );
-		}
+		new_component<gui_fill_t>();
 	}
 	end_table();
 
@@ -92,10 +85,6 @@ message_frame_t::message_frame_t() :
 	tabs.add_tab( &scrolly, translator::translate("All") );
 	tab_categories.append( -1 );
 
-	if (env_t::networkmode) {
-		tabs.add_tab( &scrolly, translator::translate(tab_strings[0]) );
-		tab_categories.append( categories[0] );
-	}
 	if (welt->get_scenario()->is_scripted()) {
 		tabs.add_tab( &scrolly, translator::translate(tab_strings[1]) );
 		tab_categories.append( categories[1] );
@@ -159,8 +148,8 @@ void message_frame_t::filter_list(sint32 type)
 
 bool message_frame_t::action_triggered( gui_action_creator_t *comp, value_t v )
 {
-	if(  comp==&option_bt  ) {
-		create_win({ 320, 200 }, new message_option_t(), w_info, magic_message_options );
+	if(  comp==&opaque_bt  ) {
+		create_win({ 320, 200 }, new message_option_t(), w_info, magic_message_options, false );
 	}
 	else if(  comp==&opaque_bt  ) {
 		if(  !opaque_bt.pressed  &&  env_t::chat_window_transparency!=100  ) {
@@ -173,6 +162,9 @@ bool message_frame_t::action_triggered( gui_action_creator_t *comp, value_t v )
 			scrolly.set_skin_type(gui_scrolled_list_t::transparent);
 		}
 		opaque_bt.pressed ^= 1;
+    }
+	else if(  comp==&open_chat_bt  ) {
+		create_win({ 0, 200 }, new chat_frame_t(), w_info, magic_chatframe, false);
 	}
 	else if(  comp==&copy_bt  ) {
 		cbuffer_t clipboard;
@@ -200,14 +192,6 @@ bool message_frame_t::action_triggered( gui_action_creator_t *comp, value_t v )
 		if( clipboard.len() > 0 ) {
 			dr_copy( clipboard, clipboard.len() );
 		}
-
-	}
-	else if(  comp==&input  &&  ibuf[0]!=0  ) {
-		// Send chat message to server for distribution
-		nwc_chat_t* nwchat = new nwc_chat_t( ibuf, welt->get_active_player()->get_player_nr(), env_t::nickname.c_str() );
-		network_send_server( nwchat );
-
-		ibuf[0] = 0;
 	}
 	else if(  comp==&tabs  ) {
 		// filter messages by type where necessary
@@ -234,7 +218,11 @@ void message_frame_t::rdwr(loadsave_t *file)
 
 	scrolly.rdwr(file);
 	tabs.rdwr(file);
-	file->rdwr_str( ibuf, lengthof(ibuf) );
+
+	if (file->is_version_less(124, 1)) {
+		char dummy[256] = { 0 };
+		file->rdwr_str(dummy, lengthof(dummy));
+	}
 
 	if(  file->is_loading()  ) {
 		fill_list();

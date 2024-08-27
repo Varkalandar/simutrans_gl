@@ -246,7 +246,6 @@ clipping_info_t clips;
 
 #define CR clips CLIP_NUM_INDEX
 
-
 #define RGBMAPSIZE (0x8000+LIGHT_COUNT+MAX_PLAYER_COUNT+1024 /* 343 transparent */)
 
 // RGB 555/565 specific functions
@@ -2712,37 +2711,7 @@ PIXVAL display_blend_colors_alpha32(PIXVAL background, PIXVAL foreground, int al
 // Blends two colors
 PIXVAL display_blend_colors(PIXVAL background, PIXVAL foreground, int percent_blend)
 {
-	const PIXVAL alpha = (percent_blend*64)/100;
-
-	switch( alpha ) {
-		case 0: // nothing to do ...
-			return background;
-		case 16:
-			return colors_blend25(background, foreground);
-
-		case 32:
-			return colors_blend50(background, foreground);
-
-		case 48:
-			return colors_blend25(background, foreground);
-
-		case 64:
-			return foreground;
-
-		default:
-			// any percentage blending: SLOW!
-			const PIXVAL r_src = red(background);
-			const PIXVAL g_src = green(background);
-			const PIXVAL b_src = blue(background);
-			const PIXVAL r_dest = red(foreground);
-			const PIXVAL g_dest = green(foreground);
-			const PIXVAL b_dest = blue(foreground);
-			const PIXVAL r = (r_dest * alpha + r_src * (64 - alpha) + 32) >> 6;
-			const PIXVAL g = (g_dest * alpha + g_src * (64 - alpha) + 32) >> 6;
-			const PIXVAL b = (b_dest * alpha + b_src * (64 - alpha) + 32) >> 6;
-			return rgb(r, g, b);
-	}
-// ??	return display_blend_colors_alpha32(background, foreground, (percent_blend*32)/100);
+	return display_blend_colors_alpha32(background, foreground, (percent_blend*32)/100);
 }
 
 
@@ -3425,6 +3394,16 @@ void display_fillbox_wh_clip_rgb(scr_coord_val xp, scr_coord_val yp, scr_coord_v
 }
 
 
+void display_filled_roundbox_clip(scr_coord_val xp, scr_coord_val yp, scr_coord_val w, scr_coord_val h, PIXVAL color, bool dirty)
+{
+	display_fillbox_wh_clip_rgb(xp+2,   yp, w-4, h, color, dirty);
+	display_fillbox_wh_clip_rgb(xp,     yp+2, 1, h-4, color, dirty);
+	display_fillbox_wh_clip_rgb(xp+1,   yp+1, 1, h-2, color, dirty);
+	display_fillbox_wh_clip_rgb(xp+w-1, yp+2, 1, h-4, color, dirty);
+	display_fillbox_wh_clip_rgb(xp+w-2, yp+1, 1, h-2, color, dirty);
+}
+
+
 /**
  * Draw vertical line
  */
@@ -3484,7 +3463,6 @@ void display_array_wh(scr_coord_val xp, scr_coord_val yp, scr_coord_val w, scr_c
 
 
 // --------------------------------- text rendering stuff ------------------------------
-
 
 int display_glyph(scr_coord_val x, scr_coord_val y, utf32 c, control_alignment_t flags, PIXVAL default_color, const font_t * font  CLIP_NUM_DEF)
 {

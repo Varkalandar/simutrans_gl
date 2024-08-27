@@ -101,6 +101,9 @@ private:
 	enum type type;
 
 	bool maximize; // true if to expand to bottom right corner
+	bool sliders_dirty; // true if sliders need attention during next redraw
+
+	scr_coord_val c_old_width;
 
 	item_compare_func compare;
 
@@ -114,14 +117,18 @@ protected:
 	void reset_container_size();
 
 	/// deletes invalid elements from list
-	void cleanup_elements();
+	void cleanup_elements(bool resize=true);
 
 public:
+	scr_size get_container_min_size() const { return container.get_min_size(); }
+
 	virtual void set_skin_type(enum type t) { this->type = t; }
 
 	void set_cmp(item_compare_func cmp) { compare = cmp; }
 
-	gui_scrolled_list_t(enum type, item_compare_func cmp = 0);
+	void set_checkered(bool c) { container.set_checkered(c); }
+
+	gui_scrolled_list_t(enum type t= windowskin, item_compare_func cmp = 0);
 
 	~gui_scrolled_list_t() { clear_elements(); }
 
@@ -132,7 +139,7 @@ public:
 	vector_tpl<sint32> get_selections() const;
 
 	scrollitem_t* get_selected_item() const;
-	sint32 get_count() const { return item_list.get_count(); }
+	uint32 get_count() const { return item_list.get_count(); }
 
 	void enable_multiple_selection() { multiple_selection = true; }
 
@@ -165,6 +172,8 @@ public:
 
 	bool is_marginless() const OVERRIDE { return maximize; }
 	void set_maximize(bool b) { maximize = b; }
+
+	void show_bottom();
 };
 
 #endif

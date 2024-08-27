@@ -274,6 +274,10 @@ void player_t::set_player_color(uint8 col1, uint8 col2)
 	player_color_1 = col1;
 	player_color_2 = col2;
 	display_set_player_color_scheme( player_nr, col1, col2 );
+	// update player window
+	if (ki_kontroll_t* frame = dynamic_cast<ki_kontroll_t*>(win_get_magic(magic_ki_kontroll_t))) {
+		frame->update_data();
+	}
 }
 
 
@@ -301,7 +305,7 @@ bool player_t::new_month()
 			if(  welt->get_active_player_nr()==player_nr  &&  !env_t::networkmode  ) {
 				if(  finance->get_netwealth() < 0 ) {
 					destroy_all_win(true);
-					create_win({ display_get_width()/2-128, 40 }, new news_img("Bankrott:\n\nDu bist bankrott.\n"), w_info, magic_none);
+					create_win({ display_get_width()/2-128, 40 }, new news_img("Bankrott:\n\nDu bist bankrott.\n"), w_info, magic_none, false);
 					ticker::add_msg(translator::translate("Bankrott:\n\nDu bist bankrott.\n"), koord3d::invalid, color_idx_to_rgb(player_color_1 + 1));
 					welt->stop(false);
 				}
@@ -530,7 +534,7 @@ void player_t::ai_bankrupt()
 			for (size_t b = plan->get_boden_count(); b-- != 0;) {
 				grund_t *gr = plan->get_boden_bei(b);
 				// remove tunnel and bridges first
-				if(  gr->get_top()>0  &&  gr->obj_bei(0)->get_owner()==this   &&  (gr->ist_bruecke()  ||  gr->ist_tunnel())  ) {
+				if(  gr->obj_count()>0  &&  gr->obj_bei(0)->get_owner()==this   &&  (gr->ist_bruecke()  ||  gr->ist_tunnel())  ) {
 					koord3d pos = gr->get_pos();
 
 					waytype_t wt = gr->hat_wege() ? gr->get_weg_nr(0)->get_waytype() : powerline_wt;
@@ -547,7 +551,7 @@ void player_t::ai_bankrupt()
 						continue;
 					}
 				}
-				for (uint8 i = gr->get_top(); i-- != 0;) {
+				for (uint8 i = gr->obj_count(); i-- != 0;) {
 					obj_t *obj = gr->obj_bei(i);
 					if(obj->get_owner()==this) {
 						sint32 costs = 0;
@@ -626,7 +630,7 @@ void player_t::ai_bankrupt()
 					}
 				}
 				// remove empty tiles (elevated ways)
-				if (!gr->ist_karten_boden()  &&  gr->get_top()==0) {
+				if (!gr->ist_karten_boden()  &&  gr->obj_count()==0) {
 					plan->boden_entfernen(gr);
 				}
 			}
@@ -820,7 +824,7 @@ void player_t::init_undo( waytype_t wtype, unsigned short max )
 	// allow for UNDO for real player
 DBG_MESSAGE("player_t::int_undo()","undo tiles %i",max);
 	last_built.clear();
-	last_built.resize(max+1);
+	last_built.reserve(max+1);
 	if(max>0) {
 		undo_type = wtype;
 	}
@@ -830,7 +834,7 @@ DBG_MESSAGE("player_t::int_undo()","undo tiles %i",max);
 
 void player_t::add_undo(koord3d k)
 {
-	if(last_built.get_size()>0) {
+	if(last_built.get_capacity()>0) {
 //DBG_DEBUG("player_t::add_undo()","tile at (%i,%i)",k.x,k.y);
 		last_built.append(k);
 	}
@@ -853,7 +857,7 @@ sint64 player_t::undo()
 		}
 		// we allow ways, unimportant stuff but no vehicles, signals, wayobjs etc
 		if(gr->obj_count()>0) {
-			for( unsigned i=0;  i<gr->get_top();  i++  ) {
+			for( unsigned i=0;  i<gr->obj_count();  i++  ) {
 				switch(gr->obj_bei(i)->get_typ()) {
 					// these are allowed
 					case obj_t::zeiger:

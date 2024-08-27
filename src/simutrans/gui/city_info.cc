@@ -8,6 +8,7 @@
 #include "../tool/simmenu.h"
 #include "../world/simworld.h"
 #include "../simcolor.h"
+#include "../dataobj/environment.h"
 #include "../dataobj/translator.h"
 #include "../display/viewport.h"
 #include "../utils/cbuffer.h"
@@ -180,7 +181,8 @@ void city_info_t::init()
 	set_table_layout(1,0);
 
 	// add city name input field
-	name_input.add_listener( this );
+	name_input.set_notify_all_changes_delay(500);	// since each letter triggers a tool
+	name_input.add_listener(this);
 	add_component(&name_input);
 
 	add_table(2,0)->set_alignment(ALIGN_TOP);
@@ -214,9 +216,11 @@ void city_info_t::init()
 	// .. put the same buttons in both containers
 	button_t* buttons[MAX_CITY_HISTORY-1];
 	// add city charts
+
 	// year chart
-	container_year.set_table_layout(1,0);
-	container_year.add_component(&chart);
+	container_year.set_table_layout(D_BUTTONS_PER_ROW,0);
+	container_year.set_force_equal_columns(true);
+	container_year.add_component(&chart, D_BUTTONS_PER_ROW);
 	chart.set_min_size(scr_size(0 ,8*LINESPACE));
 	chart.set_dimension(MAX_CITY_HISTORY_YEARS, 10000);
 	chart.set_seed(welt->get_last_year());
@@ -226,20 +230,19 @@ void city_info_t::init()
 	//   skip electricity
 	for(  uint32 i = 0;  i<MAX_CITY_HISTORY-1;  i++  ) {
 		sint16 curve = chart.add_curve( color_idx_to_rgb(hist_type_color[i]), city->get_city_history_year(),
-			MAX_CITY_HISTORY, i, 12, STANDARD, (city->stadtinfo_options & (1<<i))!=0, true, 0 );
+			MAX_CITY_HISTORY, i, 12, gui_chart_t::STANDARD, (city->stadtinfo_options & (1<<i))!=0, true, 0 );
 		// add button
 		buttons[i] = container_year.new_component<button_t>();
 		buttons[i]->init(button_t::box_state_automatic | button_t::flexible, hist_type[i]);
 		buttons[i]->background_color = color_idx_to_rgb(hist_type_color[i]);
 		buttons[i]->pressed = (city->stadtinfo_options & (1<<i))!=0;
-
 		button_to_chart.append(buttons[i], &chart, curve);
 	}
-	container_year.end_table();
 
 	// month chart
-	container_month.set_table_layout(1,0);
-	container_month.add_component(&mchart);
+	container_month.set_table_layout(D_BUTTONS_PER_ROW, 0);
+	container_month.set_force_equal_columns(true);
+	container_month.add_component(&mchart, D_BUTTONS_PER_ROW);
 	mchart.set_pos(scr_coord(D_MARGIN_LEFT,1));
 	mchart.set_min_size(scr_size(0 ,8*LINESPACE));
 	mchart.set_dimension(MAX_CITY_HISTORY_MONTHS, 10000);
@@ -249,13 +252,11 @@ void city_info_t::init()
 	container_month.add_table(4,3)->set_force_equal_columns(true);
 	for(  uint32 i = 0;  i<MAX_CITY_HISTORY-1;  i++  ) {
 		sint16 curve = mchart.add_curve( color_idx_to_rgb(hist_type_color[i]), city->get_city_history_month(),
-			MAX_CITY_HISTORY, i, 12, STANDARD, (city->stadtinfo_options & (1<<i))!=0, true, 0 );
-
+			MAX_CITY_HISTORY, i, 12, gui_chart_t::STANDARD, (city->stadtinfo_options & (1<<i))!=0, true, 0 );
 		// add button
 		container_month.add_component(buttons[i]);
 		button_to_chart.append(buttons[i], &mchart, curve);
 	}
-	container_month.end_table();
 
 	update_labels();
 	set_resizemode(diagonal_resize);
@@ -323,6 +324,7 @@ void city_info_t::reset_city_name()
 		tstrncpy(old_name, city->get_name(), sizeof(old_name));
 		tstrncpy(name, city->get_name(), sizeof(name));
 		name_input.set_text(name, sizeof(name));
+		set_name(old_name);
 	}
 }
 

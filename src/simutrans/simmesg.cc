@@ -9,22 +9,30 @@
 #include "simticker.h"
 #include "display/simgraph.h"
 #include "simcolor.h"
+#include "gui/chat_frame.h"
 #include "gui/simwin.h"
 #include "world/simworld.h"
 
 #include "dataobj/loadsave.h"
+#include "dataobj/translator.h"
 #include "dataobj/environment.h"
 #include "dataobj/pakset_manager.h"
+#include "network/network_socket_list.h"
 #include "player/simplay.h"
 #include "utils/simstring.h"
 #include "tpl/slist_tpl.h"
 #include "gui/messagebox.h"
 #include <string.h>
-
+#include <time.h>
+#include "simsound.h"
+#include "descriptor/sound_desc.h"
 
 #define MAX_SAVED_MESSAGES (2000)
 
 static karte_ptr_t welt;
+
+static vector_tpl<plainstring>clients;
+
 
 uint32 message_node_t::get_type_shifted() const
 {
@@ -124,6 +132,8 @@ void message_t::clear()
 		delete list.remove_first();
 	}
 	ticker::clear_messages();
+	clients.clear();
+	clients.append(env_t::nickname.c_str());
 }
 
 
@@ -275,55 +285,236 @@ void message_t::rotate90( sint16 size_w )
 }
 
 
-void message_t::rdwr( loadsave_t *file )
+void message_t::rdwr(loadsave_t* file)
 {
 	uint16 msg_count;
-	if(  file->is_saving()  ) {
+	if (file->is_saving()) {
 		msg_count = 0;
-		if( env_t::server ) {
+		vector_tpl<message_node_t*>msg_to_save;
+		msg_to_save.reserve(list.get_count());
+		if (env_t::server) {
 			// do not save local messages and expired messages
 			uint32 current_time = world()->get_current_month();
-			for(message_node_t* const i : list) {
-				if( i->type & do_not_rdwr_flag  ||  (i->type & expire_after_one_month_flag  &&  current_time - i->time > 1)  ) {
+			for (message_node_t* const i : list) {
+				if (i->type & DO_NOT_SAVE_MSG || (i->type & EXPIRE_AFTER_ONE_MONTH_MSG && current_time - i->time > 1)) {
 					continue;
 				}
-				if (++msg_count == MAX_SAVED_MESSAGES) break;
-			}
-			file->rdwr_short( msg_count );
-			for(message_node_t* const i : list) {
-				if (msg_count == 0) break;
-				if(  i->type & do_not_rdwr_flag  || (i->type & expire_after_one_month_flag  &&  current_time - i->time > 1)  ) {
-					continue;
-				}
-				i->rdwr(file);
-				msg_count --;
+				msg_to_save.append(i);
 			}
 		}
 		else {
 			// do not save discardable messages (like changing player)
-			for(message_node_t* const i : list) {
-				if (!(i->type & do_not_rdwr_flag)) {
-					if (++msg_count == MAX_SAVED_MESSAGES) break;
+			for (message_node_t* const i : list) {
+				if (!(i->type & DO_NOT_SAVE_MSG)) {
+					msg_to_save.append(i);
 				}
 			}
-			file->rdwr_short( msg_count );
-			for(message_node_t* const i : list) {
-				if (msg_count == 0) break;
-				if(  !(i->type & do_not_rdwr_flag)  ) {
-					i->rdwr(file);
-					msg_count --;
-				}
-			}
+		}
+		// save only the last MAX_SAVED_MESSAGES
+		msg_count = (uint16)min(MAX_SAVED_MESSAGES, msg_to_save.get_count());
+		file->rdwr_short(msg_count);
+		for (uint32 i = msg_to_save.get_count() - msg_count; i < msg_to_save.get_count(); i++) {
+			msg_to_save[i]->rdwr(file);
 		}
 	}
 	else {
 		// loading
 		clear();
 		file->rdwr_short(msg_count);
-		while(  (msg_count--)>0  ) {
-			message_node_t *n = new message_node_t();
+		if (file->is_version_less(124, 1)) {
+			welt->get_chat_message()->clear();
+		}
+		while ((msg_count--) > 0) {
+			message_node_t* n = new message_node_t();
+			n->rdwr(file);
+			// maybe add this rather to the chat
+			if (file->is_version_less(124, 1)) {
+				if (n->get_type_shifted() == (1 << message_t::chat)) {
+					char name[256];
+					char msg_no_name[256];
+					sint8 player_nr = 0;
+
+					if (char* c = strchr(n->msg, ']')) {
+						*c = 0;
+						strcpy(name, n->msg+1);
+						strcpy(msg_no_name, c+1);
+					}
+					else {
+						strcpy(name, "Unknown");
+						tstrncpy(msg_no_name, n->msg,256);
+					}
+					if (n) { // fixme, player number?
+						player_t* player = welt->get_player(0); // fixme, find real player
+						if (player) {
+							player_nr = player->get_player_nr();
+						}
+					}
+					welt->get_chat_message()->convert_old_message(msg_no_name, name, player_nr, n->time, n->pos.get_2d());
+					continue; // remove the chat message
+				}
+			}
+			list.append(n);
+		}
+	}
+}
+
+
+
+
+chat_message_t::~chat_message_t()
+{
+	clear();
+}
+
+
+void chat_message_t::clear()
+{
+	while (!list.empty()) {
+		delete list.remove_first();
+	}
+}
+
+void chat_message_t::convert_old_message(const char* text, const char* name, sint8 player_nr, sint32 time, koord pos)
+{
+	chat_node* const n = new chat_node();
+	tstrncpy(n->msg, text, lengthof(n->msg));
+
+	n->flags = chat_message_t::NONE;
+	n->pos = pos;
+	n->player_nr = player_nr;
+	n->channel_nr = -1;
+	n->sender = name;
+	n->destination = 0;
+	n->time = time;
+	n->local_time = 0;
+	list.append(n);
+}
+
+void chat_message_t::add_chat_message(const char* text, sint8 channel, sint8 sender_nr, plainstring sender_, plainstring recipient, koord pos, uint8 flags)
+{
+	cbuffer_t buf;  // Output which will be printed to ticker
+	player_t* player = world()->get_player(sender_nr);
+	// send this message to a ticker if public channel message
+	if (channel >= -1) {
+		if (sender_nr >= 0  &&  sender_nr != PLAYER_UNOWNED) {
+			if (player != world()->get_active_player()) {
+				// so it is not a message sent from us
+				bool show_message = channel == -1; // message for all?
+				show_message |= channel == world()->get_active_player_nr(); // company message for us?
+				show_message |= recipient && strcmp(recipient, env_t::nickname.c_str()) == 0; // private chat for us?
+				if(show_message) {
+					buf.printf("%s: %s", sender_.c_str(), text);
+					ticker::add_msg(buf, koord3d::invalid, RGBA_BLACK); // fixme, real player color
+					env_t::chat_unread_public++;
+					sound_play(sound_desc_t::message_sound, 255, TOOL_SOUND);
+				}
+			}
+		}
+	}
+	else if (channel == -2) {
+		// text contains the current nicks, separated by TAB
+		clients.clear();
+		char* nick = strtok((char*)text, "\t");
+		while (nick) {
+			clients.append(nick);
+			nick = strtok(NULL, "\t");
+		}
+		flags |= DO_NO_LOG_MSG|DO_NOT_SAVE_MSG; // not saving this message
+		if (chat_frame_t* cf = (chat_frame_t*)win_get_magic(magic_chatframe)) {
+			cf->fill_list();
+		}
+	}
+
+	if (!(flags & DO_NO_LOG_MSG)) {
+		// we do not allow messages larger than 256 bytes
+		chat_node* const n = new chat_node();
+		tstrncpy(n->msg, text, lengthof(n->msg));
+		n->flags = flags;
+		n->pos = pos;
+
+		n->player_nr = sender_nr;
+		n->channel_nr = channel;
+		n->sender = sender_;
+		n->destination = recipient;
+
+		n->time = world()->get_current_month();
+		time_t ltime;
+		time(&ltime);
+		n->local_time = ltime;
+
+		list.append(n);
+	}
+}
+
+void chat_message_t::rename_client(plainstring old_name, plainstring new_name)
+{
+	for (chat_node* i : list) {
+		if (i->sender && strcmp(i->sender, old_name) == 0) {
+			i->sender = new_name;
+		}
+		if (i->destination && strcmp(i->destination, old_name) == 0) {
+			i->destination = new_name;
+		}
+	}
+}
+
+void chat_message_t::chat_node::rdwr(loadsave_t* file)
+{
+	file->rdwr_str(msg, lengthof(msg));
+	file->rdwr_byte(flags);
+	file->rdwr_byte(player_nr);
+	file->rdwr_byte(channel_nr);
+	file->rdwr_str(sender);
+	file->rdwr_str(destination);
+	file->rdwr_long(time);
+	sint64 tmp = local_time;
+	file->rdwr_longlong(tmp);
+	local_time = tmp;
+	pos.rdwr(file);
+}
+
+void chat_message_t::rotate90(sint16 size_w)
+{
+	for (chat_node* const i : list) {
+		i->pos.rotate90(size_w);
+	}
+}
+
+void chat_message_t::rdwr(loadsave_t* file)
+{
+	uint16 msg_count;
+	if (file->is_saving()) {
+		vector_tpl<chat_node*>msg_to_save;
+		msg_to_save.reserve(list.get_count());
+		// do not save discardable messages
+		for (chat_node* const i : list) {
+			if (!(i->flags & DO_NOT_SAVE_MSG)) {
+				msg_to_save.append(i);
+			}
+		}
+		// save only the last MAX_SAVED_MESSAGES
+		msg_count = (uint16)min(MAX_SAVED_MESSAGES, msg_to_save.get_count());
+		file->rdwr_short(msg_count);
+		for (uint32 i = msg_to_save.get_count() - msg_count; i < msg_to_save.get_count(); i++) {
+			msg_to_save[i]->rdwr(file);
+		}
+	}
+	else {
+		// loading
+		clear();
+
+		file->rdwr_short(msg_count);
+		while ((msg_count--) > 0) {
+			chat_node* n = new chat_node();
 			n->rdwr(file);
 			list.append(n);
 		}
 	}
+}
+
+
+// return the number of connected clients
+const vector_tpl<plainstring>& chat_message_t::get_online_nicks()
+{
+	return clients;
 }

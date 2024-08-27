@@ -28,9 +28,9 @@ Getting the libraries
 
 You will need pkgconfig (Unix) or vcpkg (Microsoft Visual C++) https://github.com/Microsoft/vcpkg
 
-- Needed (All): libpng2 libbzip2 zlib 
+- Needed (All): libpng2 libbzip2 zlib libfreetype
 - Needed (Linux/Mac): libSDL2 libfluidsynth (for midi music)
-- Optional but recommended: libzstd (faster compression) libfreetype (TrueType font support) miniupnpc (for easy server setup)
+- Optional but recommended: libzstd (faster compression) miniupnpc (for easy server setup)
 
 - MSVC: Copy install-building-libs-{architecture}.bat to the vcpkg folder and run it.
 - MSYS2/Ubuntu/Debian: Run setup-development.sh to get the libraries and set up the environment.
@@ -58,13 +58,12 @@ Open the simutrans.sln, select the target (default is GDI) and build.
 
 3) CMake
 
-mkdir build && cd build
-(Unix) cmake -G "Insert Correct Makefiles Generator" ..
-(Unix) cmake build . -j 4
-(MSVC) cmake.exe .. -G "Visual Studio 16 2019" -A x64 -DCMAKE_TOOLCHAIN_FILE=[vcpkg-root]/scripts/buildsystems/vcpkg.cmake
-(MSVC) cmake.exe --build . --config Release
+(Unix) cmake -G "Insert Correct Makefiles Generator" -B build .
+(Unix) cmake --build build -j 4
+(MSVC) cmake.exe -B build -G "Visual Studio 16 2019" -A x64 -DCMAKE_TOOLCHAIN_FILE=[vcpkg-root]/scripts/buildsystems/vcpkg.cmake
+(MSVC) cmake.exe --build build --config Release
 
-See here a list of generators: https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html
+See here for a list of generators: https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html
 
 
 Cross-Compiling

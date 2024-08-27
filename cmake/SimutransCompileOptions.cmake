@@ -23,10 +23,6 @@ endif ()
 
 option(SIMUTRANS_VALGRIND_SUPPORT  "Add support for valgrind \"memcheck\" tool" OFF)
 
-if (Freetype_FOUND)
-	option(SIMUTRANS_USE_FREETYPE "Enable TrueType font support using freetype library" ON)
-endif (Freetype_FOUND)
-
 if (MiniUPNP_FOUND)
 	option(SIMUTRANS_USE_UPNP "Use MiniUPNP for easier server setup" ON)
 endif (MiniUPNP_FOUND)
@@ -39,7 +35,12 @@ if (FluidSynth_FOUND AND NOT WIN32)
 	option(SIMUTRANS_USE_FLUIDSYNTH_MIDI "Enable FluidSynth for MIDI playback" ON)
 endif (FluidSynth_FOUND AND NOT WIN32)
 
+if(Fontconfig_FOUND)
+	option(SIMUTRANS_USE_FONTCONFIG "Use Fontconfig for font autodetection" ON)
+endif()
+
 option(SIMUTRANS_INSTALL_PAK64 "Download pak64 on install" OFF)
+option(SIMUTRANS_UPDATE_LANGFILES "Update language files from the translator on install" OFF)
 option(SIMUTRANS_ENABLE_PROFILING "Enable profiling code" OFF)
 option(SIMUTRANS_USE_SYSLOG "Enable logging to syslog" OFF)
 option(SIMUTRANS_USE_IP4_ONLY "Use only IPv4" OFF)

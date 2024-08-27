@@ -10,12 +10,13 @@
 #include "gui_convoiinfo.h"
 #include "gui_spacer.h"
 #include "../../world/simworld.h"
-#include "../../vehicle/vehicle.h"
+#include "../../vehicle/rail_vehicle.h"
 #include "../../simconvoi.h"
 #include "../../simcolor.h"
 #include "../../simhalt.h"
 #include "../../display/simgraph.h"
 #include "../../display/viewport.h"
+#include "../../tool/simmenu.h"
 #include "../../player/simplay.h"
 #include "../../simline.h"
 
@@ -23,7 +24,6 @@
 #include "../../dataobj/schedule.h"
 
 #include "../../utils/simstring.h"
-
 
 class gui_convoi_images_t : public gui_component_t
 {
@@ -117,60 +117,99 @@ gui_convoiinfo_t::gui_convoiinfo_t(convoihandle_t cnv)
 	update_label();
 }
 
-/**
- * Events are notified to GUI components via this method
- */
 bool gui_convoiinfo_t::infowin_event(const event_t *ev)
 {
 	if(cnv.is_bound()) {
-		// check whether some child must handle this!
-		event_t ev2 = *ev;
-		ev2.move_origin(container_next_halt->get_pos());
 
-		if( container_next_halt->infowin_event( &ev2 ) ) {
+		// check whether some child must handle this!
+		if (gui_aligned_container_t::infowin_event(ev)) {
 			return true;
 		}
-		if(IS_LEFTRELEASE(ev)) {
-			cnv->open_info_window();
+
+		if (IS_LEFTRELEASE(ev)) {
+			if ((event_get_last_control_shift() ^ tool_t::control_invert) == 2) {
+				world()->get_viewport()->change_world_position(cnv->get_pos());
+			}
+			else {
+				cnv->open_info_window();
+			}
 			return true;
 		}
 		else if(IS_RIGHTRELEASE(ev)) {
-			karte_ptr_t welt;
-			welt->get_viewport()->change_world_position(cnv->get_pos());
+			world()->get_viewport()->change_world_position(cnv->get_pos());
 			return true;
 		}
 	}
 	return false;
 }
 
+
 const char* gui_convoiinfo_t::get_text() const
 {
 	return cnv->get_name();
 }
 
+
 void gui_convoiinfo_t::update_label()
 {
+	bool size_change = old_income != cnv->get_jahresgewinn();
+	old_income = cnv->get_jahresgewinn();
+
+	label_profit.buf().append(translator::translate("Gewinn"));
 	label_profit.buf().append_money(cnv->get_jahresgewinn() / 100.0);
 	label_profit.update();
-	label_line.buf().clear();
 
+	label_line.buf().clear();
 	if (cnv->in_depot()) {
-		label_line.set_visible( false );
+		if (label_line.is_visible()) {
+			label_line.buf();
+			label_line.set_visible(false);
+			size_change = true;
+		}
 		pos_next_halt.set_targetpos3d(cnv->get_home_depot());
 		label_next_halt.set_text("(in depot)");
 	}
 	else {
-		label_line.set_visible(true);
 		if( cnv->get_line().is_bound() ) {
+			if (!label_line.is_visible()) {
+				label_line.set_visible(true);
+				size_change = true;
+			}
 			label_line.buf().printf( "%s: %s", translator::translate( "Line" ), cnv->get_line()->get_name() );
 		}
 		else {
-			label_line.buf();
-			label_line.set_visible( false );
+			if (label_line.is_visible()) {
+				label_line.buf();
+				label_line.set_visible(false);
+				size_change = true;
+			}
 		}
 		label_line.update();
 
+		switch (cnv->get_state()) {
+		case convoi_t::WAITING_FOR_CLEARANCE:
+		case convoi_t::CAN_START:
+		case convoi_t::DRIVING:
+			route_bar.set_state(0);
+			break;
+		case convoi_t::NO_ROUTE:
+			route_bar.set_state(3);
+			break;
+		case convoi_t::WAITING_FOR_CLEARANCE_ONE_MONTH:
+		case convoi_t::CAN_START_ONE_MONTH:
+		case convoi_t::WAITING_FOR_CLEARANCE_TWO_MONTHS:
+		case convoi_t::CAN_START_TWO_MONTHS:
+			route_bar.set_state(2);
+			break;
+		default:
+			route_bar.set_state(1);
+			break;
+		}
 		if (!cnv->get_route()->empty()) {
+			route_bar.set_base(cnv->get_route()->get_count() - 1);
+			cnv_route_index = cnv->front()->get_route_index() - 1;
+			next_reservation_index = cnv->get_next_reservation_index();
+
 			halthandle_t h;
 			const koord3d end = cnv->get_route()->back();
 
@@ -185,14 +224,25 @@ void gui_convoiinfo_t::update_label()
 				}
 			}
 			pos_next_halt.set_targetpos3d( end );
+			scr_size old_min = label_next_halt.get_max_size();
 			label_next_halt.set_text_pointer(h.is_bound()?h->get_name():translator::translate("wegpunkt"));
+			if(old_min != label_next_halt.get_max_size()) {
+				size_change = true;
+			}
+		}
+		else {
+			route_bar.set_base(1);
+			cnv_route_index = 0;
+			next_reservation_index = 0;
 		}
 	}
 
 	label_name.set_text_pointer(cnv->get_name());
 	label_name.set_color(cnv->get_status_color());
 
-	set_size(get_size());
+	if (size_change) {
+		set_size(scr_size(get_size().w, get_min_size().h));
+	}
 }
 
 /**
@@ -200,9 +250,11 @@ void gui_convoiinfo_t::update_label()
  */
 void gui_convoiinfo_t::draw(scr_coord offset)
 {
-	update_label();
-	
+	if (cnv.is_bound()) {
+		update_label();
+	}
+
 	draw_background(offset);
-	
+
 	gui_aligned_container_t::draw(offset);
 }

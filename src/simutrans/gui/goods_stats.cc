@@ -45,7 +45,7 @@ void goods_stats_t::update_goodslist(vector_tpl<const goods_desc_t*>goods, int b
 		const sint32 price = (grundwert128>grundwert_bonus ? grundwert128 : grundwert_bonus);
 
 		gui_label_buf_t *lb = new_component<gui_label_buf_t>((gui_theme_t::gui_color_text), gui_label_t::right);
-		lb->buf().append_money(price/300000.0);
+		lb->buf().append_money(price/3000.0);
 		lb->update();
 
 		lb = new_component<gui_label_buf_t>((gui_theme_t::gui_color_text), gui_label_t::right);

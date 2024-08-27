@@ -36,6 +36,8 @@ curiositylist_frame_t::curiositylist_frame_t() :
 	scrolly(gui_scrolled_list_t::windowskin, curiositylist_stats_t::compare)
 {
 	attraction_count = 0;
+	scrolly.set_checkered(true);
+	scrolly.set_maximize(true);
 
 	set_table_layout(1,0);
 	add_table(2, 4);
@@ -43,10 +45,12 @@ curiositylist_frame_t::curiositylist_frame_t() :
 		new_component<gui_label_t>("Filter:");
 		name_filter_input.set_text(name_filter, lengthof(name_filter));
 		add_component(&name_filter_input);
-		// new_component<gui_fill_t>();
+		new_component<gui_fill_t>();
 
-                new_component<gui_label_t>("Show served by:");
-
+        filter_by_owner.init(button_t::square_automatic, "Served by");
+	    filter_by_owner.add_listener(this);
+	    filter_by_owner.set_tooltip("At least one tile is connected to one stop.");
+	    add_component(&filter_by_owner);
 		filterowner.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("Anyone"), (gui_theme_t::gui_color_text));
 		filterowner.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("No one"), (gui_theme_t::gui_color_text));
 		for (int i = 0; i < MAX_PLAYER_COUNT; i++) {
@@ -81,9 +85,25 @@ curiositylist_frame_t::curiositylist_frame_t() :
 
 		// new_component<gui_fill_t>();
 	}
-	end_table();
+	filterowner.add_listener(this);
+	add_component(&filterowner);
+	new_component<gui_fill_t>();
 
-	add_component(&scrolly);
+	new_component<gui_label_t>("hl_txt_sort");
+	sortedby.set_unsorted(); // do not sort
+	for (size_t i = 0; i < lengthof(sort_text); i++) {
+		sortedby.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate(sort_text[i]), (gui_theme_t::gui_color_text));
+	}
+	sortedby.set_selection(curiositylist_stats_t::sortby);
+	sortedby.add_listener(this);
+	add_component(&sortedby);
+
+	sorteddir.init(button_t::sortarrow_state, NULL);
+	sorteddir.add_listener(this);
+	sorteddir.pressed = curiositylist_stats_t::sortby;
+	add_component(&sorteddir);
+
+	add_component(&scrolly,3);
 	fill_list();
 
 	set_resizemode(diagonal_resize);
@@ -152,7 +172,7 @@ void curiositylist_frame_t::fill_list()
 		}
 	}
 	scrolly.sort(0);
-	scrolly.set_size( scrolly.get_size());
+	scrolly.set_size(scr_size(get_windowsize().w, scrolly.get_size().h));
 }
 
 
@@ -167,21 +187,19 @@ bool curiositylist_frame_t::action_triggered( gui_action_creator_t *comp,value_t
 		sorteddir.pressed = curiositylist_stats_t::sortreverse;
 		scrolly.sort(0);
 	}
-        else {
-                fill_list();
-        }
-	return true;
-}
-
-
-void curiositylist_frame_t::draw(scr_coord pos, scr_size size)
-{
-	if(  world()->get_attractions().get_count() != attraction_count  ||  strcmp(last_name_filter, name_filter)  ) {
-		strcpy(last_name_filter, name_filter);
+	else if (comp == &name_filter_input) {
+		fill_list();
+	}
+	else if (comp == &filterowner) {
+		if(  filter_by_owner.pressed ) {
+			fill_list();
+		}
+	}
+	else if( comp == &filter_by_owner ) {
 		fill_list();
 	}
 
-	gui_frame_t::draw(pos,size);
+	return true;
 }
 
 

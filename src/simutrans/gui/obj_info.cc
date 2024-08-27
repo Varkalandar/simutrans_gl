@@ -20,7 +20,9 @@ obj_infowin_t::obj_infowin_t(const obj_t* obj) :
     dbg->message("obj_infowin_t", "width = %d", width);
     
 	textarea.set_width(width);
+
 	fill_buffer();
+	//textarea.set_width( textarea.get_size().w + get_base_tile_raster_width() - 64);
 	set_embedded(&view);
 }
 

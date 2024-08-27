@@ -12,7 +12,7 @@ Prop-Latin1.bdf
 #                            Language: nl Nederlands                           #
 #                             Encoding: ISO-8859-1                             #
 #                             Font: Prop-Latin1.bdf                            #
-#                           Date Created: 25.02 2023                           #
+#                           Date Created: 20.07 2024                           #
 #                                                                              #
 ################################################################################
 #__________________________________button_text__________________________________
@@ -41,6 +41,8 @@ clf_btn_invers
 wissel
 clf_btn_keine
 geen
+Continue Game
+Speel verder
 gl_btn_sort_bonus
 naar bonus
 gl_btn_sort_name
@@ -95,6 +97,10 @@ rocky
 Rotsachtig
 temperate
 Gematigd
+tropic
+Tropisch
+tundra
+Toendra
 #__________________________________error_text___________________________________
 #__________________________________error_text___________________________________
  Loading scenario script failed
@@ -751,8 +757,6 @@ Deccelerate time
 Tijd vertragen
 decrease underground view level
 lager ondergronds niveau
-Default.sve
-Standaard
 Del Stop
 Verwijderen
 Delete Line
@@ -920,7 +924,7 @@ Gegenereerd
 Generation: %.0f MW
 Generatie: %.0f MW\n
 Gewinn
-Inkomsten
+Inkomsten 
 Give the selected vehicle(s) an individual schedule
 Ken het geselecteerde voertuig een eigen dienstregeling toe
 gl_btn_sort_catg
@@ -1770,7 +1774,7 @@ Voertuig info omschakelen
 tonnen
 t
 Total inhabitants:
-Aantal inwoners
+Aantal inwoners 
 Tourist attractions
 Bezienswaardigheden
 Tourists
@@ -1811,14 +1815,10 @@ Transported
 Vervoerd
 TrolleyBus_tab
 Trolleybussen
-tropic
-Tropisch
 Truck
 Vrachtwagen
 tt_Other
 Andere
-tundra
-Toendra
 Tunnel muss an\neinfachem\nHang beginnen!\n
 Een tunnel moet op\neen rechte\nhelling beginnen\n
 Tunnel must start on single way!

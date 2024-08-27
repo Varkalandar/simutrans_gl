@@ -180,6 +180,7 @@ void convoi_frame_t::fill_list()
 		}
 	}
 	sort_list();
+	scrolly->set_size(scr_size(get_windowsize().w, scrolly->get_size().h));
 }
 
 
@@ -208,7 +209,9 @@ convoi_frame_t::convoi_frame_t() :
 	add_table(4,2);
 	{
 		new_component<gui_label_t>("Filter:");
-		name_filter_input.set_text( name_filter, lengthof(name_filter) );
+		name_filter_input.set_text(name_filter, lengthof(name_filter));
+		name_filter_input.set_notify_all_changes_delay(500);
+		name_filter_input.add_listener(this);
 		add_component(&name_filter_input);
 		name_filter_input.add_listener(this);
 
@@ -237,6 +240,7 @@ convoi_frame_t::convoi_frame_t() :
 
 	scrolly = new gui_scrolled_convoy_list_t(this);
 	scrolly->set_maximize( true );
+	scrolly->set_checkered( true );
 
 	tabs.init_tabs(scrolly);
 	for(  uint32 i = 0;  i < tabs.get_count();  i++  ) {

@@ -112,6 +112,7 @@ void tunnel_builder_t::fill_menu(tool_selector_t* tool_selector, const waytype_t
 	if (!welt->get_scenario()->is_tool_allowed(welt->get_active_player(), TOOL_BUILD_TUNNEL | GENERAL_TOOL, wtyp)) {
 		return;
 	}
+	bool enable = welt->get_scenario()->is_tool_enabled(welt->get_active_player(), TOOL_BUILD_TUNNEL | GENERAL_TOOL, wtyp);
 
 	const uint16 time=welt->get_timeline_year_month();
 	vector_tpl<const tunnel_desc_t*> matching(tunnel_by_name.get_count());
@@ -124,6 +125,7 @@ void tunnel_builder_t::fill_menu(tool_selector_t* tool_selector, const waytype_t
 	}
 	// now sorted ...
 	for(tunnel_desc_t const* const i : matching) {
+		i->get_builder()->enabled = enable;
 		tool_selector->add_tool_selector(i->get_builder());
 	}
 }
@@ -394,7 +396,7 @@ const char *tunnel_builder_t::build( player_t *player, koord pos, const tunnel_d
 	const grund_t *end_gr = welt->lookup(end);
 	if (end_gr) {
 		if (weg_t *weg_end = end_gr->get_weg(wegtyp)) {
-			if (weg_end->is_deletable(player)!=NULL) {
+			if (weg_end->get_removal_error(player)!=NULL) {
 				return "Das Feld gehoert\neinem anderen Spieler\n";
 			}
 			if(  full_tunnel  &&  end_gr->get_typ() == grund_t::tunnelboden  ) {

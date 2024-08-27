@@ -603,7 +603,7 @@ public:
 	player_t *get_owner() const
 	{
 		grund_t const* const p = welt->lookup(pos);
-		return p ? p->first_obj()->get_owner() : 0;
+		return p ? p->first_no_way_obj()->get_owner() : 0;
 	}
 
 	void open_info_window();

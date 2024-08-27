@@ -12,7 +12,7 @@ Prop-Latin1.bdf
 #                             Language: en English                             #
 #                             Encoding: ISO-8859-1                             #
 #                             Font: Prop-Latin1.bdf                            #
-#                           Date Created: 25.02 2023                           #
+#                           Date Created: 20.07 2024                           #
 #                                                                              #
 ################################################################################
 #__________________________________button_text__________________________________
@@ -52,7 +52,7 @@ Size single climate
 Cost to remove:
 Cost to remove:
 CROSSING_SOUND
-crossign warnings
+crossing warnings
 FACTORY_SOUND
 factory noises
 gl_btn_sort_bonus
@@ -88,7 +88,7 @@ inv.
 hlf_btn_keine
 none
 humidities
-humitdity borders
+humidity borders
 Lake height
 max. lake height
 moisture land
@@ -100,7 +100,7 @@ Waiting Trend
 rainfall
 humidity
 Reselect closes tools
-Reselect a tool deselect it
+Re-selecting a tool de-selects it
 Road toll
 Road Toll
 Scenario
@@ -129,10 +129,12 @@ rocky
 Alpine (rocky)
 temperate
 Temperate
+tropic
+Tropical
+tundra
+Tundra
 #__________________________________error_text___________________________________
 #__________________________________error_text___________________________________
- Loading scenario script failed
-Twin House\n\nAfter a long discussion with no conclusion about the interior decoration of their house, the Burns family decided to divide their house. Father and son manned the left half, Mother and daughter call the shots in the right half.
 Cannot alter water
 This basin cannot be further drained or filled.
 Cannot build on a double slope!
@@ -141,6 +143,8 @@ Cannot built depot here!
 Cannot build a depot here.
 Cannot built this station/building\nin underground mode here.
 This station/building cannot be built underground.
+Cannot connect to the\ncenter of a double slope!
+A brige cannot connect to the middle of a double slope!\nUse landscaping tool to fix this.
 Convoi handles exhausted!
 Maximum number of convoys reached.
 Das Feld gehoert\neinem anderen Spieler\n
@@ -175,6 +179,8 @@ Not enough clearance.
 Between two ways a minimum height difference of two is needed.
 Not enough money!
 You do not have enough\nmoney to buy this!
+On narrowgauge track only!\n
+Must be placed on narrow gauge track only!
 Only public player can lock games!
 Only a public player can lock games!
 Only up and down movement in the underground!
@@ -282,7 +288,7 @@ Industry growth: New factory chain\nfor %s near\n%s built with\n%i factories.
 New vehicle now available:\n%s\n
 \n A new vehicle is\n now available:\n\n\n -- %s --\n\n
 Now %u clients connected.
-Right now %u clients are connected.
+Right now %u client(s) are connected.
 Remove vehicle from map. Use with care!
 Remove vehicle from map. (Use with care!)
 Screenshot\ngespeichert.\n
@@ -349,6 +355,8 @@ Age: %i years and %i months
 %s %s yard
 %s land %d %s
 %s %d outer %s
+%s now known as %s.
+%s is now known as %s.
 %s wasted\nyour money with a\nnew townhall\nwhen it reached\n%i inhabitants.
 %s \nbuilt a\nnew townhall\nwhen it reached\n%i inhabitants.
 %s\nspeed %i\nmax_speed %i\ndx:%i dy:%i
@@ -369,6 +377,8 @@ Age: %i years and %i months
 1 convoy
 1 Einzelfahrzeug im Depot
 1 vehicle stored here.
+1 minute ago
+one minute ago
 1LIGHT_CHOOSE
 Brightness:
 1WORLD_CHOOSE
@@ -601,6 +611,8 @@ closed
 closed.
 COLOR_CHOOSE\n
 Please choose two\ncolours from the\nimage on the right:
+company_chat
+Company chat
 Company_msg
 Competitors
 Congratulation\nScenario was complete in\n%i months %i years.
@@ -653,8 +665,6 @@ deactivated in online mode
 Not active while online
 Deccelerate time
 Decelerate time
-Default.sve
-Default
 Del Stop
  Remove
 Delete Line
@@ -679,6 +689,8 @@ Destroying map ...
 Destroying old map ...
 Die Bruecke ist nicht frei!\n
 The bridge is not free!\n
+direct_chat_to:
+Direct message to
 directmail
 Leaflets
 Direkt erreichbare Haltestellen
@@ -782,7 +794,7 @@ Generation: %.0f MW\n
 Gewicht
 Weight
 Gewinn
-Income:
+Income: 
 Give the selected vehicle(s) an individual schedule
 Edit the selected vehicle(s) individual schedule or assigned line
 gl_btn_sort_catg
@@ -959,6 +971,8 @@ load height data from file
 Load height data from file.
 Load scenario
 Load Scenario
+Load settings from
+Apply settings from
 loaded passenger/freight
 Sort passengers/freight by
 Loading (%i->%i%%)!
@@ -1131,6 +1145,8 @@ PaxDest
 Destinations
 Percent Electricity
 Electricity output (%% demand):
+personal_chat
+Private chats
 Planes are not available yet!
 Aircrafts are not yet available.
 Plant tree
@@ -1179,6 +1195,8 @@ Produktion
 Production:
 promote to line
 Promote to line
+public_chat
+General chat
 q1
 Spring
 q2
@@ -1241,6 +1259,8 @@ sack
  bags
 sail
 wind
+Save
+Save game
 Scenario Debug
 Debug
 Scenario Error Log
@@ -1427,12 +1447,8 @@ Transported
 Trips
 TrolleyBus_tab
 Trolleybuses
-tropic
-Tropical
 tt_Other
 Other
-tundra
-Tundra
 Tunnel muss an\neinfachem\nHang beginnen!\n
 Tunnels must\nstart on a straight\nslope!\n
 Tunnel must start on single way!

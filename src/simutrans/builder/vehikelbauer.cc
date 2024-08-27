@@ -113,7 +113,7 @@ bool vehicle_builder_t::speedbonus_init()
 			tracks.pop_back();
 		}
 
-		speedbonus[j].resize( tracks.get_count()/2 );
+		speedbonus[j].reserve( tracks.get_count()/2 );
 		for(  uint32 i=0;  i<tracks.get_count();  i+=2  ) {
 			bonus_record_t b( tracks[i], tracks[i+1] );
 			speedbonus[j].append( b );
@@ -181,7 +181,7 @@ void vehicle_builder_t::rdwr_speedbonus(loadsave_t *file)
 		file->rdwr_long(count);
 		if (file->is_loading()) {
 			speedbonus[j].clear();
-			speedbonus[j].resize(count);
+			speedbonus[j].reserve(count);
 		}
 		for(uint32 i=0; i<count; i++) {
 			if (file->is_loading()) {
@@ -279,6 +279,10 @@ bool vehicle_builder_t::compare_vehicles(const vehicle_desc_t* a, const vehicle_
 			break;
 		case sb_name:
 			cmp = strcmp(translator::translate(a->get_name()), translator::translate(b->get_name()));
+			if (cmp != 0) return cmp < 0;
+			break;
+		case sb_capacity:
+			cmp = compare_capacity(a, b);
 			if (cmp != 0) return cmp < 0;
 			break;
 		case sb_price:

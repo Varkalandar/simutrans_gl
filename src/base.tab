@@ -405,6 +405,7 @@ name=Build drain
 -
 obj=program_text
 name=build HQ
+note=finance window
 -
 obj=program_text
 name=Build land consumer
@@ -1749,6 +1750,10 @@ obj=program_text
 name=show grid
 -
 obj=program_text
+name=show HQ
+note=finance window
+-
+obj=program_text
 name=Show industry
 -
 obj=program_text
@@ -1765,9 +1770,6 @@ name=Show schedules
 -
 obj=program_text
 name=show station coverage
--
-obj=program_text
-name=show station names
 -
 obj=program_text
 name=show waiting bars
@@ -2018,6 +2020,7 @@ name=Update Line
 -
 obj=program_text
 name=upgrade HQ
+note=HQ info window
 -
 obj=program_text
 name=Use timeline start year
@@ -2594,12 +2597,6 @@ name=Routing
 -
 obj=program_text
 name=Costs
--
-obj=program_text
-name=Simuconf.tab
--
-obj=program_text
-name=Default.sve
 -
 obj=error_text
 name=Cannot create socket
@@ -4216,6 +4213,10 @@ obj=error_text
 name=No curves on runways
 note=Displayed when a route search failed as one possible cause
 --
+obj=error_text
+name=A building blocks the construction
+note=Displayed when a route search failed as one possible cause
+--
 obj=tooltip_text
 name=Mirrors order of stops
 note=tooltip for mirror stop order button
@@ -4276,34 +4277,163 @@ obj=button_text
 name=Continue Game
 note=Button in the banner window
 --
+obj=program_text
+name=Load '%s'
+note=Tooltip for Continue Game button in banner window
+--
 obj=button_text
 name=Return to menu
 note=Button to return to banner menu
 --
 obj=program_text
 name=Welcome to Simutrans
-note=Text in banner. It may be followed by a version string (i.e. "Nightly")
+note=Text in banner window. It may be followed by a version string (i.e. "Nightly")
 --
 obj=program_text
 name=Developed by the Simutrans Team
-note=Text in banner
+note=Text in banner window
 --
 obj=program_text
 name=under the Artistic License
-note=Text in banner
+note=Text in banner window
 --
 obj=program_text
 name=based on Simutrans 84.22.1
-note=Text in banner
+note=Text in banner window
 --
 obj=program_text
 name=Selling of the program is forbidden.
-note=Text in banner
+note=Text in banner window
 --
 obj=program_text
 name=For questions and support please visit:
-note=Text in banner
+note=Text in banner window
 --
+obj=program_text
+name=/month
+note=Text in tooltip for way and building tool icons
+--
+obj=program_text
+name=Revenue/unit/100 tiles
+note=Column header in goods list
+--
+obj=program_text
+name=Speed Bonus
+note=Column header in goods list
+--
+obj=program_text
+name=Category
+note=Column header in goods list
+--
+obj=program_text
+name=Weight/unit
+note=Column header in goods list
+--
+obj=program_text
+name=Hide labels
+note=Option in display settings/stations
+--
+obj=program_text
+name=Change label style
+note=Option in display settings/stations
+--
+obj=program_text
+name=%s now known as %s.
+note=Shown as message if a client renames himself.
+--
+obj=program_text
+name=Welcome, %s!
+note=Shown as message if a client connects
+--
+obj=program_text
+name=%s has left.
+note=Shown as message if a client leaves
+--
+obj=program_text
+name=Lock Control key
+note=Tool button tooltip
+--
+obj=program_text
+name=1 year ago
+note=chat window
+--
+obj=program_text
+name=%u years ago
+note=chat window
+--
+obj=program_text
+name=%u days ago
+note=chat window
+--
+obj=program_text
+name=%u hours ago
+note=chat window
+--
+obj=program_text
+name=1 minute ago
+note=chat window
+--
+obj=program_text
+name=%u minutes ago
+note=chat window
+--
+obj=program_text
+name=just now
+note=chat window
+--
+obj=tooltip_text
+name=Attach current coordinate to the comment
+note=chat window
+--
+obj=program_text
+name=%u Client(s)\n
+note=chat window
+--
+obj=program_text
+name=direct_chat_to:
+note=chat window
+--
+obj=program_text
+name=To: %s
+note=chat window
+--
+obj=program_text
+name=public_chat
+note=tab in chat window
+--
+obj=program_text
+name=company_chat
+note=tab in chat window
+--
+obj=program_text
+name=Player ranking
+note=player ranking window
+--
+obj=program_text
+name=Click to open the finance dialog.
+note=player ranking window
+--
+obj=program_text
+name=Not online
+note=message when offline in chat window
+--
+obj=program_text
+name=Current game
+note=loading default in extended settings
+--
+obj=program_text
+name=Load settings from
+note=loading setting in extended settings
+--
+obj=program_text
+name=Left button drags minimap too
+note=in display settings
+--
+
+
+
+
+
 
 #obj=help_text
 #name=Lower values mean more local sounds
@@ -4528,6 +4658,9 @@ note=Text in banner
 #obj=program_text
 #name=\nAct. Load: %u MW\n
 #note=powernet info window (depricated)
+#-
+#obj=program_text
+#name=show station names
 #-
 #obj=program_text
 #name=Account above %s

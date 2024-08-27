@@ -12,7 +12,7 @@ cyr.bdf
 #                             Language: gr Ellinika                            #
 #                                Encoding: UTF-8                               #
 #                                 Font: cyr.bdf                                #
-#                           Date Created: 25.02 2023                           #
+#                            Date Created: 2.06 2024                           #
 #                                                                              #
 ################################################################################
 #__________________________________button_text__________________________________
@@ -378,7 +378,7 @@ Gebaeude
 Gewicht
 Βάρος
 Gewinn
-Εισόδημα:
+Εισόδημα: 
 Give the selected vehicle(s) an individual schedule
 Δώστε στο επιλεγμένο όχημα(τα) ένα ατομικό χρονοδιάγραμμα.
 gl_btn_sort_catg

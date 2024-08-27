@@ -20,10 +20,10 @@ static const char *sort_text[labellist::SORT_MODES] = {
 };
 
 labellist_frame_t::labellist_frame_t() :
-	gui_frame_t( translator::translate("labellist_title") ),
+	gui_frame_t(translator::translate("labellist_title")),
 	scrolly(gui_scrolled_list_t::windowskin, labellist_stats_t::compare)
 {
-	set_table_layout(1,0);
+set_table_layout(1,0);
 
 	add_table(3, 3);
 	{
@@ -68,7 +68,6 @@ labellist_frame_t::labellist_frame_t() :
 
 void labellist_frame_t::fill_list()
 {
-	strcpy(last_name_filter, name_filter);
 	label_count = welt->get_label_list().get_count();
 
 	scrolly.clear_elements();
@@ -114,20 +113,14 @@ bool labellist_frame_t::action_triggered( gui_action_creator_t *comp,value_t v)
 		sorteddir.pressed = labellist_stats_t::sortreverse;
 		scrolly.sort(0);
 	}
+	else if (comp == &name_filter_input) {
+		fill_list();
+	}
 	else if (comp == &filter) {
 		labellist_stats_t::filter = !labellist_stats_t::filter;
 		fill_list();
 	}
 	return true;
-}
-
-
-void labellist_frame_t::draw(scr_coord pos, scr_size size)
-{
-	if(  label_count != welt->get_label_list().get_count()  ||  strcmp(last_name_filter, name_filter)  ) {
-		fill_list();
-	}
-	gui_frame_t::draw(pos, size);
 }
 
 

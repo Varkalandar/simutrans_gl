@@ -12,10 +12,16 @@
 ; untgz
 ; ShellLink
 
-!define VERSION "0.123.0.1"
+!define VERSION "0.124.2.2"
 
 VIProductVersion "${VERSION}"
 VIFileVersion "${VERSION}"
+
+VIAddVersionKey "ProductName" "Simutrans"
+;VIAddVersionKey "Comments" "A test comment"
+VIAddVersionKey "CompanyName" "Simutrans Team"
+VIAddVersionKey "LegalCopyright" "Artistic License"
+VIAddVersionKey "FileDescription" "Simutrans installer (all users)"
 VIAddVersionKey "FileVersion" "${VERSION}"
 
 Unicode true
@@ -31,6 +37,7 @@ Name "Simutrans Transport Simulator"
 OutFile "simutrans-online-install.exe"
 
 InstallDir $PROGRAMFILES\Simutrans
+
 
 !define MUI_UNICON "..\stormoog.ico"
 
@@ -67,9 +74,9 @@ finishGDIexe:
 FunctionEnd
 
 Section /o "Executable (GDI)" GDIexe
-  AddSize 18656
-  StrCpy $downloadlink "http://downloads.sourceforge.net/project/simutrans/simutrans/123-0-1/simuwin-123-0-1.zip"
-  StrCpy $archievename "simuwin-123-0-1.zip"
+  AddSize 19164
+  StrCpy $downloadlink "http://downloads.sourceforge.net/project/simutrans/simutrans/124-2-2/simuwin-124-2-2.zip"
+  StrCpy $archievename "simuwin-124-2-2.zip"
   StrCpy $downloadname "Simutrans Executable (GDI)"
   SetOutPath $INSTDIR
   Call DownloadInstallZip
@@ -77,9 +84,9 @@ Section /o "Executable (GDI)" GDIexe
 SectionEnd
 
 Section "Executable (SDL2)" SDLexe
-  AddSize 20372
-  StrCpy $downloadlink "http://downloads.sourceforge.net/project/simutrans/simutrans/123-0-1/simuwin-sdl-123-0-1.zip"
-  StrCpy $archievename "simuwin-sdl-123-0-1.zip"
+  AddSize 21508
+  StrCpy $downloadlink "http://downloads.sourceforge.net/project/simutrans/simutrans/124-2-2/simuwin-sdl-124-2-2.zip"
+  StrCpy $archievename "simuwin-sdl-124-2-2.zip"
   StrCpy $downloadname "Simutrans Executable (SDL2)"
   SetOutPath $INSTDIR
   Call DownloadInstallZip
@@ -87,9 +94,9 @@ Section "Executable (SDL2)" SDLexe
 SectionEnd
 
 Section /o "Executable (GDI 64bit)" GDI64exe
-  AddSize 18196
-  StrCpy $downloadlink "http://downloads.sourceforge.net/project/simutrans/simutrans/123-0/simuwin-x64-123-0-1.zip"
-  StrCpy $archievename "simuwin-x64-123-0-1.zip"
+  AddSize 18672
+  StrCpy $downloadlink "http://downloads.sourceforge.net/project/simutrans/simutrans/124-2-2/simuwin-x64-124-2-2.zip"
+  StrCpy $archievename "simuwin-x64-124-2-2.zip"
   StrCpy $downloadname "Simutrans Executable (GDI) only needed for huge maps"
   SetOutPath $INSTDIR
   Call DownloadInstallZip
@@ -97,26 +104,13 @@ Section /o "Executable (GDI 64bit)" GDI64exe
 SectionEnd
 
 Section /o "Executable (SDL2 64bit)" SDL64exe
-  AddSize 19776
-  StrCpy $downloadlink "http://downloads.sourceforge.net/project/simutrans/simutrans/123-0/simuwin-x64-sdl-123-0-1.zip"
-  StrCpy $archievename "simuwin-sdl-x64-123-0-1.zip"
+  AddSize 17180
+  StrCpy $downloadlink "http://downloads.sourceforge.net/project/simutrans/simutrans/124-2-2/simuwin-x64-sdl-124-2-2.zip"
+  StrCpy $archievename "simuwin-sdl-x64-124-2-2.zip"
   StrCpy $downloadname "Simutrans Executable (SDL2) only needed for huge maps"
   SetOutPath $INSTDIR
   Call DownloadInstallZip
   Call PostExeInstall
-SectionEnd
-
-Section "Chinese Font" wenquanyi_font
-  AddSize 3169
-  IfFileExists $INSTDIR\font\wenquanyi_9pt.bdf no_chinese_needed
-  StrCpy $downloadlink "http://downloads.sourceforge.net/project/simutrans/simutrans/wenquanyi_9pt-font-bdf.zip"
-  StrCpy $archievename "wenquanyi_9pt-font-bdf.zip"
-  StrCpy $downloadname "wenquanyi_9pt"
-  SetOutPath $INSTDIR
-  Call DownloadInstallZipWithoutSimutrans
-  Rename $INSTDIR\wenquanyi_9pt.bdf $INSTDIR\font\wenquanyi_9pt.bdf
-  Delete $INSTDIR\wenquanyi_9pt.bdf
-no_chinese_needed:
 SectionEnd
 
 SectionGroupEnd
@@ -129,8 +123,14 @@ Section "Uninstall"
   Delete "$SMPROGRAMS\Simutrans\Simutrans (Debug).lnk"
   Delete $INSTDIR\Uninst.exe ; delete self (see explanation below why this works)
   RMDir /r $INSTDIR
+
+  SetShellVarContext all
+  StrCpy $PAKDIR "$LOCALAPPDATA\simutrans"
+  SetShellVarContext current
+  DeleteRegKey SHCTX "Software\Microsoft\Windows\CurrentVersion\Uninstall\Simutrans"
+  MessageBox MB_YESNO "Remove global paksets from $PAKDIR?" /SD IDYES IDNO +2
   RMDir /r $PAKDIR
-  DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Simutrans"
+  
 SectionEnd
 
 !include "paksets.nsh"
@@ -171,9 +171,9 @@ test_for_pak:
   IntCmp $R0 ${SF_SELECTED} show_not
   SectionGetFlags ${pak.nippon} $R0
   IntCmp $R0 ${SF_SELECTED} show_not
-  SectionGetFlags ${pak64.ho-scale} $R0
-  IntOp $R0 $R0 & ${SF_SELECTED}
-  IntCmp $R0 ${SF_SELECTED} show_not
+;  SectionGetFlags ${pak64.ho-scale} $R0
+;  IntOp $R0 $R0 & ${SF_SELECTED}
+;  IntCmp $R0 ${SF_SELECTED} show_not
   SectionGetFlags ${pakcontrast} $R0
   IntOp $R0 $R0 & ${SF_SELECTED}
   IntCmp $R0 ${SF_SELECTED} show_not
@@ -210,6 +210,12 @@ test_for_pak:
   IntOp $R0 $R0 & ${SF_SELECTED}
   IntCmp $R0 ${SF_SELECTED} show_not
   SectionGetFlags ${pak32} $R0
+  IntOp $R0 $R0 & ${SF_SELECTED}
+  IntCmp $R0 ${SF_SELECTED} show_not
+  SectionGetFlags ${pakTTD} $R0
+  IntOp $R0 $R0 & ${SF_SELECTED}
+  IntCmp $R0 ${SF_SELECTED} show_not
+  SectionGetFlags ${pak48.bitlit} $R0
   IntOp $R0 $R0 & ${SF_SELECTED}
   IntCmp $R0 ${SF_SELECTED} show_not
   ; not pak selected!

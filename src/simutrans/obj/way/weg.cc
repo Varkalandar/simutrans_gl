@@ -296,7 +296,7 @@ void weg_t::count_sign()
 			max_speed = min(max_speed, top_speed);
 		}
 		// since way 0 is at least present here ...
-		for( ;  i<gr->get_top();  i++  ) {
+		for( ;  i<gr->obj_count();  i++  ) {
 			obj_t *obj=gr->obj_bei(i);
 			// sign for us?
 			if(  roadsign_t const* const sign = obj_cast<roadsign_t>(obj)  ) {
@@ -575,10 +575,10 @@ void weg_t::finish_rd()
 
 // returns NULL, if removal is allowed
 // players can remove public owned ways
-const char *weg_t::is_deletable(const player_t *player)
+const char *weg_t::get_removal_error(const player_t *player)
 {
 	if(  get_owner_nr()==PUBLIC_PLAYER_NR  ) {
 		return NULL;
 	}
-	return obj_t::is_deletable(player);
+	return obj_t::get_removal_error(player);
 }

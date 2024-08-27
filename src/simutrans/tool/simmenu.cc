@@ -202,6 +202,8 @@ const char *tool_t::id_to_string(uint16 id)
 		CASE_TO_STRING(DIALOG_LIST_VEHICLE);
 		CASE_TO_STRING(DIALOG_SCRIPT_TOOL);
 		CASE_TO_STRING(DIALOG_EDIT_GROUNDOBJ);
+		CASE_TO_STRING(DIALOG_CHAT);
+		CASE_TO_STRING(DIALOG_PLAYER_RANKING);
 		}
 	}
 
@@ -326,6 +328,7 @@ tool_t *create_simple_tool(int toolnr)
 		case TOOL_SHOW_FACTORY_STORAGE: tool = new tool_show_factory_storage_t(); break;
 		case TOOL_TOGGLE_CONTROL:       tool = new tool_toggle_control_t();       break;
 		case TOOL_LOAD_SCENARIO:        tool = new tool_load_scenario_t();        break;
+		case TOOL_DAY_NIGHT_TOGGLE:     tool = new tool_day_night_toggle_t();    break;
 		case UNUSED_TOOL_ADD_MESSAGE: // fall-through - intended!!!111elf
 		case UNUSED_WKZ_PWDHASH_TOOL:
 			dbg->warning("create_simple_tool()", "Deprecated tool [%i] requested", toolnr);
@@ -380,6 +383,8 @@ tool_t *create_dialog_tool(int toolnr)
 		case DIALOG_LIST_VEHICLE:    tool = new dialog_list_vehicle_t();    break;
 		case DIALOG_SCRIPT_TOOL:     tool = new dialog_script_tool_t();     break;
 		case DIALOG_EDIT_GROUNDOBJ:  tool = new dialog_edit_groundobj_t();  break;
+		case DIALOG_CHAT:            tool = new dialog_chat_t();            break;
+		case DIALOG_PLAYER_RANKING:  tool = new dialog_player_ranking_t();  break;
 		default:
 			dbg->error("create_dialog_tool()","cannot satisfy request for dialog_tool[%i]!",toolnr);
 			return NULL;
@@ -566,7 +571,15 @@ static utf32 str_to_key( const char *str, uint8 *modifier )
 		if (strstart(str, "END")) {
 			return SIM_KEY_END;
 		}
-		// END
+		// SPACE
+		if (strstart(str, "SPACE")) {
+			return SIM_KEY_SPACE;
+		}
+		// ENTER
+		//if (strstart(str, "ENTER")) {
+		//	return SIM_KEY_ENTER
+		//}
+		// ESC
 		if (strstart(str, "ESC")) {
 			// but currently fixed binding!
 			return SIM_KEY_ESCAPE;
@@ -762,7 +775,7 @@ bool tool_t::read_menu(const std::string &menuconf_path)
 	DBG_MESSAGE( "tool_t::read_menu()", "Reading toolbars" );
 	toolbar_last_used_t::last_used_tools = new toolbar_last_used_t( TOOL_LAST_USED | TOOLBAR_TOOL, "Last used tools", "last_used.txt" );
 	// first: add main menu
-	toolbar_tool.resize( skinverwaltung_t::tool_icons_toolbars->get_count() );
+	toolbar_tool.reserve( skinverwaltung_t::tool_icons_toolbars->get_count() );
 	toolbar_tool.append(new toolbar_t(TOOLBAR_TOOL, "", ""));
 	for(  uint16 i=0;  i<toolbar_tool.get_count();  i++  ) {
 		char id[256];
@@ -1159,6 +1172,7 @@ void toolbar_t::update(player_t *player)
 			if ( !check_tool_availability(w,  welt->get_timeline_year_month()) ) {
 				continue;
 			}
+			w->enabled = welt->get_scenario()->is_tool_enabled(welt->get_active_player(), w->get_id(), w->get_waytype());
 			// now add it to the toolbar gui
 			tool_selector->add_tool_selector( w );
 		}
