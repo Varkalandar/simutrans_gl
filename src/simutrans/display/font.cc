@@ -193,6 +193,7 @@ void font_t::print_debug() const
 bool font_t::load_from_file(const char *srcfilename, int size)
 {
 	tstrncpy( fname, srcfilename, lengthof(fname) );
+
 	bool ok = load_from_freetype( fname, size );
 
 #if MSG_LEVEL>=4

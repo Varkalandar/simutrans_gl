@@ -12,7 +12,7 @@ cyr.bdf
 #                            Language: lt Lithuanian                           #
 #                                Encoding: UTF-8                               #
 #                                 Font: cyr.bdf                                #
-#                           Date Created: 20.03 2024                           #
+#                           Date Created: 20.07 2024                           #
 #                                                                              #
 ################################################################################
 #__________________________________button_text__________________________________
@@ -91,6 +91,8 @@ rocky
 kalnų klimatas
 temperate
 vidutinis klimatas
+tropic
+tropikai
 #__________________________________error_text___________________________________
 #__________________________________error_text___________________________________
 Cannot built depot here!
@@ -711,8 +713,6 @@ December
 Gruodis
 decrease underground view level
 nuleisti požeminį vaizdą
-Default.sve
-Numatytas
 Del Stop
 Pašalinti
 Delete Line
@@ -884,7 +884,7 @@ Generation: %.0f MW
 Gewicht
 Svoris
 Gewinn
-Pelnas:
+Pelnas: 
 Give the selected vehicle(s) an individual schedule
 Duoti transporto priemonei nuosavą grafiką.
 gl_btn_sort_catg
@@ -1728,7 +1728,7 @@ Keisti transporto pranešimus
 tonnen
 t
 Total inhabitants:
-Gyventojai:
+Gyventojai: 
 Tourist attractions
 Turistų traukos centrai:
 Tourists
@@ -1771,8 +1771,6 @@ Transported
 Nukeliavo
 TrolleyBus_tab
 troleibusai
-tropic
-tropikai
 Truck
 Sunkvežimiai
 Tunnel muss an\neinfachem\nHang beginnen!\n

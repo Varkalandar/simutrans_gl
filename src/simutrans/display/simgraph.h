@@ -218,6 +218,8 @@ void display_fillbox_wh_rgb(scr_coord_val xp, scr_coord_val yp, scr_coord_val w,
 
 void display_fillbox_wh_clip_rgb(scr_coord_val xp, scr_coord_val yp, scr_coord_val w, scr_coord_val h, PIXVAL color, bool dirty  CLIP_NUM_DEF CLIP_NUM_DEFAULT_ZERO);
 
+void display_filled_roundbox_clip(scr_coord_val xp, scr_coord_val yp, scr_coord_val w, scr_coord_val h, PIXVAL color, bool dirty);
+
 void display_vline_wh_clip_rgb(scr_coord_val xp, scr_coord_val yp, scr_coord_val h, PIXVAL c, bool dirty  CLIP_NUM_DEF CLIP_NUM_DEFAULT_ZERO);
 
 void display_flush_buffer();
@@ -236,7 +238,6 @@ void display_ddd_box_clip_rgb(scr_coord_val x1, scr_coord_val y1, scr_coord_val 
 
 // #ifdef MULTI_THREAD
 int display_glyph(scr_coord_val x, scr_coord_val y, utf32 c, control_alignment_t flags, PIXVAL default_color, const font_t * font  CLIP_NUM_DEF  CLIP_NUM_DEFAULT_ZERO);
-
 
 // line drawing primitives
 void display_direct_line_rgb(const scr_coord_val x, const scr_coord_val y, const scr_coord_val xx, const scr_coord_val yy, const PIXVAL color);

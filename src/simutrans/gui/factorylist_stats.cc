@@ -7,6 +7,8 @@
 #include "../simskin.h"
 #include "../simfab.h"
 #include "../world/simworld.h"
+#include "../display/viewport.h"
+#include "../tool/simmenu.h"
 #include "../simskin.h"
 
 #include "../builder/goods_manager.h"
@@ -68,7 +70,10 @@ factorylist_stats_t::factorylist_stats_t(fabrik_t *fab)
 		new_component<gui_empty_t>();
 	}
 
+
+	// factory name
 	update_label();
+	add_component(&name_label);
 }
 
 
@@ -122,9 +127,21 @@ bool factorylist_stats_t::infowin_event(const event_t * ev)
 {
 	bool swallowed = gui_aligned_container_t::infowin_event(ev);
 
-	if(  !swallowed  &&  IS_LEFTRELEASE(ev)  ) {
-		fab->open_info_window();
-		swallowed = true;
+	if (!swallowed) {
+		// either open dialog or goto (with control or right click)
+		if (IS_LEFTRELEASE(ev)) {
+			if ((event_get_last_control_shift() ^ tool_t::control_invert) == 2) {
+				world()->get_viewport()->change_world_position(fab->get_pos());
+			}
+			else {
+				fab->open_info_window();
+			}
+			return true;
+		}
+		if (IS_RIGHTRELEASE(ev)) {
+			world()->get_viewport()->change_world_position(fab->get_pos());
+			return true;
+		}
 	}
 	return swallowed;
 }
@@ -133,11 +150,11 @@ bool factorylist_stats_t::infowin_event(const event_t * ev)
 void factorylist_stats_t::draw(scr_coord offset)
 {
 	update_label();
+
 	// boost stuff
 	boost_electric.set_transparent(fab->get_prodfactor_electric()>0 ? 0 : TRANSPARENT50_FLAG | OUTLINE_FLAG | SYSCOL_IMAGE_TRANSPARENCY);
 	boost_passenger.set_transparent(fab->get_prodfactor_pax()>0 ? 0 : TRANSPARENT50_FLAG | OUTLINE_FLAG | SYSCOL_IMAGE_TRANSPARENCY);
 	boost_mail.set_transparent(fab->get_prodfactor_mail()>0 ? 0 : TRANSPARENT50_FLAG | OUTLINE_FLAG | SYSCOL_IMAGE_TRANSPARENCY);
-
 	indicator.set_color( color_idx_to_rgb(fabrik_t::status_to_color[fab->get_status()]) );
 
 	draw_background(offset);

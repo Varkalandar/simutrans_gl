@@ -25,24 +25,22 @@ private:
 	button_t sorteddir;
 	gui_scrolled_list_t scrolly;
 	gui_aligned_container_t list;
+    button_t filter_by_owner;
 	gui_combobox_t filterowner;
 
 	uint32 attraction_count;
 
-	void fill_list();
-
 	static char name_filter[256];
-	char last_name_filter[256];
 	gui_textinput_t name_filter_input;
 
 public:
 	curiositylist_frame_t();
 
+	void fill_list();
+
 	const char *get_help_filename() const OVERRIDE {return "curiositylist_filter.txt"; }
 
 	bool action_triggered(gui_action_creator_t*, value_t) OVERRIDE;
-
-	void draw(scr_coord pos, scr_size size) OVERRIDE;
 
 	void map_rotate90( sint16 ) OVERRIDE { fill_list(); }
 

@@ -122,6 +122,8 @@ enum magic_numbers {
 	magic_depotlist   = magic_depot + MAX_PLAYER_COUNT,
 	magic_vehiclelist = magic_depotlist   + MAX_PLAYER_COUNT,
 	magic_pakinstall,
+	magic_chatframe,
+	magic_player_ranking,
 	magic_max
 };
 
@@ -134,10 +136,10 @@ void rdwr_all_win(loadsave_t *file);
 // save windowsizes in settings
 void rdwr_win_settings(loadsave_t *file);
 
-void win_clamp_xywh_position(scr_coord &pos, scr_size wh, bool move_to_full_view);
+void win_clamp_xywh_position(gui_frame_t *gui, scr_coord &pos, bool move_to_full_view);
 
 int create_win(gui_frame_t *gui, wintype type, ptrdiff_t magic);
-int create_win(scr_coord pos, gui_frame_t *gui, wintype type, ptrdiff_t magic, bool move_to_show_full=false);
+int create_win(scr_coord pos, gui_frame_t *gui, wintype type, ptrdiff_t magic);
 
 // call to avoid the main menu getting mouse events while dragging
 void catch_dragging();

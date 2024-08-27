@@ -4,7 +4,7 @@
 /out
 /Debug
 /Release
-/build
+build
 /vcpkg*
 /config.*
 /configure
@@ -40,3 +40,4 @@ revision.h
 *.exe
 *.kdev4
 vcpkg_installed/
+UpgradeLog.htm

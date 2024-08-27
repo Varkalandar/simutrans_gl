@@ -12,7 +12,7 @@ cyr.bdf
 #                            Language: uk Ukrainian                            #
 #                                Encoding: UTF-8                               #
 #                                 Font: cyr.bdf                                #
-#                           Date Created: 20.03 2024                           #
+#                           Date Created: 20.07 2024                           #
 #                                                                              #
 ################################################################################
 #__________________________________button_text__________________________________
@@ -93,6 +93,10 @@ rocky
 гірський клімат
 temperate
 помірний клімат
+tropic
+тропічний клімат
+tundra
+тундра
 #__________________________________error_text___________________________________
 #__________________________________error_text___________________________________
  Loading scenario script failed
@@ -757,8 +761,6 @@ December
 Грудень
 decrease underground view level
 зменшити рівень підземного огляду
-Default.sve
-Типово
 Del Stop
 Вилучити
 Delete Line
@@ -938,7 +940,7 @@ Generation: %.0f MW
 Gewicht
 Маса
 Gewinn
-Прибуток:
+Прибуток: 
 Give the selected vehicle(s) an individual schedule
 Призначити обраним т/з індивідуальний розклад
 gl_btn_sort_catg
@@ -1810,7 +1812,7 @@ Toggle vehicle tooltips
 tonnen
 т
 Total inhabitants:
-Всього жителів:
+Всього жителів: 
 Tourist attractions
 Туристичні принади:
 Tourists
@@ -1853,14 +1855,10 @@ Transported
 Перевезено
 TrolleyBus_tab
 тролейбуси
-tropic
-тропічний клімат
 Truck
 Вантажівка
 tt_Other
 Інше
-tundra
-тундра
 Tunnel muss an\neinfachem\nHang beginnen!\n
 Тунелі мають починатися\nна прямому схилі!\n
 Tunnel must start on single way!

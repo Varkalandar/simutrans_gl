@@ -189,7 +189,7 @@ int number_to_string(char * p, double f, int decimals  )
 
 
 /**
- * tries to squeese a nubmer into a string with max_length
+ * tries to squeese a number into a string with max_length
  * Will still produce a too long string with too large nubmers!
  */
 void number_to_string_fit(char *ret, double f, int decimals, int max_length )
@@ -283,6 +283,48 @@ char *tstrncpy(char *dest, const char *src, size_t n)
 
 	return dest;
 }
+
+
+
+/**
+ * strcasestr implementation. Search for a pattern in a given string, ignoring case.
+ * @param str: String to search in
+ * @param pattern: The pattern we are looking for.
+ * @returns: A char pointer to the start of the pattern we are looking for in the given string, or NULL if not found.
+ * Original code written by Clifford and shared at StackOverflow: https://stackoverflow.com/a/27304609
+*/
+char *tstrcasestr(const char* str, const char* pattern)
+{
+    const char* p1 = str;
+    const char* p2 = pattern;
+    const char* r = *p2 == 0 ? str : 0;
+
+    while( *p1 != 0 && *p2 != 0 ) {
+        if( tolower( (unsigned char)*p1 ) == tolower( (unsigned char)*p2 ) ) {
+            if( r == 0 ) {
+                r = p1;
+            }
+            p2++;
+        }
+        else {
+            p2 = pattern;
+            if( r != 0 ) {
+                p1 = r + 1;
+            }
+            if( tolower( (unsigned char)*p1 ) == tolower( (unsigned char)*p2 ) ) {
+                r = p1;
+                p2++;
+            }
+            else {
+                r = 0;
+            }
+        }
+        p1++;
+    }
+
+    return *p2 == 0 ? const_cast<char *>(r) : NULL;
+}
+
 
 
 /**
@@ -396,11 +438,11 @@ std::string str_get_basename(const char* fullpath)
 /**
  * Removes ASCII control characters and the space character from the end of the string
  * See https://www.ascii-code.com/
- * 
+ *
  * @param string
  * @returns the string without control chars at the end
 */
-char* clear_invalid_ending_chars(char* string) 
+char* clear_invalid_ending_chars(char* string)
 {
 	static int MAX_ASCII_CHAR = 32;
 	size_t len = strlen(string);
@@ -408,4 +450,8 @@ char* clear_invalid_ending_chars(char* string)
 		string[len] = 0;
 	}
 	return string;
+}
+
+void str_to_lowercase(std::string& s) {
+	std::transform(s.begin(), s.end(), s.begin(), [](unsigned char c) { return std::tolower(c); });
 }

@@ -12,7 +12,7 @@ m+10r.bdf
 #                             Language: ja Japanese                            #
 #                                Encoding: UTF-8                               #
 #                                Font: m+10r.bdf                               #
-#                           Date Created: 20.03 2024                           #
+#                           Date Created: 20.07 2024                           #
 #                                                                              #
 ################################################################################
 #__________________________________button_text__________________________________
@@ -49,6 +49,8 @@ clf_btn_keine
 全解除
 climate area percentage
 気候区分の割合
+Continue Game
+前回の続き
 CROSSING_SOUND
 踏切の音量
 FACTORY_SOUND
@@ -113,10 +115,10 @@ rainfall
 降雨量
 Reselect closes tools
 選択済のツールボタンを押すと選択を解除する
+Return to menu
+メニューに戻る
 Road toll
 通行料
-Save
-ゲームの保存
 Scenario
 シナリオ
 sea
@@ -137,6 +139,8 @@ TRAFFIC_SOUND
 乗り物の音量
 Transfers
 乗降数
+Tutorial
+チュートリアル
 #_________________________________climates_text_________________________________
 #_________________________________climates_text_________________________________
 arctic
@@ -149,6 +153,10 @@ rocky
 氷雪気候
 temperate
 温暖気候
+tropic
+熱帯気候
+tundra
+ツンドラ気候
 #__________________________________error_text___________________________________
 #__________________________________error_text___________________________________
  Loading scenario script failed
@@ -165,6 +173,8 @@ Cannot built depot here!
 ここに車庫を\n建てることはできません。
 Cannot built this station/building\nin underground mode here.
 駅ビル/駅舎は、\n地下には建設できません。
+Cannot connect to the\ncenter of a double slope!
+ダブルスロープの中間の高さには橋を建設できません。
 Cannot create generic line!\nSelect line type by\nusing filter tabs.
 汎用の路線を作成することはできません。\nタブで路線のタイプを選んでください。
 Cannot create socket
@@ -181,6 +191,10 @@ Could not open file
 ファイルを開けません
 Das Feld gehoert\neinem anderen Spieler\n
 この場所は\n他のプレイヤーによって\nすでに占拠されています。\n
+Depots cannot be built on runways!
+車庫を滑走路上に建設することはできません！
+Depots must be built on flat dead-end way tiles!
+車庫は平坦な道路の行き止まりに設置できます
 Der Besitzer erlaubt das Entfernen nicht
 撤去できません。\nここは他社の所有地です。\n
 Diese Zusammenstellung kann nicht fahren!\n
@@ -243,6 +257,8 @@ Server busy
 サーバー使用中\nServer busy
 Server version too new
 サーバーで使用されているものより古いバージョンのプログラムです
+Ship depots must be built on water!
+造船所は水上に建設する必要があります！
 Show all revenue messages
 全てのプレイヤーの収益を表示
 Show no revenue messages
@@ -390,7 +406,7 @@ New factory chain\nfor %s near\n%s built with\n%i factories.
 New vehicle now available:\n%s\n
 「%s」が\n新たに使用可能になりました。
 Now %u clients connected.
-現在、 %u 名のプレーヤーが接続しています。
+現在、 %u 人がオンライン中です。
 overtaking
 車線
 Remove vehicle from map. Use with care!
@@ -411,6 +427,8 @@ Line Filter
 路線フィルター
 #_________________________________program_text__________________________________
 #_________________________________program_text__________________________________
+...
+…
 (%.2f$/km %.2f$/m)
  (%.2f$/km %.2f$/月)
 (%.2f$/km)
@@ -439,6 +457,8 @@ Line Filter
 [DEL]
 [SCROLLLOCK]
 [SCROLL LOCK]
+/month
+/月
 \nBauzeit bis
  ～ 
 \nBauzeit von
@@ -493,8 +513,12 @@ Line Filter
 %s %s前 %s
 %s has entered a depot.
 %s\nは車庫に着きました。\n
+%s has left.
+%s がオフラインになりました。
 %s land %d %s
 %s郊外第%d%s
+%s now known as %s.
+%s はプレイヤー名を %s に変更しました。
 %s wasted\nyour money with a\nnew townhall\nwhen it reached\n%i inhabitants.
 %s町は\n住民が%i人に達したので、\n新しい役場を建てました。
 %s\nis crowded.
@@ -777,6 +801,8 @@ chooses a random map
 マップ番号を無作為に選びます
 citicens
 住民
+Cities can only be built on flat empty ground!
+市役所は平坦な空き地にのみ建設できます。
 City attraction
 都市内施設
 City industries
@@ -943,8 +969,6 @@ December
 12月
 decrease underground view level
 ハイトカットレベルを下げる
-Default.sve
-デフォルト
 Del Stop
  削除
 Delete Line
@@ -1107,6 +1131,8 @@ Follow the convoi on the map.
 この編成を追ってマップを移動します
 font size
 フォントサイズ
+For questions and support please visit:
+質問・サポートは以下のサイトへアクセスしてください：
 Forest
 森
 Found new city
@@ -1201,6 +1227,8 @@ hide all building
 全ての建物を隠す
 hide city building
 都市の建物を隠す
+Hide labels
+駅名プレートを非表示にする
 hide objects under cursor
 カーソル周辺の樹木や建物を隠す
 hide station names
@@ -1393,6 +1421,8 @@ List of industries on the map
 マップ上の産業施設一覧
 LKW_tab
 トラック
+Load '%s'
+「%s」を再開します
 Load game
 ゲームの再開
 load height data from file
@@ -1572,7 +1602,7 @@ New line created!\nYou can assign the line now\nby selecting it from the\nline s
 New Vehicles
 購入費
 Nickname:
-名前：
+プレイヤー名：
 no buildings hidden
 すべての建物を表示
 no convois
@@ -1591,6 +1621,8 @@ No stop here!
 ここには駅がありません。\nキャンセルします。
 No suitable ground!
 適切な場所ではありません。\n\n気候条件が合わない/空地ではない\nまたは線路/道路上ではありません\nまた地下では線路/道路上を起点としてください。
+No suitable townhall available for this climate!
+気候に適合する役所建築物がありません！
 No terminal station here!
 この形式の停車場は走路の終端に\n建ててください！
 no timeline
@@ -1881,6 +1913,8 @@ sack
  袋
 sail
 帆走
+Save
+ゲームの保存
 Saving map ...
 マップを保存中
 Scenario complete: %i%%
@@ -2217,14 +2251,10 @@ Trees disabled!
 樹木は使用できません！
 TrolleyBus_tab
 トロリーバス
-tropic
-熱帯気候
 Truck
 自動車
 tt_Other
 その他
-tundra
-ツンドラ気候
 Tunnel muss an\neinfachem\nHang beginnen!\n
 トンネルは直線の\n坂に作ってください。\n
 Tunnel must start on single way!
@@ -2329,6 +2359,10 @@ Weight
 重量
 Weight:
 重量:
+Welcome to Simutrans
+ようこそ、Simutransへ
+Welcome, %s!
+%s がゲームに接続しました。
 Wert
 価格
 west
@@ -2401,6 +2435,8 @@ vehicles of the line %s were retired
 #_________________________________tooltip_text__________________________________
 Add convois with similar schedule to this line.
 この路線と同じスケジュールの車両を追加します。
+Tutorial not available for this pakset. Please try loading Pak128.
+このpakセットにはチュートリアルが用意されていません。(最新版のpak128を確認してみてください)
 #_______________________________unnecessary_text________________________________
 #_______________________________unnecessary_text________________________________
 &0_CITY_SYLL

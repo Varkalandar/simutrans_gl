@@ -93,11 +93,15 @@ scr_size gui_tab_panel_t::get_min_size() const
 			t_size.h = max(t_size.h, LINESPACE + D_V_SPACE);
 		}
 		if (iter.component != last_component) {
-			c_size.clip_lefttop( iter.component->get_min_size() );
+			scr_size cs = iter.component->get_min_size();
+			if (!iter.component->is_marginless()) {
+				cs.h += D_MARGIN_BOTTOM;
+			}
+			c_size.clip_lefttop( cs );
 			last_component = iter.component;
 		}
 	}
-	return t_size + c_size;
+	return t_size+c_size;
 }
 
 
@@ -121,6 +125,18 @@ bool gui_tab_panel_t::tab_getroffen(scr_coord p)
 
 bool gui_tab_panel_t::infowin_event(const event_t *ev)
 {
+	if (gui_component_t *t=get_aktives_tab()) {
+		if (gui_component_t *comp = t->get_focus()) {
+			event_t ev2 = *ev;
+			ev2.move_origin(t->get_pos());
+			ev2.move_origin(comp->get_pos());
+			if (comp->infowin_event(&ev2)) {
+				// has been already handled
+				return true;
+			}
+		}
+	}
+
 	// since we get can grab the focus to get keyboard events, we must make sure to handle mouse events only if we are hit
 	if (ev->ev_class < EVENT_CLICK || IS_WHEELUP(ev) || IS_WHEELDOWN(ev)) {
 		is_dragging = false;

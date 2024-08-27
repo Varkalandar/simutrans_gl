@@ -507,7 +507,7 @@ void grund_t::rotate90()
 	// then rotate the things on this tile
 	objlist.rotate90_moving();
 	uint8 trees = 0, offset = 0;
-	if(  get_top()==254  ) {
+	if(  obj_count()==254  ) {
 		dbg->warning( "grund_t::rotate90()", "Too many stuff on (%s)", pos.get_str() );
 	}
 	for(  uint8 i=0;  i<objlist.get_top();  i++  ) {
@@ -564,7 +564,7 @@ void grund_t::enlarge_map( sint16, sint16 /*new_size_y*/ )
 void grund_t::take_obj_from(grund_t* other_gr)
 {
 	// transfer all things
-	while( other_gr->get_top() ) {
+	while( other_gr->obj_count() ) {
 		objlist.add( other_gr->obj_remove_top() );
 	}
 	// transfer the way flags
@@ -582,6 +582,8 @@ void grund_t::take_obj_from(grund_t* other_gr)
 void grund_t::open_info_window()
 {
 	if(env_t::ground_info  ||  hat_wege()) {
+		if (hat_wege()) {
+		}
 		create_win(new grund_info_t(this), w_info, (ptrdiff_t)this);
 	}
 }
@@ -592,9 +594,8 @@ void grund_t::info(cbuffer_t& buf) const
 	if(!is_water()) {
 		if(flags&has_way1) {
 			// bridges / tunnels only carry dummy ways
-			if(ist_tunnel()  ||  ist_bruecke()) {
-				buf.append(translator::translate(get_weg_nr(0)->get_name()));
-				buf.append("\n");
+			if (!ist_tunnel() && !ist_bruecke()) {
+				translator::get_obj_info(buf, get_weg_nr(0)->get_name());
 			}
 			obj_bei(0)->info(buf);
 			// creator of bridge or tunnel graphic
@@ -615,6 +616,7 @@ void grund_t::info(cbuffer_t& buf) const
 			}
 			// second way
 			if(flags&has_way2) {
+				//translator::get_obj_info(buf, get_weg_nr(0)->get_name()) // might get too long ...
 				buf.append(translator::translate(get_weg_nr(1)->get_name()));
 				buf.append("\n");
 				obj_bei(1)->info(buf);
@@ -1911,7 +1913,7 @@ ribi_t::ribi grund_t::get_weg_ribi_unmasked(waytype_t typ) const
 */
 depot_t* grund_t::get_depot() const
 {
-	return dynamic_cast<depot_t *>(first_obj());
+	return dynamic_cast<depot_t *>(first_no_way_obj());
 }
 
 
@@ -2186,9 +2188,9 @@ bool grund_t::remove_everything_from_way(player_t* player, waytype_t wt, ribi_t:
 		ribi_t::ribi add=(weg->get_ribi_unmasked()&rem);
 		sint32 costs = 0;
 
-		for(  sint16 i=get_top();  i>=0;  i--  ) {
+		for(  sint16 i=obj_count();  i>=0;  i--  ) {
 			// we need to delete backwards, since we might miss things otherwise
-			if(  i>=get_top()  ) {
+			if(  i>=obj_count()  ) {
 				continue;
 			}
 
@@ -2288,7 +2290,7 @@ wayobj_t *grund_t::get_wayobj( waytype_t wt ) const
 	waytype_t wt1 = ( wt == tram_wt ) ? track_wt : wt;
 
 	// since there might be more than one, we have to iterate through all of them
-	for(  uint8 i = 0;  i < get_top();  i++  ) {
+	for(  uint8 i = 0;  i < obj_count();  i++  ) {
 		obj_t *obj = obj_bei(i);
 		if (wayobj_t* const wayobj = obj_cast<wayobj_t>(obj)) {
 			waytype_t wt2 = wayobj->get_desc()->get_wtyp();

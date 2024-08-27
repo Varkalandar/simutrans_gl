@@ -664,6 +664,27 @@ const char *translator::translate(const char *str, int lang)
 }
 
 
+const char* translator::get_obj_info(cbuffer_t &buf,const char *name)
+{
+	buf.append(translator::translate(name));
+	buf.rtrim();
+	buf.append("\n\n");
+
+	// append extra info if it is a short name
+	if (strlen(name) < 238) {
+		char ei[256];
+		sprintf(ei, "obj_%s_details", name);
+		const char* translated_ei = translate(ei);
+		if (ei != translated_ei) {
+			buf.append(translated_ei);
+			buf.rtrim();
+			buf.append("\n\n");
+		}
+	}
+	return NULL;
+}
+
+
 const char *translator::get_month_name(uint16 month)
 {
 	static const char *const month_names[] = {

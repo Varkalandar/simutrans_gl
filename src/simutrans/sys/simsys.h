@@ -151,6 +151,7 @@ int dr_stat(const char *path, struct stat *buf);
 
 /**
 * Check if the directory exists and if so set the result variable to it
+* If the directory doesn't exist previously, it will attempt to create it if testfile is not provided
 * @param path : Path to directory to check
 * @param info : String to provide extra log info
 * @param result : Variable to store the path to directory if it exists
@@ -163,7 +164,7 @@ bool check_and_set_dir(const char *path, const char *info, char *result, const c
 * @param base_dir_arg : command line argument "-set_basedir"
 * @param executable_path : Path to executable (as stored in argv[0])
 */
-bool dr_set_basedir(const char * base_dir_arg, char * executable_path);
+bool dr_set_basedir(const char *base_dir_arg, char *executable_path);
 
 /* query home directory */
 char const* dr_query_homedir();

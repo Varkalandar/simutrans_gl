@@ -903,7 +903,7 @@ bool minimap_t::calc_map_pixel(const grund_t *gr)
 			break;
 
 		case MAP_FOREST:
-			if (gr->get_top() > 1 && gr->obj_bei(gr->get_top() - 1)->get_typ() == obj_t::baum) {
+			if (gr->obj_count() > 1 && gr->obj_bei(gr->obj_count() - 1)->get_typ() == obj_t::baum) {
 				set_map_color(k, color_idx_to_rgb(COL_GREEN));
 				return true;
 			}
@@ -1186,12 +1186,15 @@ bool minimap_t::infowin_event(const event_t *ev)
 	// get factory under mouse cursor
 	last_world_pos = k;
 
+	if (IS_WHEELDOWN(ev) || IS_WHEELUP(ev)) {
+		change_zoom_factor(IS_WHEELUP(ev));
+		return true;
+	}
+
 	// recenter
-	if(IS_LEFTCLICK(ev) || IS_LEFTDRAG(ev)) {
+	if(IS_LEFTRELEASE(ev)  ||  ((IS_LEFTCLICK(ev)  ||  IS_LEFTDRAG(ev))  &&  !env_t::leftdrag_in_minimap)) {
 		world->get_viewport()->set_follow_convoi( convoihandle_t() );
-
 		const sint8 min_hgt = world->is_within_grid_limits(k) ? world->min_hgt(k) : 0;
-
 		world->get_viewport()->change_world_position(koord3d(k,min_hgt));
 		return true;
 	}

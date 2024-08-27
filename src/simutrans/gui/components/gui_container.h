@@ -26,10 +26,13 @@ protected:
 	// focused component of this container can only be one of its immediate children
 	gui_component_t *comp_focus;
 
-	bool list_dirty:1;
+	bool list_dirty : 1;
+
+	// if true, alternate background
+	bool checkered : 1;
 
 	// true, while infowin_event is processed
-	bool inside_infowin_event:1;
+	bool inside_infowin_event : 1;
 
 public:
 	gui_container_t();
@@ -37,6 +40,8 @@ public:
 
 	// needed for WIN_OPEN events
 	void clear_dirty() { list_dirty=false; }
+
+	void set_checkered(bool c) { checkered = c; }
 
 	/**
 	* Adds a Component to the Container.
@@ -47,6 +52,10 @@ public:
 	* Removes a Component in the Container.
 	*/
 	virtual void remove_component(gui_component_t *comp);
+
+	gui_component_t* get_component(size_t i) const { return components[i]; }
+
+	uint32 get_component_count() const { return components.get_count(); }
 
 	bool infowin_event(event_t const*) OVERRIDE;
 

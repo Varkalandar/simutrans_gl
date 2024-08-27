@@ -12,7 +12,7 @@ cyr.bdf
 #                             Language: ru Russian                             #
 #                                Encoding: UTF-8                               #
 #                                 Font: cyr.bdf                                #
-#                           Date Created: 20.03 2024                           #
+#                           Date Created: 20.07 2024                           #
 #                                                                              #
 ################################################################################
 #__________________________________button_text__________________________________
@@ -147,6 +147,10 @@ rocky
 Альпийский (скалистый)
 temperate
 Умеренный
+tropic
+Тропический
+tundra
+Субарктический
 #__________________________________error_text___________________________________
 #__________________________________error_text___________________________________
  Loading scenario script failed
@@ -937,8 +941,6 @@ December
 Декабрь
 decrease underground view level
 уменьшить уровень подземного режима
-Default.sve
-По умолчанию
 Del Stop
 Удалить
 Delete Line
@@ -1142,7 +1144,7 @@ Generation: %.0f MW
 Gewicht
 Вес
 Gewinn
-Доход:
+Доход: 
 Give the selected vehicle(s) an individual schedule
 Назначить выбранным т/с индивидуальное расписание
 gl_btn_sort_catg
@@ -2097,14 +2099,10 @@ Trees disabled!
 Деревья запрещены!
 TrolleyBus_tab
 троллейбусы
-tropic
-Тропический
 Truck
 Грузовик
 tt_Other
 Другое
-tundra
-Субарктический
 Tunnel muss an\neinfachem\nHang beginnen!\n
 Туннели должны начинаться\nна прямом склоне!\n
 Tunnel must start on single way!

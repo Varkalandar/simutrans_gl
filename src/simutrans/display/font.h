@@ -79,8 +79,10 @@ public:
     uint32 get_glyph_count() const { return glyphs.size(); }
 
 private:
-    /// Load a freetype font
-    bool load_from_freetype(const char *fname, int pixel_height);
+#if COLOUR_DEPTH != 0
+	/// Load a freetype font
+	bool load_from_freetype(const char *fname, int pixel_height);
+#endif
 
     void print_debug() const;
 

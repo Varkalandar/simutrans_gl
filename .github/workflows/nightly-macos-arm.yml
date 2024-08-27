@@ -1,4 +1,4 @@
-name: Nightly build MacOS
+name: Nightly build MacOS ARM
 
 on:
   workflow_dispatch:
@@ -14,14 +14,12 @@ jobs:
 
     - name: install_dependencies
       run: |
-        brew reinstall cmake pkg-config libpng freetype zstd sdl2 fluidsynth
+        brew install cmake pkg-config libpng freetype zstd sdl2 fluidsynth
 
     - name: build
       run: |
-        mkdir build
-        cd build
-        cmake -DCMAKE_BUILD_TYPE=Release ..
-        cmake --build . --target install
+        cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DSIMUTRANS_UPDATE_LANGFILES=ON ..
+        cmake --build build --target install
 
     - name: distribute
       run: |
@@ -33,6 +31,6 @@ jobs:
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: build/simumac-nightly.zip
-        asset_name: simumac-nightly.zip
+        asset_name: simumac-arm-nightly.zip
         tag: Nightly
         overwrite: true

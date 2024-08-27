@@ -12,12 +12,19 @@
 ; untgz
 ; ShellLink
 
-!define VERSION "0.124.0.0"
+!define VERSION "0.124.2.2"
 
 RequestExecutionLevel user
+!define MULTIUSER_EXECUTIONLEVEL user
 
 VIProductVersion "${VERSION}"
 VIFileVersion "${VERSION}"
+
+VIAddVersionKey "ProductName" "Simutrans"
+;VIAddVersionKey "Comments" "A test comment"
+VIAddVersionKey "CompanyName" "Simutrans Team"
+VIAddVersionKey "LegalCopyright" "Artistic License"
+VIAddVersionKey "FileDescription" "Simutrans installer (local user)"
 VIAddVersionKey "FileVersion" "${VERSION}"
 
 Unicode true
@@ -49,19 +56,22 @@ Function PostExeInstall
   goto finishGDIexe
 
 NotPortable:
+  WriteRegStr SHCTX "Software\Microsoft\Windows\CurrentVersion\Uninstall\Simutrans" "DisplayName" "Simutrans - A transport simulator"
+  WriteRegStr SHCTX "Software\Microsoft\Windows\CurrentVersion\Uninstall\Simutrans" "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
+  WriteRegStr SHCTX "Software\Microsoft\Windows\CurrentVersion\Uninstall\Simutrans" "DisplayIcon" "$\"$INSTDIR\uninstall.exe$\""
+
   ; make start menu entries
   CreateDirectory "$SMPROGRAMS\Simutrans"
   CreateShortCut "$SMPROGRAMS\Simutrans\Simutrans.lnk" "$INSTDIR\Simutrans.exe" ""
   CreateShortCut "$SMPROGRAMS\Simutrans\Simutrans (Debug).lnk" "$INSTDIR\Simutrans.exe" "-log 1 -debug 3"
-  CreateShortCut "$SMPROGRAMS\Simutrans\Simutrans Uninstall.lnk" "$INSTDIR\uninstall.exe" ""
 
 finishGDIexe:
 FunctionEnd
 
 Section /o "Executable (GDI)" GDIexe
-  AddSize 18656
-  StrCpy $downloadlink "http://downloads.sourceforge.net/project/simutrans/simutrans/123-0-1/simuwin-123-0-1.zip"
-  StrCpy $archievename "simuwin-123-0-1.zip"
+  AddSize 19164
+  StrCpy $downloadlink "http://downloads.sourceforge.net/project/simutrans/simutrans/124-2-2/simuwin-124-2-2.zip"
+  StrCpy $archievename "simuwin-124-2-2.zip"
   StrCpy $downloadname "Simutrans Executable (GDI)"
   SetOutPath $INSTDIR
   Call DownloadInstallZip
@@ -69,9 +79,9 @@ Section /o "Executable (GDI)" GDIexe
 SectionEnd
 
 Section "Executable (SDL2)" SDLexe
-  AddSize 20372
-  StrCpy $downloadlink "http://downloads.sourceforge.net/project/simutrans/simutrans/123-0-1/simuwin-sdl-123-0-1.zip"
-  StrCpy $archievename "simuwin-sdl-123-0-1.zip"
+  AddSize 21508
+  StrCpy $downloadlink "http://downloads.sourceforge.net/project/simutrans/simutrans/124-2-2/simuwin-sdl-124-2-2.zip"
+  StrCpy $archievename "simuwin-sdl-124-2-2.zip"
   StrCpy $downloadname "Simutrans Executable (SDL2)"
   SetOutPath $INSTDIR
   Call DownloadInstallZip
@@ -79,9 +89,9 @@ Section "Executable (SDL2)" SDLexe
 SectionEnd
 
 Section /o "Executable (GDI 64bit)" GDI64exe
-  AddSize 18196
-  StrCpy $downloadlink "http://downloads.sourceforge.net/project/simutrans/simutrans/123-0/simuwin-x64-123-0-1.zip"
-  StrCpy $archievename "simuwin-x64-123-0-1.zip"
+  AddSize 18672
+  StrCpy $downloadlink "http://downloads.sourceforge.net/project/simutrans/simutrans/124-2-2/simuwin-x64-124-2-2.zip"
+  StrCpy $archievename "simuwin-x64-124-2-2.zip"
   StrCpy $downloadname "Simutrans Executable (GDI) only needed for huge maps"
   SetOutPath $INSTDIR
   Call DownloadInstallZip
@@ -89,9 +99,9 @@ Section /o "Executable (GDI 64bit)" GDI64exe
 SectionEnd
 
 Section /o "Executable (SDL2 64bit)" SDL64exe
-  AddSize 19776
-  StrCpy $downloadlink "http://downloads.sourceforge.net/project/simutrans/simutrans/123-0/simuwin-x64-sdl-123-0-1.zip"
-  StrCpy $archievename "simuwin-sdl-x64-123-0-1.zip"
+  AddSize 17180
+  StrCpy $downloadlink "http://downloads.sourceforge.net/project/simutrans/simutrans/124-2-2/simuwin-x64-sdl-124-2-2.zip"
+  StrCpy $archievename "simuwin-sdl-x64-124-2-2.zip"
   StrCpy $downloadname "Simutrans Executable (SDL2) only needed for huge maps"
   SetOutPath $INSTDIR
   Call DownloadInstallZip
@@ -110,6 +120,7 @@ Section "Uninstall"
   SetShellVarContext all
   StrCpy $PAKDIR "$LOCALAPPDATA\simutrans"
   SetShellVarContext current
+  DeleteRegKey SHCTX "Software\Microsoft\Windows\CurrentVersion\Uninstall\Simutrans"
   MessageBox MB_YESNO "Remove global paksets from $PAKDIR?" /SD IDYES IDNO +2
   RMDir /r $PAKDIR
   
@@ -153,9 +164,9 @@ test_for_pak:
   IntCmp $R0 ${SF_SELECTED} show_not
   SectionGetFlags ${pak.nippon} $R0
   IntCmp $R0 ${SF_SELECTED} show_not
-  SectionGetFlags ${pak64.ho-scale} $R0
-  IntOp $R0 $R0 & ${SF_SELECTED}
-  IntCmp $R0 ${SF_SELECTED} show_not
+;  SectionGetFlags ${pak64.ho-scale} $R0
+;  IntOp $R0 $R0 & ${SF_SELECTED}
+;  IntCmp $R0 ${SF_SELECTED} show_not
   SectionGetFlags ${pakcontrast} $R0
   IntOp $R0 $R0 & ${SF_SELECTED}
   IntCmp $R0 ${SF_SELECTED} show_not
@@ -192,6 +203,12 @@ test_for_pak:
   IntOp $R0 $R0 & ${SF_SELECTED}
   IntCmp $R0 ${SF_SELECTED} show_not
   SectionGetFlags ${pak32} $R0
+  IntOp $R0 $R0 & ${SF_SELECTED}
+  IntCmp $R0 ${SF_SELECTED} show_not
+  SectionGetFlags ${pakTTD} $R0
+  IntOp $R0 $R0 & ${SF_SELECTED}
+  IntCmp $R0 ${SF_SELECTED} show_not
+  SectionGetFlags ${pak48.bitlit} $R0
   IntOp $R0 $R0 & ${SF_SELECTED}
   IntCmp $R0 ${SF_SELECTED} show_not
   ; not pak selected!

@@ -61,15 +61,15 @@ Function CheckForPortableInstall
   StrCpy $installinsimutransfolder "1"
   StrCpy $multiuserinstall "1"
   ; if the destination directory is the program dir, we must use use own documents directory for data
-  StrCmp $INSTDIR $PROGRAMFILES\simutrans AllSetPortable
-  StrCmp $INSTDIR $PROGRAMFILES64\simutrans AllSetPortable
-  StrCmp $INSTDIR $USERDIR AllSetPortable
+  StrCmp $INSTDIR $PROGRAMFILES\simutrans FinishSetPortable
+  StrCmp $INSTDIR $PROGRAMFILES64\simutrans FinishSetPortable
+  StrCmp $INSTDIR $USERDIR FinishSetPortable
   StrCpy $multiuserinstall "0"  ; check whether we already have a simuconf.tab, to get state from file
   IfFileExists "$INSTDIR\config\simuconf.tab" 0 PortableUnknown
   ; now we have a config. Without single_user install, it will be multiuser
   StrCpy $multiuserinstall "1"
   ${ConfigRead} "$INSTDIR\config\simuconf.tab" "singleuser_install" $R0
-  IfErrors YesPortable
+  IfErrors PortableUnknown
   ; skip a leading space
 PortableSpaceSkip:
   StrCpy $1 $R0 1
@@ -79,25 +79,31 @@ PortableSpaceSkip:
   ; skip the equal char
   StrCpy $R0 $R0 10 1
   IntOp $multiuserinstall $R0 ^ 1
-  Goto AllSetPortable
+  Goto FinishSetPortable
 
 PortableUnknown:
   ; ask whether this is a portable installation
+  ; check if there are paksets in the current folder
+  FindFirst $R0 $R1 "$INSTDIR\pak*"
+  IfErrors 0 YesPortable
   MessageBox MB_YESNO|MB_ICONINFORMATION "Should this be a portable installation?" /SD IDNO IDYES YesPortable
   StrCpy $multiuserinstall "1"
+  Goto FinishSetPortable
 YesPortable:
-  Goto AllSetPortable
-NotPortable:
-  StrCpy $multiuserinstall "0"
+; Messagebox MB_OK "singleuser"
   StrCpy $PAKDIR $INSTDIR
+  StrCpy $multiuserinstall "0"
+  Goto FinishSetPortable
+NoPortable:
+Messagebox MB_OK "Multiuser"
   
-AllSetPortable:
+FinishSetPortable:
   ; now check, whether the path ends with "simutrans"
   StrCpy $0 $INSTDIR 9 -9
   StrCmp $0 simutrans +2
   StrCpy $installinsimutransfolder "0"
   ; here everything is ok
-;  MessageBox MB_OK "$INSTDIR $PAKDIR"
+; MessageBox MB_OK "$INSTDIR $PAKDIR"
 FunctionEnd
 
 !ifndef PAKSETINSTALL
@@ -106,11 +112,11 @@ PageEx directory
 PageExEnd
 !endif
 
-Page custom MovePre MoveLeave "Moving paks to PorgramData"
+Page custom MovePre MoveLeave "Moving paks to ProgramData"
 
 ; only show this page, if there are old paks to move ...
 Function MovePre
-  StrCmp $PAKDIR $INSTDIR0 0 +2
+  StrCmp $PAKDIR $INSTDIR 0 +2
   Abort
 
   StrCmp $multiuserinstall "1" +2
@@ -202,8 +208,8 @@ Function componentsPre
   Call EnableSectionIfThere
   Push ${pak.nippon}
   Call EnableSectionIfThere
-  Push ${pak64.ho-scale}
-  Call EnableSectionIfThere
+;  Push ${pak64.ho-scale}
+;  Call EnableSectionIfThere
   Push ${pakHAJO}
   Call EnableSectionIfThere
   Push ${pakcontrast}
@@ -233,6 +239,10 @@ Function componentsPre
   Push ${pak48.Excentrique}
   Call EnableSectionIfThere
   Push ${pak32}
+  Call EnableSectionIfThere
+  Push ${pakTTD}
+  Call EnableSectionIfThere
+  Push ${pak48.bitlit}
   Call EnableSectionIfThere
 FunctionEnd
 
@@ -287,9 +297,9 @@ PageExEnd
 ; Some packs are GPL
 Function CheckForGPL
 
-  SectionGetFlags ${pak64.ho-scale} $R0
-  IntOp $R0 $R0 & ${SF_SELECTED}
-  IntCmp $R0 ${SF_SELECTED} showGPL
+;  SectionGetFlags ${pak64.ho-scale} $R0
+;  IntOp $R0 $R0 & ${SF_SELECTED}
+;  IntCmp $R0 ${SF_SELECTED} showGPL
 
   SectionGetFlags ${pakcontrast} $R0
   IntOp $R0 $R0 & ${SF_SELECTED}
@@ -312,6 +322,10 @@ PageExEnd
 Function CheckForCC
 
   SectionGetFlags ${pak192.comic} $R0
+  IntOp $R0 $R0 & ${SF_SELECTED}
+  IntCmp $R0 ${SF_SELECTED} showCC
+
+  SectionGetFlags ${pak48.bitlit} $R0
   IntOp $R0 $R0 & ${SF_SELECTED}
   IntCmp $R0 ${SF_SELECTED} showCC
 
@@ -486,7 +500,7 @@ Function DownloadInstallNoRemoveZip
 ;     Quit
   inetc::get /WEAKSECURITY $downloadlink "$Temp\$archievename" /END
   Pop $0
-  StrCmp $0 "OK" +3
+  StrCmp $0 "OK" +4
      MessageBox MB_OK "Download of $archievename failed: $R0" /SD IDOK
      SetErrorLevel 3
      Quit
@@ -497,7 +511,7 @@ Function DownloadInstallNoRemoveZip
     goto +2
     nsisunz::Unzip "$TEMP\$archievename" "$TEMP"
   Pop $R0 ;Get the return value
-  StrCmp $R0 "success" +4
+  StrCmp $R0 "success" +5
     MessageBox MB_OK|MB_ICONINFORMATION "$R0" /SD IDOK
     RMdir /r "$TEMP\simutrans"
     SetErrorLevel 5
@@ -557,14 +571,14 @@ Function DownloadInstallAddonZipPortable
 ;     Quit
   inetc::get /WEAKSECURITY $downloadlink "$Temp\$archievename" /END
   Pop $0
-  StrCmp $0 "OK" +3
+  StrCmp $0 "OK" +4
      MessageBox MB_OK "Download of $archievename failed: $R0" /SD IDOK
      SetErrorLevel 3
      Quit
 
   nsisunz::Unzip "$TEMP\$archievename" "$OUTDIR\.."
   Pop $R0 ;Get the return value
-  StrCmp $R0 "success" +4
+  StrCmp $R0 "success" +5
     DetailPrint "$0" ;print error message to log
     Delete "$TEMP\$archievename"
     SetErrorLevel 5
@@ -591,9 +605,9 @@ DownloadInstallZipWithoutSimutransDo:
   RMdir /r "$TEMP\simutrans"
   CreateDirectory "$TEMP\simutrans"
 # since we also want to download from addons ...
-  inetc::get /WEAKSECURITY $downloadlink "$Temp\$archievename" /END
+  inetc::get /WEAKSECURITY $downloadlink "$Temp\simutrans\$archievename" /END
   POP $0
-  StrCmp $0 "OK" +3
+  StrCmp $0 "OK" +4
      MessageBox MB_OK "Download of $archievename failed: $R0" /SD IDOK
      SetErrorLevel 3
      Quit
@@ -601,15 +615,16 @@ DownloadInstallZipWithoutSimutransDo:
   ; remove all old files before!
   RMdir /r "$OUTDIR\$downloadname"
   CreateDirectory "$OUTDIR"
-  nsisunz::Unzip "$TEMP\$archievename" "$OUTDIR"
+  DetailPrint "Unzip $archievename to $OUTDIR"
+  nsisunz::Unzip "$TEMP\simutrans\$archievename" "$OUTDIR"
   Pop $R0
-  StrCmp $R0 "success" +4
-    Delete "$Temp\$archievename"
+  StrCmp $R0 "success" +5
+    Delete "$Temp\simutrans\$archievename"
     DetailPrint "$0" ;print error message to log
     SetErrorLevel 5
     Quit
 
-  Delete "$Temp\$archievename"
+  RMdir /r "$TEMP\simutrans"
 DownloadInstallZipWithoutSimutransSkip:
 FunctionEnd
 
@@ -626,14 +641,16 @@ Function DownloadInstallCabWithoutSimutrans
   DetailPrint "Old $downloadname renamed to $downloadname.old"
 DownloadInstallCabWithoutSimutransDo:
   ; ok, needs update
+  RMdir /r "$TEMP\simutrans"
+  CreateDirectory "$TEMP\simutrans"
   Call ConnectInternet
-  NSISdl::download $downloadlink "$Temp\$archievename"
-  Pop $R0 ;Get the return value
-  StrCmp $R0 "success" +4
-    DetailPrint "$R0" ;print error message to log
-     MessageBox MB_OK "Download of $archievename failed: $R0" /SD IDOK
-     SetErrorLevel 3
-     Quit
+  inetc::get /WEAKSECURITY $downloadlink "$Temp\simutrans\$archievename" /END
+  POP $0
+  StrCmp $0 "OK" +5
+    DetailPrint "Download error $R0" ;print error message to log
+    MessageBox MB_OK "Download of $archievename failed: $R0" /SD IDOK
+    SetErrorLevel 3
+    Quit
 
   ; not supported with Unicode
   ;CabDLL::CabView "$TEMP\$archievename"
@@ -643,17 +660,17 @@ DownloadInstallCabWithoutSimutransDo:
   CreateDirectory "$OUTDIR\$downloadname\sound"
   CreateDirectory "$OUTDIR\$downloadname\text"
 
-  CabX::FromFile "" "$TEMP\$archievename" "$OUTDIR"
+  CabX::FromFile "" "$TEMP\simutrans\$archievename" "$OUTDIR"
   ; for ANSI installer
   ;CabDLL::CabExtractAll "$TEMP\$archievename" "$OUTDIR"
-  StrCmp $R0 "0" +5
+  StrCmp $R0 "0" +6
     DetailPrint "$0" ;print error message to log
     RMdir /r "$TEMP\simutrans"
-    Delete "$Temp\$archievename"
+	MessageBox MB_OK "Could not extract $TEMP\simutrans\$archievename"
     SetErrorLevel 5
     Quit
 
-  Delete "$Temp\$archievename"
+  RMdir /r "$TEMP\simutrans"
 DownloadInstallCabWithoutSimutransSkip:
 FunctionEnd
 
@@ -663,22 +680,24 @@ Function DownloadInstallTgzWithoutSimutrans
 #  DetailPrint "Download of $downloadname from\n$downloadlink to $archievename"
   Call ConnectInternet
   RMdir /r "$TEMP\simutrans"
-  NSISdl::download $downloadlink "$Temp\$archievename"
-  Pop $R0 ;Get the return value
-  StrCmp $R0 "success" +3
-     MessageBox MB_OK "Download of $archievename failed: $R0" /SD IDOK
-     SetErrorLevel 3
-     Quit
+  CreateDirectory "$TEMP\simutrans"
+  inetc::get /WEAKSECURITY $downloadlink "$Temp\simutrans\$archievename" /END
+  POP $0
+  StrCmp $0 "OK" +5
+    DetailPrint "Download error $R0" ;print error message to log
+    MessageBox MB_OK "Download of $archievename failed: $R0" /SD IDOK
+    SetErrorLevel 3
+    Quit
 
   CreateDirectory "$OUTDIR"
   ; remove all old files before!
   RMdir /r "$OUTDIR\$downloadname"
-  untgz::extract -d "$OUTDIR" "$TEMP\$archievename"
+  untgz::extract -d "$OUTDIR" "$TEMP\simutrans\$archievename"
   StrCmp $R0 "success" +4
-    Delete "$Temp\$archievename"
+    RMdir /r "$TEMP\simutrans"
     MessageBox MB_OK "Extraction of $archievename failed: $R0" /SD IDOK
     SetErrorLevel 5
     Quit
 
-  Delete "$Temp\$archievename"
+  RMdir /r "$TEMP\simutrans"
 FunctionEnd

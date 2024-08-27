@@ -398,6 +398,7 @@ public:
 class tool_remove_wayobj_t : public tool_build_wayobj_t {
 public:
 	tool_remove_wayobj_t() : tool_build_wayobj_t(TOOL_REMOVE_WAYOBJ | GENERAL_TOOL, false) {}
+	image_id get_icon(player_t*) const OVERRIDE;
 	bool is_selected() const OVERRIDE { return tool_t::is_selected(); }
 	bool is_init_keeps_game_state() const OVERRIDE { return true; }
 };
@@ -412,10 +413,12 @@ private:
 
 public:
 	tool_build_station_t() : tool_t(TOOL_BUILD_STATION | GENERAL_TOOL) {}
+	bool move_has_effects() const OVERRIDE { return true; }
 	image_id get_icon(player_t*) const OVERRIDE;
 	char const* get_tooltip(player_t const*) const OVERRIDE;
 	bool init(player_t*) OVERRIDE;
 	char const* check_pos(player_t*, koord3d) OVERRIDE;
+	char const* move(player_t* const player, uint16 const b, koord3d const pos) OVERRIDE;
 	char const* work(player_t*, koord3d) OVERRIDE;
 	bool is_init_keeps_game_state() const OVERRIDE { return true; }
 	waytype_t get_waytype() const OVERRIDE;
@@ -674,6 +677,7 @@ private:
 class tool_remove_signal_t : public tool_t {
 public:
 	tool_remove_signal_t() : tool_t(TOOL_REMOVE_SIGNAL | GENERAL_TOOL) {}
+	image_id get_icon(player_t*) const OVERRIDE;
 	char const* get_tooltip(player_t const*) const OVERRIDE { return translator::translate("remove signal"); }
 	char const* work(player_t*, koord3d) OVERRIDE;
 	bool is_init_keeps_game_state() const OVERRIDE { return true; }
@@ -916,6 +920,7 @@ public:
 			env_t::hide_buildings==0 ? "hide city building" :
 			(env_t::hide_buildings==1) ? "hide all building" : "show all building");
 	}
+	bool is_selected() const OVERRIDE { return env_t::hide_buildings>0; }
 	bool init( player_t * ) OVERRIDE {
 		env_t::hide_buildings ++;
 		if(env_t::hide_buildings>env_t::ALL_HIDDEN_BUILDING) {
@@ -924,6 +929,7 @@ public:
 		welt->set_dirty();
 		return false;
 	}
+	bool exit(player_t* s) OVERRIDE { return init(s); }
 	bool is_init_keeps_game_state() const OVERRIDE { return true; }
 	bool is_work_keeps_game_state() const OVERRIDE { return true; }
 };
@@ -985,7 +991,7 @@ class tool_quit_t : public tool_t {
 	// default_parameter not empty: start new game
 public:
 	tool_quit_t() : tool_t(TOOL_QUIT | SIMPLE_TOOL) { flags = WFL_LOCAL | WFL_NO_CHK; }
-	char const* get_tooltip(player_t const*) const OVERRIDE { return translator::translate("Beenden"); }
+	char const* get_tooltip(player_t const*) const OVERRIDE { return translator::translate( (default_param && *default_param) ? "Neue Welt" : "Beenden"); }
 	bool init( player_t * ) OVERRIDE;
 	bool is_init_keeps_game_state() const OVERRIDE { return false; }
 	bool is_work_keeps_game_state() const OVERRIDE { return false; }
@@ -1128,6 +1134,23 @@ public:
 	bool is_init_keeps_game_state() const OVERRIDE { return true; }
 	bool is_work_keeps_game_state() const OVERRIDE { return true; }
 };
+
+// on off of night mode
+class tool_day_night_toggle_t : public tool_t {
+public:
+	tool_day_night_toggle_t() : tool_t(TOOL_DAY_NIGHT_TOGGLE | SIMPLE_TOOL) {}
+	char const* get_tooltip(player_t const*) const OVERRIDE { return translator::translate("8WORLD_CHOOSE"); }
+	bool is_selected() const OVERRIDE { return env_t::night_shift; }
+	bool init(player_t*) OVERRIDE {
+		env_t::night_shift = !env_t::night_shift;
+		welt->set_dirty();
+		return false;
+	}
+	bool exit(player_t* s) OVERRIDE { return init(s); }
+	bool is_init_keeps_game_state() const OVERRIDE { return true; }
+	bool is_work_keeps_game_state() const OVERRIDE { return true; }
+};
+
 
 
 /******************************** Internal tools ***********/
