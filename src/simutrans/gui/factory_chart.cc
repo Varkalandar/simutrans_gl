@@ -129,7 +129,9 @@ static const uint8 prod_cell_ref[] =
 	MAX_FAB_REF_LINE, MAX_FAB_REF_LINE, MAX_FAB_REF_LINE, MAX_FAB_REF_LINE,
 };
 
-factory_chart_t::factory_chart_t(const fabrik_t *_factory)
+factory_chart_t::factory_chart_t(const fabrik_t *_factory) :
+	goods_pane(&goods_cont, true, true),
+	prod_pane(&prod_cont, true, true)
 {
 	set_factory(_factory);
 }
@@ -153,9 +155,10 @@ void factory_chart_t::set_factory(const fabrik_t *_factory)
 	const uint32 output_count = factory->get_output().get_count();
 	if(  input_count>0  ||  output_count>0  ) {
 		// only add tab if there is something to display
-		tab_panel.add_tab(&goods_cont, translator::translate("Goods"));
-		goods_cont.set_table_layout(1, 0);
-		goods_cont.add_component(&goods_chart);
+
+		goods_cont.set_table_layout(4, 0);
+		goods_cont.set_force_equal_columns(true);
+		goods_cont.add_component(&goods_chart,4);
 
 		// GUI components for goods input/output statistics
 		goods_chart.set_min_size(scr_size(D_DEFAULT_WIDTH - D_MARGIN_LEFT - D_MARGIN_RIGHT, CHART_HEIGHT));
@@ -165,8 +168,6 @@ void factory_chart_t::set_factory(const fabrik_t *_factory)
 		uint32 count = 0;
 
 		// first tab: charts for goods production/consumption
-		goods_cont.add_table(4, 0)->set_force_equal_columns(true);
-
 		if (input_count > 0) {
 			// create table of buttons, insert curves to chart
 			goods_cont.new_component_span<gui_label_t>("Verbrauch", 4);
@@ -211,11 +212,16 @@ void factory_chart_t::set_factory(const fabrik_t *_factory)
 				count++;
 			}
 		}
-		goods_cont.end_table();
 		goods_cont.new_component<gui_empty_t>();
+		scr_size contsz = goods_cont.get_min_size();
+		if (contsz.w > display_get_width()) {
+			tab_panel.add_tab(&goods_pane, translator::translate("Goods"));
+		}
+		else {
+			tab_panel.add_tab(&goods_cont, translator::translate("Goods"));
+		}
 	}
 
-	tab_panel.add_tab( &prod_cont, translator::translate("Production/Boost") );
 	prod_cont.set_table_layout(1,0);
 	prod_cont.add_component( &prod_chart );
 
@@ -235,7 +241,7 @@ void factory_chart_t::set_factory(const fabrik_t *_factory)
 			else if (prod_cell_button[cell] < MAX_FAB_STAT) {
 				uint8 s = prod_cell_button[cell];
 				// add curve
-				uint16 curve = prod_chart.add_curve( color_idx_to_rgb(prod_color[s]), factory->get_stats(), MAX_FAB_STAT, s, MAX_MONTH, (2<=s  &&  s<=4) ? PERCENT : STANDARD, false, true, 0, prod_convert[s] );
+				uint16 curve = prod_chart.add_curve( color_idx_to_rgb(prod_color[s]), factory->get_stats(), MAX_FAB_STAT, s, MAX_MONTH, (2<=s  &&  s<=4) ? gui_chart_t::PERCENT : gui_chart_t::STANDARD, false, true, 0, prod_convert[s] );
 				// only show buttons, if the is something to do ...
 				if(
 					(s==FAB_BOOST_ELECTRIC  &&  (factory->get_desc()->is_electricity_producer()  ||  factory->get_desc()->get_electric_boost()==0))  ||
@@ -256,7 +262,7 @@ void factory_chart_t::set_factory(const fabrik_t *_factory)
 			else if (prod_cell_ref[cell] < MAX_FAB_REF_LINE) {
 				uint8 r = prod_cell_ref[cell];
 				// add curve
-				uint16 curve = prod_chart.add_curve( color_idx_to_rgb(ref_color[r]), prod_ref_line_data + r, 0, 0, MAX_MONTH, r<3 ? PERCENT : STANDARD, false, true, 0, ref_convert[r] );
+				uint16 curve = prod_chart.add_curve( color_idx_to_rgb(ref_color[r]), prod_ref_line_data + r, 0, 0, MAX_MONTH, r<3 ? gui_chart_t::PERCENT : gui_chart_t::STANDARD, false, true, 0, ref_convert[r] );
 				if(
 					(r==FAB_REF_MAX_BOOST_ELECTRIC  &&  (factory->get_desc()->is_electricity_producer()  ||  factory->get_desc()->get_electric_boost()==0))  ||
 					(r==FAB_REF_MAX_BOOST_PAX  &&  factory->get_desc()->get_pax_boost()==0)  ||
@@ -282,6 +288,13 @@ void factory_chart_t::set_factory(const fabrik_t *_factory)
 	}
 	prod_cont.end_table();
 	prod_cont.new_component<gui_empty_t>();
+	scr_size sz = prod_cont.get_min_size();
+	if (sz.w > display_get_width()) {
+		tab_panel.add_tab(&prod_pane, translator::translate("Production/Boost"));
+	}
+	else {
+		tab_panel.add_tab(&prod_cont, translator::translate("Production/Boost"));
+	}
 
 	set_size(get_min_size());
 	// initialize reference lines' data (these do not change over time)

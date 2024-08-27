@@ -12,6 +12,7 @@
 #include "../tpl/stringhashtable_tpl.h"
 #include "../tpl/vector_tpl.h"
 
+class cbuffer_t;
 
 /**
  * Central location for loading and translating language text for the
@@ -116,6 +117,11 @@ public:
 	 */
 	static const char *translate(const char* str);
 	static const char *translate(const char* str, int lang);
+
+	/**
+	 * Fills the buffer with the obj name and detail translation (if there is any)
+	 */
+	static const char *get_obj_info(cbuffer_t &buf, const char *name);
 
 	/**
 	 * @return replacement info for almost any object within the game

@@ -12,7 +12,7 @@ jobs:
    runs-on: windows-latest
    steps:
     - name: Setup MSBuild and add to PATH
-      uses: microsoft/setup-msbuild@v1.0.2
+      uses: microsoft/setup-msbuild@v2
 
     - name: Checkout code
       uses: actions/checkout@v4
@@ -27,11 +27,7 @@ jobs:
       shell: pwsh
       working-directory: ${{env.GITHUB_WORKSPACE}}
       run: |
-        git clone https://github.com/Microsoft/vcpkg.git
-        cd vcpkg
-        ./bootstrap-vcpkg.bat
-        ./vcpkg integrate install
-        cd ..
+        vcpkg integrate install
         msbuild /m .\Simutrans-SDL2.vcxproj -p:Configuration=Release /p:platform=x64
 
     - name: Build zipfile

@@ -12,7 +12,7 @@ cyr.bdf
 #                              Language: hu Magyar                             #
 #                                Encoding: UTF-8                               #
 #                                 Font: cyr.bdf                                #
-#                           Date Created: 20.03 2024                           #
+#                            Date Created: 2.06 2024                           #
 #                                                                              #
 ################################################################################
 #__________________________________button_text__________________________________
@@ -125,6 +125,10 @@ rocky
 Sziklás/köves
 temperate
 Mérsékelt éghajlat
+tropic
+Trópusi éghajlat
+tundra
+Tundra éghajlat
 #__________________________________error_text___________________________________
 #__________________________________error_text___________________________________
  Loading scenario script failed
@@ -950,7 +954,7 @@ Termelés: %.0f MW\n
 Gewicht
 Súly
 Gewinn
-Bevétel:
+Bevétel: 
 Give the selected vehicle(s) an individual schedule
 A járműhöz rendelt vonal vagy egyedi menetrend megadása
 gl_btn_sort_catg
@@ -1771,14 +1775,10 @@ Transported
 Szállítmányok
 TrolleyBus_tab
 Trolibuszok
-tropic
-Trópusi éghajlat
 Truck
 Közúti jármű
 tt_Other
 Egyebek
-tundra
-Tundra éghajlat
 Tunnel muss an\neinfachem\nHang beginnen!\n
 Az alagút csakis egyenes emelkedőn építhető!
 Tunnel must start on single way!

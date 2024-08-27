@@ -12,7 +12,7 @@ cyr.bdf
 #                            Language: eo Esperanto                            #
 #                                Encoding: UTF-8                               #
 #                                 Font: cyr.bdf                                #
-#                           Date Created: 20.03 2024                           #
+#                           Date Created: 20.07 2024                           #
 #                                                                              #
 ################################################################################
 #__________________________________button_text__________________________________
@@ -97,6 +97,10 @@ rocky
 Altmonta klimato
 temperate
 Mezvarma klimato
+tropic
+Tropika klimato
+tundra
+Tundra klimato
 #__________________________________error_text___________________________________
 #__________________________________error_text___________________________________
  Loading scenario script failed
@@ -813,8 +817,6 @@ December
 Decembro
 decrease underground view level
 Malaltigi subteran nivelon
-Default.sve
-Implicitaĵo
 Del Stop
  Forigi
 Delete Line
@@ -1000,7 +1002,7 @@ Farkvanto: %.0f MW\n
 Gewicht
 Pezeco
 Gewinn
-Enspezo:
+Enspezo: 
 Give the selected vehicle(s) an individual schedule
 Agordi apartan liniplanon al la elektita(j) veturilo(j)
 gl_btn_sort_catg
@@ -1906,7 +1908,7 @@ Toggle vehicle tooltips
 tonnen
 t
 Total inhabitants:
-Tutaj loĝantoj:
+Tutaj loĝantoj: 
 Tourist attractions
 Altiraĵoj:
 Tourists
@@ -1951,14 +1953,10 @@ Trees disabled!
 Arboj ne estas uzeblaj!
 TrolleyBus_tab
 Trolebusoj
-tropic
-Tropika klimato
 Truck
 Ŝarĝaŭto
 tt_Other
 Aliaj
-tundra
-Tundra klimato
 Tunnel muss an\neinfachem\nHang beginnen!\n
 Tuneloj devas esti sur rekta deklivo!
 Tunnel must start on single way!

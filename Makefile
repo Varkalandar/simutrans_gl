@@ -170,35 +170,33 @@ ifdef MSG_LEVEL
   CFLAGS += -DMSG_LEVEL=$(MSG_LEVEL)
 endif
 
-ifdef USE_FREETYPE
-  ifeq ($(shell expr $(USE_FREETYPE) \>= 1), 1)
-    CFLAGS   += -DUSE_FREETYPE
-    ifneq ($(FREETYPE_CONFIG),)
-      CFLAGS += $(shell $(FREETYPE_CONFIG) --cflags)
-      ifeq ($(shell expr $(STATIC) \>= 1), 1)
-        # since static is not supported by slightly old freetype versions
-        FTF := $(shell $(FREETYPE_CONFIG) --libs --static)
-        ifneq ($(FTF),)
-          LDFLAGS += $(subst -lm ,,$(FTF))
-        else
-          LDFLAGS += $(shell $(FREETYPE_CONFIG) --libs)
-        endif
+ifneq ($(BACKEND),posix)
+  ifneq ($(FREETYPE_CONFIG),)
+    CFLAGS += $(shell $(FREETYPE_CONFIG) --cflags)
+    ifeq ($(shell expr $(STATIC) \>= 1), 1)
+      # since static is not supported by slightly old freetype versions
+      FTF := $(shell $(FREETYPE_CONFIG) --libs --static)
+      ifneq ($(FTF),)
+        LDFLAGS += $(subst -lm ,,$(FTF))
       else
-        LDFLAGS   += $(shell $(FREETYPE_CONFIG) --libs)
+        LDFLAGS += $(shell $(FREETYPE_CONFIG) --libs)
       endif
     else
-      LDFLAGS += -lfreetype
-      ifeq ($(OSTYPE),mingw)
-        LDFLAGS += -lpng -lharfbuzz
-      endif
+      LDFLAGS   += $(shell $(FREETYPE_CONFIG) --libs)
     endif
-
+  else
+    LDFLAGS += -lfreetype
     ifeq ($(OSTYPE),mingw)
-      LDFLAGS += -lfreetype
+      LDFLAGS += -lpng -lharfbuzz
     endif
   endif
+  
+  ifeq ($(OSTYPE),mingw)
+    LDFLAGS += -lfreetype
+  endif
+
   ifdef USE_FONTCONFIG
-    CFLAGS  += -USE_FONTCONFIG
+    CFLAGS  += -DUSE_FONTCONFIG
     CFLAGS  += $(shell $(FONTCONFIG_CONFIG) --cflags)
     LDFLAGS += $(shell $(FONTCONFIG_CONFIG) --libs)
   endif
@@ -274,7 +272,7 @@ ifneq ($(REV),)
   DUMMY := $(shell rm -f src/simutrans/revision.h)
 else
   ifeq ("$(wildcard src/simutrans/revision.h)","")
-    DUMMY := $(shell printf "#define REVISION" > src/simutrans/revision.h)
+    DUMMY := $(shell printf '#define REVISION' > src/simutrans/revision.h)
   endif
 endif
 
@@ -372,16 +370,6 @@ SOURCES += src/simutrans/ground/grund.cc
 SOURCES += src/simutrans/ground/monorailboden.cc
 SOURCES += src/simutrans/ground/tunnelboden.cc
 SOURCES += src/simutrans/ground/wasser.cc
-SOURCES += src/simutrans/gui/ai_option.cc
-SOURCES += src/simutrans/gui/ai_selector.cc
-SOURCES += src/simutrans/gui/banner.cc
-SOURCES += src/simutrans/gui/base_info.cc
-SOURCES += src/simutrans/gui/baum_edit.cc
-SOURCES += src/simutrans/gui/city_info.cc
-SOURCES += src/simutrans/gui/citybuilding_edit.cc
-SOURCES += src/simutrans/gui/citylist_frame.cc
-SOURCES += src/simutrans/gui/citylist_stats.cc
-SOURCES += src/simutrans/gui/climates.cc
 SOURCES += src/simutrans/gui/components/gui_aligned_container.cc
 SOURCES += src/simutrans/gui/components/gui_building.cc
 SOURCES += src/simutrans/gui/components/gui_button.cc
@@ -412,6 +400,17 @@ SOURCES += src/simutrans/gui/components/gui_textinput.cc
 SOURCES += src/simutrans/gui/components/gui_timeinput.cc
 SOURCES += src/simutrans/gui/components/gui_waytype_tab_panel.cc
 SOURCES += src/simutrans/gui/components/gui_world_view.cc
+SOURCES += src/simutrans/gui/ai_option.cc
+SOURCES += src/simutrans/gui/ai_selector.cc
+SOURCES += src/simutrans/gui/banner.cc
+SOURCES += src/simutrans/gui/base_info.cc
+SOURCES += src/simutrans/gui/baum_edit.cc
+SOURCES += src/simutrans/gui/chat_frame.cc
+SOURCES += src/simutrans/gui/city_info.cc
+SOURCES += src/simutrans/gui/citybuilding_edit.cc
+SOURCES += src/simutrans/gui/citylist_frame.cc
+SOURCES += src/simutrans/gui/citylist_stats.cc
+SOURCES += src/simutrans/gui/climates.cc
 SOURCES += src/simutrans/gui/convoi_detail.cc
 SOURCES += src/simutrans/gui/convoi_filter_frame.cc
 SOURCES += src/simutrans/gui/convoi_frame.cc
@@ -465,6 +464,7 @@ SOURCES += src/simutrans/gui/pakinstaller.cc
 SOURCES += src/simutrans/gui/pakselector.cc
 SOURCES += src/simutrans/gui/password_frame.cc
 SOURCES += src/simutrans/gui/player_frame.cc
+SOURCES += src/simutrans/gui/player_ranking_frame.cc
 SOURCES += src/simutrans/gui/privatesign_info.cc
 SOURCES += src/simutrans/gui/savegame_frame.cc
 SOURCES += src/simutrans/gui/scenario_frame.cc
@@ -571,6 +571,7 @@ SOURCES += src/simutrans/script/export_objs.cc
 SOURCES += src/simutrans/script/script.cc
 SOURCES += src/simutrans/script/script_loader.cc
 SOURCES += src/simutrans/script/script_tool_manager.cc
+SOURCES += src/simutrans/simachievements.cc
 SOURCES += src/simutrans/simconvoi.cc
 SOURCES += src/simutrans/simdebug.cc
 SOURCES += src/simutrans/simevent.cc

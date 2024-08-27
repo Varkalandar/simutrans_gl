@@ -227,7 +227,7 @@ public:
 		marking &= env_t::visualize_schedule;
 		for(schedule_entry_t const& i : schedule->entries) {
 			if (grund_t* const gr = welt->lookup(i.pos)) {
-				for(  uint idx=0;  idx<gr->get_top();  idx++  ) {
+				for(  uint idx=0;  idx<gr->obj_count();  idx++  ) {
 					obj_t *obj = gr->obj_bei(idx);
 					if(  marking  ) {
 						if(  !obj->is_moving()  ) {
@@ -469,9 +469,9 @@ gui_schedule_t::~gui_schedule_t()
 	delete schedule;
 }
 
-void gui_schedule_t::init(schedule_t* schedule_, player_t* player, convoihandle_t cnv, linehandle_t lin)
+void gui_schedule_t::init(schedule_t* schedule_, player_t* player, convoihandle_t cnv, linehandle_t lin, bool force)
 {
-	if( old_schedule != schedule_ ) {
+	if( force  ||  old_schedule != schedule_ ) {
 		if( old_schedule ) {
 			stats->highlight_schedule( false );
 			update_tool( false );

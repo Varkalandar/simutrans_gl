@@ -268,6 +268,10 @@ void player_t::set_player_color(uint8 col1, uint8 col2)
 	player_color_1 = col1;
 	player_color_2 = col2;
 	display_set_player_color_scheme( player_nr, col1, col2 );
+	// update player window
+	if (ki_kontroll_t* frame = dynamic_cast<ki_kontroll_t*>(win_get_magic(magic_ki_kontroll_t))) {
+		frame->update_data();
+	}
 }
 
 
@@ -296,18 +300,18 @@ bool player_t::new_month()
 				if(  finance->get_netwealth() < 0 ) {
 					destroy_all_win(true);
 					create_win({ display_get_width()/2-128, 40 }, new news_img("Bankrott:\n\nDu bist bankrott.\n"), w_info, magic_none);
-					ticker::add_msg( translator::translate("Bankrott:\n\nDu bist bankrott.\n"), koord3d::invalid, PLAYER_FLAG + player_color_1 + 1 );
+					ticker::add_msg( translator::translate("Bankrott:\n\nDu bist bankrott.\n"), koord3d::invalid, PLAYER_FLAG | player_nr );
 					welt->stop(false);
 				}
 				else if(  finance->get_netwealth()*10 < welt->get_settings().get_starting_money(welt->get_current_month()/12)  ){
 					// tell the player (problem!)
-					welt->get_message()->add_message( translator::translate("Net wealth less than 10%% of starting capital!"), koord3d::invalid, message_t::problems, player_nr, IMG_EMPTY );
+					welt->get_message()->add_message( translator::translate("Net wealth less than 10%% of starting capital!"), koord3d::invalid, message_t::problems, PLAYER_FLAG | player_nr, IMG_EMPTY );
 				}
 				else {
 					// tell the player (just warning)
 					buf.clear();
 					buf.printf( translator::translate("On loan since %i month(s)"), finance->get_account_overdrawn() );
-					welt->get_message()->add_message( buf, koord3d::invalid, message_t::ai, player_nr, IMG_EMPTY );
+					welt->get_message()->add_message( buf, koord3d::invalid, message_t::ai, PLAYER_FLAG | player_nr, IMG_EMPTY );
 				}
 			}
 			// no assets => nothing to go bankrupt about again
@@ -321,13 +325,13 @@ bool player_t::new_month()
 				if(  welt->get_active_player_nr()==player_nr  ) {
 					if(  finance->get_netwealth()*10 < welt->get_settings().get_starting_money(welt->get_current_month()/12)  ){
 						// net wealth nearly spent (problem!)
-						welt->get_message()->add_message( translator::translate("Net wealth near zero"), koord3d::invalid, message_t::problems, player_nr, IMG_EMPTY );
+						welt->get_message()->add_message( translator::translate("Net wealth near zero"), koord3d::invalid, message_t::problems, PLAYER_FLAG | player_nr, IMG_EMPTY );
 					}
 					else {
 						// just minus in account (just tell)
 						buf.clear();
 						buf.printf( translator::translate("On loan since %i month(s)"), finance->get_account_overdrawn() );
-						welt->get_message()->add_message( buf, koord3d::invalid, message_t::ai, player_nr, IMG_EMPTY );
+						welt->get_message()->add_message( buf, koord3d::invalid, message_t::ai, PLAYER_FLAG | player_nr, IMG_EMPTY );
 					}
 				}
 			}
@@ -524,7 +528,7 @@ void player_t::ai_bankrupt()
 			for (size_t b = plan->get_boden_count(); b-- != 0;) {
 				grund_t *gr = plan->get_boden_bei(b);
 				// remove tunnel and bridges first
-				if(  gr->get_top()>0  &&  gr->obj_bei(0)->get_owner()==this   &&  (gr->ist_bruecke()  ||  gr->ist_tunnel())  ) {
+				if(  gr->obj_count()>0  &&  gr->obj_bei(0)->get_owner()==this   &&  (gr->ist_bruecke()  ||  gr->ist_tunnel())  ) {
 					koord3d pos = gr->get_pos();
 
 					waytype_t wt = gr->hat_wege() ? gr->get_weg_nr(0)->get_waytype() : powerline_wt;
@@ -541,7 +545,7 @@ void player_t::ai_bankrupt()
 						continue;
 					}
 				}
-				for (uint8 i = gr->get_top(); i-- != 0;) {
+				for (uint8 i = gr->obj_count(); i-- != 0;) {
 					obj_t *obj = gr->obj_bei(i);
 					if(obj->get_owner()==this) {
 						sint32 costs = 0;
@@ -620,7 +624,7 @@ void player_t::ai_bankrupt()
 					}
 				}
 				// remove empty tiles (elevated ways)
-				if (!gr->ist_karten_boden()  &&  gr->get_top()==0) {
+				if (!gr->ist_karten_boden()  &&  gr->obj_count()==0) {
 					plan->boden_entfernen(gr);
 				}
 			}
@@ -847,7 +851,7 @@ sint64 player_t::undo()
 		}
 		// we allow ways, unimportant stuff but no vehicles, signals, wayobjs etc
 		if(gr->obj_count()>0) {
-			for( unsigned i=0;  i<gr->get_top();  i++  ) {
+			for( unsigned i=0;  i<gr->obj_count();  i++  ) {
 				switch(gr->obj_bei(i)->get_typ()) {
 					// these are allowed
 					case obj_t::zeiger:

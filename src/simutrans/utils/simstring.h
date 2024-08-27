@@ -9,6 +9,7 @@
 
 #include <stddef.h>
 #include <string>
+#include <algorithm>
 
 #ifdef __HAIKU__
 #include <strings.h>
@@ -23,6 +24,7 @@
 #define STRNICMP strncasecmp
 #endif
 #endif
+
 
 #if defined(_MSC_VER) && _MSC_VER < 1900
 #define snprintf(buf,len, format,...) _snprintf_s(buf, len,len, format, __VA_ARGS__)
@@ -90,6 +92,16 @@ char *tstrncpy(char *dest, const char *src, size_t n);
 
 
 /**
+ * strcasestr implementation. Search for a pattern in a given string, ignoring case.
+ * @param str: String to search in
+ * @param pattern: The pattern we are looking for.
+ * @returns: A char pointer to the start of the pattern we are looking for in the given string, or NULL if not found.
+ * Original code written by Clifford and shared at StackOverflow: https://stackoverflow.com/a/27304609
+*/
+char* tstrcasestr(const char* str, const char* pattern);
+
+
+/**
  * Removes whitespace from the end of the string.
  * Modifies the argument!
  */
@@ -129,5 +141,7 @@ std::string str_get_basename(const char* fullpath);
  * @returns string without control chars at the end
 */
 char* clear_invalid_ending_chars(char* string);
+
+void str_to_lowercase(std::string& s);
 
 #endif

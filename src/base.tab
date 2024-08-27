@@ -405,6 +405,7 @@ name=Build drain
 -
 obj=program_text
 name=build HQ
+note=finance window
 -
 obj=program_text
 name=Build land consumer
@@ -1749,6 +1750,10 @@ obj=program_text
 name=show grid
 -
 obj=program_text
+name=show HQ
+note=finance window
+-
+obj=program_text
 name=Show industry
 -
 obj=program_text
@@ -2015,6 +2020,7 @@ name=Update Line
 -
 obj=program_text
 name=upgrade HQ
+note=HQ info window
 -
 obj=program_text
 name=Use timeline start year
@@ -2591,12 +2597,6 @@ name=Routing
 -
 obj=program_text
 name=Costs
--
-obj=program_text
-name=Simuconf.tab
--
-obj=program_text
-name=Default.sve
 -
 obj=error_text
 name=Cannot create socket
@@ -4337,6 +4337,103 @@ obj=program_text
 name=Change label style
 note=Option in display settings/stations
 --
+obj=program_text
+name=%s now known as %s.
+note=Shown as message if a client renames himself.
+--
+obj=program_text
+name=Welcome, %s!
+note=Shown as message if a client connects
+--
+obj=program_text
+name=%s has left.
+note=Shown as message if a client leaves
+--
+obj=program_text
+name=Lock Control key
+note=Tool button tooltip
+--
+obj=program_text
+name=1 year ago
+note=chat window
+--
+obj=program_text
+name=%u years ago
+note=chat window
+--
+obj=program_text
+name=%u days ago
+note=chat window
+--
+obj=program_text
+name=%u hours ago
+note=chat window
+--
+obj=program_text
+name=1 minute ago
+note=chat window
+--
+obj=program_text
+name=%u minutes ago
+note=chat window
+--
+obj=program_text
+name=just now
+note=chat window
+--
+obj=tooltip_text
+name=Attach current coordinate to the comment
+note=chat window
+--
+obj=program_text
+name=%u Client(s)\n
+note=chat window
+--
+obj=program_text
+name=direct_chat_to:
+note=chat window
+--
+obj=program_text
+name=To: %s
+note=chat window
+--
+obj=program_text
+name=public_chat
+note=tab in chat window
+--
+obj=program_text
+name=company_chat
+note=tab in chat window
+--
+obj=program_text
+name=Player ranking
+note=player ranking window
+--
+obj=program_text
+name=Click to open the finance dialog.
+note=player ranking window
+--
+obj=program_text
+name=Not online
+note=message when offline in chat window
+--
+obj=program_text
+name=Current game
+note=loading default in extended settings
+--
+obj=program_text
+name=Load settings from
+note=loading setting in extended settings
+--
+obj=program_text
+name=Left button drags minimap too
+note=in display settings
+--
+
+
+
+
+
 
 #obj=help_text
 #name=Lower values mean more local sounds

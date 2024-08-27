@@ -44,6 +44,7 @@ class interaction_t;
 class tool_t;
 class scenario_t;
 class message_t;
+class chat_message_t;
 class way_desc_t;
 class network_world_command_t;
 class goods_desc_t;
@@ -52,7 +53,6 @@ class viewport_t;
 class records_t;
 class loadingscreen_t;
 class terraformer_t;
-
 
 /**
  * Threaded function caller.
@@ -72,6 +72,9 @@ class karte_t : public surface_t
 	static karte_t* world; ///< static single instance
 
 public:
+	// kind of map
+	enum { AUTO_GENERATED, SCENARIO_WORLD, NEW_WORLD, RESTORED_WORLD, CLIENT_WORLD, LOADED_WORLD } type_of_generation;
+
 	/**
 	 * Height of a point of the map with "perlin noise".
 	 * Uses map roughness and mountain height from @p sets.
@@ -382,6 +385,12 @@ private:
 	*/
 	uint32 next_midi_time;
 
+	/**
+	 * Miscellaneus stuff that do not need to be updated frequently
+	 * Currently used for rich presence and achievements
+	*/
+	uint32 next_misc_time;
+
 	/// To calculate the fps and the simloops.
 	uint32 idle_time;
 	/** @} */
@@ -431,6 +440,7 @@ private:
 	 * Holds all the text messages in the messagebox (chat, new vehicle etc).
 	 */
 	message_t *msg;
+	chat_message_t* chat_msg;
 
 	/**
 	 * Array indexed per way type. Used to determine the speedbonus.
@@ -559,6 +569,11 @@ public:
 	 * Returns the messagebox message container.
 	 */
 	message_t *get_message() { return msg; }
+
+	/**
+	 * Returns the messagebox message container.
+	 */
+	chat_message_t* get_chat_message() const { return chat_msg; }
 
 	/**
 	 * Set to something useful, if there is a total distance != 0 to show in the bar below.
@@ -978,8 +993,8 @@ public:
 	void remove_attraction(gebaeude_t *gb);
 	const weighted_vector_tpl<gebaeude_t*> &get_attractions() const {return attractions; }
 
-	void add_label(koord k) { labels.append_unique(k); }
-	void remove_label(koord k) { labels.remove(k); }
+	void add_label(koord k);
+	void remove_label(koord k);
 	const vector_tpl<koord>& get_label_list() const { return labels; }
 
 	bool add_fab(fabrik_t *fab);

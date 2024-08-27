@@ -62,7 +62,7 @@ void gui_aligned_container_t::set_size(scr_size new_size)
 //	printf("\n");
 
 #ifdef DEBUG
-	if (new_size.w < min_size.w  ||  new_size.h < min_size.h) {
+	if (new_size.w>0  &&  (new_size.w < min_size.w  ||  new_size.h < min_size.h)) {
 		dbg->warning("gui_aligned_container_t::set_size", "new size (%d,%d) cannot fit all elements; at least (%d,%d) required", new_size.w, new_size.h, min_size.w, min_size.h);
 	}
 #endif
@@ -262,6 +262,10 @@ void gui_aligned_container_t::compute_sizes(vector_tpl<scr_coord_val>& col_w, ve
 
 			// only compute if necessary
 			scr_size s = outer == 0 ||  span>1 ? (calc_max ? comp->get_max_size() : comp->get_min_size()) : scr_size(0,0);
+
+			if (!calc_max && comp->is_marginless()) {
+				s = s - (margin_tl + margin_br);
+			}
 
 			if (outer == 0) {
 
@@ -489,7 +493,7 @@ void gui_aligned_container_t::set_spacing_from_theme()
 }
 
 
-gui_aligned_container_t* gui_aligned_container_t::add_table(uint16 columns_, uint16 rows_)
+gui_aligned_container_t* gui_aligned_container_t::add_table(uint16 columns_, uint16 rows_, uint16 span_)
 {
 	if (child) {
 		return child->add_table(columns_, rows_);
@@ -497,6 +501,11 @@ gui_aligned_container_t* gui_aligned_container_t::add_table(uint16 columns_, uin
 	else {
 		child = new_component<gui_aligned_container_t>(columns_, rows_);
 		child->set_margin(scr_size(0,0), scr_size(0,0));
+		// fill with placeholders
+		assert(columns > 0 || span_ <= 1);
+		for (uint i = 1; i < span_; i++) {
+			gui_container_t::add_component(&placeholder);
+		}
 		return child;
 	}
 }

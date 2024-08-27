@@ -41,7 +41,7 @@ void interaction_t::move_view( const event_t &ev )
 	// move the mouse pointer back to starting location => infinite mouse movement
 	if ((ev.mouse_pos.x - ev.click_pos.x) != 0 || (ev.mouse_pos.y - ev.click_pos.y) != 0) {
 		if(!env_t::scroll_infinite  ||  !move_pointer(ev.click_pos.x, ev.click_pos.y)) {
-			// fails in finger mode
+			// fails in finger mode => we have to reset start ourselves
 			change_drag_start(ev.mouse_pos - ev.click_pos);
 		}
 	}
@@ -374,26 +374,33 @@ void interaction_t::check_events()
 	event_t deferred_ev;
 	deferred_ev.ev_class = EVENT_NONE;
 
-	while(  ev.ev_class != EVENT_NONE ) {
+	for(  int swallow_dummies=0;  swallow_dummies<4;  swallow_dummies++  ) {
 
-		DBG_DEBUG4("interaction_t::check_events", "called win_poll_event");
+		/* there are always dummy events in the queue, usually less than 4
+		 * => retry a few times until we get a useful event
+		 * Otherwise very laggy response at low fps
+		 */
+		if (ev.ev_class != EVENT_NONE) {
+			DBG_DEBUG4("interaction_t::check_events", "event %d after %d dummies", ev.ev_class, swallow_dummies);
+			swallow_dummies = 0;
 
-		if (ev.ev_class == EVENT_DRAG) {
-			// defer processing, since there might be many triggered at once
-			// Otherwise mark tiles could be alled twice duing one step
-			deferred_ev = ev;
-		}
-		else {
-			// still one drag left in queue?
-			if (deferred_ev.ev_class == EVENT_DRAG) {
-				// do this first
-				process_event(deferred_ev);
-				deferred_ev.ev_class = EVENT_NONE;
+			if (ev.ev_class == EVENT_DRAG) {
+				// defer processing, since there might be many triggered at once
+				// Otherwise mark tiles could be alled twice duing one step
+				deferred_ev = ev;
 			}
+			else {
+				// still one drag left in queue?
+				if (deferred_ev.ev_class == EVENT_DRAG) {
+					// do this first
+					process_event(deferred_ev);
+					deferred_ev.ev_class = EVENT_NONE;
+				}
 
-			if (process_event(ev)) {
-				// We have been asked to stop processing, exit.
-				return;
+				if (process_event(ev)) {
+					// We have been asked to stop processing, exit.
+					return;
+				}
 			}
 		}
 
