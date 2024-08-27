@@ -208,7 +208,7 @@ SOCKET network_open_address(char const* cp, char const*& err)
 	ips.append_unique("::");
 	ips.append_unique("0.0.0.0");
 #else
-	vector_tpl<std::string> const& ips = *env_t::listen;
+	vector_tpl<std::string> const& ips = env_t::listen;
 #endif
 
 	// For each address in the list of listen addresses try and create a socket to transmit on
@@ -248,7 +248,7 @@ SOCKET network_open_address(char const* cp, char const*& err)
 		if (  (ret = getaddrinfo( ip.c_str(), 0, &local_hints, &local )) != 0  ) {
 			dbg->warning( "network_open_address()", "Failed to getaddrinfo for %s, error was: %s", ip.c_str(), gai_strerror(ret) );
 #ifndef NETTOOL
-			env_t::listen->remove_at( i );
+			env_t::listen.remove_at( i );
 #endif
 			i --;
 			continue;

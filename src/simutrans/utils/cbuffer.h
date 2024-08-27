@@ -48,7 +48,7 @@ public:
 
 	/**
 	 * Creates a new cbuffer with the given text
-         * @param text The text to initialize the buffer 
+     * @param text The text to initialize the buffer 
 	 */
 	cbuffer_t(const char * text);
 
@@ -58,8 +58,6 @@ public:
 	 * Copy constructor
 	 */
 	cbuffer_t(const cbuffer_t& cbx);
-
-	cbuffer_t(const char *);
 
 	/**
 	 * Copy assignment operator

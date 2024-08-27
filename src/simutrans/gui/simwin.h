@@ -139,7 +139,7 @@ void rdwr_win_settings(loadsave_t *file);
 void win_clamp_xywh_position(gui_frame_t *gui, scr_coord &pos, bool move_to_full_view);
 
 int create_win(gui_frame_t *gui, wintype type, ptrdiff_t magic);
-int create_win(scr_coord pos, gui_frame_t *gui, wintype type, ptrdiff_t magic);
+int create_win(scr_coord pos, gui_frame_t *gui, wintype type, ptrdiff_t magic, bool move_to_full_view);
 
 // call to avoid the main menu getting mouse events while dragging
 void catch_dragging();

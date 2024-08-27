@@ -154,7 +154,7 @@ public:
 	static std::string server_admin_pw;
 
 	/// IP addresses to listen on/send announcements on
-	static vector_tpl<std::string> * listen;
+	static vector_tpl<std::string> listen;
 
 	/// pause server if no client connected
 	static bool pause_server_no_clients;

@@ -90,7 +90,7 @@ private:
 
 	time_t msg_time;
 	sint8 player_nr;
-	PIXVAL bgcolor;
+	rgba_t bgcolor;
 	cbuffer_t text;
 	scr_coord_val width;
 
@@ -132,11 +132,11 @@ private:
 			else {
 				lb_time_diff.buf().printf(translator::translate("%u minutes ago"), minutes);
 			}
-			lb_time_diff.set_color(SYSCOL_TEXT);
+			lb_time_diff.set_color((gui_theme_t::gui_color_text));
 		}
 		else {
 			lb_time_diff.buf().append(translator::translate("just now"));
-			lb_time_diff.set_color(SYSCOL_TEXT);
+			lb_time_diff.set_color((gui_theme_t::gui_color_text));
 		}
 		lb_time_diff.buf().append(") ");
 		lb_time_diff.update();
@@ -163,7 +163,7 @@ public:
 		const bool is_dark_theme = (env_t::gui_player_color_dark >= env_t::gui_player_color_bright);
 		const int base_blend_percent = tail_dir == tail_right ? 60 : 80;
 		player_t* player = world()->get_player(player_nr);
-		const PIXVAL base_color = color_idx_to_rgb(player ? player->get_player_color1() + env_t::gui_player_color_bright : COL_GREY4);
+		const rgba_t base_color = color_idx_to_rgb(player ? player->get_player_color1() + env_t::gui_player_color_bright : COL_GREY4);
 		bgcolor = display_blend_colors(base_color, color_idx_to_rgb(COL_WHITE), is_dark_theme ? (95 - base_blend_percent) : base_blend_percent);
 		if (msg_time) { // old save messages does not have date
 			update_time_diff(time(NULL));
@@ -247,8 +247,13 @@ public:
 		lb_time_diff.set_pos(message.get_pos()+scr_size(bsize.w-D_MARGIN_RIGHT-lb_time_diff.get_size().w-2, message.get_size().h));
 
 		// draw ballon
+/*
 		display_filled_roundbox_clip(offset.x + off_w + 1, offset.y + 1, bsize.w, bsize.h, display_blend_colors(bgcolor, SYSCOL_SHADOW, 75), false);
 		display_filled_roundbox_clip(offset.x + off_w, offset.y, bsize.w, bsize.h, bgcolor, false);
+*/
+		display_fillbox_wh_rgb(offset.x + off_w + 1, offset.y + 1, bsize.w, bsize.h, display_blend_colors(bgcolor, SYSCOL_SHADOW, 75), false);
+		display_fillbox_wh_rgb(offset.x + off_w, offset.y, bsize.w, bsize.h, bgcolor, false);
+
 		if (tail_dir) {
 			scr_coord_val h = LINESPACE / 2;
 			for (scr_coord_val x = 0; x < h; x++) {
@@ -392,15 +397,15 @@ void chat_frame_t::fill_list()
 		break;
 	case CH_WHISPER:
 		lb_channel.set_text("direct_chat_to:");
-		lb_channel.set_color(SYSCOL_TEXT);
+		lb_channel.set_color((gui_theme_t::gui_color_text));
 		cb_direct_chat_targets.clear_elements();
-		cb_direct_chat_targets.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("Show all"), SYSCOL_TEXT);
+		cb_direct_chat_targets.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("Show all"), (gui_theme_t::gui_color_text));
 		cb_direct_chat_targets.set_selection(0);
 		for (uint32 i = 0; i < chat_message_t::get_online_nicks().get_count(); i++) {
 			if (chat_message_t::get_online_nicks()[i] == env_t::nickname.c_str()) {
 				continue;
 			}
-			cb_direct_chat_targets.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(chat_message_t::get_online_nicks()[i], SYSCOL_TEXT);
+			cb_direct_chat_targets.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(chat_message_t::get_online_nicks()[i], (gui_theme_t::gui_color_text));
 			if (chat_message_t::get_online_nicks()[i] == selected_destination) {
 				cb_direct_chat_targets.set_selection(cb_direct_chat_targets.count_elements()-1);
 			}
@@ -506,13 +511,13 @@ bool chat_frame_t::action_triggered(gui_action_creator_t* comp, value_t v)
 	}
 	else if (comp == &opaque_bt) {
 		if (!opaque_bt.pressed && env_t::chat_window_transparency != 100) {
-			set_transparent(100 - env_t::chat_window_transparency, gui_theme_t::gui_color_chat_window_network_transparency);
+			set_transparent(gui_theme_t::gui_color_chat_window_network_transparency);
 			cont_chat_log[0].set_skin_type(gui_scrolled_list_t::transparent);
 			cont_chat_log[1].set_skin_type(gui_scrolled_list_t::transparent);
 			cont_chat_log[2].set_skin_type(gui_scrolled_list_t::transparent);
 		}
 		else {
-			set_transparent(0, gui_theme_t::gui_color_chat_window_network_transparency);
+			set_transparent(gui_theme_t::gui_color_chat_window_network_transparency);
 			cont_chat_log[0].set_skin_type(gui_scrolled_list_t::windowskin);
 			cont_chat_log[1].set_skin_type(gui_scrolled_list_t::windowskin);
 			cont_chat_log[2].set_skin_type(gui_scrolled_list_t::windowskin);

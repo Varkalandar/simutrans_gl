@@ -1115,7 +1115,7 @@ void settings_t::parse_simuconf( tabfile_t& simuconf, sint16& disp_width, sint16
 
 	// listen directive is a comma separated list of IP addresses to listen on
 	if( *contents.get( "listen" ) ) {
-		env_t::listen->clear();
+		env_t::listen.clear();
 		std::string s = ltrim( contents.get( "listen" ) );
 
 		// Find index of first ',' copy from start of string to that position
@@ -1126,11 +1126,11 @@ void settings_t::parse_simuconf( tabfile_t& simuconf, sint16& disp_width, sint16
 		size_t end;
 
 		end = s.find_first_of( "," );
-		env_t::listen->append_unique( ltrim( s.substr( start, end ).c_str() ) );
+		env_t::listen.append_unique( ltrim( s.substr( start, end ).c_str() ) );
 		while( end != std::string::npos ) {
 			start = end;
 			end = s.find_first_of( ",", start + 1 );
-			env_t::listen->append_unique( ltrim( s.substr( start + 1, end - 1 - start ).c_str() ) );
+			env_t::listen.append_unique( ltrim( s.substr( start + 1, end - 1 - start ).c_str() ) );
 		}
 	}
 

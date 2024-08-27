@@ -1210,11 +1210,11 @@ bool toolbar_t::init(player_t *player)
 			scr_coord_val w = display_get_width() - (env_t::menupos == MENU_LEFT ? env_t::iconsize.w : 0) - (env_t::menupos == MENU_RIGHT ? env_t::iconsize.w : 0);
 			scr_coord_val x = (w-tool_selector->get_windowsize().w)/2+(env_t::menupos == MENU_LEFT ? env_t::iconsize.w : 0);
 			scr_coord_val y = (env_t::menupos == MENU_BOTTOM ? display_get_height()-tool_selector->get_windowsize().h-env_t::iconsize.h : 0);
-			create_win({ x, y }, tool_selector, w_do_not_delete, magic_toolbar+toolbar_tool.index_of(this) );
+			create_win({ x, y }, tool_selector, w_do_not_delete, magic_toolbar+toolbar_tool.index_of(this), false);
 		}
 		else {
 			// not main menu => open random
-			create_win( tool_selector, w_info|w_do_not_delete|w_no_overlap, magic_toolbar+toolbar_tool.index_of(this) );
+			create_win( tool_selector, w_info|w_do_not_delete|w_no_overlap, magic_toolbar+toolbar_tool.index_of(this));
 		}
 		DBG_MESSAGE("toolbar_t::init()", "ID=%id", get_id());
 	}

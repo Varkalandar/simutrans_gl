@@ -219,14 +219,14 @@ player_ranking_frame_t::player_ranking_frame_t(uint8 selected_player_nr) :
 
 		add_table(2, 2);
 		{
-			years_back_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("This Year"), SYSCOL_TEXT);
-			years_back_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("Last Year"), SYSCOL_TEXT);
+			years_back_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("This Year"), (gui_theme_t::gui_color_text));
+			years_back_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("Last Year"), (gui_theme_t::gui_color_text));
 			years_back_c.add_listener(this);
 			years_back_c.set_selection(0);
 			add_component(&years_back_c);
 
 			for (int i = 0, count = 0; i < TT_OTHER; ++i) {
-				transport_type_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate(finance_t::transport_type_values[i]), SYSCOL_TEXT);
+				transport_type_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate(finance_t::transport_type_values[i]), (gui_theme_t::gui_color_text));
 				transport_types[count++] = i;
 			}
 			transport_type_c.add_listener(this);
@@ -407,13 +407,13 @@ void player_ranking_frame_t::update_chart(bool full_update)
 				cont_players.new_component<gui_label_t>("1", color_idx_to_rgb(COL_YELLOW), gui_label_t::centered);
 				break;
 			case 2:
-				cont_players.new_component<gui_label_t>("2", 0, gui_label_t::centered);
+				cont_players.new_component<gui_label_t>("2", RGBA_BLACK, gui_label_t::centered);
 				break;
 			case 3:
-				cont_players.new_component<gui_label_t>("3", 0, gui_label_t::centered);
+				cont_players.new_component<gui_label_t>("3", RGBA_BLACK, gui_label_t::centered);
 				break;
 			default:
-				gui_label_buf_t* lb = cont_players.new_component<gui_label_buf_t>(SYSCOL_TEXT, gui_label_t::centered);
+				gui_label_buf_t* lb = cont_players.new_component<gui_label_buf_t>((gui_theme_t::gui_color_text), gui_label_t::centered);
 				lb->buf().printf("%u", count);
 				lb->update();
 				lb->set_min_width(lb->get_min_size().w);
@@ -476,18 +476,18 @@ void player_ranking_frame_t::update_chart(bool full_update)
 			buttons.at(i)->pressed = false;
 		}
 		const finance_t* finance = welt->get_player(player_nr)->get_finance();
-		PIXVAL color = SYSCOL_TEXT;
+		rgba_t color = (gui_theme_t::gui_color_text);
 		sint64 value = is_atv ? finance->get_history_veh_year((transport_type)player_ranking_frame_t::transport_type_option, years_back, history_type_idx[selected_item * 2 + 1])
 			: finance->get_history_com_year(years_back, history_type_idx[selected_item * 2 + 1]);
 		switch (cost_type[selected_item]) {
 		case gui_chart_t::MONEY:
 			lb_player_val[i].buf().append_money(value / 100.0);
-			color = value >= 0 ? (value > 0 ? MONEY_PLUS : SYSCOL_TEXT_UNUSED) : MONEY_MINUS;
+			color = value >= 0 ? (value > 0 ? (gui_theme_t::gui_color_text_plus) : (gui_theme_t::gui_color_text_unused)) : (gui_theme_t::gui_color_text_minus);
 			break;
 		case gui_chart_t::PERCENT:
 			lb_player_val[i].buf().append(value / 100.0, 2);
 			lb_player_val[i].buf().append("%");
-			color = value >= 0 ? (value > 0 ? MONEY_PLUS : SYSCOL_TEXT_UNUSED) : MONEY_MINUS;
+			color = value >= 0 ? (value > 0 ? (gui_theme_t::gui_color_text_plus) : (gui_theme_t::gui_color_text_unused)) : (gui_theme_t::gui_color_text_minus);
 			break;
 		case gui_chart_t::STANDARD:
 		default:
@@ -517,11 +517,11 @@ void player_ranking_frame_t::draw(scr_coord pos, scr_size size)
 		// rebuilt year list
 		sint32 sel = years_back_c.get_selection();
 		years_back_c.clear_elements();
-		years_back_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("This Year"), SYSCOL_TEXT);
-		years_back_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("Last Year"), SYSCOL_TEXT);
+		years_back_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("This Year"), (gui_theme_t::gui_color_text));
+		years_back_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("Last Year"), (gui_theme_t::gui_color_text));
 		for (int i = 1; i < years_back; i++) {
 			sprintf(years_back_s[i - 1], "%i", last_year - i - 1);
-			years_back_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(years_back_s[i - 1], SYSCOL_TEXT);
+			years_back_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(years_back_s[i - 1], (gui_theme_t::gui_color_text));
 		}
 		chart.set_seed(last_year);
 		years_back_c.set_selection(sel <= 0 ? 0 : (sel == 1 ? 1 : sel + 1));

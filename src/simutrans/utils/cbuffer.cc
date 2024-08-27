@@ -25,16 +25,6 @@ cbuffer_t::cbuffer_t() :
 }
 
 
-cbuffer_t::cbuffer_t(const char * text) :
-	capacity(256),
-	size(0),
-	buf(new char[capacity])
-{
-	buf[0] = '\0';
-    append(text);
-}
-
-
 cbuffer_t::~cbuffer_t()
 {
 	free();
@@ -59,6 +49,8 @@ cbuffer_t::cbuffer_t(const char *txt)
 	capacity = (txt ? strlen(txt)+1 : 256);
 	buf = new char[capacity];
 	size = 0;
+    *buf = 0;
+
 	if (txt) {
 		size = capacity-1;
 		strcpy(buf, txt);

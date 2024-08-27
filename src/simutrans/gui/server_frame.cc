@@ -7,6 +7,7 @@
 #include "../simcolor.h"
 #include "../display/simgraph.h"
 #include "simwin.h"
+#include "components/gui_chart.h"
 #include "../utils/simstring.h"
 #include "../utils/cbuffer.h"
 #include "../utils/csv.h"

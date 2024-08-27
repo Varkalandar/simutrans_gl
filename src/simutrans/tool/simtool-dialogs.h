@@ -83,7 +83,7 @@ public:
 	char const* get_tooltip(player_t const*) const OVERRIDE{ return translator::translate("Einstellungen aendern"); }
 	bool is_selected() const OVERRIDE{ return win_get_magic(magic_optionen_gui_t); }
 	bool init(player_t*) OVERRIDE{
-		create_win({ -1, -1 }, new optionen_gui_t(), w_info, magic_optionen_gui_t);
+		create_win({ -1, -1 }, new optionen_gui_t(), w_info, magic_optionen_gui_t, false);
 		return false;
 	}
 	bool exit(player_t*) OVERRIDE{ destroy_win(magic_optionen_gui_t); return false; }
@@ -161,7 +161,7 @@ public:
 	char const* get_tooltip(player_t const*) const OVERRIDE{ return translator::translate("Spielerliste"); }
 	bool is_selected() const OVERRIDE{ return win_get_magic(magic_ki_kontroll_t); }
 	bool init(player_t*) OVERRIDE{
-		create_win({ 272, 160 }, new ki_kontroll_t(), w_info, magic_ki_kontroll_t);
+		create_win({ 272, 160 }, new ki_kontroll_t(), w_info, magic_ki_kontroll_t, false);
 		return false;
 	}
 	bool exit(player_t*) OVERRIDE{ destroy_win(magic_ki_kontroll_t); return false; }
@@ -258,7 +258,7 @@ public:
 			destroy_win(magic_save_t);
 			create_win( new loadsave_frame_t(true), w_info, magic_load_t);
 			const scr_coord pos = win_get_pos( win_get_magic(magic_load_t) );
-			create_win( pos + scr_coord{ 20, 20 }, new news_img("Loading a new game will end the current server session!"), w_no_overlap, magic_none);
+			create_win( pos + scr_coord{ 20, 20 }, new news_img("Loading a new game will end the current server session!"), w_no_overlap, magic_none, false);
 		}
 		return false;
 	}
@@ -309,7 +309,7 @@ public:
 		else {
 			create_win( new scenario_frame_t(), w_info, magic_load_scenario );
 			const scr_coord pos = win_get_pos( win_get_magic(magic_load_scenario) );
-			create_win( pos + scr_coord{ 20, 20 }, new news_img("Loading a new game will end the current server session!"), w_no_overlap, magic_none);
+			create_win( pos + scr_coord{ 20, 20 }, new news_img("Loading a new game will end the current server session!"), w_no_overlap, magic_none, false);
 		}
 		return false;
 	}
@@ -651,7 +651,7 @@ public:
 	{
 		if (icon != IMG_EMPTY) {
 			if (is_selected()) {
-				display_img_blend(icon, pos.x, pos.y, TRANSPARENT50_FLAG | OUTLINE_FLAG | color_idx_to_rgb(COL_BLACK), false, dirty);
+				display_base_img(icon, pos.x, pos.y, 0);
 			}
 			uint16 unread_count = env_t::chat_unread_public + env_t::chat_unread_company + env_t::chat_unread_whisper;
 			if (unread_count > 99) {
@@ -664,7 +664,7 @@ public:
 				scr_coord_val width = max(LINESPACE, txt_width + 2);
 				scr_coord_val xoff = env_t::iconsize.w - width - 1;
 				scr_coord_val yoff = env_t::iconsize.h - LINESPACE - 1;
-				display_filled_roundbox_clip(pos.x + xoff, pos.y + yoff, width, LINESPACE, color_idx_to_rgb(COL_RED + 1), dirty);
+				display_fillbox_wh_rgb(pos.x + xoff, pos.y + yoff, width, LINESPACE, color_idx_to_rgb(COL_RED + 1), dirty);
 				display_proportional_rgb(pos.x + xoff + D_GET_CENTER_ALIGN_OFFSET(txt_width, width), pos.y + yoff + 1, str, ALIGN_LEFT, color_idx_to_rgb(COL_WHITE), dirty);
 			}
 		}

@@ -26,7 +26,7 @@ class message_frame_t : public gui_frame_t, private action_listener_t
 private:
 	gui_scrolled_list_t scrolly;
 	gui_tab_panel_t tabs;     // tab panel for filtering messages
-	button_t option_bt, copy_bt, open_chat_bt;
+	button_t opaque_bt, copy_bt, open_chat_bt;
 	vector_tpl<sint32> tab_categories;
 
 	uint32 last_count; // of messages in list

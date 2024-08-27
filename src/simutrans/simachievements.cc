@@ -1,5 +1,7 @@
 #include "simachievements.h"
 
+#include "./descriptor/goods_desc.h"
+#include "./descriptor/building_desc.h"
 #include "./dataobj/environment.h"
 #include "./simdebug.h"
 #include "./simfab.h"
