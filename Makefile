@@ -6,7 +6,7 @@
 # Define variables here to force them as simple flavor. -> Faster parallel builds.
 FLAGS :=
 CFLAGS ?=
-LDFLAGS ?=
+LDFLAGS ?= -v
 LIBS :=
 SOURCES :=
 STATIC := 0
@@ -198,7 +198,7 @@ ifneq ($(BACKEND),posix)
   ifdef USE_FONTCONFIG
     CFLAGS  += -DUSE_FONTCONFIG
     CFLAGS  += $(shell $(FONTCONFIG_CONFIG) --cflags)
-    LDFLAGS += $(shell $(FONTCONFIG_CONFIG) --libs)
+    LDFLAGS += $(shell $(FONTCONFIG_CONFIG) --libs) -lexpat -luuid
   endif
 endif
 
