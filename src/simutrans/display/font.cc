@@ -22,6 +22,7 @@
 font_t::glyph_t::glyph_t() :
 	height(0),
 	width(0),
+	bearing(0),
 	advance(0xFF),
 	top(0)
 {
@@ -45,15 +46,14 @@ font_t::font_t() :
 
 void texture_setpix(uint8_t * texture, int scanwidth, int x, int y, uint8 alpha)
 {
-    uint32_t dpos =
-        (y * scanwidth) +
-        x * 4;
+    uint32_t dpos = (y * scanwidth) + x * 4;
 
-        texture[dpos] = 255; // red
-        texture[dpos+1] = 255; // green
-        texture[dpos+2] = 255; // blue
-        texture[dpos+3] = alpha; // alpha
+	texture[dpos] = 255; // red
+	texture[dpos+1] = 255; // green
+	texture[dpos+2] = 255; // blue
+	texture[dpos+3] = alpha; // alpha
 }
+
 
 void convert_glyph(font_t::glyph_t glyph, uint8_t * texture, int scanwidth)
 {
@@ -134,15 +134,15 @@ bool font_t::load_from_freetype(const char *fname, int pixel_height)
 		num_glyphs = glyph_nr+1;
 
 		// now render into cache
-		// the bitmap is at slot->bitmap
-		// the glyph base is at slot->bitmap_left, CELL_HEIGHT - slot->bitmap_top
-
 		glyph_t & glyph = glyphs[glyph_nr];
 
 		// set glyph size
 		glyph.height  = face->glyph->bitmap.rows;
 		glyph.width   = face->glyph->bitmap.width;
-		glyph.advance = face->glyph->bitmap.width+1;
+		glyph.bearing = face->glyph->metrics.horiBearingX >> 6;
+		glyph.advance = face->glyph->metrics.horiAdvance >> 6;
+
+		// printf("%c -> %d %d\n", glyph_nr, face->glyph->metrics.horiBearingX, face->glyph->metrics.horiAdvance);
 
 		// Hajo: the bitmaps are all top aligned. Bitmap top is the ascent
 		// above the base line
@@ -248,6 +248,20 @@ bool font_t::load_from_file(const char *srcfilename, int size)
 #endif
 	return ok;
 }
+
+
+sint8 font_t::get_glyph_bearing(utf32 c) const
+{
+	if(!is_loaded()) {
+		return 0;
+	}
+	else if(c >= get_glyph_count()  ||  glyphs[c].advance == 0xFF) {
+		return 0;
+	}
+
+	return glyphs[c].bearing;
+}
+
 
 uint8 font_t::get_glyph_advance(utf32 c) const
 {

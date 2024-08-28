@@ -63,7 +63,7 @@ int display_text_bold(scr_coord_val xpos, scr_coord_val ypos, rgba_t color, cons
 
 
 /**
- * Loads the font, returns the number of characters in it
+ * Loads a font and returns true if loading succeeded
  * @param reload if true forces reload
  */
 bool display_load_font(const char *fname, bool reload = false);

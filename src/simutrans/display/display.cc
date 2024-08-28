@@ -86,6 +86,9 @@ static int handle_aligned_text(utf8_decoder_t & decoder, const font_t * font,
     while(decoder.has_next()) {
         c = decoder.next();
         if(c == '\n') break;
+
+		x += font->get_glyph_bearing(c);
+
 		const int gw = display_glyph(x + xx, y, c, font);
 		x += gw;
     }    
@@ -169,11 +172,13 @@ int display_text_proportional_len_clip_rgb(scr_coord_val x, const scr_coord_val 
 			break;
 		}
         
+		x += font->get_glyph_bearing(c);
+
 		const int gw = display_glyph(x, y, c, font);
 		x += gw + spacing;
 	}
 
-	if(  dirty  ) {
+	if(dirty) {
 		// here, because only now we know the length also for ALIGN_LEFT text
 		mark_rect_dirty_wc(x0, y, x - 1, y + LINESPACE - 1);
 	}
@@ -566,7 +571,7 @@ int display_calc_string_len_width(const char* text, size_t len, int spacing, con
 			break;
 		}
         else {
-    		width += font->get_glyph_advance(c) + spacing;
+    		width += font->get_glyph_bearing(c) + font->get_glyph_advance(c) + spacing;
             // if(debug) dbg->message("XX", "Glyph w=%d", width);
             len --;
         }

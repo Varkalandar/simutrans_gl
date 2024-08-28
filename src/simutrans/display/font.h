@@ -26,8 +26,6 @@ class gl_texture_t;
 class font_t
 {
 public:
-    /// glyph data is stored dense in an array
-    /// 23 rows of bytes, second column for widths between 8 and 16
     struct glyph_t
     {
         glyph_t();
@@ -36,6 +34,7 @@ public:
 
         uint8 height;
 		uint8 width;
+        sint8 bearing;
 		uint8 advance;
 		uint8 top;
 
@@ -57,6 +56,9 @@ public:
 
     /// @returns true if this is a valid (defined) glyph
     bool is_valid_glyph(utf32 c) const { return  is_loaded()  &&  c < get_glyph_count()  &&  glyphs[c].advance != 0xFF;  }
+
+    /// @returns size in pixels between the cursor and the start of this glyph
+    sint8 get_glyph_bearing(utf32 c) const;
 
     /// @returns size in pixels between the start of this glyph and the next glyph
     uint8 get_glyph_advance(utf32 c) const;
