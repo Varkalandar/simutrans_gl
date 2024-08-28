@@ -322,12 +322,17 @@ scr_rect gui_scrollpane_t::get_client( void )
 void gui_scrollpane_t::draw(scr_coord pos)
 {
 	// check, if we need to recalc slider size
-	if(  old_comp_size  !=  comp->get_size()  ) {
+	if(old_comp_size != comp->get_size()) {
 		recalc_sliders( size );
 	}
 
 	// get client area (scroll panel - scrollbars)
 	scr_rect client = get_client() + pos;
+
+	if(b_draw_background) {
+
+		display_fillbox_wh_rgb(client.x, client.y, client.w, client.h, background_color, false);
+	}
 
 	if(b_show_border) {
 
@@ -337,7 +342,6 @@ void gui_scrollpane_t::draw(scr_coord pos)
 					  (gui_theme_t::gui_highlight_color),
 					  (gui_theme_t::gui_highlight_color));
 	}
-
 
 	PUSH_CLIP_FIT( client.x, client.y, client.w, client.h )
 	comp->draw( client.get_pos()-scr_coord(scroll_x.get_knob_offset(), scroll_y.get_knob_offset()) );

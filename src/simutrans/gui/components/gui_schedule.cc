@@ -186,6 +186,7 @@ public:
 	}
 };
 
+
 /**
  * List of displayed schedule entries.
  */
@@ -387,15 +388,21 @@ gui_schedule_t::gui_schedule_t() :
 	scrolly( stats ),
 	departure( NULL )
 {
-	scrolly.set_maximize( true );
 	old_schedule = schedule = NULL;
 	player   = NULL;
 
-	set_table_layout(1,0);
+	set_table_layout(1, 3);
+
+	scrolly.set_show_scroll_x(true);
+	scrolly.set_scroll_amount_y(LINESPACE + 1);
+	scrolly.set_background_color(rgba_t(0.5, 0.5, 0.5, 0.5), true);
+	scrolly.set_show_border(true);
+	add_component(&scrolly);
+	scrolly.set_maximize(true);
 
 	// loading level and waiting time
-	loading_details = add_table( 3, 3 );
-	loading_details->set_margin( scr_size(D_MARGIN_LEFT,0), scr_size(D_MARGIN_RIGHT,0) );
+	loading_details = add_table(3, 3);
+	loading_details->set_margin(scr_size(D_MARGIN_LEFT, D_MARGIN_TOP), scr_size(D_MARGIN_RIGHT, 0));
 	{
 		add_component(&cb_wait,2);
 		cb_wait.add_listener( this );
@@ -421,8 +428,8 @@ gui_schedule_t::gui_schedule_t() :
 	end_table();
 
 	// action button row
-	button_row = add_table( 3, 1 );
-	button_row->set_margin( scr_size(D_MARGIN_LEFT,0), scr_size(D_MARGIN_RIGHT,0) );
+	button_row = add_table(3, 1);
+	button_row->set_margin(scr_size(D_MARGIN_LEFT, 0), scr_size(D_MARGIN_RIGHT, D_MARGIN_BOTTOM));
 	{
 		insert_mode.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("Ins Stop"), (gui_theme_t::gui_color_text));
 		insert_mode.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("Add Stop"), (gui_theme_t::gui_color_text));
@@ -449,14 +456,9 @@ gui_schedule_t::gui_schedule_t() :
 	}
 	end_table();
 
-	scrolly.set_show_scroll_x(true);
-	scrolly.set_scroll_amount_y(LINESPACE+1);
-	add_component(&scrolly);
 	stats->add_listener(this);
 
 	current_schedule_rotation = welt->get_settings().get_rotation();
-
-	scrolly.set_maximize(true);
 
 	set_size( gui_aligned_container_t::get_min_size() );
 }
@@ -736,9 +738,6 @@ void gui_schedule_t::set_size(scr_size size)
 {
 	gui_aligned_container_t::set_size(size);
 	size = get_size();
-
-	// make scrolly take all of space
-	scrolly.set_size( scr_size(scrolly.get_size().w, get_size().h - scrolly.get_pos().y));
 }
 
 

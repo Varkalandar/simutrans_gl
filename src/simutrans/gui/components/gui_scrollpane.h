@@ -26,7 +26,10 @@ private:
 	bool maximize:1;
 	bool b_can_drag:1;
 	bool b_is_dragging:1;
-	bool b_show_border:1;   // draw a bevel border around the client area?
+	bool b_show_border:1;     // draw a bevel border around the client area?
+	bool b_draw_background:1; // draw a box for the background?
+
+	rgba_t background_color;
 
 	// start of dragging
 	scr_coord origin;
@@ -59,13 +62,15 @@ public:
 
 	void set_allow_dragging(bool yesno) { b_can_drag = yesno; }
         
-        void set_show_border(bool yesno) { b_show_border = yesno; }
+    void set_show_border(bool yesno) { b_show_border = yesno; }
+
+	void set_background_color(rgba_t color, bool active) { b_draw_background = active; background_color = color; }
 
 	/**
-	* this is the maximum width a scrollbar requests as minimum size
-	* default is the stadard width of a dialoge (4*button width+3*space)
-	* @param width the minimum width it should strech to
-	*/
+	 * this is the maximum width a scrollbar requests as minimum size
+	 * default is the standard width of a dialoge (4*button width+3*space)
+	 * @param width the minimum width it should strech to
+	 */
 	virtual void set_min_width( scr_coord_val width ) { max_width = width; }
 
 	/**
