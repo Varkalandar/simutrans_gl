@@ -5,10 +5,11 @@ if (NOT ANDROID)
 	find_package(PNG REQUIRED)
 	find_package(MiniUPNP)
 	find_package(Fontconfig)
+	find_package(Freetype)
+
 	if (MSVC)
 		find_package(ZSTD)
 		find_package(SDL2)
-		find_package(Freetype)
 		find_package(FluidSynth)
 	else ()
 		find_package(PkgConfig MODULE REQUIRED)
@@ -20,6 +21,7 @@ if (NOT ANDROID)
 
 	set(CMAKE_THREAD_PREFER_PTHREAD ON)
 	find_package(Threads)
+	
 else ()
 
 	if (CMAKE_BUILD_TYPE STREQUAL "Debug")

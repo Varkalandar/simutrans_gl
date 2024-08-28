@@ -144,6 +144,7 @@ else (MSVC) # Assume GCC/Clang
 		-Wcast-align
 		-Walloca
 		-Wduplicated-cond
+#		-I /usr/include/freetype2/
 	)
 
 	SIMUTRANS_CHECK_CXX_COMPILER_FLAGS(SIMUTRANS_COMMON_COMPILE_OPTIONS

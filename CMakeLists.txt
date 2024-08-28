@@ -199,7 +199,7 @@ target_link_libraries(simutrans PRIVATE ZLIB::ZLIB)
 target_link_libraries(simutrans PRIVATE BZip2::BZip2)
 
 # Freetype is mandatory for graphical builds
-if (SIMUTRANS_BACKEND STREQUAL "sdl2" OR SIMUTRANS_BACKEND STREQUAL "gdi")
+if (SIMUTRANS_BACKEND STREQUAL "sdl2" OR SIMUTRANS_BACKEND STREQUAL "gdi" OR SIMUTRANS_BACKEND STREQUAL "ogl")
 	target_include_directories(simutrans PRIVATE ${Freetype_INCLUDE_DIRS})
 	if (MINGW)
 		target_link_libraries(simutrans PRIVATE ${Freetype_STATIC_LIBRARIES})
