@@ -17,10 +17,10 @@ jobs:
       run: |
         echo "revision=`tools/get_revision.sh`" >> $GITHUB_ENV
 
-    - name: set current head to nightly
+    - name: set current head to dev_snapshot
       uses: richardsimko/update-tag@v1
       with:
-          tag_name: Simutrans_GL_Nightly
+          tag_name: dev_snapshot
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -28,7 +28,7 @@ jobs:
       uses: meeDamian/github-release@2.0
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-        tag: Simutrans_GL_Nightly
-        name: Simutrans GL nightly build r${{ env.revision }}
-        body: Simutrans GL is a variant of Simutrans which uses Open GL to display the map. It can display graphics in 32 bpp and use transparency effects. It's work in progress.
+        tag: dev_snapshot
+        name: Simutrans GL Dev Snapshot r${{ env.revision }}
+        body: Simutrans GL is a variant of Simutrans which uses Open GL to display the map. It can display graphics in 32 bpp and use transparency effects. It's work in progress. Please note, development snapshots like this one can contain numerous bugs and problems.
         allow_override: true

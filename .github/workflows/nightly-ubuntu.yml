@@ -42,12 +42,12 @@ jobs:
         cd build
         zip -r simulinux-x64-nightly.zip simutrans
 
-    - name: Update binaries of Nightly Release
+    - name: Update binaries of development snapshot
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: build/simulinux-x64-nightly.zip
         asset_name: simulinux_gl-x64.zip
-        tag: Simutrans_GL_Nightly
+        tag: dev_snapshot
         overwrite: true
 
