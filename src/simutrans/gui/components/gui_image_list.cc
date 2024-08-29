@@ -86,10 +86,10 @@ void gui_image_list_t::draw(scr_coord parent_pos)
 
 			// display mark
 			if(idata.lcolor.alpha > 0) {
-				display_fillbox_wh_clip_rgb( xpos + 1, ypos + grid.y - 1, grid.x/2 - 1, 4, idata.lcolor, true);
+				display_fillbox_wh_clip_rgb(xpos + 1, ypos + grid.y - 1, grid.x/2 - 1, 4, idata.lcolor);
 			}
 			if(idata.rcolor.alpha > 0) {
-				display_fillbox_wh_clip_rgb( xpos + grid.x/2, ypos + grid.y - 1, grid.x - grid.x/2 - 1, 4, idata.rcolor, true);
+				display_fillbox_wh_clip_rgb(xpos + grid.x/2, ypos + grid.y - 1, grid.x - grid.x/2 - 1, 4, idata.rcolor);
 			}
 			if (sel_index-- == 0) {
 				display_ddd_box_clip_rgb(xpos, ypos, grid.x, grid.y, color_idx_to_rgb(MN_GREY4), color_idx_to_rgb(MN_GREY0));

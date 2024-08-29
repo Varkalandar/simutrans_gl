@@ -3146,14 +3146,14 @@ void haltestelle_t::display_status(sint16 xpos, sint16 ypos)
 				v = (v / 4) + 2;
 			}
 
-			display_fillbox_wh_clip_rgb( xpos, ypos - v - 1, 1, v, color_idx_to_rgb( COL_GREY4 ), false );
-			display_fillbox_wh_clip_rgb( xpos + 1, ypos - v - 1, D_WAITINGBAR_WIDTH - 2, v, wtyp->get_color(), false );
-			display_fillbox_wh_clip_rgb( xpos + D_WAITINGBAR_WIDTH - 1, ypos - v - 1, 1, v, color_idx_to_rgb( COL_GREY1 ), false );
+			display_fillbox_wh_clip_rgb(xpos, ypos - v - 1, 1, v, color_idx_to_rgb( COL_GREY4 ));
+			display_fillbox_wh_clip_rgb(xpos + 1, ypos - v - 1, D_WAITINGBAR_WIDTH - 2, v, wtyp->get_color());
+			display_fillbox_wh_clip_rgb(xpos + D_WAITINGBAR_WIDTH - 1, ypos - v - 1, 1, v, color_idx_to_rgb( COL_GREY1 ));
 
 			// show up arrow for capped values
 			if(  sum > max_capacity  ) {
-				display_fillbox_wh_clip_rgb( xpos + (D_WAITINGBAR_WIDTH / 2) - 1, ypos - v - 6, 2, 4, color_idx_to_rgb( COL_WHITE ), false );
-				display_fillbox_wh_clip_rgb( xpos + (D_WAITINGBAR_WIDTH / 2) - 2, ypos - v - 5, 4, 1, color_idx_to_rgb( COL_WHITE ), false );
+				display_fillbox_wh_clip_rgb(xpos + (D_WAITINGBAR_WIDTH / 2) - 1, ypos - v - 6, 2, 4, color_idx_to_rgb( COL_WHITE ));
+				display_fillbox_wh_clip_rgb(xpos + (D_WAITINGBAR_WIDTH / 2) - 2, ypos - v - 5, 4, 1, color_idx_to_rgb( COL_WHITE ));
 				v += 5; // for marking dirty
 			}
 
@@ -3180,7 +3180,7 @@ void haltestelle_t::display_status(sint16 xpos, sint16 ypos)
 		last_status_color = get_status_farbe();
 		dirty = true;
 	}
-	display_fillbox_wh_clip_rgb( x - 1 - 4, ypos, count * D_WAITINGBAR_WIDTH + 12 - 2, D_WAITINGBAR_WIDTH, get_status_farbe(), dirty );
+	display_fillbox_wh_clip_rgb(x - 1 - 4, ypos, count * D_WAITINGBAR_WIDTH + 12 - 2, D_WAITINGBAR_WIDTH, get_status_farbe());
 }
 
 

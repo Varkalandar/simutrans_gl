@@ -1321,7 +1321,7 @@ const fabrik_t* minimap_t::draw_factory_connections(const fabrik_t* const fab, b
 			if (fab2) {
 				const scr_coord end = map_to_screen_coord( lieferziel ) + pos;
 				display_direct_line_rgb(fabpos.x, fabpos.y, end.x, end.y, color);
-				display_fillbox_wh_clip_rgb(end.x, end.y, 3, 3, ((world->get_ticks() >> 10) & 1) == 0 ? color_idx_to_rgb(COL_RED) : color_idx_to_rgb(COL_WHITE), true);
+				display_fillbox_wh_clip_rgb(end.x, end.y, 3, 3, ((world->get_ticks() >> 10) & 1) == 0 ? color_idx_to_rgb(COL_RED) : color_idx_to_rgb(COL_WHITE));
 
 				scr_coord boxpos = end + scr_coord(10, 0);
 				const char * name = translator::translate(fab2->get_name());
@@ -1853,8 +1853,8 @@ void minimap_t::draw(scr_coord pos)
 			koord size = f->get_desc()->get_building()->get_size(f->get_rotate());
 			sint16 x_size = max( 5, size.x*zoom_in );
 			sint16 y_size = max( 5, size.y*zoom_in );
-			display_fillbox_wh_clip_rgb( fab_pos.x-1, fab_pos.y-1, x_size+2, y_size+2, color_idx_to_rgb(COL_BLACK), false );
-			display_fillbox_wh_clip_rgb( fab_pos.x, fab_pos.y, x_size, y_size, f->get_color(), false );
+			display_fillbox_wh_clip_rgb(fab_pos.x-1, fab_pos.y-1, x_size+2, y_size+2, color_idx_to_rgb(COL_BLACK));
+			display_fillbox_wh_clip_rgb(fab_pos.x, fab_pos.y, x_size, y_size, f->get_color());
 		}
 	}
 
@@ -1944,7 +1944,7 @@ void minimap_t::draw(scr_coord pos)
 		scr_coord_val wd = max( zoom_in/zoom_out, 1) * 2 + 1; // to have it always odd
 		for(  int i = 0;  i < current_cnv->get_vehicle_count();  i++  ) {
 			const scr_coord veh_pos = map_to_screen_coord(current_cnv->get_vehicle(i)->get_pos().get_2d()) + pos;
-			display_fillbox_wh_clip_rgb(veh_pos.x-(wd/2)+offset, veh_pos.y-(wd/2)+offset, wd, wd, color_idx_to_rgb(COL_MAGENTA), true);
+			display_fillbox_wh_clip_rgb(veh_pos.x-(wd/2)+offset, veh_pos.y-(wd/2)+offset, wd, wd, color_idx_to_rgb(COL_MAGENTA));
 		}
 	}
 

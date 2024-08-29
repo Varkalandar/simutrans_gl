@@ -1349,7 +1349,7 @@ static void draw_vehicle_info_popup(scr_coord pos, scr_size size, gui_aligned_co
     display_set_color(rgba_t(0.9, 0.9, 0.9, 1.0));
     display_img_stretch(gui_theme_t::windowback, scr_rect(popup_pos + scr_coord(0, 1), size.w, height));
 
-    display_fillbox_wh_clip_rgb(popup_pos.x+1, popup_pos.y, size.w-2, 1, (SYSCOL_TEXT_SHADOW), false);
+    display_fillbox_wh_clip_rgb(popup_pos.x+1, popup_pos.y, size.w-2, 1, (SYSCOL_TEXT_SHADOW));
 
     cont_vehicle_labels->draw(popup_pos);
 }

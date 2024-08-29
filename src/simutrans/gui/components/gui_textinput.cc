@@ -652,7 +652,7 @@ void gui_textinput_t::display_with_cursor(scr_coord offset, bool cursor_active, 
 			// mark targeted part in a similar manner to selected text
 			int start_offset = proportional_string_len_width(composition.get_str(), composition_target_start);
 			int highlight_width = proportional_string_len_width(composition.get_str()+composition_target_start, composition_target_length);
-			display_fillbox_wh_clip_rgb(x_base_offset+x_offset+start_offset, y_offset, highlight_width, LINESPACE, (SYSCOL_EDIT_BACKGROUND_SELECTED), true);
+			display_fillbox_wh_clip_rgb(x_base_offset+x_offset+start_offset, y_offset, highlight_width, LINESPACE, (SYSCOL_EDIT_BACKGROUND_SELECTED));
 			display_text_proportional_len_clip_rgb(x_base_offset+x_offset+start_offset, y_offset, composition.get_str()+composition_target_start, ALIGN_LEFT|DT_CLIP, (SYSCOL_EDIT_TEXT_SELECTED), composition_target_length, 0, FS_NORMAL);
 
 			x_offset += composition_width;
@@ -668,13 +668,13 @@ void gui_textinput_t::display_with_cursor(scr_coord offset, bool cursor_active, 
 				size_t end_pos = ::max(head_cursor_pos, tail_cursor_pos);
 				const scr_coord_val start_offset = proportional_string_len_width(text, start_pos);
 				const scr_coord_val highlight_width = proportional_string_len_width(text+start_pos, end_pos-start_pos);
-				display_fillbox_wh_clip_rgb(x_base_offset+start_offset, y_offset, highlight_width, LINESPACE, (SYSCOL_EDIT_BACKGROUND_SELECTED), true);
+				display_fillbox_wh_clip_rgb(x_base_offset+start_offset, y_offset, highlight_width, LINESPACE, (SYSCOL_EDIT_BACKGROUND_SELECTED));
 				display_text_proportional_len_clip_rgb(x_base_offset+start_offset, y_offset, text+start_pos, ALIGN_LEFT|DT_CLIP, (SYSCOL_EDIT_TEXT_SELECTED), end_pos-start_pos, 0, FS_NORMAL);
 			}
 
 			// display blinking cursor
 			if(  cursor_visible  ) {
-				display_fillbox_wh_clip_rgb(x_base_offset+cursor_offset-1, y_offset, 1, LINESPACE, (SYSCOL_CURSOR_BEAM), true);
+				display_fillbox_wh_clip_rgb(x_base_offset+cursor_offset-1, y_offset, 1, LINESPACE, (SYSCOL_CURSOR_BEAM));
 			}
 		}
 
@@ -756,7 +756,7 @@ void gui_hidden_textinput_t::display_with_cursor(scr_coord const offset, bool, b
 		do {
 			// cursor?
 			if(  cursor_visible  &&  text_pos == (utf8 const*)text + head_cursor_pos  ) {
-				display_fillbox_wh_clip_rgb( xpos, pos.y+offset.y+1+(size.h-LINESPACE)/2, 1, LINESPACE, (SYSCOL_CURSOR_BEAM), true);
+				display_fillbox_wh_clip_rgb(xpos, pos.y+offset.y+1+(size.h-LINESPACE)/2, 1, LINESPACE, (SYSCOL_CURSOR_BEAM));
 			}
 			c = utf8_decoder_t::decode((utf8 const *&)text_pos);
 			if(c) {

@@ -265,7 +265,7 @@ public:
 				}
 			}
 			if (tail_dir == tail_right) {
-				display_fillbox_wh_clip_rgb(offset.x + off_w + bsize.w, offset.y + bsize.h - 10, h, 1, display_blend_colors(bgcolor, SYSCOL_SHADOW, 75), true);
+				display_fillbox_wh_clip_rgb(offset.x + off_w + bsize.w, offset.y + bsize.h - 10, h, 1, display_blend_colors(bgcolor, SYSCOL_SHADOW, 75));
 			}
 		}
 		scr_coord_val old_h = message.get_size().h;

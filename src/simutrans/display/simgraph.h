@@ -191,12 +191,12 @@ extern scr_coord_val current_tile_raster_width;
 // Blends two colors
 rgba_t display_blend_colors(rgba_t background, rgba_t foreground, float blend);
 
-// blends a rectangular region
+// fills a rectangular region with a color
 void display_fillbox_wh(scr_coord_val xp, scr_coord_val yp, scr_coord_val w, scr_coord_val h);
 
 void display_fillbox_wh_rgb(scr_coord_val xp, scr_coord_val yp, scr_coord_val w, scr_coord_val h, rgba_t color, bool dirty);
 
-void display_fillbox_wh_clip_rgb(scr_coord_val xp, scr_coord_val yp, scr_coord_val w, scr_coord_val h, rgba_t color, bool dirty  CLIP_NUM_DEF CLIP_NUM_DEFAULT_ZERO);
+void display_fillbox_wh_clip_rgb(scr_coord_val xp, scr_coord_val yp, scr_coord_val w, scr_coord_val h, rgba_t color);
 
 void display_vline_wh_clip_rgb(scr_coord_val xp, scr_coord_val yp, scr_coord_val h, rgba_t color, bool dirty  CLIP_NUM_DEF CLIP_NUM_DEFAULT_ZERO);
 

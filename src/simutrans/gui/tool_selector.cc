@@ -324,6 +324,8 @@ void tool_selector_t::draw(scr_coord pos, scr_size sz)
 		}
 	}
 
+	scr_coord mouse_pos = get_mouse_pos();
+
 	for(  uint i = tool_icon_disp_start;  i < tool_icon_disp_end;  i++  ) {
 		const image_id icon_img = tools[i].tool->get_icon(player);
 #if COLOUR_DEPTH != 0
@@ -346,7 +348,7 @@ void tool_selector_t::draw(scr_coord pos, scr_size sz)
 				display_base_img(back_img, draw_pos.x, draw_pos.y, welt->get_active_player_nr(), env_t::iconsize.w, env_t::iconsize.w);
 			}
 			else {
-				display_fillbox_wh_clip_rgb( draw_pos.x, draw_pos.y, env_t::iconsize.w, env_t::iconsize.h, color_idx_to_rgb(MN_GREY2), false );
+				display_fillbox_wh_clip_rgb(draw_pos.x, draw_pos.y, env_t::iconsize.w, env_t::iconsize.h, color_idx_to_rgb(MN_GREY2));
 			}
 		}
 
@@ -354,9 +356,16 @@ void tool_selector_t::draw(scr_coord pos, scr_size sz)
 		if(  icon_img != IMG_EMPTY  ) {
 			bool tool_dirty = dirty  ||  (tools[i].tool->is_selected() ^ tools[i].selected);
 
-            // First, draw it opaque in original colors.
-            display_set_color(RGBA_WHITE);
+            // First, draw it opaque in original colors
+			display_set_color(RGBA_WHITE);
 			display_base_img(icon_img, draw_pos.x, draw_pos.y, player->get_player_nr(), env_t::iconsize.w, env_t::iconsize.w);
+
+			// Highlight the icon a bit on mouse over
+			if(mouse_pos.x >= draw_pos.x && mouse_pos.x < draw_pos.x + env_t::iconsize.w &&
+			   mouse_pos.y >= draw_pos.y && mouse_pos.y < draw_pos.y + env_t::iconsize.w) {
+				display_fillbox_wh_clip_rgb(draw_pos.x, draw_pos.y, env_t::iconsize.w, env_t::iconsize.w,
+				                            rgba_t(1.0, 1.0, 1.0, 0.1));
+			}
             
             // this draws an overlay is selected
 			tools[i].tool->draw_after(draw_pos, tool_dirty);

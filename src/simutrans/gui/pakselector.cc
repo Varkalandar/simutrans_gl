@@ -145,7 +145,7 @@ void pak_set_panel_t::draw_logo(const scr_coord_val xpos, const scr_coord_val yp
 	display_bevel_box(scr_rect(xpos-1, ypos-1, 258, 258), c, c, c, c);
 
 	// Hajo: Logos are designed for black background
-	display_fillbox_wh_clip_rgb(xpos, ypos, 256, 256, RGBA_BLACK, true);
+	display_fillbox_wh_clip_rgb(xpos, ypos, 256, 256, RGBA_BLACK);
 
 	display_set_color(RGBA_WHITE);
 	display_base_img(logo->get_image_id(0), xpos, ypos, 0);
@@ -169,7 +169,7 @@ void pak_set_panel_t::draw_logo(const scr_coord_val xpos, const scr_coord_val yp
 
 void pak_set_panel_t::draw(scr_coord offset)
 {
-	display_fillbox_wh_clip_rgb(offset.x, offset.y, size.w, size.h, rgba_t(0, 0, 0, 0.1), true);
+	display_fillbox_wh_clip_rgb(offset.x, offset.y, size.w, size.h, rgba_t(0, 0, 0, 0.1));
 
 	const scr_coord_val xspace = 280;
 	const scr_coord_val xstart = 20;
@@ -203,7 +203,7 @@ void pak_set_panel_t::draw(scr_coord offset)
 	const rgba_t c = gui_theme_t::gui_highlight_color;
 	display_bevel_box(scr_rect(xpos-1, ypos-1, 258, 258), c, c, c, c);
 
-	display_fillbox_wh_clip_rgb(xpos, ypos, 256, 256, rgba_t(0.7, 0.7, 0.7, 1), true);
+	display_fillbox_wh_clip_rgb(xpos, ypos, 256, 256, rgba_t(0.7, 0.7, 0.7, 1));
     
     const char * install = "Install a new graphics set";
     

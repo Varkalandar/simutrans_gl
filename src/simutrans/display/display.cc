@@ -55,8 +55,8 @@ void display_bevel_box(scr_rect area,
 	display_vline_wh_clip_rgb(area.x, area.y, area.h, left, true);
 	display_vline_wh_clip_rgb(area.x+area.w-1, area.y+1, area.h-1, right, true);
 
-	display_fillbox_wh_clip_rgb(area.x, area.y, area.w, 1, top, true);
-	display_fillbox_wh_clip_rgb(area.x+1, area.y+area.h-1, area.w-1, 1, bottom, true);
+	display_fillbox_wh_clip_rgb(area.x, area.y, area.w, 1, top);
+	display_fillbox_wh_clip_rgb(area.x+1, area.y+area.h-1, area.w-1, 1, bottom);
 }
 
 
@@ -298,10 +298,10 @@ void display_ddd_proportional_clip(scr_coord_val xpos, scr_coord_val ypos, rgba_
 	rgba_t lighter = display_blend_colors(ddd_color, RGBA_WHITE, 0.25);
 	rgba_t darker  = display_blend_colors(ddd_color, RGBA_BLACK, 0.25);
 
-	display_fillbox_wh_clip_rgb( xpos+1, ypos - vpadding + 1, width+2*hpadding-2, LINESPACE+2*vpadding-1, ddd_color, dirty );
+	display_fillbox_wh_clip_rgb(xpos+1, ypos - vpadding + 1, width+2*hpadding-2, LINESPACE+2*vpadding-1, ddd_color);
 
-	display_fillbox_wh_clip_rgb( xpos, ypos - vpadding, width + 2*hpadding - 2, 1, lighter, dirty );
-	display_fillbox_wh_clip_rgb( xpos, ypos + LINESPACE + vpadding, width + 2*hpadding - 2, 1, darker,  dirty );
+	display_fillbox_wh_clip_rgb(xpos, ypos - vpadding, width + 2*hpadding - 2, 1, lighter);
+	display_fillbox_wh_clip_rgb(xpos, ypos + LINESPACE + vpadding, width + 2*hpadding - 2, 1, darker);
 
 	display_vline_wh_clip_rgb( xpos, ypos - vpadding, LINESPACE + vpadding * 2, lighter, dirty );
 	display_vline_wh_clip_rgb( xpos + width + 2*hpadding - 2, ypos - vpadding, LINESPACE + vpadding * 2, darker,  dirty );

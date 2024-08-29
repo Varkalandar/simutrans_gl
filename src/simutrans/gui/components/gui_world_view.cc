@@ -143,10 +143,10 @@ void world_view_t::internal_draw(const scr_coord offset, obj_t const* const obj)
 	/* Not very elegant, but works: Fill everything with black for underground
 	 * mode. */
 	if(  grund_t::underground_mode  ) {
-		display_fillbox_wh_clip_rgb(pos.x, pos.y, size.w, size.h, RGBA_BLACK, true);
+		display_fillbox_wh_clip_rgb(pos.x, pos.y, size.w, size.h, RGBA_BLACK);
 	}
 	else {
-		display_fillbox_wh_clip_rgb(pos.x, pos.y, size.w, size.h, color_idx_to_rgb(env_t::background_color), true);
+		display_fillbox_wh_clip_rgb(pos.x, pos.y, size.w, size.h, color_idx_to_rgb(env_t::background_color));
 	}
 
 	const sint16 yoff = obj && obj->is_moving() ?

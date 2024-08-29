@@ -44,12 +44,12 @@ void gui_speedbar_t::draw(scr_coord offset)
 		for(info_t const& i : values) {
 			sint32 const to = size.h - min(*i.value, base) * size.h / base;
 			if(to < from) {
-				display_fillbox_wh_clip_rgb(offset.x, offset.y + to, size.w, from - to, i.color, true);
+				display_fillbox_wh_clip_rgb(offset.x, offset.y + to, size.w, from - to, i.color);
 				from = to - 1;
 			}
 		}
 		if(from > 0) {
-			display_fillbox_wh_clip_rgb( offset.x, offset.y, size.w, from, color_idx_to_rgb(MN_GREY0), true);
+			display_fillbox_wh_clip_rgb( offset.x, offset.y, size.w, from, color_idx_to_rgb(MN_GREY0));
 		}
 	}
 	else {
@@ -57,12 +57,12 @@ void gui_speedbar_t::draw(scr_coord offset)
 		for(info_t const& i : values) {
 			sint32 const to = min(*i.value, base) * size.w / base;
 			if(to > from) {
-				display_fillbox_wh_clip_rgb(offset.x + from, offset.y, to - from, size.h, i.color, true);
+				display_fillbox_wh_clip_rgb(offset.x + from, offset.y, to - from, size.h, i.color);
 				from = to + 1;
 			}
 		}
 		if(from < size.w) {
-			display_fillbox_wh_clip_rgb(offset.x + from, offset.y, size.w - from, size.h, color_idx_to_rgb(MN_GREY0), true);
+			display_fillbox_wh_clip_rgb(offset.x + from, offset.y, size.w - from, size.h, color_idx_to_rgb(MN_GREY0));
 		}
 	}
 }
@@ -97,7 +97,7 @@ void gui_routebar_t::draw(scr_coord offset)
 	const uint16 w = size.w - h/2;
 
 	offset += pos;
-	display_fillbox_wh_clip_rgb(offset.x, offset.y+h/2-1, w, 3, color_idx_to_rgb(MN_GREY1), true);
+	display_fillbox_wh_clip_rgb(offset.x, offset.y+h/2-1, w, 3, color_idx_to_rgb(MN_GREY1));
 
 	rgba_t col;
 	for (uint8 i = 0; i<5; i++) {
@@ -107,24 +107,24 @@ void gui_routebar_t::draw(scr_coord offset)
 	sint32 const to = min(*value, base) * w / base;
 	if (reserve_value  &&  *reserve_value) {
 		sint32 const reserved_to = min(*reserve_value, base) * w / base;
-		display_fillbox_wh_clip_rgb(offset.x + h / 2, offset.y + h / 2 - 1, reserved_to, 3, reserved_color, true);
+		display_fillbox_wh_clip_rgb(offset.x + h / 2, offset.y + h / 2 - 1, reserved_to, 3, reserved_color);
 	}
-	display_fillbox_wh_clip_rgb(offset.x+h/2, offset.y+h/2-1, to, 3, color_idx_to_rgb(43), true);
+	display_fillbox_wh_clip_rgb(offset.x+h/2, offset.y+h/2-1, to, 3, color_idx_to_rgb(43));
 
 	switch (state)
 	{
 		case 1:
-			display_fillbox_wh_clip_rgb(offset.x + to + 1, offset.y + 1, h - 2, h - 2, color_idx_to_rgb(COL_YELLOW), true);
+			display_fillbox_wh_clip_rgb(offset.x + to + 1, offset.y + 1, h - 2, h - 2, color_idx_to_rgb(COL_YELLOW));
 			break;
 		case 2:
-			display_fillbox_wh_clip_rgb(offset.x + to + 1, offset.y + 1, h - 2, h - 2, color_idx_to_rgb(COL_ORANGE), true);
+			display_fillbox_wh_clip_rgb(offset.x + to + 1, offset.y + 1, h - 2, h - 2, color_idx_to_rgb(COL_ORANGE));
 			break;
 		case 3:
-			display_fillbox_wh_clip_rgb(offset.x + to + 1, offset.y + 1, h - 2, h - 2, color_idx_to_rgb(COL_RED), true);
+			display_fillbox_wh_clip_rgb(offset.x + to + 1, offset.y + 1, h - 2, h - 2, color_idx_to_rgb(COL_RED));
 			break;
 		case 0:
 		default:
-			display_fillbox_wh_clip_rgb( offset.x+h/2, offset.y + 1, to-2, h - 2, color_idx_to_rgb( COL_GREEN ), true );
+			display_fillbox_wh_clip_rgb( offset.x+h/2, offset.y + 1, to-2, h - 2, color_idx_to_rgb(COL_GREEN));
 			display_right_triangle_rgb(offset.x + to, offset.y, h, color_idx_to_rgb(COL_MAGENTA), true);
 			break;
 	}

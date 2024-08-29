@@ -395,7 +395,7 @@ scr_size gui_flowtext_intern_t::output(scr_coord offset, bool doit, bool return_
 						if(  xpos!=last_link_x  &&  link_it  ) {
 							if(  doit  ) {
 								// close the link
-								display_fillbox_wh_clip_rgb( offset.x + last_link_x + D_MARGIN_LEFT, ypos + offset.y + LINESPACE-1, xpos-last_link_x, 1, color, false);
+								display_fillbox_wh_clip_rgb(offset.x + last_link_x + D_MARGIN_LEFT, ypos + offset.y + LINESPACE-1, xpos-last_link_x, 1, color);
 							}
 							extra_pixel = 1;
 						}
@@ -417,7 +417,7 @@ scr_size gui_flowtext_intern_t::output(scr_coord offset, bool doit, bool return_
 					}
 					scr_coord_val width = display_proportional_clip_rgb(offset.x + xpos + D_MARGIN_LEFT, offset.y + ypos, i.text.c_str(), 0, color, FS_NORMAL);
 					if(  link_it  ) {
-						display_fillbox_wh_clip_rgb( offset.x + last_link_x + D_MARGIN_LEFT, ypos + offset.y + LINESPACE-1, (xpos+width)-last_link_x, 1, color, false);
+						display_fillbox_wh_clip_rgb(offset.x + last_link_x + D_MARGIN_LEFT, ypos + offset.y + LINESPACE-1, (xpos+width)-last_link_x, 1, color);
 						last_link_x = xpos+width;
 					}
 				}
@@ -433,7 +433,7 @@ scr_size gui_flowtext_intern_t::output(scr_coord offset, bool doit, bool return_
 				if(  last_link_x<xpos  &&  link_it  ) {
 					if(  doit  ) {
 						// close the link
-						display_fillbox_wh_clip_rgb( offset.x + last_link_x + D_MARGIN_LEFT, ypos + offset.y + LINESPACE-1, xpos-last_link_x, 1, color, false);
+						display_fillbox_wh_clip_rgb(offset.x + last_link_x + D_MARGIN_LEFT, ypos + offset.y + LINESPACE-1, xpos-last_link_x, 1, color);
 					}
 					extra_pixel = 1;
 				}
@@ -469,8 +469,8 @@ scr_size gui_flowtext_intern_t::output(scr_coord offset, bool doit, bool return_
 			case ATT_H1_END:
 				double_it = false;
 				if(doit) {
-					display_fillbox_wh_clip_rgb(offset.x + 1 + D_MARGIN_LEFT, offset.y + ypos + LINESPACE,   xpos, 1, color,        false);
-					display_fillbox_wh_clip_rgb(offset.x + D_MARGIN_LEFT,     offset.y + ypos + LINESPACE-1, xpos, 1, double_color, false);
+					display_fillbox_wh_clip_rgb(offset.x + 1 + D_MARGIN_LEFT, offset.y + ypos + LINESPACE,   xpos, 1, color);
+					display_fillbox_wh_clip_rgb(offset.x + D_MARGIN_LEFT,     offset.y + ypos + LINESPACE-1, xpos, 1, double_color);
 				}
 				xpos = 0;
 				extra_pixel = 0;

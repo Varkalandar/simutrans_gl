@@ -3374,7 +3374,7 @@ void fabrik_t::display_status(sint16 xpos, sint16 ypos)
 		if(  currently_producing  ) {
 			display_ddd_box_clip_rgb(xpos-2,  ypos-1, D_WAITINGBAR_WIDTH*input.get_count()+4, 6, color_idx_to_rgb(10), color_idx_to_rgb(12));
 		}
-		display_fillbox_wh_clip_rgb(xpos-1, ypos, D_WAITINGBAR_WIDTH*input.get_count()+2, 4, color_idx_to_rgb(150), true);
+		display_fillbox_wh_clip_rgb(xpos-1, ypos, D_WAITINGBAR_WIDTH*input.get_count()+2, 4, color_idx_to_rgb(150));
 
 		for(uint32 i=0; i < input.get_count(); i++) {
 			ware_production_t const& goods = input[i];
@@ -3391,9 +3391,9 @@ void fabrik_t::display_status(sint16 xpos, sint16 ypos)
 				const uint16 v = min(25, (uint16)(25 * stock_quantity / storage_capacity)) + 2;
 
 				if (currently_producing) {
-					display_fillbox_wh_clip_rgb(xpos, ypos - v - 1, 1, v, color_idx_to_rgb(COL_GREY4), true);
-					display_fillbox_wh_clip_rgb(xpos + 1, ypos - v - 1, D_WAITINGBAR_WIDTH - 2, v, goods_color, true);
-					display_fillbox_wh_clip_rgb(xpos + D_WAITINGBAR_WIDTH - 1, ypos - v - 1, 1, v, color_idx_to_rgb(COL_GREY1), true);
+					display_fillbox_wh_clip_rgb(xpos, ypos - v - 1, 1, v, color_idx_to_rgb(COL_GREY4));
+					display_fillbox_wh_clip_rgb(xpos + 1, ypos - v - 1, D_WAITINGBAR_WIDTH - 2, v, goods_color);
+					display_fillbox_wh_clip_rgb(xpos + D_WAITINGBAR_WIDTH - 1, ypos - v - 1, 1, v, color_idx_to_rgb(COL_GREY1));
 				}
 				else {
                     display_set_color(rgba_t(goods_color, 0.4f));
@@ -3411,7 +3411,7 @@ void fabrik_t::display_status(sint16 xpos, sint16 ypos)
 		if(  currently_producing  ) {
 			display_ddd_box_clip_rgb(xpos-2,  ypos-1, D_WAITINGBAR_WIDTH*output.get_count()+4, 6, color_idx_to_rgb(10), color_idx_to_rgb(12));
 		}
-		display_fillbox_wh_clip_rgb(xpos-1, ypos, D_WAITINGBAR_WIDTH*output.get_count()+2, 4, color_idx_to_rgb(COL_ORANGE), true);
+		display_fillbox_wh_clip_rgb(xpos-1, ypos, D_WAITINGBAR_WIDTH*output.get_count()+2, 4, color_idx_to_rgb(COL_ORANGE));
 
 		for(uint32 i=0; i < output.get_count(); i++) {
 			ware_production_t const& goods = output[i];
@@ -3427,9 +3427,9 @@ void fabrik_t::display_status(sint16 xpos, sint16 ypos)
 
 				// the blended bars are too faint for me
 				if (currently_producing) {
-					display_fillbox_wh_clip_rgb(xpos, ypos - v - 1, 1, v, color_idx_to_rgb(COL_GREY4), true);
-					display_fillbox_wh_clip_rgb(xpos + 1, ypos - v - 1, D_WAITINGBAR_WIDTH - 2, v, goods_color, true);
-					display_fillbox_wh_clip_rgb(xpos + D_WAITINGBAR_WIDTH - 1, ypos - v - 1, 1, v, color_idx_to_rgb(COL_GREY1), true);
+					display_fillbox_wh_clip_rgb(xpos, ypos - v - 1, 1, v, color_idx_to_rgb(COL_GREY4));
+					display_fillbox_wh_clip_rgb(xpos + 1, ypos - v - 1, D_WAITINGBAR_WIDTH - 2, v, goods_color);
+					display_fillbox_wh_clip_rgb(xpos + D_WAITINGBAR_WIDTH - 1, ypos - v - 1, 1, v, color_idx_to_rgb(COL_GREY1));
 				}
 				else {
                     display_set_color(rgba_t(goods_color, 0.4f));

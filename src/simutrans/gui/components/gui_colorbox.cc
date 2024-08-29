@@ -32,5 +32,5 @@ void gui_colorbox_t::draw(scr_coord offset)
 	const scr_coord_val height = max(fixed_min_height, D_INDICATOR_HEIGHT);
 
 	display_ddd_box_clip_rgb(offset.x, offset.y, size.w, height, color_idx_to_rgb(MN_GREY0), color_idx_to_rgb(MN_GREY4));
-	display_fillbox_wh_clip_rgb(offset.x + 1, offset.y + 1, size.w - 2, height-2, color, true);
+	display_fillbox_wh_clip_rgb(offset.x + 1, offset.y + 1, size.w - 2, height-2, color);
 }

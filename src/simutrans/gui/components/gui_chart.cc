@@ -124,7 +124,7 @@ void gui_chart_t::draw(scr_coord offset)
 
 	// draw background if desired
 	if(background.alpha > 0.0f) {
-		display_fillbox_wh_clip_rgb(offset.x, offset.y, chart_size.w, chart_size.h, background, false);
+		display_fillbox_wh_clip_rgb(offset.x, offset.y, chart_size.w, chart_size.h, background);
 	}
 	int tmpx, factor;
 	if(env_t::left_to_right_graphs) {
@@ -206,7 +206,7 @@ void gui_chart_t::draw(scr_coord offset)
 				}
 
 				// display marker(box) for financial value
-				display_fillbox_wh_clip_rgb(tmpx+factor*(chart_size.w / (x_elements - 1))*i-2, (scr_coord_val)(offset.y+baseline- (long)(tmp/scale)-2), 5, 5, c.color, true);
+				display_fillbox_wh_clip_rgb(tmpx+factor*(chart_size.w / (x_elements - 1))*i-2, (scr_coord_val)(offset.y+baseline- (long)(tmp/scale)-2), 5, 5, c.color);
 
 				// display tooltip?
 				if(i==tooltip_n  &&  abs((int)(baseline-(int)(tmp/scale)-tooltipcoord.y))<10) {

@@ -251,16 +251,16 @@ void gui_tab_panel_t::draw(scr_coord parent_pos)
 	if(  required_size.w>size.w  || tab_offset_x > 0) {
 		left.draw( parent_pos+pos );
 		right.draw( parent_pos+pos );
-		//display_fillbox_wh_clip_rgb(xpos, ypos+required_size.h-1, 10, 1, (SYSCOL_TEXT_HIGHLIGHT), true);
-		display_fillbox_wh_clip_rgb(xpos, ypos+required_size.h-1, D_ARROW_LEFT_WIDTH, 1, (SYSCOL_HIGHLIGHT), true);
+		//display_fillbox_wh_clip_rgb(xpos, ypos+required_size.h-1, 10, 1, (SYSCOL_TEXT_HIGHLIGHT));
+		display_fillbox_wh_clip_rgb(xpos, ypos+required_size.h-1, D_ARROW_LEFT_WIDTH, 1, (SYSCOL_HIGHLIGHT));
 		xpos += D_ARROW_LEFT_WIDTH;
 	}
 
 	int text_x = xpos + D_H_SPACE;
 	int text_y = ypos + (required_size.h - LINESPACE)/2;
 
-	//display_fillbox_wh_clip_rgb(xpos, ypos+required_size.h-1, 4, 1, color_idx_to_rgb(COL_WHITE), true);
-	display_fillbox_wh_clip_rgb(xpos, ypos+required_size.h-1, 4, 1, (SYSCOL_HIGHLIGHT), true);
+	//display_fillbox_wh_clip_rgb(xpos, ypos+required_size.h-1, 4, 1, color_idx_to_rgb(COL_WHITE));
+	display_fillbox_wh_clip_rgb(xpos, ypos+required_size.h-1, 4, 1, (SYSCOL_HIGHLIGHT));
 
 	// do not draw under right button
 	int xx = required_size.w>get_size().w ? get_size().w-(D_ARROW_LEFT_WIDTH+2+D_ARROW_RIGHT_WIDTH) : get_size().w;
@@ -280,8 +280,8 @@ void gui_tab_panel_t::draw(scr_coord parent_pos)
 
 		if (i != active_tab) {
 			// Non active tabs
-			display_fillbox_wh_clip_rgb(text_x+1, ypos+2, iter.width-2, 1, (SYSCOL_HIGHLIGHT), true);
-			display_fillbox_wh_clip_rgb(text_x, ypos+required_size.h-1, iter.width-2, 1, (SYSCOL_HIGHLIGHT), true);
+			display_fillbox_wh_clip_rgb(text_x+1, ypos+2, iter.width-2, 1, (SYSCOL_HIGHLIGHT));
+			display_fillbox_wh_clip_rgb(text_x, ypos+required_size.h-1, iter.width-2, 1, (SYSCOL_HIGHLIGHT));
 
 			display_vline_wh_clip_rgb(text_x, ypos+3, required_size.h-4, (SYSCOL_HIGHLIGHT), true);
 			display_vline_wh_clip_rgb(text_x+iter.width-1, ypos+3, required_size.h-4, (SYSCOL_SHADOW), true);
@@ -298,7 +298,7 @@ void gui_tab_panel_t::draw(scr_coord parent_pos)
 		}
 		else {
 			// Active tab
-			display_fillbox_wh_clip_rgb(text_x+1, ypos, iter.width-2, 1, (SYSCOL_HIGHLIGHT), true);
+			display_fillbox_wh_clip_rgb(text_x+1, ypos, iter.width-2, 1, (SYSCOL_HIGHLIGHT));
 
 			display_vline_wh_clip_rgb(text_x, ypos+1, required_size.h-2, (SYSCOL_HIGHLIGHT), true);
 			display_vline_wh_clip_rgb(text_x+iter.width-1, ypos+1, required_size.h-2, (SYSCOL_SHADOW), true);
@@ -320,7 +320,7 @@ void gui_tab_panel_t::draw(scr_coord parent_pos)
 
 		i++;
 	}
-	display_fillbox_wh_clip_rgb(text_x, ypos+required_size.h-1, xpos+size.w-text_x, 1, (SYSCOL_HIGHLIGHT), true);
+	display_fillbox_wh_clip_rgb(text_x, ypos+required_size.h-1, xpos+size.w-text_x, 1, (SYSCOL_HIGHLIGHT));
 
 	// draw tab content after tab row
 	// (combobox may open to above, and tab row may draw into it)

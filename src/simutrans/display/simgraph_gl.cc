@@ -1145,7 +1145,7 @@ void display_fillbox_wh_rgb(scr_coord_val x, scr_coord_val y, scr_coord_val w, s
 }
 
 
-void display_fillbox_wh_clip_rgb(scr_coord_val x, scr_coord_val y, scr_coord_val w, scr_coord_val h, rgba_t color, bool  CLIP_NUM_DEF_NOUSE)
+void display_fillbox_wh_clip_rgb(scr_coord_val x, scr_coord_val y, scr_coord_val w, scr_coord_val h, rgba_t color)
 {
     // dbg->message("display_fillbox_wh_clip_rgb()", "Called %d,%d,%d,%d color %f,%f,%f,%f", x, y, w, h, color.red, color.green, color.blue, color.alpha);
 
@@ -1170,7 +1170,7 @@ void display_fillbox_wh_clip_rgb(scr_coord_val x, scr_coord_val y, scr_coord_val
 
 void display_vline_wh_clip_rgb(scr_coord_val x, scr_coord_val y, scr_coord_val h, rgba_t color, bool dirty CLIP_NUM_DEF_NOUSE)
 {
-  display_fillbox_wh_clip_rgb(x, y, 1, h, color, dirty);
+  display_fillbox_wh_clip_rgb(x, y, 1, h, color);
 }
 
 

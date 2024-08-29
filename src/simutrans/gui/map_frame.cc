@@ -70,7 +70,7 @@ public:
 	void draw(scr_coord offset) OVERRIDE
 	{
 		scr_coord pos = get_pos() + offset;
-		display_fillbox_wh_clip_rgb( pos.x, pos.y+D_GET_CENTER_ALIGN_OFFSET(D_INDICATOR_BOX_HEIGHT,LINESPACE), D_INDICATOR_BOX_WIDTH, D_INDICATOR_BOX_HEIGHT, color, false );
+		display_fillbox_wh_clip_rgb(pos.x, pos.y+D_GET_CENTER_ALIGN_OFFSET(D_INDICATOR_BOX_HEIGHT,LINESPACE), D_INDICATOR_BOX_WIDTH, D_INDICATOR_BOX_HEIGHT, color);
 		label.draw( pos+scr_size(D_INDICATOR_BOX_WIDTH+D_H_SPACE,0) );
 	}
 };
@@ -87,7 +87,7 @@ public:
 		double bar_width = (double)get_size().w/(double)MAX_SEVERITY_COLORS;
 		// color bar
 		for(  int i=0;  i<MAX_SEVERITY_COLORS;  i++  ) {
-			display_fillbox_wh_clip_rgb(pos.x + (scr_coord_val)(i*bar_width), pos.y+2, (scr_coord_val)bar_width+1, 7, minimap_t::calc_severity_color(i, MAX_SEVERITY_COLORS-1), false);
+			display_fillbox_wh_clip_rgb(pos.x + (scr_coord_val)(i*bar_width), pos.y+2, (scr_coord_val)bar_width+1, 7, minimap_t::calc_severity_color(i, MAX_SEVERITY_COLORS-1));
 		}
 	}
 	scr_size get_min_size() const OVERRIDE

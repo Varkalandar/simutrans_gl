@@ -335,8 +335,8 @@ void button_t::draw_focus_rect( scr_rect r, scr_coord_val offset) {
 
 	scr_coord_val w = ((offset-1)<<1);
 
-	display_fillbox_wh_clip_rgb(r.x-offset+1,     r.y-1-offset+1,   r.w+w, 1, color_idx_to_rgb(COL_WHITE), false);
-	display_fillbox_wh_clip_rgb(r.x-offset+1,     r.y+r.h+offset-1, r.w+w, 1, color_idx_to_rgb(COL_WHITE), false);
+	display_fillbox_wh_clip_rgb(r.x-offset+1,     r.y-1-offset+1,   r.w+w, 1, color_idx_to_rgb(COL_WHITE));
+	display_fillbox_wh_clip_rgb(r.x-offset+1,     r.y+r.h+offset-1, r.w+w, 1, color_idx_to_rgb(COL_WHITE));
 	display_vline_wh_clip_rgb  (r.x-offset,       r.y-offset+1,     r.h+w,    color_idx_to_rgb(COL_WHITE), false);
 	display_vline_wh_clip_rgb  (r.x+r.w+offset-1, r.y-offset+1,     r.h+w,    color_idx_to_rgb(COL_WHITE), false);
 }
@@ -411,22 +411,22 @@ void button_t::draw(scr_coord offset)
 				area_drawing.set_pos(gui_theme_t::gui_color_button_text_offset + area.get_pos() + scr_coord(4/*left margin*/,D_GET_CENTER_ALIGN_OFFSET(bars_height,size.h)));
 
 				// draw an arrow
-				display_fillbox_wh_clip_rgb(area_drawing.x+2, area_drawing.y, 1, bars_height, (SYSCOL_BUTTON_TEXT), false);
+				display_fillbox_wh_clip_rgb(area_drawing.x+2, area_drawing.y, 1, bars_height, (SYSCOL_BUTTON_TEXT));
 				if (pressed) {
 					// desc
-					display_fillbox_wh_clip_rgb(area_drawing.x+1, area_drawing.y+1, 3, 1, (SYSCOL_BUTTON_TEXT), false);
-					display_fillbox_wh_clip_rgb(area_drawing.x,   area_drawing.y+2, 5, 1, (SYSCOL_BUTTON_TEXT), false);
+					display_fillbox_wh_clip_rgb(area_drawing.x+1, area_drawing.y+1, 3, 1, (SYSCOL_BUTTON_TEXT));
+					display_fillbox_wh_clip_rgb(area_drawing.x,   area_drawing.y+2, 5, 1, (SYSCOL_BUTTON_TEXT));
 					for (uint8 row=0; row*4<bars_height; row++) {
-						display_fillbox_wh_clip_rgb(area_drawing.x + 6/*arrow width(5)+margin(1)*/, area_drawing.y + bars_height - block_height - row*block_height*2, block_height*(row+1), block_height, (SYSCOL_BUTTON_TEXT), false);
+						display_fillbox_wh_clip_rgb(area_drawing.x + 6/*arrow width(5)+margin(1)*/, area_drawing.y + bars_height - block_height - row*block_height*2, block_height*(row+1), block_height, (SYSCOL_BUTTON_TEXT));
 					}
 					tooltip = "hl_btn_sort_desc";
 				}
 				else {
 					// asc
-					display_fillbox_wh_clip_rgb(area_drawing.x+1, area_drawing.y+bars_height-2, 3, 1, (SYSCOL_BUTTON_TEXT), false);
-					display_fillbox_wh_clip_rgb(area_drawing.x,   area_drawing.y+bars_height-3, 5, 1, (SYSCOL_BUTTON_TEXT), false);
+					display_fillbox_wh_clip_rgb(area_drawing.x+1, area_drawing.y+bars_height-2, 3, 1, (SYSCOL_BUTTON_TEXT));
+					display_fillbox_wh_clip_rgb(area_drawing.x,   area_drawing.y+bars_height-3, 5, 1, (SYSCOL_BUTTON_TEXT));
 					for (uint8 row=0; row*4<bars_height; row++) {
-						display_fillbox_wh_clip_rgb(area_drawing.x + 6/*arrow width(5)+margin(1)*/, area_drawing.y + row*block_height*2, block_height*(row+1), block_height, (SYSCOL_BUTTON_TEXT), false);
+						display_fillbox_wh_clip_rgb(area_drawing.x + 6/*arrow width(5)+margin(1)*/, area_drawing.y + row*block_height*2, block_height*(row+1), block_height, (SYSCOL_BUTTON_TEXT));
 					}
 					tooltip = "hl_btn_sort_asc";
 				}

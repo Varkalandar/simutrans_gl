@@ -188,7 +188,7 @@ static int display_gadget_box(sint8 code,
 
 	if(pushed) {
 		// mark_rect_dirty_wc(x, y, D_GADGET_WIDTH, D_TITLEBAR_HEIGHT);
-		display_fillbox_wh_clip_rgb(x, y, D_GADGET_WIDTH, D_TITLEBAR_HEIGHT, lighter, false);
+		display_fillbox_wh_clip_rgb(x, y, D_GADGET_WIDTH, D_TITLEBAR_HEIGHT, lighter);
 	}
 
 	// Do we have a gadget image?
@@ -369,11 +369,11 @@ static void win_draw_window_title(const scr_coord pos, const scr_size size,
 		darker  = display_blend_colors(color, color_idx_to_rgb(COL_BLACK), 0.25f);
 
 		// fill title bar with color
-		display_fillbox_wh_clip_rgb(pos.x, pos.y, size.w, D_TITLEBAR_HEIGHT, color, true);
+		display_fillbox_wh_clip_rgb(pos.x, pos.y, size.w, D_TITLEBAR_HEIGHT, color);
 
 		// border of title bar
-		display_fillbox_wh_clip_rgb( pos.x + 1, pos.y,                         size.w - 2, 1, lighter, false ); // top
-		display_fillbox_wh_clip_rgb( pos.x + 1, pos.y + D_TITLEBAR_HEIGHT - 1, size.w - 2, 1, darker,  false ); // bottom
+		display_fillbox_wh_clip_rgb(pos.x + 1, pos.y,                         size.w - 2, 1, lighter); // top
+		display_fillbox_wh_clip_rgb(pos.x + 1, pos.y + D_TITLEBAR_HEIGHT - 1, size.w - 2, 1, darker); // bottom
 
 		display_vline_wh_clip_rgb( pos.x,              pos.y, D_TITLEBAR_HEIGHT, lighter, false ); // left
 		display_vline_wh_clip_rgb( pos.x + size.w - 1, pos.y, D_TITLEBAR_HEIGHT, darker,  false ); // right
@@ -416,7 +416,7 @@ static void win_draw_window_dragger(scr_coord pos, scr_size size)
 	else {
 		int dragger_size = min(D_DRAGGER_WIDTH, D_DRAGGER_HEIGHT);
 		for(  int x=1;  x<dragger_size;  x++  ) {
-			display_fillbox_wh_clip_rgb( pos.x-x, pos.y-dragger_size+x, x, 1, color_idx_to_rgb((x & 1) ? COL_BLACK : MN_GREY4), true);
+			display_fillbox_wh_clip_rgb(pos.x-x, pos.y-dragger_size+x, x, 1, color_idx_to_rgb((x & 1) ? COL_BLACK : MN_GREY4));
 		}
 	}
 }

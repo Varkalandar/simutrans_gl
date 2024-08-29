@@ -36,8 +36,8 @@ void gui_scrolled_list_t::scrollitem_t::draw_background(const scr_coord offset) 
 	int odd = (pos.y / size.h) & 1;
 	rgba_t color = odd ? (gui_theme_t::gui_color_list_background_odd) : (gui_theme_t::gui_color_list_background_even);
 
-	// display_fillbox_wh_clip_rgb(offset.x + pos.x - 4, offset.y + pos.y, size.w + 200, size.h, color, true);
-	display_fillbox_wh_clip_rgb(offset.x + pos.x - 4, offset.y + pos.y, display_get_width(), size.h, color, true);
+	// display_fillbox_wh_clip_rgb(offset.x + pos.x - 4, offset.y + pos.y, size.w + 200, size.h, color);
+	display_fillbox_wh_clip_rgb(offset.x + pos.x - 4, offset.y + pos.y, display_get_width(), size.h, color);
 }
 
 
@@ -64,7 +64,7 @@ void gui_scrolled_list_t::const_text_scrollitem_t::draw(scr_coord pos)
 	pos += get_pos();
 	if(selected) {
 		// selected element
-		display_fillbox_wh_clip_rgb(pos.x+D_H_SPACE/2, pos.y-1, get_size().w-D_H_SPACE, get_size().h + 1, (focused ? (SYSCOL_LIST_BACKGROUND_SELECTED_F) : (SYSCOL_LIST_BACKGROUND_SELECTED_NF)), true);
+		display_fillbox_wh_clip_rgb(pos.x+D_H_SPACE/2, pos.y-1, get_size().w-D_H_SPACE, get_size().h + 1, (focused ? (SYSCOL_LIST_BACKGROUND_SELECTED_F) : (SYSCOL_LIST_BACKGROUND_SELECTED_NF)));
 		display_proportional_clip_rgb(pos.x+D_H_SPACE, pos.y, get_text(), ALIGN_LEFT, (focused ? (SYSCOL_LIST_TEXT_SELECTED_FOCUS) : (SYSCOL_LIST_TEXT_SELECTED_NOFOCUS)), FS_NORMAL);
 	}
 	else {
