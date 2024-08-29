@@ -98,20 +98,20 @@ void gui_label_t::draw(scr_coord offset)
 			}
 
 			if(separator) {
-				display_proportional_clip_rgb(right.x, right.y, separator, ALIGN_LEFT, color, true);
+				display_proportional_clip_rgb(right.x, right.y, separator, ALIGN_LEFT, color, FS_NORMAL);
 				if(  separator!=text  ) {
 					if (shadowed) {
-						display_text_proportional_len_clip_rgb(right.x+1, right.y+1, text, ALIGN_RIGHT | DT_CLIP, color_shadow, true, separator - text, 0, font_size);
+						display_text_proportional_len_clip_rgb(right.x+1, right.y+1, text, ALIGN_RIGHT | DT_CLIP, color_shadow, separator - text, 0, font_size);
 					}
-					display_text_proportional_len_clip_rgb(right.x, right.y, text, ALIGN_RIGHT | DT_CLIP, color, true, separator-text, 0, font_size);
+					display_text_proportional_len_clip_rgb(right.x, right.y, text, ALIGN_RIGHT | DT_CLIP, color, separator-text, 0, font_size);
 				}
 			}
 			else {
 				// integer or normal text
 				if (shadowed) {
-					display_proportional_clip_rgb(right.x + 1, right.y + 1, text, ALIGN_RIGHT | DT_CLIP, color_shadow, true);
+					display_proportional_clip_rgb(right.x + 1, right.y + 1, text, ALIGN_RIGHT | DT_CLIP, color_shadow, FS_NORMAL);
 				}
-				display_proportional_clip_rgb(right.x, right.y, text, ALIGN_RIGHT, color, true);
+				display_proportional_clip_rgb(right.x, right.y, text, ALIGN_RIGHT, color, FS_NORMAL);
 			}
 		}
 	}

@@ -84,7 +84,7 @@ void loadingscreen_t::display()
 		display_logo();
 		
 		if(  info  ) {
-			display_proportional_rgb( half_width, bar_y - LINESPACE - 2, info, ALIGN_CENTER_H, RGBA_WHITE, true );
+			display_proportional_rgb(half_width, bar_y - LINESPACE - 2, info, ALIGN_CENTER_H, RGBA_WHITE, FS_NORMAL);
 		}
 
 		// outline
@@ -98,7 +98,7 @@ void loadingscreen_t::display()
 		display_fillbox_wh_rgb( quarter_width, bar_y + 4, bar_len,  bar_height - 8, (SYSCOL_LOADINGBAR_PROGRESS), true );
 
 		if(  what  ) {
-			display_proportional_rgb( half_width, bar_text_y, what, ALIGN_CENTER_H, (SYSCOL_TEXT_HIGHLIGHT), false );
+			display_proportional_rgb(half_width, bar_text_y, what, ALIGN_CENTER_H, (SYSCOL_TEXT_HIGHLIGHT), FS_NORMAL);
 		}
 
 		dr_flush();

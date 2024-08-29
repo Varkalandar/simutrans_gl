@@ -287,7 +287,7 @@ void gui_tab_panel_t::draw(scr_coord parent_pos)
 			display_vline_wh_clip_rgb(text_x+iter.width-1, ypos+3, required_size.h-4, (SYSCOL_SHADOW), true);
 
 			if(text) {
-				display_proportional_clip_rgb(text_x+D_H_SPACE, text_y+2, text, ALIGN_LEFT, (gui_theme_t::gui_color_text), true);
+				display_proportional_clip_rgb(text_x+D_H_SPACE, text_y+2, text, ALIGN_LEFT, (gui_theme_t::gui_color_text), FS_NORMAL);
 			}
 			else {
 				scr_coord_val const y = ypos   - iter.img->get_pic()->y + required_size.h / 2 - iter.img->get_pic()->h / 2 + 1;
@@ -304,7 +304,7 @@ void gui_tab_panel_t::draw(scr_coord parent_pos)
 			display_vline_wh_clip_rgb(text_x+iter.width-1, ypos+1, required_size.h-2, (SYSCOL_SHADOW), true);
 
 			if(text) {
-				display_proportional_clip_rgb(text_x+D_H_SPACE, text_y, text, ALIGN_LEFT, (SYSCOL_TEXT_HIGHLIGHT), true);
+				display_proportional_clip_rgb(text_x+D_H_SPACE, text_y, text, ALIGN_LEFT, (SYSCOL_TEXT_HIGHLIGHT), FS_NORMAL);
 			}
 			else {
 				scr_coord_val const y = ypos   - iter.img->get_pic()->y + required_size.h / 2 - iter.img->get_pic()->h / 2 - 1;

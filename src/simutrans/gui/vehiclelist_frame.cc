@@ -140,12 +140,12 @@ void vehiclelist_stats_t::draw( scr_coord offset )
 		translator::translate( veh->get_name(), world()->get_settings().get_name_language_id() ),
 		ALIGN_LEFT|DT_CLIP,
 		veh->is_future(month) ? (gui_theme_t::gui_color_text_highlight) : (veh->is_available(month) ? (gui_theme_t::gui_color_text) : gui_theme_t::gui_color_obsolete),
-		false
+		FS_NORMAL
 	);
 	if( veh->get_power() > 0 ) {
 		char str[ 256 ];
 		sprintf( str, " (%s)", translator::translate( vehicle_builder_t::engine_type_names[ veh->get_engine_type() + 1 ] ) );
-		display_proportional_rgb( offset.x+dx, offset.y, str, ALIGN_LEFT|DT_CLIP, (gui_theme_t::gui_color_text), false );
+		display_proportional_rgb(offset.x+dx, offset.y, str, ALIGN_LEFT|DT_CLIP, (gui_theme_t::gui_color_text), FS_NORMAL);
 	}
 
 	// maybe there are detailed text to the vehicle?

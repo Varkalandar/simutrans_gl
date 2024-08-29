@@ -65,11 +65,11 @@ void gui_scrolled_list_t::const_text_scrollitem_t::draw(scr_coord pos)
 	if(selected) {
 		// selected element
 		display_fillbox_wh_clip_rgb(pos.x+D_H_SPACE/2, pos.y-1, get_size().w-D_H_SPACE, get_size().h + 1, (focused ? (SYSCOL_LIST_BACKGROUND_SELECTED_F) : (SYSCOL_LIST_BACKGROUND_SELECTED_NF)), true);
-		display_proportional_clip_rgb(pos.x+D_H_SPACE, pos.y, get_text(), ALIGN_LEFT, (focused ? (SYSCOL_LIST_TEXT_SELECTED_FOCUS) : (SYSCOL_LIST_TEXT_SELECTED_NOFOCUS)), true);
+		display_proportional_clip_rgb(pos.x+D_H_SPACE, pos.y, get_text(), ALIGN_LEFT, (focused ? (SYSCOL_LIST_TEXT_SELECTED_FOCUS) : (SYSCOL_LIST_TEXT_SELECTED_NOFOCUS)), FS_NORMAL);
 	}
 	else {
 		// normal text
-		display_proportional_clip_rgb(pos.x+D_H_SPACE, pos.y, get_text(), ALIGN_LEFT, get_color(), true);
+		display_proportional_clip_rgb(pos.x+D_H_SPACE, pos.y, get_text(), ALIGN_LEFT, get_color(), FS_NORMAL);
 	}
 }
 

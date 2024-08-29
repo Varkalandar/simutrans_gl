@@ -636,14 +636,14 @@ void gui_textinput_t::display_with_cursor(scr_coord offset, bool cursor_active, 
 		const int y_offset = pos.y+offset.y+D_GET_CENTER_ALIGN_OFFSET(LINESPACE,size.h);
 
 		// display text (before composition)
-		display_text_proportional_len_clip_rgb(x_base_offset, y_offset, text, ALIGN_LEFT | DT_CLIP, textcol, true, head_cursor_pos, 0, FS_NORMAL);
+		display_text_proportional_len_clip_rgb(x_base_offset, y_offset, text, ALIGN_LEFT | DT_CLIP, textcol, head_cursor_pos, 0, FS_NORMAL);
 		int x_offset = proportional_string_len_width(text, head_cursor_pos);
 
 		// IME text to display?
 		if(  composition.len()  ) {
 //			assert(head_cursor_pos==tail_cursor_pos);
 
-			display_proportional_clip_rgb(x_base_offset+x_offset, y_offset, composition.get_str(), ALIGN_LEFT | DT_CLIP, textcol, true);
+			display_proportional_clip_rgb(x_base_offset+x_offset, y_offset, composition.get_str(), ALIGN_LEFT | DT_CLIP, textcol, FS_NORMAL);
 
 			// draw underline
 			int composition_width = proportional_string_width(composition.get_str());
@@ -653,13 +653,13 @@ void gui_textinput_t::display_with_cursor(scr_coord offset, bool cursor_active, 
 			int start_offset = proportional_string_len_width(composition.get_str(), composition_target_start);
 			int highlight_width = proportional_string_len_width(composition.get_str()+composition_target_start, composition_target_length);
 			display_fillbox_wh_clip_rgb(x_base_offset+x_offset+start_offset, y_offset, highlight_width, LINESPACE, (SYSCOL_EDIT_BACKGROUND_SELECTED), true);
-			display_text_proportional_len_clip_rgb(x_base_offset+x_offset+start_offset, y_offset, composition.get_str()+composition_target_start, ALIGN_LEFT|DT_CLIP, (SYSCOL_EDIT_TEXT_SELECTED), false, composition_target_length, 0, FS_NORMAL);
+			display_text_proportional_len_clip_rgb(x_base_offset+x_offset+start_offset, y_offset, composition.get_str()+composition_target_start, ALIGN_LEFT|DT_CLIP, (SYSCOL_EDIT_TEXT_SELECTED), composition_target_length, 0, FS_NORMAL);
 
 			x_offset += composition_width;
 		}
 
 		// display text (after composition)
-		display_proportional_clip_rgb(x_base_offset+x_offset, y_offset, text+head_cursor_pos, ALIGN_LEFT | DT_CLIP, textcol, true);
+		display_proportional_clip_rgb(x_base_offset+x_offset, y_offset, text+head_cursor_pos, ALIGN_LEFT | DT_CLIP, textcol, FS_NORMAL);
 
 		if(  cursor_active  ) {
 			// display selected text block with light grey text on charcoal bounding box
@@ -669,7 +669,7 @@ void gui_textinput_t::display_with_cursor(scr_coord offset, bool cursor_active, 
 				const scr_coord_val start_offset = proportional_string_len_width(text, start_pos);
 				const scr_coord_val highlight_width = proportional_string_len_width(text+start_pos, end_pos-start_pos);
 				display_fillbox_wh_clip_rgb(x_base_offset+start_offset, y_offset, highlight_width, LINESPACE, (SYSCOL_EDIT_BACKGROUND_SELECTED), true);
-				display_text_proportional_len_clip_rgb(x_base_offset+start_offset, y_offset, text+start_pos, ALIGN_LEFT|DT_CLIP, (SYSCOL_EDIT_TEXT_SELECTED), false, end_pos-start_pos, 0, FS_NORMAL);
+				display_text_proportional_len_clip_rgb(x_base_offset+start_offset, y_offset, text+start_pos, ALIGN_LEFT|DT_CLIP, (SYSCOL_EDIT_TEXT_SELECTED), end_pos-start_pos, 0, FS_NORMAL);
 			}
 
 			// display blinking cursor
@@ -760,7 +760,7 @@ void gui_hidden_textinput_t::display_with_cursor(scr_coord const offset, bool, b
 			}
 			c = utf8_decoder_t::decode((utf8 const *&)text_pos);
 			if(c) {
-				xpos += display_proportional_clip_rgb( xpos, pos.y+offset.y+1+(size.h-LINESPACE)/2, "*", ALIGN_LEFT | DT_CLIP, textcol, true);
+				xpos += display_proportional_clip_rgb( xpos, pos.y+offset.y+1+(size.h-LINESPACE)/2, "*", ALIGN_LEFT | DT_CLIP, textcol, FS_NORMAL);
 			}
 		}
 		while(  text_pos < end  &&  c != UNICODE_NUL  );

@@ -21,12 +21,33 @@
 #include "../dataobj/translator.h"
 
 
+static font_t small_font;
 static font_t default_font;
 static font_t headline_font;
 
 // needed for resizing gui
 int default_font_linespace = 0;
 
+
+static font_t * get_font_for_size(font_size_t fs)
+{
+	font_t * result = &default_font;
+
+	switch(fs)
+	{
+		case FS_SMALL:
+			result = &small_font;
+			break; 
+		case FS_NORMAL:
+			result = &default_font;
+			break; 
+		case FS_HEADLINE:
+			result = &headline_font;
+			break; 
+	}
+
+	return result;
+}
 
 void display_bevel_box(scr_rect area,
                        rgba_t top, rgba_t left, rgba_t right, rgba_t bottom)
@@ -78,7 +99,8 @@ static int handle_aligned_text(utf8_decoder_t & decoder, const font_t * font,
 
     int text_width = display_calc_string_len_width((const char*)text, len, 0, font);
     
-    int xx = cell_width - text_width;
+	// alignement. Only l and r are supported so far.
+    int xx = (r == 'r') ? cell_width - text_width : 0;
 
     // dbg->message("handle_aligned_text()", "len=%d cell_width=%d text_with=%d", len, cell_width, text_width);    
     // display_fillbox_wh(x, y, cell_width, 2);
@@ -103,12 +125,12 @@ static int handle_aligned_text(utf8_decoder_t & decoder, const font_t * font,
  */
 int display_text_proportional_len_clip_rgb(scr_coord_val x, const scr_coord_val y,
 	                                       const char* txt, control_alignment_t flags,
-	                                       const rgba_t default_color, bool dirty,
+	                                       const rgba_t default_color,
 	                                       sint32 len, sint32 spacing, font_size_t size)
 {
 	// dbg->message("display_text_proportional_len_clip_rgb()", "Text %s", txt);
 
-	font_t * font = (size == FS_NORMAL) ? &default_font : &headline_font;
+	font_t * font = get_font_for_size(size);
 	rgba_t color = default_color;
 
 	display_set_color(color);
@@ -178,11 +200,6 @@ int display_text_proportional_len_clip_rgb(scr_coord_val x, const scr_coord_val 
 		x += gw + spacing;
 	}
 
-	if(dirty) {
-		// here, because only now we know the length also for ALIGN_LEFT text
-		mark_rect_dirty_wc(x0, y, x - 1, y + LINESPACE - 1);
-	}
-
 	// warning: actual len might be longer, due to clipping!
 	return x - x0;
 }
@@ -236,15 +253,15 @@ void display_proportional_ellipsis_rgb(scr_rect r, const char *text, int align, 
 				w = (max_screen_width-max_offset_before_ellipsis-ellipsis_width)/2;
 			}
 			if (shadowed) {
-				display_text_proportional_len_clip_rgb(r.x+w+1, r.y+1, text, ALIGN_LEFT | DT_CLIP, shadow_color, dirty, max_idx_before_ellipsis, 0, size);
+				display_text_proportional_len_clip_rgb(r.x+w+1, r.y+1, text, ALIGN_LEFT | DT_CLIP, shadow_color, max_idx_before_ellipsis, 0, size);
 			}
-			w += display_text_proportional_len_clip_rgb(r.x+w, r.y, text, ALIGN_LEFT | DT_CLIP, color, dirty, max_idx_before_ellipsis, 0, size);
+			w += display_text_proportional_len_clip_rgb(r.x+w, r.y, text, ALIGN_LEFT | DT_CLIP, color, max_idx_before_ellipsis, 0, size);
 
 			if (shadowed) {
-				display_text_proportional_len_clip_rgb(r.x+w+1, r.y+1, translator::translate("..."), ALIGN_LEFT | DT_CLIP, shadow_color, dirty, -1, 0, size);
+				display_text_proportional_len_clip_rgb(r.x+w+1, r.y+1, translator::translate("..."), ALIGN_LEFT | DT_CLIP, shadow_color, -1, 0, size);
 			}
 
-			display_text_proportional_len_clip_rgb(r.x+w, r.y, translator::translate("..."), ALIGN_LEFT | DT_CLIP, color, dirty, -1, 0, size);
+			display_text_proportional_len_clip_rgb(r.x+w, r.y, translator::translate("..."), ALIGN_LEFT | DT_CLIP, color, -1, 0, size);
 			return;
 		}
 		else {
@@ -262,9 +279,9 @@ void display_proportional_ellipsis_rgb(scr_rect r, const char *text, int align, 
 		default: ;
 	}
 	if (shadowed) {
-		display_text_proportional_len_clip_rgb( r.x+1, r.y+1, text, ALIGN_LEFT | DT_CLIP, shadow_color, dirty, -1, 0, size);
+		display_text_proportional_len_clip_rgb( r.x+1, r.y+1, text, ALIGN_LEFT | DT_CLIP, shadow_color, -1, 0, size);
 	}
-	display_text_proportional_len_clip_rgb( r.x, r.y, text, ALIGN_LEFT | DT_CLIP, color, dirty, -1, 0, size);
+	display_text_proportional_len_clip_rgb( r.x, r.y, text, ALIGN_LEFT | DT_CLIP, color, -1, 0, size);
 }
 
 
@@ -289,7 +306,7 @@ void display_ddd_proportional_clip(scr_coord_val xpos, scr_coord_val ypos, rgba_
 	display_vline_wh_clip_rgb( xpos, ypos - vpadding, LINESPACE + vpadding * 2, lighter, dirty );
 	display_vline_wh_clip_rgb( xpos + width + 2*hpadding - 2, ypos - vpadding, LINESPACE + vpadding * 2, darker,  dirty );
 
-	display_text_proportional_len_clip_rgb( xpos+hpadding, ypos+1, text, ALIGN_LEFT | DT_CLIP, text_color, dirty, -1, 0, FS_NORMAL);
+	display_text_proportional_len_clip_rgb( xpos+hpadding, ypos+1, text, ALIGN_LEFT | DT_CLIP, text_color, -1, 0, FS_NORMAL);
 }
 
 
@@ -306,7 +323,7 @@ int display_multiline_text_rgb(scr_coord_val x, scr_coord_val y, const char *buf
 			next = strchr(buf, '\n');
 			const int px_len = display_text_proportional_len_clip_rgb(
 				x, y, buf,
-				ALIGN_LEFT | DT_CLIP, color, true,
+				ALIGN_LEFT | DT_CLIP, color,
 				next != NULL ? (int)(size_t)(next - buf) : -1,
 				0, FS_NORMAL);
 
@@ -320,22 +337,23 @@ int display_multiline_text_rgb(scr_coord_val x, scr_coord_val y, const char *buf
 }
 
 
-void display_outline_proportional_rgb(scr_coord_val xpos, scr_coord_val ypos, rgba_t text_color, rgba_t shadow_color, const char *text, int dirty, sint32 len)
+void display_outline_proportional_rgb(scr_coord_val xpos, scr_coord_val ypos, rgba_t text_color, rgba_t shadow_color, const char *text, font_size_t fs)
 {
 	const int flags = ALIGN_LEFT | DT_CLIP;
-	display_text_proportional_len_clip_rgb(xpos - 1, ypos, text, flags, shadow_color, dirty, len, 0, FS_NORMAL);
-	display_text_proportional_len_clip_rgb(xpos + 1, ypos, text, flags, shadow_color, dirty, len, 0, FS_NORMAL);
-	display_text_proportional_len_clip_rgb(xpos, ypos - 1, text, flags, shadow_color, dirty, len, 0, FS_NORMAL);
-	display_text_proportional_len_clip_rgb(xpos, ypos + 1, text, flags, shadow_color, dirty, len, 0, FS_NORMAL);
-	display_text_proportional_len_clip_rgb(xpos, ypos, text, flags, text_color, dirty, len, 0, FS_NORMAL);
+	display_text_proportional_len_clip_rgb(xpos - 1, ypos, text, flags, shadow_color, -1, 0, fs);
+	display_text_proportional_len_clip_rgb(xpos + 1, ypos, text, flags, shadow_color, -1, 0, fs);
+	display_text_proportional_len_clip_rgb(xpos, ypos - 1, text, flags, shadow_color, -1, 0, fs);
+	display_text_proportional_len_clip_rgb(xpos, ypos + 1, text, flags, shadow_color, -1, 0, fs);
+
+	display_text_proportional_len_clip_rgb(xpos, ypos, text, flags, text_color, -1, 0, fs);
 }
 
 
 void display_shadow_proportional_rgb(scr_coord_val xpos, scr_coord_val ypos, rgba_t text_color, rgba_t shadow_color, const char *text, int dirty, sint32 len)
 {
 	const int flags = ALIGN_LEFT | DT_CLIP;
-	display_text_proportional_len_clip_rgb(xpos + 1, ypos + 1 + (12 - LINESPACE) / 2, text, flags, shadow_color, dirty, len, 0, FS_NORMAL);
-	display_text_proportional_len_clip_rgb(xpos, ypos + (12 - LINESPACE) / 2, text, flags, text_color, dirty, len, 0, FS_NORMAL);
+	display_text_proportional_len_clip_rgb(xpos + 1, ypos + 1 + (12 - LINESPACE) / 2, text, flags, shadow_color, len, 0, FS_NORMAL);
+	display_text_proportional_len_clip_rgb(xpos, ypos + (12 - LINESPACE) / 2, text, flags, text_color, len, 0, FS_NORMAL);
 }
 
 
@@ -344,8 +362,8 @@ int display_text_bold(scr_coord_val xpos, scr_coord_val ypos, rgba_t color,
 	                  sint32 len, font_size_t size)
 {
 	const int flags = ALIGN_LEFT | DT_CLIP;
-	display_text_proportional_len_clip_rgb(xpos, ypos, text, flags, color, dirty, len, 1, size);
-	int width = display_text_proportional_len_clip_rgb(xpos+1, ypos, text, flags, color, dirty, len, 1, size);
+	display_text_proportional_len_clip_rgb(xpos, ypos, text, flags, color, len, 1, size);
+	int width = display_text_proportional_len_clip_rgb(xpos+1, ypos, text, flags, color, len, 1, size);
 	return width + 1;
 }
 
@@ -373,8 +391,13 @@ bool display_load_font(const char *fname, bool reload)
 		env_t::fontname = fname;
 	}
 
+	small_font.load_from_file(fname, size * 100 / 120);
+
 	if(headline_font.load_from_file(fname, size * 120 / 100)) {
-		return default_font.is_loaded() && headline_font.is_loaded();
+		return 
+			small_font.is_loaded() && 
+			default_font.is_loaded() && 
+			headline_font.is_loaded();
 	}
 
 	return false;

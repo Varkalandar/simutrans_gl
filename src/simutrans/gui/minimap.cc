@@ -1327,7 +1327,8 @@ const fabrik_t* minimap_t::draw_factory_connections(const fabrik_t* const fab, b
 				const char * name = translator::translate(fab2->get_name());
 				int name_width = proportional_string_width(name)+(LINESPACE/2);
 				boxpos.x = clamp( boxpos.x, pos.x, pos.x+get_size().w-name_width );
-				display_ddd_proportional_clip(boxpos.x, boxpos.y, color_idx_to_rgb(5), color_idx_to_rgb(COL_WHITE), name, true);
+				// display_proportional_clip_rgb(boxpos.x, boxpos.y, name, ALIGN_LEFT, rgba_t(1.0, 0.8, 0.2, 1.0), FS_SMALL);
+				display_outline_proportional_rgb(boxpos.x, boxpos.y, color_idx_to_rgb(COL_YELLOW), RGBA_BLACK, name, FS_SMALL);
 			}
 		}
 	}
@@ -1777,14 +1778,15 @@ void minimap_t::draw(scr_coord pos)
 	// ADD: if CRTL key is pressed, temporary show the name
 	if(  mode & MAP_TOWN  ) {
 		const weighted_vector_tpl<stadt_t*>& staedte = world->get_cities();
-		const rgba_t col = color_idx_to_rgb(showing_schedule ? COL_BLACK : COL_WHITE);
+		const rgba_t col = color_idx_to_rgb(showing_schedule ? COL_RED : COL_WHITE);
 
 		for(stadt_t* const stadt : staedte ) {
 			const char * name = stadt->get_name();
 
 			scr_coord p = map_to_screen_coord( stadt->get_pos() );
 			p += pos;
-			display_proportional_clip_rgb( p.x, p.y, name, ALIGN_LEFT, col, true );
+			// display_proportional_clip_rgb(p.x, p.y, name, ALIGN_LEFT, col, FS_SMALL);
+			display_outline_proportional_rgb(p.x, p.y, col, RGBA_BLACK, name, FS_SMALL);
 		}
 	}
 
@@ -1908,7 +1910,7 @@ void minimap_t::draw(scr_coord pos)
 	}
 
 	if(  !showing_schedule  ) {
-		// Add factory name tooltips and draw factory connections, if on a factory
+		// show factory names and draw factory connections, if on a factory
 		const fabrik_t* const fab = get_factory_near(last_world_pos, (mode & MAP_FACTORIES));
 		if(fab) {
 			if (mode & MAP_FACTORIES) {
@@ -1920,7 +1922,8 @@ void minimap_t::draw(scr_coord pos)
 			int name_width = proportional_string_width(name)+(LINESPACE/2);
 			boxpos.x = clamp( boxpos.x, 0, 0+get_size().w-name_width );
 			boxpos += pos;
-			display_ddd_proportional_clip(boxpos.x, boxpos.y, color_idx_to_rgb(10), color_idx_to_rgb(COL_WHITE), name, true);
+			// display_proportional_clip_rgb(boxpos.x, boxpos.y, name, ALIGN_LEFT, color_idx_to_rgb(COL_WHITE), FS_SMALL);
+			display_outline_proportional_rgb(boxpos.x, boxpos.y, color_idx_to_rgb(COL_WHITE), RGBA_BLACK, name, FS_SMALL);
 		}
 
 		for (int i = win_get_open_count() - 1; i >= 0; i--) {

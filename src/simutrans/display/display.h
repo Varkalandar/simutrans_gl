@@ -20,6 +20,7 @@ class font_t;
 
 enum font_size_t
 {
+    FS_SMALL,
     FS_NORMAL,
     FS_HEADLINE,
 };
@@ -38,10 +39,10 @@ void display_bevel_box(scr_rect area,
                        rgba_t top, rgba_t left, rgba_t right, rgba_t bottom);
 
 
-int display_text_proportional_len_clip_rgb(scr_coord_val x, scr_coord_val y, const char* txt, control_alignment_t flags, rgba_t color, bool dirty, sint32 len, sint32 spacing, font_size_t size);
+int display_text_proportional_len_clip_rgb(scr_coord_val x, scr_coord_val y, const char* txt, control_alignment_t flags, rgba_t color, sint32 len, sint32 spacing, font_size_t size);
 /* macro are for compatibility */
-#define display_proportional_rgb(               x, y, txt, align, color, dirty)       display_text_proportional_len_clip_rgb( x, y, txt, align,           color, dirty, -1, 0, FS_NORMAL )
-#define display_proportional_clip_rgb(          x, y, txt, align, color, dirty)       display_text_proportional_len_clip_rgb( x, y, txt, align | DT_CLIP, color, dirty, -1, 0, FS_NORMAL )
+#define display_proportional_rgb(     x, y, txt, align, color, fs) display_text_proportional_len_clip_rgb(x, y, txt, align,           color, -1, 0, fs)
+#define display_proportional_clip_rgb(x, y, txt, align, color, fs) display_text_proportional_len_clip_rgb(x, y, txt, align | DT_CLIP, color, -1, 0, fs)
 
 
 /// Display a string that is abbreviated by the (language specific) ellipsis character if too wide
@@ -57,7 +58,7 @@ void display_ddd_proportional_clip(scr_coord_val xpos, scr_coord_val ypos, rgba_
 
 int display_multiline_text_rgb(scr_coord_val x, scr_coord_val y, const char *inbuf, rgba_t color);
 
-void display_outline_proportional_rgb(scr_coord_val xpos, scr_coord_val ypos, rgba_t text_color, rgba_t shadow_color, const char *text, int dirty, sint32 len=-1);
+void display_outline_proportional_rgb(scr_coord_val xpos, scr_coord_val ypos, rgba_t text_color, rgba_t shadow_color, const char *text, font_size_t fs);
 void display_shadow_proportional_rgb(scr_coord_val xpos, scr_coord_val ypos, rgba_t text_color, rgba_t shadow_color, const char *text, int dirty, sint32 len=-1);
 int display_text_bold(scr_coord_val xpos, scr_coord_val ypos, rgba_t color, const char *text, int dirty, sint32 len=-1, font_size_t size=FS_NORMAL);
 

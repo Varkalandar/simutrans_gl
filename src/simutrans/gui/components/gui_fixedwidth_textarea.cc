@@ -78,7 +78,7 @@ static scr_coord display_word(const char * word_start, const char * word_end,
     // dbg->message("xx", "'%s'", word);
     
     display_text_proportional_len_clip_rgb(pos.x, pos.y, word_start, 0, 
-                                           (gui_theme_t::gui_color_text), false,  
+                                           (gui_theme_t::gui_color_text),
                                            word_end - word_start, 0, FS_NORMAL); 
     return pos;
 }

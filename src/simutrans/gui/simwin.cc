@@ -214,7 +214,7 @@ static int display_gadget_box(sint8 code,
 		else if(  code == SKIN_GADGET_PINNED  ) {
 			gadget_text = "S";
 		}
-		display_proportional_rgb( x+4, y+4, gadget_text, ALIGN_LEFT, (gui_theme_t::gui_color_text), false );
+		display_proportional_rgb(x+4, y+4, gadget_text, ALIGN_LEFT, (gui_theme_t::gui_color_text), FS_NORMAL);
 	}
 
 	int side = x+REVERSE_GADGETS*D_GADGET_WIDTH-1;
@@ -394,7 +394,7 @@ static void win_draw_window_title(const scr_coord pos, const scr_size size,
 	// if the object has a world position, show the coordinates
 	flags.gotopos = (welt_pos != koord3d::invalid);
 	if(flags.gotopos) {
-		display_proportional_clip_rgb(pos.x + left + titlewidth + 8, pos.y + top, welt_pos.get_2d_str(), ALIGN_LEFT, text_color, false);
+		display_proportional_clip_rgb(pos.x + left + titlewidth + 8, pos.y + top, welt_pos.get_2d_str(), ALIGN_LEFT, text_color, FS_NORMAL);
 	}
 	POP_CLIP();
 }
@@ -2217,8 +2217,8 @@ void win_display_flush(double konto)
 	}
 #endif
 
-	display_proportional_rgb(20, status_bar_text_y, time, ALIGN_LEFT, (SYSCOL_STATUSBAR_TEXT), true);
-	display_proportional_rgb(right_border-4, status_bar_text_y, info, ALIGN_RIGHT, (SYSCOL_STATUSBAR_TEXT), true);
+	display_proportional_rgb(20, status_bar_text_y, time, ALIGN_LEFT, (SYSCOL_STATUSBAR_TEXT), FS_NORMAL);
+	display_proportional_rgb(right_border-4, status_bar_text_y, info, ALIGN_RIGHT, (SYSCOL_STATUSBAR_TEXT), FS_NORMAL);
 	/* Since the visual center (disp_width + ((w_left + 8) & 0xFFF0) - ((w_right + 8) & 0xFFF0)) / 2;
 	 * jumps left and right with proportional fonts, we just take the actual center
 	 */
@@ -2241,8 +2241,8 @@ void win_display_flush(double konto)
 		if (textwidth_mn + textwidth_pl < right_border - left_border) {
 			// everything fits
 			left_border += ( (right_border - left_border) - (textwidth_mn + textwidth_pl)  ) / 2;
-			left_border += D_H_SPACE + display_proportional_rgb(left_border, status_bar_text_y, wl->get_active_player()->get_name(), ALIGN_LEFT, color_idx_to_rgb(wl->get_active_player()->get_player_color1() + env_t::gui_player_color_dark), true);
-			display_proportional_rgb(left_border, status_bar_text_y, buffer, ALIGN_LEFT, konto >= 0.0 ? MONEY_PLUS : MONEY_MINUS, true);
+			left_border += D_H_SPACE + display_proportional_rgb(left_border, status_bar_text_y, wl->get_active_player()->get_name(), ALIGN_LEFT, color_idx_to_rgb(wl->get_active_player()->get_player_color1() + env_t::gui_player_color_dark), FS_NORMAL);
+			display_proportional_rgb(left_border, status_bar_text_y, buffer, ALIGN_LEFT, konto >= 0.0 ? MONEY_PLUS : MONEY_MINUS, FS_NORMAL);
 		}
 		else {
 			// no space => only money
@@ -2253,7 +2253,7 @@ void win_display_flush(double konto)
 				display_proportional_ellipsis_rgb(r, wl->get_active_player()->get_name(), ALIGN_LEFT, color_idx_to_rgb(wl->get_active_player()->get_player_color1() + env_t::gui_player_color_dark), true);
 				left_border += width_left;
 				// normal color
-				display_proportional_rgb(left_border, status_bar_text_y, buffer, ALIGN_LEFT, konto >= 0.0 ? MONEY_PLUS : MONEY_MINUS, true);
+				display_proportional_rgb(left_border, status_bar_text_y, buffer, ALIGN_LEFT, konto >= 0.0 ? MONEY_PLUS : MONEY_MINUS, FS_NORMAL);
 			}
 			else {
 				// just money in player color, no player name
@@ -2265,7 +2265,7 @@ void win_display_flush(double konto)
 					number_to_string_fit(buffer, konto, 0, 5);
 					strcat(buffer, "$");
 				}
-				display_proportional_rgb(left_border, status_bar_text_y, buffer, ALIGN_LEFT, konto >= 0.0 ? color_idx_to_rgb(wl->get_active_player()->get_player_color1() + env_t::gui_player_color_dark) : MONEY_MINUS, true);
+				display_proportional_rgb(left_border, status_bar_text_y, buffer, ALIGN_LEFT, konto >= 0.0 ? color_idx_to_rgb(wl->get_active_player()->get_player_color1() + env_t::gui_player_color_dark) : MONEY_MINUS, FS_NORMAL);
 			}
 		}
 	}

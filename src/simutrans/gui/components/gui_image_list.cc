@@ -131,11 +131,11 @@ void gui_image_list_t::draw(scr_coord parent_pos)
 				// Let's make a black background to ensure visibility
 				for(int iy = -3; iy < 0; iy++) {
 					for(int ix = 1; ix < 4; ix++) {
-						display_proportional_clip_rgb(xpos + ix, ypos + iy, text, ALIGN_LEFT, color_idx_to_rgb(COL_BLACK), true);
+						display_proportional_clip_rgb(xpos + ix, ypos + iy, text, ALIGN_LEFT, color_idx_to_rgb(COL_BLACK), FS_NORMAL);
 					}
 				}
 				// Display the number white on black
-				display_proportional_clip_rgb(xpos + 2, ypos - 2, text, ALIGN_LEFT, color_idx_to_rgb(COL_WHITE), true);
+				display_proportional_clip_rgb(xpos + 2, ypos - 2, text, ALIGN_LEFT, color_idx_to_rgb(COL_WHITE), FS_NORMAL);
 			}
 		}
 		// advance x, y to next position

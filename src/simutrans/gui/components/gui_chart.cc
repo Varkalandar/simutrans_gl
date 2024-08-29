@@ -143,12 +143,12 @@ void gui_chart_t::draw(scr_coord offset)
 
 		// draw zero number only, if it will not disturb any other printed values!
 		if ((baseline > 18) && (baseline < chart_size.h -18)) {
-			display_proportional_clip_rgb(offset.x - 4, offset.y+(scr_coord_val)baseline-3, "0", ALIGN_RIGHT, (SYSCOL_TEXT_HIGHLIGHT), true);
+			display_proportional_clip_rgb(offset.x - 4, offset.y+(scr_coord_val)baseline-3, "0", ALIGN_RIGHT, (SYSCOL_TEXT_HIGHLIGHT), FS_NORMAL);
 		}
 
 		// display min/max money values
-		display_proportional_clip_rgb(offset.x - 4, offset.y-5, cmax, ALIGN_RIGHT, (SYSCOL_TEXT_HIGHLIGHT), true);
-		display_proportional_clip_rgb(offset.x - 4, offset.y+chart_size.h-5, cmin, ALIGN_RIGHT, (SYSCOL_TEXT_HIGHLIGHT), true);
+		display_proportional_clip_rgb(offset.x - 4, offset.y-5, cmax, ALIGN_RIGHT, (SYSCOL_TEXT_HIGHLIGHT), FS_NORMAL);
+		display_proportional_clip_rgb(offset.x - 4, offset.y+chart_size.h-5, cmin, ALIGN_RIGHT, (SYSCOL_TEXT_HIGHLIGHT), FS_NORMAL);
 	}
 
 	// draw chart frame
@@ -165,7 +165,7 @@ void gui_chart_t::draw(scr_coord offset)
 			sprintf( digit, "%i", abs(seed - j) );
 			scr_coord_val x =  x0 - (seed != j ? (int)(2 * log( (double)abs(seed - j) )) : 0);
 			if(  x > x_last  ) {
-				x_last = x + display_proportional_clip_rgb( x, offset.y + chart_size.h + 4, digit, ALIGN_LEFT, line_color, true );
+				x_last = x + display_proportional_clip_rgb(x, offset.y + chart_size.h + 4, digit, ALIGN_LEFT, line_color, FS_NORMAL);
 			}
 		}
 		// year's vertical lines
@@ -238,7 +238,7 @@ void gui_chart_t::draw(scr_coord offset)
 							display_ddd_proportional_clip( tmpx + 8, (scr_coord_val)(offset.y+baseline-(int)(tmp/scale)-4), color_idx_to_rgb(COL_GREY4), c.color, cmin, true);
 						}
 						else if(  (baseline-tmp/scale-8) > 0  &&  (baseline-tmp/scale+8) < chart_size.h  &&  abs((int)(tmp/scale)) > 9  ) {
-							display_proportional_clip_rgb(tmpx - 4, (scr_coord_val)(offset.y+baseline-(int)(tmp/scale)-4), cmin, ALIGN_RIGHT, c.color, true );
+							display_proportional_clip_rgb(tmpx - 4, (scr_coord_val)(offset.y+baseline-(int)(tmp/scale)-4), cmin, ALIGN_RIGHT, c.color, FS_NORMAL);
 						}
 					}
 				}
