@@ -665,7 +665,7 @@ public:
 				scr_coord_val xoff = env_t::iconsize.w - width - 1;
 				scr_coord_val yoff = env_t::iconsize.h - LINESPACE - 1;
 				display_fillbox_wh_rgb(pos.x + xoff, pos.y + yoff, width, LINESPACE, color_idx_to_rgb(COL_RED + 1), dirty);
-				display_proportional_rgb(pos.x + xoff + D_GET_CENTER_ALIGN_OFFSET(txt_width, width), pos.y + yoff + 1, str, ALIGN_LEFT, color_idx_to_rgb(COL_WHITE), FS_NORMAL);
+				display_proportional_rgb(pos.x + xoff + D_GET_CENTER_ALIGN_OFFSET(txt_width, width), pos.y + yoff - 1, str, ALIGN_LEFT, color_idx_to_rgb(COL_WHITE), FS_SMALL);
 			}
 		}
 	}

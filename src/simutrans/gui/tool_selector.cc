@@ -363,8 +363,13 @@ void tool_selector_t::draw(scr_coord pos, scr_size sz)
 			// Highlight the icon a bit on mouse over
 			if(mouse_pos.x >= draw_pos.x && mouse_pos.x < draw_pos.x + env_t::iconsize.w &&
 			   mouse_pos.y >= draw_pos.y && mouse_pos.y < draw_pos.y + env_t::iconsize.w) {
-				display_fillbox_wh_clip_rgb(draw_pos.x, draw_pos.y, env_t::iconsize.w, env_t::iconsize.w,
-				                            rgba_t(1.0, 1.0, 1.0, 0.1));
+
+				display_set_color(rgba_t(0.2, 0.2, 0.2, 1.0));
+				display_light_img(icon_img, draw_pos.x, draw_pos.y, env_t::iconsize.w, env_t::iconsize.w);
+
+//				display_fillbox_wh_clip_rgb(draw_pos.x, draw_pos.y, env_t::iconsize.w, env_t::iconsize.w,
+//				                            rgba_t(1.0, 1.0, 1.0, 0.1));
+				display_set_color(RGBA_WHITE);
 			}
             
             // this draws an overlay is selected

@@ -928,7 +928,7 @@ void display_light_img(const image_id id, scr_coord_val x, scr_coord_val y, scr_
 		x += imd.base_x;
 		y += imd.base_y;
 
-        glBlendFunc(GL_SRC_ALPHA, GL_DST_ALPHA);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
 		display_tile_from_sheet(imd.texture, x, y, w, h,
 								imd.sheet_x, imd.sheet_y, imd.base_w, imd.base_h);

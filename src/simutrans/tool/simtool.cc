@@ -5147,7 +5147,7 @@ void tool_build_roadsign_t::draw_after(scr_coord k, bool /* dirty */) const
 		display_base_img(icon, k.x, k.y, welt->get_active_player_nr(), env_t::iconsize.w, env_t::iconsize.w);
 		char level_str[16];
 		sprintf(level_str, "%i", signal[welt->get_active_player_nr()].spacing);
-		display_proportional_rgb(k.x+4, k.y+4, level_str, ALIGN_LEFT, color_idx_to_rgb(COL_YELLOW), FS_NORMAL);
+		display_proportional_rgb(k.x+4, k.y+2, level_str, ALIGN_LEFT, color_idx_to_rgb(COL_YELLOW), FS_SMALL);
 	}
 }
 
@@ -7239,7 +7239,7 @@ void tool_show_underground_t::draw_after(scr_coord k, bool dirty) const
 		if(  default_param!=NULL  &&  grund_t::underground_mode==grund_t::ugm_level  ) {
 			char level_str[16];
 			sprintf( level_str, "%i", grund_t::underground_level );
-			display_proportional_rgb(k.x+4, k.y+4, level_str, ALIGN_LEFT, color_idx_to_rgb(COL_YELLOW), FS_NORMAL);
+			display_proportional_rgb(k.x+4, k.y+2, level_str, ALIGN_LEFT, color_idx_to_rgb(COL_YELLOW), FS_SMALL);
 		}
 	}
 }
