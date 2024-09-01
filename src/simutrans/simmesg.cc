@@ -407,7 +407,8 @@ void chat_message_t::add_chat_message(const char* text, sint8 channel, sint8 sen
 				if(show_message) {
 					buf.printf("%s: %s", sender_nick.c_str(), text);
 					int type = message_t::chat_common + company_msg + private_msg*2;
-					ticker::add_msg(buf, koord3d::invalid, RGBA_BLACK, type); // fixme, real player color
+					rgba_t color = color_idx_to_rgb(player->get_player_color1());
+					ticker::add_msg(buf, koord3d::invalid, color, type);
 					env_t::chat_unread_public++;
 					sound_play(sound_desc_t::message_sound, 255, TOOL_SOUND);
 				}
