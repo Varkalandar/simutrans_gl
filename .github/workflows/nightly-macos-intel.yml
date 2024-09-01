@@ -1,6 +1,8 @@
 name: Nightly build MacOS Intel
 
-on: [push]
+on:
+  workflow_dispatch:
+#  push:
 
 jobs:
   build:
