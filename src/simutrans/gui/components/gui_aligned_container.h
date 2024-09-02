@@ -81,7 +81,7 @@ public:
 	 * New components will be added there.
 	 * @returns pointer to new table
 	 */
-	gui_aligned_container_t* add_table(uint16 columns_=0, uint16 rows_=0, uint16 span=1);
+	gui_aligned_container_t* add_table(uint16 columns_=0, uint16 rows_=0, uint16 span=0);
 
 	/**
 	 * Virtually closes the current table.

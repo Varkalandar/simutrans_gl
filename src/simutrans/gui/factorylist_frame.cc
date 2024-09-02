@@ -39,7 +39,6 @@ factorylist_frame_t::factorylist_frame_t() :
 {
 	old_factories_count = 0;
 
-	set_table_layout(1,0);
 	set_table_layout(1, 0);
 	add_table(3, 3);
 	{

@@ -23,11 +23,16 @@ sint16 factorylist_stats_t::sort_mode = factorylist::by_name;
 bool factorylist_stats_t::reverse = false;
 
 
-factorylist_stats_t::factorylist_stats_t(fabrik_t *fab) : indicator(RGBA_BLACK)
+factorylist_stats_t::factorylist_stats_t(fabrik_t *fab) : 
+	indicator(RGBA_BLACK),
+    name_label((gui_theme_t::gui_color_text)),
+	storage_label((gui_theme_t::gui_color_text))
 {
 	this->fab = fab;
+
+	set_table_layout(7, 1);
+
 	// pos button
-	set_table_layout(7,1);
 	button_t *b = new_component<button_t>();
 	b->set_typ(button_t::posbutton_automatic);
 	b->set_targetpos3d(fab->get_pos());
@@ -38,7 +43,7 @@ factorylist_stats_t::factorylist_stats_t(fabrik_t *fab) : indicator(RGBA_BLACK)
 	add_component(&indicator);
 
 	// factory name
-	name_label.fixed_min_width = 160;
+	name_label.fixed_min_width = 180;
 	name_label.fixed_min_height = gui_theme_t::gui_label_size.h + 8;
 	add_component(&name_label);
 
@@ -72,17 +77,14 @@ factorylist_stats_t::factorylist_stats_t(fabrik_t *fab) : indicator(RGBA_BLACK)
 		new_component<gui_empty_t>();
 	}
 
-
 	// factory name
 	update_label();
-	add_component(&name_label);
 }
 
 
 void factorylist_stats_t::update_label()
 {
 	cbuffer_t &nbuf = name_label.buf();
-	nbuf.append(" ");
 	nbuf.append(fab->get_name());
 	name_label.update();
 
@@ -157,7 +159,7 @@ void factorylist_stats_t::draw(scr_coord offset)
 	boost_electric.set_alpha(fab->get_prodfactor_electric() > 0 ? 1.0f : 0.5f);
 	boost_passenger.set_alpha(fab->get_prodfactor_pax() > 0 ? 1.0f : 0.5f);
 	boost_mail.set_alpha(fab->get_prodfactor_mail() > 0 ? 1.0f : 0.5f);
-
+   
 	indicator.set_color( color_idx_to_rgb(fabrik_t::status_to_color[fab->get_status()]) );
 
 	draw_background(offset);
