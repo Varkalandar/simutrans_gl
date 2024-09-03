@@ -1,0 +1,25 @@
+name: Build Fedora
+
+on:
+  #  workflow_dispatch:
+  push:
+    
+jobs:
+  fedora-job:
+    runs-on: ubuntu-latest
+    container: fedora:35
+    steps:
+      - run: cat /etc/os-release
+
+      - uses: actions/checkout@v4
+
+      - name: install_dependencies
+      run: |
+        dnf -y upgrade
+        dnf -y install libsdl2-dev
+        dnf -y install libfreetype6-dev
+        dnf -y install libfontconfig-dev
+        dnf -y install libminiupnpc-dev
+        dnf -y install libzstd-dev libglfw3-dev
+        dnf -y install libglew-dev
+        dnf -y install libopenal-dev
