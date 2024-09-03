@@ -70,16 +70,18 @@ public:
 	void clear();
 
 
-        /**
-         * Sets the buffer to the given text 
-         * @param text The new text
-         */
-        void set(const char * text);
-        
+	/**
+	 * Sets the buffer to the given text 
+	 * @param text The new text
+	 */
+	void set(const char * text);
+
+
 	/**
 	 * Appends text. Buffer will be extended if it does not have enough capacity.
 	 */
 	void append(const char * text);
+
 
 	/**
 	 * Appends text, at most n characters worth. Buffer will be extended if needed.
@@ -88,27 +90,40 @@ public:
 	 */
 	void append(const char* text, size_t maxchars);
 
+
+	/**
+	 * Appends unsigned number. Buffer will be extended if it does not have enough capacity.
+	 */
+	void append(unsigned int n);
+
+
 	/**
 	 * Removes all trailing whitespaces
 	 */
 	void rtrim();
+
 
 	/**
 	 * Return contents of buffer
 	 */
 	const char* get_str() const;
 
+
 	/**
 	 * Appends a number. Buffer will be extended if it does not have enough capacity.
 	 */
 	void append(double n, int precision);
+
 
 	/**
 	 * appends formatted money string
 	 */
 	void append_money(double money);
 
-	/* Append formatted text to the buffer */
+
+	/*
+	 * Append formatted text to the buffer 
+	 */
 	void printf(const char *fmt, ...);
 
 	void vprintf(const char *fmt,  va_list args );

@@ -35,7 +35,8 @@ gui_scrollpane_t::gui_scrollpane_t(gui_component_t* comp, bool b_scroll_x, bool 
 	b_can_drag = true;
 	b_is_dragging = false;
     b_show_border = false;
-    
+    b_draw_background = false;
+	
 	old_comp_size = scr_size::invalid;
 	maximize = false;
 }

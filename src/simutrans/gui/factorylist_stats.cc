@@ -90,26 +90,22 @@ void factorylist_stats_t::update_label()
 
 	cbuffer_t &buf = storage_label.buf();
 
-	buf.append("(");
-
-	if (!fab->get_input().empty()) {
-		buf.printf( "%i+%i", fab->get_total_in(), fab->get_total_transit() );
+	if(!fab->get_input().empty()) {
+		buf.append("In: ");
+		buf.append(fab->get_total_in());
+		buf.append(", Incoming: ");
+		buf.append(fab->get_total_transit());
+		buf.append(", ");
 	}
-	else {
-		buf.append("-");
-	}
-	buf.append(", ");
 
 	if (!fab->get_output().empty()) {
-		buf.append(fab->get_total_out(),0);
+		buf.append("Out: ");
+		buf.append(fab->get_total_out(), 0);
+		buf.append(", ");
 	}
-	else {
-		buf.append("-");
-	}
-	buf.append(", ");
 
+	buf.append("Prod.: ");
 	buf.append(fab->get_current_production(), 0);
-	buf.append(")");
 	storage_label.update();
 }
 

@@ -78,8 +78,10 @@ curiositylist_stats_t::curiositylist_stats_t(gebaeude_t *att) : indicator(RGBA_B
 		new_component<gui_empty_t>();
 	}
 	// name
+
 	gui_label_buf_t *l = new_component<gui_label_buf_t>();
-	l->buf().printf("%s (%d)", get_text(), attraction->get_passagier_level());
+	l->fixed_min_height = gui_theme_t::gui_label_size.h + 8;
+	l->buf().printf("%s\t (%d)", get_text(), attraction->get_passagier_level());
 	l->update();
 }
 

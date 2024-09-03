@@ -112,6 +112,13 @@ void cbuffer_t::append(const char* text, size_t maxchars)
 }
 
 
+void cbuffer_t::append(unsigned int n)
+{
+	char tmp[128];
+	sprintf(tmp, "%u", n);
+	append(tmp);
+}
+
 void cbuffer_t::append(double n,int decimals)
 {
 	char tmp[128];

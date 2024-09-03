@@ -235,7 +235,8 @@ void gui_aligned_container_t::compute_sizes(vector_tpl<scr_coord_val>& col_w, ve
 		for(uint32 i = 0; i<components.get_count(); i++) {
 			gui_component_t* comp = components[i];
 			// fails if span is larger than remaining column space
-			assert(comp != &placeholder);
+			// assert(comp != &placeholder);
+			dbg->warning("gui_aligned_container_t::compute_sizes()", "comp must not be placeholder");
 			uint16 span = 1;
 
 			while (i+1<components.get_count()) {

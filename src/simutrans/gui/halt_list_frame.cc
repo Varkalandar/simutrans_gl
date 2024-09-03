@@ -125,6 +125,7 @@ halt_list_frame_t::halt_list_frame_t() :
 {
 	m_player = welt->get_active_player();
 	filter_frame = NULL;
+	last_name_filter[0] = 0;
 
 	set_table_layout(1, 0);
 
@@ -362,7 +363,8 @@ void halt_list_frame_t::draw(scr_coord pos, scr_size size)
 {
 	filter_details.pressed = filter_frame != NULL;
 
-	if(  last_world_stops != haltestelle_t::get_alle_haltestellen().get_count()  ||  strcmp(last_name_filter, name_filter)  ) {
+	if(last_world_stops != haltestelle_t::get_alle_haltestellen().get_count() ||
+	   strcmp(last_name_filter, name_filter)) {
 		// some deleted/ added => resort
 		strcpy(last_name_filter, name_filter);
 		sort_list();

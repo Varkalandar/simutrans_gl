@@ -36,54 +36,32 @@ curiositylist_frame_t::curiositylist_frame_t() :
 	scrolly(gui_scrolled_list_t::windowskin, curiositylist_stats_t::compare)
 {
 	attraction_count = 0;
+	
 	scrolly.set_checkered(true);
 	scrolly.set_maximize(true);
 
-	set_table_layout(1,0);
-	add_table(2, 4);
-	{
-		new_component<gui_label_t>("Filter:");
-		name_filter_input.set_text(name_filter, lengthof(name_filter));
-		add_component(&name_filter_input);
-		new_component<gui_fill_t>();
+	set_table_layout(3,0);
 
-        filter_by_owner.init(button_t::square_automatic, "Served by");
-	    filter_by_owner.add_listener(this);
-	    filter_by_owner.set_tooltip("At least one tile is connected to one stop.");
-	    add_component(&filter_by_owner);
-		filterowner.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("Anyone"), (gui_theme_t::gui_color_text));
-		filterowner.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("No one"), (gui_theme_t::gui_color_text));
-		for (int i = 0; i < MAX_PLAYER_COUNT; i++) {
-			if (player_t* pl = welt->get_player(i)) {
-				filterowner.new_component<playername_const_scroll_item_t>(pl);
-                                /*
-				if (pl == welt->get_active_player()) {
-					filterowner.set_selection(filterowner.count_elements() - 1);
-				}
-                                */
+	new_component<gui_label_t>("Filter:");
+	name_filter_input.set_text(name_filter, lengthof(name_filter));
+	name_filter_input.set_notify_all_changes_delay(0);
+	name_filter_input.add_listener(this);
+	add_component(&name_filter_input);
+	new_component<gui_fill_t>();
+
+	filter_by_owner.init(button_t::square_automatic, "Served by");
+	filter_by_owner.add_listener(this);
+	filter_by_owner.set_tooltip("At least one tile is connected to one stop.");
+	add_component(&filter_by_owner);
+
+	filterowner.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("No player"), (gui_theme_t::gui_color_text));
+	for (int i = 0; i < MAX_PLAYER_COUNT; i++) {
+		if (player_t* pl = welt->get_player(i)) {
+			filterowner.new_component<playername_const_scroll_item_t>(pl);
+			if (pl == welt->get_active_player()) {
+				filterowner.set_selection(filterowner.count_elements() - 1);
 			}
 		}
-                filterowner.set_selection(0);
-		filterowner.add_listener(this);
-		add_component(&filterowner);
-
-		// new_component<gui_fill_t>();
-
-		new_component<gui_label_t>("hl_txt_sort");
-		sortedby.set_unsorted(); // do not sort
-		for (size_t i = 0; i < lengthof(sort_text); i++) {
-			sortedby.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate(sort_text[i]), (gui_theme_t::gui_color_text));
-		}
-		sortedby.set_selection(curiositylist_stats_t::sortby);
-		sortedby.add_listener(this);
-		add_component(&sortedby);
-
-		sorteddir.init(button_t::sortarrow_state, NULL);
-		sorteddir.add_listener(this);
-		sorteddir.pressed = curiositylist_stats_t::sortby;
-		add_component(&sorteddir);
-
-		// new_component<gui_fill_t>();
 	}
 	filterowner.add_listener(this);
 	add_component(&filterowner);
