@@ -25,6 +25,7 @@ jobs:
           dnf -y install glfw glfw-devel
           dnf -y install glew glew-devel libGLEW
           dnf -y install openal-soft openal-soft-devel
+          dnf -y install cmake
 
       - name: build
         run: |
