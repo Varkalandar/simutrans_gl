@@ -72,9 +72,6 @@ void goods_stats_t::draw(scr_coord offset)
 
 	for(int line = 1; line < goods_manager_t::get_count(); line ++) {
 		rgba_t color = (line & 1) ? (gui_theme_t::gui_color_list_background_odd) : (gui_theme_t::gui_color_list_background_even);
-		// color.alpha = 1.0f;
-
-		// printf("%f %f %f %f\n", color.red, color.green, color.blue, color.alpha);
 		display_fillbox_wh_clip_rgb(pos.x + offset.x, y + line * spacing, w, spacing, color);
 	}
 
