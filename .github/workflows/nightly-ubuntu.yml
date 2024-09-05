@@ -1,8 +1,8 @@
 name: Nightly build Ubuntu
 
 on:
-#  workflow_dispatch:
-  push:
+  workflow_dispatch:
+#  push:
     
 jobs:
   build:
@@ -47,7 +47,7 @@ jobs:
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: build/simulinux-x64-nightly.zip
-        asset_name: simulinux_gl-x64.zip
+        asset_name: simutrans_gl-linux-ubuntu-x64.zip
         tag: dev_snapshot
         overwrite: true
 

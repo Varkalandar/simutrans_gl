@@ -1,7 +1,7 @@
 name: Build Fedora
 
 on:
-  #  workflow_dispatch:
+  workflow_dispatch:
   push:
     
 jobs:
@@ -16,16 +16,33 @@ jobs:
         run: |
           cat /etc/os-release
           dnf -y upgrade
-          dnf -y install libsdl2-dev
-          dnf -y install libfreetype6-dev
-          dnf -y install libfontconfig-dev
-          dnf -y install libminiupnpc-dev
-          dnf -y install libzstd-dev libglfw3-dev
-          dnf -y install libglew-dev
-          dnf -y install libopenal-dev
+          dnf -y install gcc-c++ libgcc 
+          dnf -y install SDL2-static SDL2-devel
+          dnf -y install freetype freetype-devel
+          dnf -y install fontconfig fontconfig-devel
+          dnf -y install miniupnpc miniupnpc-devel
+          dnf -y install zstd libzstd libzstd-devel
+          dnf -y install glfw glfw-devel
+          dnf -y install glew glew-devel libGLEW
+          dnf -y install openal-soft openal-soft-devel
 
       - name: build
         run: |
           cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DOPTION_BUNDLE_LIBRARIES=ON -DSIMUTRANS_UPDATE_LANGFILES=ON
           cmake --build build -j$(nproc) --target install
-  
+
+      - name: distribute
+        run: |
+          cd build
+          zip -r simulinux-x64-nightly.zip simutrans
+
+      - name: Update binaries of development snapshot
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: build/simulinux-x64-nightly.zip
+          asset_name: simutrans_gl-linux-fedora-x64.zip
+          tag: dev_snapshot
+          overwrite: true
+    
+              
