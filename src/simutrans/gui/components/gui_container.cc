@@ -279,10 +279,10 @@ void gui_container_t::draw(scr_coord offset)
 				continue;
 			}
 
-			if (checkered && (checker_count&1)==0) {
+			if(checkered) {
+				rgba_t color = (checker_count & 1) ? (gui_theme_t::gui_color_list_background_odd) : (gui_theme_t::gui_color_list_background_even);
 				scr_coord c_pos = screen_pos + c->get_pos();
-				// display_blend_wh_rgb( c_pos.x, c_pos.y, c->get_size().w, c->get_size().h, color_idx_to_rgb(COL_WHITE), 50 );
-                rgba_t color (1, 1, 1, 0.5);
+
                 display_fillbox_wh_rgb(c_pos.x, c_pos.y, c->get_size().w, c->get_size().h, color, false);
 			}
 

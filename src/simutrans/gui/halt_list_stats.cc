@@ -131,7 +131,7 @@ void halt_list_stats_t::draw(scr_coord offset)
 
 	set_size(get_size());
 	
-	draw_background(offset);
+	// draw_background(offset);
 
 	gui_aligned_container_t::draw(offset);
 }

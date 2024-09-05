@@ -6,7 +6,6 @@
 #ifndef GUI_GOODS_STATS_H
 #define GUI_GOODS_STATS_H
 
-
 #include "../simtypes.h"
 #include "components/gui_aligned_container.h"
 
@@ -22,6 +21,8 @@ public:
 
 	// update list and resize
 	void update_goodslist(vector_tpl<const goods_desc_t*>, int bonus);
+
+	void draw(scr_coord offset);
 };
 
 #endif

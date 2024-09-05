@@ -31,12 +31,16 @@ private:
 	align_t align;
 
 	/**
-	 * Color of the Labels
+	 * Color of the label text
 	 */
 	rgba_t color;
 
 	bool shadowed;
 	rgba_t color_shadow;
+
+	bool draw_background;
+	rgba_t color_background;
+
 
 	const char * text; // only for direct access of non-translatable things. Do not use!
 	const char * tooltip;
@@ -96,6 +100,15 @@ public:
 	{
 		this->color_shadow = color_shadow;
 		this->shadowed = shadowed;
+	}
+
+	/**
+	 * Toggles shadow and sets shadow color.
+	 */
+	void set_draw_background(rgba_t color_background, bool yesno)
+	{
+		this->color_background = color_background;
+		this->draw_background = yesno;
 	}
 
 	/**

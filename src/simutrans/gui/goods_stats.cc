@@ -62,3 +62,21 @@ void goods_stats_t::update_goodslist(vector_tpl<const goods_desc_t*>goods, int b
 	scr_size min_size = get_min_size();
 	set_size(scr_size(max(size.w, min_size.w), min_size.h) );
 }
+
+
+void goods_stats_t::draw(scr_coord offset)
+{
+	scr_coord_val spacing = D_LABEL_HEIGHT + D_V_SPACE;
+	scr_coord_val y = pos.y + offset.y + spacing - D_V_SPACE;
+	scr_coord_val w = display_get_width();
+
+	for(int line = 1; line < goods_manager_t::get_count(); line ++) {
+		rgba_t color = (line & 1) ? (gui_theme_t::gui_color_list_background_odd) : (gui_theme_t::gui_color_list_background_even);
+		// color.alpha = 1.0f;
+
+		// printf("%f %f %f %f\n", color.red, color.green, color.blue, color.alpha);
+		display_fillbox_wh_clip_rgb(pos.x + offset.x, y + line * spacing, w, spacing, color);
+	}
+
+	gui_aligned_container_t::draw(offset);
+}

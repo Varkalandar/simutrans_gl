@@ -34,6 +34,7 @@ gui_label_t::gui_label_t(const char* text, rgba_t color_, align_t align_, font_s
 	set_size( scr_size( D_BUTTON_WIDTH, D_LABEL_HEIGHT ) );
 	init( text, scr_coord (0,0), color_, align_);
 	shadowed = false;
+	draw_background = false;
 }
 
 
@@ -73,6 +74,11 @@ void gui_label_t::set_text_pointer(const char *text_par, bool autosize)
 void gui_label_t::draw(scr_coord offset)
 {
     // dbg->message("gui_label_t::draw", "Called");
+
+	if(draw_background) {
+		scr_size size = get_size();
+		display_fillbox_wh_clip_rgb(pos.x + offset.x, pos.y + offset.y, size.w, size.h, color_background);
+	}
 
 	if(  align == money_right) {
 		if(text) {

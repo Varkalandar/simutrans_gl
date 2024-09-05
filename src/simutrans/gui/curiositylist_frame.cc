@@ -37,7 +37,7 @@ curiositylist_frame_t::curiositylist_frame_t() :
 {
 	attraction_count = 0;
 	
-	scrolly.set_checkered(true);
+	// scrolly.set_checkered(true);
 	scrolly.set_maximize(true);
 
 	set_table_layout(3,0);
