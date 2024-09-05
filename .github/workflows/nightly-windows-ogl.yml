@@ -1,7 +1,7 @@
-name: Nightly Built Windows
+name: Build Windows
 
 on:
-#  push:  
+  push:  
   workflow_dispatch:
       
 jobs:
