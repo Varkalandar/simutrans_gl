@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
       
 jobs:
-  mingw-opengl:
+  mingw-opengl-build:
     runs-on: windows-latest
     steps:
 
