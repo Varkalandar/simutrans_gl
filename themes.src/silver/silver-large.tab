@@ -68,7 +68,7 @@ bottom_window_tint = #22000000
 default_window_title_color = #84939e
 
 # gui_color_text = #000000
-gui_color_text_highlight = #806000
+gui_color_text_highlight = #FFFFDD
 gui_color_text_shadow = #333333
 gui_color_text_title = #338FCC
 gui_color_text_strong = #E46A0B
@@ -126,8 +126,8 @@ cursor_overlay_color = #ff0000
 gui_color_selected_tool = #CCEE00
 
 # Color loadbar, save game, load game, server...
-gui_color_loadingbar_progress = #76b9e6
-gui_color_loadingbar_inner = #D6ECF7
+gui_color_loadingbar_progress = #888888
+gui_color_loadingbar_inner = #BBBBBB
 
 # Color player bright
 gui_player_color_dark = 1	

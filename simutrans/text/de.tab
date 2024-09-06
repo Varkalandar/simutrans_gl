@@ -67,6 +67,8 @@ gl_btn_sort_revenue
 nach Erlös
 gl_btn_unsort
 unsortiert
+GLColor
+Farbe
 GLName
 Ware
 GLRevenue

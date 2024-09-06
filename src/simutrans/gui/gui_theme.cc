@@ -538,6 +538,8 @@ bool gui_theme_t::themes_init(const char *file_name, bool init_fonts, bool init_
 		return false;
 	}
 
+	// printf("loading theme from %s\n", file_name);
+
 	// define a default even when stuff is missing from the table
 	init_gui_defaults();
 

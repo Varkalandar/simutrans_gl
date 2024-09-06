@@ -109,7 +109,19 @@ void factory_desc_t::calc_checksum(checksum_t *chk) const
 	get_building()->calc_checksum(chk);
 }
 
+
 rgb888_t factory_desc_t::get_color() const
 {
 	return get_color_rgb(color);
+}
+
+
+goods_desc_t const* factory_supplier_desc_t::get_input_type() const 
+{ 
+	return get_child<goods_desc_t>(0); 
+}
+
+goods_desc_t const* factory_product_desc_t::get_output_type() const 
+{
+	return get_child<goods_desc_t>(0); 
 }

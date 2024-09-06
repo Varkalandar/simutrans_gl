@@ -70,6 +70,8 @@ curiositylist_stats_t::curiositylist_stats_t(gebaeude_t *att) : indicator(RGBA_B
 	// indicator bar
 	add_component(&indicator);
 	indicator.set_max_size(scr_size(D_INDICATOR_WIDTH,D_INDICATOR_HEIGHT));
+	indicator.fixed_min_height = gui_theme_t::gui_label_size.h-4;
+
 	// city attraction images
 	if (attraction->get_tile()->get_desc()->get_extra() != 0) {
 		new_component<gui_image_t>(skinverwaltung_t::intown->get_image_id(0), 0, ALIGN_NONE, true);
@@ -149,14 +151,6 @@ bool curiositylist_stats_t::infowin_event(const event_t * ev)
  */
 void curiositylist_stats_t::draw(scr_coord offset)
 {
-	scr_size size = get_size();
-	scr_coord pos = get_pos();
-
-	int odd = (pos.y / size.h) & 1;
-	rgba_t color = odd ? gui_theme_t::gui_color_list_background_odd : gui_theme_t::gui_color_list_background_even;
-
-	display_fillbox_wh_clip_rgb(offset.x + pos.x - 4, offset.y + pos.y, size.w + 200, size.h, color);
-
 	// is the curiosity connected? => decide on indicatorfarbe (indicator color)
 	rgba_t indicatorfarbe;
 	bool mail=false;

@@ -23,21 +23,25 @@ void goods_stats_t::update_goodslist(vector_tpl<const goods_desc_t*>goods, int b
 {
 	scr_size size = get_size();
 	remove_all();
-	set_table_layout(6,0);
+	set_table_layout(6, 0);
 
     // build header
     
-    new_component_span<gui_label_t>("GLName", 2)->fixed_min_height = LINESPACE * 3 / 2;
-    new_component<gui_label_t>("GLRevenue")->set_align(gui_label_t::right);
-    new_component<gui_label_t>("GLBonus")->set_align(gui_label_t::right);
-    new_component<gui_label_t>("GLCategory");
-    new_component<gui_label_t>("GLWeight")->set_align(gui_label_t::right);
+    new_component<gui_label_t>("GLColor", gui_theme_t::gui_color_text_highlight, gui_label_t::centered)->fixed_min_height = LINESPACE * 3 / 2;
+    new_component<gui_label_t>("GLName", gui_theme_t::gui_color_text_highlight, gui_label_t::centered);
+    new_component<gui_label_t>("GLRevenue", gui_theme_t::gui_color_text_highlight, gui_label_t::centered);
+    new_component<gui_label_t>("GLBonus", gui_theme_t::gui_color_text_highlight, gui_label_t::centered);
+    new_component<gui_label_t>("GLCategory", gui_theme_t::gui_color_text_highlight, gui_label_t::centered);
+    new_component<gui_label_t>("GLWeight", gui_theme_t::gui_color_text_highlight, gui_label_t::centered);
     
     // build list
     
 	for(const goods_desc_t* wtyp : goods) {
 
-		new_component<gui_colorbox_t>(wtyp->get_color())->set_max_size(scr_size(D_INDICATOR_WIDTH, D_INDICATOR_HEIGHT));
+		gui_colorbox_t * indicator = new_component<gui_colorbox_t>(wtyp->get_color());
+		indicator->fixed_min_height = gui_theme_t::gui_label_size.h-4;
+		indicator->set_max_size(scr_size(D_INDICATOR_WIDTH, D_INDICATOR_HEIGHT));
+
 		new_component<gui_label_t>(wtyp->get_name());
 
 		const sint32 grundwert128 = (sint32)wtyp->get_value() * welt->get_settings().get_bonus_basefactor(); // bonus price will be always at least this
@@ -52,7 +56,7 @@ void goods_stats_t::update_goodslist(vector_tpl<const goods_desc_t*>goods, int b
 		lb->buf().printf("%d%%", wtyp->get_speed_bonus());
 		lb->update();
 
-		new_component<gui_label_t>(wtyp->get_catg_name());
+		new_component<gui_label_t>(wtyp->get_catg_name(), (gui_theme_t::gui_color_text), gui_label_t::right);
 
 		lb = new_component<gui_label_buf_t>((gui_theme_t::gui_color_text), gui_label_t::right);
 		lb->buf().printf("%dkg", wtyp->get_weight_per_unit());

@@ -801,6 +801,8 @@ gl_btn_sort_catg
 Category
 gl_title
 Goods List
+GLColor
+Color
 GLName
 Good
 GLRevenue
