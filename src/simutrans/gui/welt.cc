@@ -52,6 +52,7 @@
 #include "settings_frame.h"
 #include "load_relief_frame.h"
 #include "messagebox.h"
+#include "optionen.h"
 
 
 // Local adjustment
@@ -571,7 +572,8 @@ bool welt_gui_t::action_triggered( gui_action_creator_t *comp,value_t v)
 	}
 	else if(comp==&return_menu) {
 		destroy_all_win(true);
-		banner_t::show_banner();
+		// banner_t::show_banner();
+		create_win(new optionen_gui_t(), w_info, magic_optionen_gui_t);
 	}
 
 	if(knr>=0  &&  sets) {
