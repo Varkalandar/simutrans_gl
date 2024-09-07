@@ -350,6 +350,7 @@ void depot_frame_t::init(depot_t *dep)
 	cont_vehicle_labels->set_force_equal_columns(true);
 	cont_vehicle_labels->set_spacing(scr_size(D_H_SPACE*4, 1));
 
+	labels[LB_VEH_NAME]->set_color(gui_theme_t::gui_color_text_highlight);
 	cont_vehicle_labels->add_component(labels[LB_VEH_NAME],2);
 	cont_vehicle_labels->add_component(new gui_spacer_t(scr_coord(0,0), scr_size(200, 4)),2);
 	cont_vehicle_labels->add_component(labels[LB_VEH_COST1]);
@@ -1513,10 +1514,10 @@ void depot_frame_t::update_vehicle_info_text(scr_coord pos)
 		// Hajo: there is data to show
 		show_vehicle_info_popup = true;
 
-		labels[LB_VEH_NAME]->buf().printf( "\en%s\ed", translator::translate( veh_type->get_name(), welt->get_settings().get_name_language_id() ) );
+		labels[LB_VEH_NAME]->buf().printf(translator::translate(veh_type->get_name(), welt->get_settings().get_name_language_id()));
 
 		if(  veh_type->get_power() > 0  ) { // engine type
-			labels[LB_VEH_NAME]->buf().printf( " (%s)", translator::translate( vehicle_builder_t::engine_type_names[veh_type->get_engine_type()+1] ) );
+			labels[LB_VEH_NAME]->buf().printf(" (%s)", translator::translate(vehicle_builder_t::engine_type_names[veh_type->get_engine_type()+1]));
 		}
 
 		if(  sint64 fix_cost = welt->scale_with_month_length( veh_type->get_fixed_cost() )  ) {
