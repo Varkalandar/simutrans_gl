@@ -88,8 +88,6 @@ savegame_frame_t::savegame_frame_t(const char *suffix, bool only_directories, co
 	if(show_divider) {
         new_component<gui_divider_t>();
     }
-    
-	add_table(3,1);
 
 	add_component(&bottom_left_frame);
 	bottom_left_frame.set_table_layout(1,0);
@@ -279,8 +277,8 @@ void savegame_frame_t::fill_list( void )
 void savegame_frame_t::list_filled( void )
 {
 	uint cols = (delete_enabled ? 1 : 0) + 1 + (label_enabled ? 1 : 0);
-	button_frame.set_table_layout(1,0);
-	button_frame.add_table(cols,0)->set_spacing(scr_size(D_H_SPACE,D_FILELIST_V_SPACE)); // less vertical spacing between entries to see more of them on screen
+	button_frame.set_table_layout(cols, 0);
+	button_frame.add_table(cols, 0)->set_spacing(scr_size(D_H_SPACE,D_FILELIST_V_SPACE)); // less vertical spacing between entries to see more of them on screen
 
 	button_t *pressed_button = NULL;
 
@@ -326,20 +324,19 @@ void savegame_frame_t::list_filled( void )
 
 	}
 	button_frame.end_table();
-
-	const scr_coord_val row_height = max( D_LABEL_HEIGHT, D_BUTTON_HEIGHT );
+	
+	// const scr_coord_val row_height = max( D_LABEL_HEIGHT, D_BUTTON_HEIGHT );
 
 	reset_min_windowsize();
-	scr_size size = get_min_size() + scr_size(0, min(entries.get_count(), L_DEFAULT_ROWS) * row_height);
-	// TODO do something smarter here
-	size.w = max(size.w, button_frame.get_min_size().w + D_SCROLLBAR_WIDTH);
-	set_windowsize(size);
+	// scr_size size = get_min_size() + scr_size(0, min(entries.get_count(), L_DEFAULT_ROWS) * row_height);
+	// size.w = max(size.w, button_frame.get_min_size().w + D_SCROLLBAR_WIDTH);
+
+	// set_windowsize(size);
 
 	if (pressed_button) {
 		scrolly.set_scroll_position(0, max(0, pressed_button->get_pos().y - 2 * D_BUTTON_HEIGHT) );
 	}
 }
-
 
 
 /**
@@ -357,7 +354,6 @@ bool savegame_frame_t::check_file(const char *filename, const char *suffix)
 	// assume truth, if there is no pattern to compare
 	return  suffix==NULL  ||  suffix[0]==0  ||  (strncmp(filename+strlen(filename)-4, suffix, 4)== 0);
 }
-
 
 
 /**
@@ -445,7 +441,6 @@ void savegame_frame_t::add_file(const char *fullpath, const char *filename, cons
 }
 
 
-
 /**
  * This dialogue's message event handler. The enter key is dispateched as
  * an action button click event. The WIN_OPEN event starts to fill the file
@@ -471,7 +466,6 @@ bool savegame_frame_t::infowin_event(const event_t *event)
 	}
 	return gui_frame_t::infowin_event(event);
 }
-
 
 
 /**
@@ -558,7 +552,6 @@ bool savegame_frame_t::action_triggered(gui_action_creator_t *component, value_t
 }
 
 
-
 /**
  * Generic delete button click handler. This will delete the
  * item from the storage media. If the system supports a
@@ -603,7 +596,6 @@ void savegame_frame_t::set_filename(const char *file_name)
 }
 
 
-
 /**
  * ONLY WIN32
  * Translates all / into \ in a given path string. If a drive
@@ -632,7 +624,6 @@ void savegame_frame_t::cleanup_path(char *path)
 }
 
 
-
 /**
  * Outputs a truncated path by replacing the middle portion with "..."
  *
@@ -657,9 +648,7 @@ void savegame_frame_t::shorten_path(char *dest,const char *source,const size_t m
 	strncpy(dest,source,half-1);
 	memcpy(&dest[half-1],"...",sizeof(char) * 3);
 	strcpy(&dest[half+2],&source[orig_size-half+2-odd]);
-
 }
-
 
 
 bool savegame_frame_t::compare_items ( const dir_entry_t & entry, const char *, const char *name )

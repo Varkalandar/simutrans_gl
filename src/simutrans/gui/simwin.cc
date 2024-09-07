@@ -472,7 +472,7 @@ static void save_windowsize(simwin_t *win)
 
 static scr_size get_stored_windowsize(simwin_t *win)
 {
-	ptrdiff_t magic = guess_magic_number(win);
+	const ptrdiff_t magic = guess_magic_number(win);
 	if (magic != magic_none) {
 		return saved_windowsizes.get(magic);
 	}
@@ -493,6 +493,13 @@ void rdwr_win_settings(loadsave_t *file)
 				scr_size s;
 				file->rdwr_long(s.w);
 				file->rdwr_long(s.h);
+
+				// Hajo: I do not think it makes sense to restore these sizes.
+				if(magic >= magic_load_t && magic <= magic_save_t) {
+					dbg->message("rdwr_win_settings", "Discarding stored size for dialog type %p", magic);
+					continue;
+				}
+
 				// ignore stuff that will not be used anymore
 				if (magic == guess_magic_number(NULL, magic)) {
 					saved_windowsizes.put(magic, s);
@@ -960,9 +967,13 @@ int create_win(scr_coord pos, gui_frame_t *const gui, wintype const wt, ptrdiff_
 		// restore windowsize
 		scr_size stored = get_stored_windowsize(&win);
 
+		// printf("stored size from store -> %d, %d\n", stored.w, stored.h);
+
 		if (stored == scr_size()) {
 			// not stored, take current
 			stored = window_size;
+
+			// printf("stored size from window -> %d, %d\n", stored.w, stored.h);
 		}
 
 		// use default width
@@ -970,7 +981,10 @@ int create_win(scr_coord pos, gui_frame_t *const gui, wintype const wt, ptrdiff_
 		// clip to display size
 		stored.clip_rightbottom( scr_size(display_get_width(), display_get_height() - env_t::iconsize.h - win_get_statusbar_height() ) );
 
+		// printf("stored size after clipping -> %d, %d\n", stored.w, stored.h);
+
 		if (stored != window_size) {
+			// printf("resizing to -> %d, %d\n", stored.w, stored.h);
 			// send tailored resize event
 			scr_size delta = stored - window_size;
 			event_t wev;

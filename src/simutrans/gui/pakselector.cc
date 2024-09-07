@@ -309,8 +309,6 @@ pakselector_t::pakselector_t() :
 		}
 	}
 
-    
-    
     backdrop = load_backdrop_image();
 }
 

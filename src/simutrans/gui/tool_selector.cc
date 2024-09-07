@@ -284,7 +284,12 @@ void tool_selector_t::draw(scr_coord pos, scr_size sz)
 			allow_break = false;
 			tool_icon_width = (display_get_width() + env_t::iconsize.w - 1) / env_t::iconsize.w;
 			tool_icon_height = 1; // only single row for title bar
-			set_windowsize(sz);
+			scr_size actual_size = get_windowsize();
+
+			if(actual_size.w != sz.w || actual_size.h != sz.h) {
+				set_windowsize(sz);
+			}
+			
 			// check for too large values (after changing width etc.)
 			if (  display_get_width() >= (int)tools.get_count() * env_t::iconsize.w  ) {
 				tool_icon_disp_start = 0;
