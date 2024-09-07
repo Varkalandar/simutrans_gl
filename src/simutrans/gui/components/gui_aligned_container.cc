@@ -545,6 +545,7 @@ void gui_aligned_container_t::add_component(gui_component_t *comp, uint span)
 		gui_container_t::add_component(comp);
 		// fill with placeholders
 		assert(columns > 0  ||  span == 1);
+		// dbg->warning("gui_aligned_container_t::add_component()", "condition is false: columns > 0  ||  span == 1");
 		for (uint i=1; i<span; i++) {
 			gui_container_t::add_component(&placeholder);
 		}

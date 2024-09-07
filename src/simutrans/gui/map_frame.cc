@@ -318,7 +318,7 @@ map_frame_t::map_frame_t() :
 	else {
 		network_filter_container.set_table_layout(1, 0);
 	}
-	network_filter_container.add_table(0, 1);
+	network_filter_container.add_table(0, 1, 1);
 	// insert selections: show networks, in filter container
 	b_overlay_networks.init(button_t::square_state, "Networks");
 	b_overlay_networks.set_tooltip("Overlay schedules/network");
@@ -342,7 +342,7 @@ map_frame_t::map_frame_t() :
 	network_filter_container.end_table();
 
 	// freight combo for network overlay
-	network_filter_container.add_table(0, 1);
+	network_filter_container.add_table(0, 1, 1);
 	{
 		viewable_freight_types.append(NULL);
 		freight_type_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate("All"), (gui_theme_t::gui_color_text)) ;
