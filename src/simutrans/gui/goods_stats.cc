@@ -70,13 +70,16 @@ void goods_stats_t::update_goodslist(vector_tpl<const goods_desc_t*>goods, int b
 
 void goods_stats_t::draw(scr_coord offset)
 {
-	scr_coord_val spacing = D_LABEL_HEIGHT + D_V_SPACE;
-	scr_coord_val y = pos.y + offset.y + spacing - D_V_SPACE;
-	scr_coord_val w = display_get_width();
+	const scr_coord_val spacing = D_LABEL_HEIGHT + D_V_SPACE;
+	const scr_coord_val y = pos.y + offset.y + spacing - D_V_SPACE;
+
+    display_set_color(RGBA_WHITE);
+    display_img_stretch(gui_theme_t::windowback, scr_rect(pos + offset + scr_coord(0, D_V_SPACE),
+	                                                      size.w, display_get_height()));
 
 	for(int line = 1; line < goods_manager_t::get_count(); line ++) {
 		rgba_t color = (line & 1) ? (gui_theme_t::gui_color_list_background_odd) : (gui_theme_t::gui_color_list_background_even);
-		display_fillbox_wh_clip_rgb(pos.x + offset.x, y + line * spacing, w, spacing, color);
+		display_fillbox_wh_clip_rgb(pos.x + offset.x, y + line * spacing, size.w, spacing, color);
 	}
 
 	gui_aligned_container_t::draw(offset);
