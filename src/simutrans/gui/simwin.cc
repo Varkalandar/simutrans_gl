@@ -495,7 +495,8 @@ void rdwr_win_settings(loadsave_t *file)
 				file->rdwr_long(s.h);
 
 				// Hajo: I do not think it makes sense to restore these sizes.
-				if(magic >= magic_load_t && magic <= magic_save_t) {
+				if(magic >= magic_load_t && magic <= magic_save_t ||
+				   magic == magic_themes) {
 					dbg->message("rdwr_win_settings", "Discarding stored size for dialog type %p", magic);
 					continue;
 				}
