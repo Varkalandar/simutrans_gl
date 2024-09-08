@@ -70,7 +70,7 @@ curiositylist_stats_t::curiositylist_stats_t(gebaeude_t *att) : indicator(RGBA_B
 	// indicator bar
 	add_component(&indicator);
 	indicator.set_max_size(scr_size(D_INDICATOR_WIDTH,D_INDICATOR_HEIGHT));
-	indicator.fixed_min_height = gui_theme_t::gui_label_size.h-4;
+	indicator.fixed_min_height = gui_theme_t::gui_big_indicator_height;
 
 	// city attraction images
 	if (attraction->get_tile()->get_desc()->get_extra() != 0) {

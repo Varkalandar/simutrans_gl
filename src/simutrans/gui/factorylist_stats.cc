@@ -38,7 +38,7 @@ factorylist_stats_t::factorylist_stats_t(fabrik_t *fab) :
 	b->set_targetpos3d(fab->get_pos());
 
 	// indicator bar
-	indicator.fixed_min_height = gui_theme_t::gui_label_size.h-4;
+	indicator.fixed_min_height = gui_theme_t::gui_big_indicator_height;
 	indicator.set_max_size(scr_size(D_INDICATOR_WIDTH, D_INDICATOR_HEIGHT));
 	add_component(&indicator);
 

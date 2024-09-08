@@ -39,7 +39,7 @@ void goods_stats_t::update_goodslist(vector_tpl<const goods_desc_t*>goods, int b
 	for(const goods_desc_t* wtyp : goods) {
 
 		gui_colorbox_t * indicator = new_component<gui_colorbox_t>(wtyp->get_color());
-		indicator->fixed_min_height = gui_theme_t::gui_label_size.h-4;
+		indicator->fixed_min_height = gui_theme_t::gui_big_indicator_height;
 		indicator->set_max_size(scr_size(D_INDICATOR_WIDTH, D_INDICATOR_HEIGHT));
 
 		new_component<gui_label_t>(wtyp->get_name());

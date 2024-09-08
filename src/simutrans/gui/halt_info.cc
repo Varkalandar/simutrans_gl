@@ -309,7 +309,6 @@ void halt_info_t::init(halthandle_t halt)
 	// top part
 	add_table(2,1)->set_alignment(ALIGN_CENTER_H);
 	{
-
 		container_top = add_table(1,0);
 		{
 			// input name
@@ -322,7 +321,6 @@ void halt_info_t::init(halthandle_t halt)
 			// status images
 			add_table(5,1)->set_alignment(ALIGN_CENTER_V);
 			{
-				add_component(&indicator_color);
 				// indicator for enabled freight type
 				img_enable[0].set_image(skinverwaltung_t::passengers->get_image_id(0));
 				img_enable[1].set_image(skinverwaltung_t::mail->get_image_id(0));
@@ -339,6 +337,10 @@ void halt_info_t::init(halthandle_t halt)
 			add_table(6,1);
 			{
 				add_component(&lb_capacity[0]);
+
+				indicator_color.fixed_min_height = gui_theme_t::gui_big_indicator_height;
+				add_component(&indicator_color);
+
 				if (welt->get_settings().is_separate_halt_capacities()) {
 					new_component<gui_image_t>(skinverwaltung_t::passengers->get_image_id(0), 0, ALIGN_NONE, true);
 					add_component(&lb_capacity[1]);
@@ -411,7 +413,7 @@ void halt_info_t::init(halthandle_t halt)
 	chart.set_background((SYSCOL_CHART_BACKGROUND));
 	container_chart.add_component(&chart);
 
-	container_chart.add_table(4,2);
+	container_chart.add_table(2, 4);
 	for (int cost = 0; cost<MAX_HALT_COST; cost++) {
 		uint16 curve = chart.add_curve(color_idx_to_rgb(cost_type_color[cost]), halt->get_finance_history(), MAX_HALT_COST, index_of_haltinfo[cost], MAX_MONTHS, 0, false, true, 0);
 

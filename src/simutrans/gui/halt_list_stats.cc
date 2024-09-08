@@ -66,7 +66,7 @@ halt_list_stats_t::halt_list_stats_t(halthandle_t h)
 
 	add_table(4, 1);
 	{
-		indicator.fixed_min_height = gui_theme_t::gui_label_size.h-4;
+		indicator.fixed_min_height = gui_theme_t::gui_big_indicator_height;
 		indicator.set_max_size(scr_size(D_INDICATOR_WIDTH, D_INDICATOR_HEIGHT));
 		add_component(&indicator);
 

@@ -328,6 +328,8 @@ public:
 	// one special entries, since there are lot of lists with files/fonts/paks/... where less spacing could fit more entires on the screen
 	static scr_coord_val gui_filelist_vspace;
 	/// @}
+	
+	static scr_coord_val gui_big_indicator_height;
 
 	// those are the 3x3 images which are used for stretching
 	static stretch_map_t button_tiles[3];
