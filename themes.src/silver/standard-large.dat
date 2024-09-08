@@ -290,3 +290,36 @@ Image[0]=-
 Image[1]=> divider.0.0
 Image[2]=-
 --
+Obj=symbol
+name=Passagiere
+Image[0]=> stations_status.1.0
+--------------------
+Obj=symbol
+name=Post
+Image[0]=> stations_status.1.1
+--------------------
+Obj=symbol
+name=Waren
+Image[0]=> stations_status.1.2
+--------------------
+Obj=symbol
+name=Happy
+Image[0]=> stations_status.0.0
+--------------------
+Obj=symbol
+name=Unhappy
+Image[0]=> stations_status.0.1
+--------------------
+Obj=symbol
+name=NoRoute
+Image[0]=> stations_status.0.2
+--------------------
+Obj=symbol
+name=Electricity
+Image[0]=> stations_status.2.0
+--------------------
+Obj=symbol
+name=InTown
+Image[0]=> stations_status.2.1
+--------------------
+
