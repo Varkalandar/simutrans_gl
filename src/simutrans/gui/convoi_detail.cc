@@ -40,13 +40,15 @@ public:
 	: freight(&freight_info)
 	{
 		this->v = v;
-		set_table_layout(2,0);
+		set_table_layout(2, 0);
 		set_alignment(ALIGN_TOP | ALIGN_LEFT);
 
 		const int month_now = world()->get_timeline_year_month();
+
 		// image
 		new_component<gui_image_t>(v->get_loaded_image(), v->get_owner()->get_player_nr())->enable_offset_removal(true);
-		add_table(1,0);
+
+		add_table(2, 0);
 		{
 			// name
 			new_component<gui_label_t>( v->get_desc()->get_name(), world()->use_timeline()  &&  v->get_desc()->is_retired(month_now) ? (SYSCOL_OBSOLETE) : (gui_theme_t::gui_color_text));
@@ -131,11 +133,7 @@ public:
 		update_labels();
 		gui_aligned_container_t::draw(offset);
 	}
-
 };
-
-
-
 
 
 convoi_detail_t::convoi_detail_t(convoihandle_t cnv)
@@ -149,16 +147,18 @@ convoi_detail_t::convoi_detail_t(convoihandle_t cnv)
 void convoi_detail_t::init(convoihandle_t cnv)
 {
 	this->cnv = cnv;
-
-	set_table_layout(1,0);
+	scrolly.set_show_border(true);
+	
+	set_table_layout(1, 0);
 
 	add_component( &container_txt );
 	container_txt.set_margin( scr_size(D_MARGIN_LEFT,0), scr_size(D_MARGIN_RIGHT,0) );
-	container_txt.set_table_layout(1,0);
+	container_txt.set_table_layout(2, 0);
 
 	container_txt.add_component(&label_power);
 	container_txt.add_component(&label_odometer);
 	container_txt.add_component(&label_length);
+	container_txt.add_component(&label_tiles);
 	container_txt.add_component(&label_resale);
 	container_txt.add_component(&label_speed);
 	add_component(&scrolly);
@@ -169,9 +169,7 @@ void convoi_detail_t::init(convoihandle_t cnv)
 	container_veh.set_checkered(true);
 	container_veh.new_component<gui_fill_t>();
 	for(unsigned veh=0;  veh<cnv->get_vehicle_count(); veh++ ) {
-//		if(veh>0) { // only on non-checkred lists
-//			container_veh.new_component<gui_divider_t>();
-//		}
+
 		vehicle_t *v = cnv->get_vehicle(veh);
 		container_veh.new_component<gui_vehicleinfo_t>(v, cnv_kmh);
 	}
@@ -183,20 +181,29 @@ void convoi_detail_t::update_labels()
 {
 	char number[128];
 	number_to_string( number, (double)cnv->get_total_distance_traveled(), 0 );
+
 	label_odometer.buf().printf(translator::translate("Odometer: %s km"), number );
 	label_odometer.update();
+
 	label_power.buf().printf( translator::translate("Leistung: %d kW"), cnv->get_sum_power() );
 	label_power.update();
+
 	if( cnv->get_vehicle_count()>0  &&  cnv->get_vehicle( 0 )->get_desc()->get_waytype()==water_wt ) {
 		label_length.buf().printf( "%s %i", translator::translate( "Vehicle count:" ), cnv->get_vehicle_count() );
+		label_tiles.buf().set("");
 	}
 	else {
-		label_length.buf().printf( "%s %i %s %s %i %s", translator::translate( "Vehicle count:" ), cnv->get_vehicle_count(), "(", translator::translate( "Station tiles:" ), cnv->get_tile_length(), ")");
+		label_length.buf().printf( "%s %i", translator::translate("Vehicle count:"), cnv->get_vehicle_count());
+		label_tiles.buf().printf( "%s %i", translator::translate("Station tiles:"), cnv->get_tile_length());
 	}
+
 	label_length.update();
+	label_tiles.update();
+
 	label_resale.buf().printf("%s ", translator::translate("Restwert:"));
 	label_resale.buf().append_money( cnv->calc_restwert() / 100.0 );
 	label_resale.update();
+
 	label_speed.buf().printf(translator::translate("Bonusspeed: %i km/h"), cnv->get_speedbonus_kmh() );
 	label_speed.update();
 }

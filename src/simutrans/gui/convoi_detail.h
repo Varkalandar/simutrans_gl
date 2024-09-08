@@ -34,7 +34,7 @@ private:
 	gui_aligned_container_t container_veh, container_txt;
 	gui_scrollpane_t scrolly;
 
-	gui_label_buf_t label_power, label_odometer, label_resale, label_length, label_speed;
+	gui_label_buf_t label_power, label_odometer, label_resale, label_length, label_tiles, label_speed;
 
 	convoihandle_t cnv;
 

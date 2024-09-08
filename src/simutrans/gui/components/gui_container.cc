@@ -283,7 +283,7 @@ void gui_container_t::draw(scr_coord offset)
 				rgba_t color = (checker_count & 1) ? (gui_theme_t::gui_color_list_background_odd) : (gui_theme_t::gui_color_list_background_even);
 				scr_coord c_pos = screen_pos + c->get_pos();
 
-                display_fillbox_wh_rgb(c_pos.x, c_pos.y, c->get_size().w, c->get_size().h, color, false);
+                display_fillbox_wh_clip_rgb(c_pos.x, c_pos.y, c->get_size().w, c->get_size().h, color);
 			}
 
 			if(  c == comp_focus  ) {

@@ -767,7 +767,6 @@ uint32 vehicle_t::get_cargo_weight() const
 void vehicle_t::get_cargo_info(cbuffer_t & buf) const
 {
 	if (fracht.empty()) {
-		buf.append("  ");
 		buf.append(translator::translate("leer"));
 		buf.append("\n");
 	} else {
@@ -779,7 +778,7 @@ void vehicle_t::get_cargo_info(cbuffer_t & buf) const
 				name = halt->get_name();
 			}
 
-			buf.printf("   %u%s %s > %s\n", ware.amount, translator::translate(ware.get_mass()), translator::translate(ware.get_name()), name);
+			buf.printf("%u%s %s > %s\n", ware.amount, translator::translate(ware.get_mass()), translator::translate(ware.get_name()), name);
 		}
 	}
 }
