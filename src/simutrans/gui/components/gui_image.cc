@@ -110,6 +110,6 @@ void gui_image_t::draw( scr_coord offset ) {
 		}
 
         display_set_color(rgba_t(1, 1, 1, alpha));
-        display_base_img(id, pos.x+offset.x+remove_offset.x, pos.y+offset.y+remove_offset.y, (sint8)player_nr, false, true);
+        display_base_img(id, pos.x+offset.x+remove_offset.x, pos.y+offset.y+remove_offset.y, (sint8)player_nr);
 	}
 }
