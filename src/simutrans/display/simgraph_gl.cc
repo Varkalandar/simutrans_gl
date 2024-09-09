@@ -1064,8 +1064,7 @@ void display_img_stretch(const stretch_map_t &imag, scr_rect area)
 
 void display_img_alpha(const image_id image, const image_id alpha_map, scr_coord_val xp, scr_coord_val yp)
 {
-    display_set_color(rgba_t(1, 1, 1, 1));
-    // display_normal(image, xp, yp, 0);
+    display_set_color(display_get_day_night_color());
 
     glBlendFunc(GL_SRC_ALPHA, GL_SRC_ALPHA);
     display_normal(alpha_map, xp, yp, 0);
