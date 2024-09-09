@@ -1182,6 +1182,7 @@ void grund_t::display_boden(const sint16 xpos, const sint16 ypos, const sint16 r
 				}
 				activate_ribi_clip( (way_ribi & ribi_t::northwest) | non_convex  CLIP_NUM_PAR );
 			}
+
 			d->display( xpos, ypos CLIP_NUM_PAR );
 		}
 		// end of clipping

@@ -92,6 +92,8 @@ const skin_desc_t* skinverwaltung_t::tunnel_texture     = NULL;
 slist_tpl<const skin_desc_t *>skinverwaltung_t::extra_menu_obj;
 slist_tpl<const skin_desc_t *>skinverwaltung_t::extra_cursor_obj;
 
+slist_tpl<const skin_desc_t *>skinverwaltung_t::light_obj;
+
 static special_obj_tpl<skin_desc_t> const misc_objekte[] = {
 	{ &skinverwaltung_t::senke,             "PowerDest"    },
 	{ &skinverwaltung_t::pumpe,             "PowerSource"  },
@@ -231,7 +233,20 @@ bool skinverwaltung_t::register_desc(skintyp_t type, const skin_desc_t* desc)
 			extra_cursor_obj.insert( desc );
 		}
 		else {
-			extra_menu_obj.insert( desc );
+			// Hajo: at the moment, lights are coded as menus with a name starting
+			// with "light_"
+
+			printf("found a menu: %s\n", desc->get_name());
+
+			if(strncmp(desc->get_name(), "light_", 6) == 0) {
+
+				printf("found a light: %s\n", desc->get_name());
+				light_obj.insert( desc );
+
+			}
+			else {
+				extra_menu_obj.insert( desc );
+			}
 		}
 		dbg->message( "skinverwaltung_t::register_desc()","Extra object %s added.", desc->get_name() );
 	}
@@ -254,6 +269,16 @@ const skin_desc_t *skinverwaltung_t::get_extra( const char *str, int len, skinty
 		(type==menu ? skinverwaltung_t::extra_menu_obj : skinverwaltung_t::extra_cursor_obj)) {
 		if (  strncmp(str, s->get_name(), len) == 0  ) {
 			return s;
+		}
+	}
+	return NULL;
+}
+
+
+const skin_desc_t *skinverwaltung_t::get_light(const char *name) {
+	for(skin_desc_t const* const sd : skinverwaltung_t::light_obj) {
+		if(strcmp(name, sd->get_name()) == 0) {
+			return sd;
 		}
 	}
 	return NULL;

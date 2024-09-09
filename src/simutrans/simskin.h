@@ -26,6 +26,7 @@ public:
 		menu,
 		cursor,
 		symbol,
+		light,
 		misc
 	};
 
@@ -175,10 +176,15 @@ public:
 	// restore pakset originals
 	static void restore_all_skins();
 
+	static const skin_desc_t * get_light(const char *str);
+
 private:
 	/// holds objects from paks with type 'menu' and 'cursor'
 	static slist_tpl<const skin_desc_t *>extra_menu_obj;
 	static slist_tpl<const skin_desc_t *>extra_cursor_obj;
+
+	/// experimental support for lights
+	static slist_tpl<const skin_desc_t *>light_obj;
 };
 
 #endif

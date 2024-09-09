@@ -18,6 +18,7 @@
 #include "../gui/simwin.h"
 #include "../vehicle/vehicle_base.h"
 #include "../simcolor.h"
+#include "../simskin.h"
 #include "../simdebug.h"
 #include "../world/simworld.h"
 #include "../utils/cbuffer.h"
@@ -222,6 +223,7 @@ void obj_t::display(int xpos, int ypos  CLIP_NUM_DEF) const
 			else {
 				display_normal(image, xpos, ypos, 0);
 			}
+
 			// this obj has another image on top (e.g. skyscraper)
 			ypos -= raster_width;
 			image = get_image(++j);
@@ -304,6 +306,25 @@ void obj_t::display_after(int xpos, int ypos, bool) const
 		else {
 			display_normal(image, xpos, ypos, 0);
 		}
+	}
+
+	// printf("%s\n", get_name());
+
+	if(strcmp("new_city_road", get_name()) == 0) {
+		const skin_desc_t * sd = skinverwaltung_t::get_light("light_test");
+		image_id id = sd->get_image_id(1);
+
+		display_set_color(rgba_t(0.5, 0.5, 0.5, 1.0));
+		display_light_img(id, xpos, ypos+16, 64, 48);
+		display_set_color(display_get_day_night_color());
+	}
+	else if(get_waytype() == maglev_wt && get_typ() == obj_t::gebaeude) {
+		const skin_desc_t * sd = skinverwaltung_t::get_light("light_test");
+		image_id id = sd->get_image_id(0);
+
+		display_set_color(rgba_t(0.4, 0.35, 0.15, 1.0));
+		display_light_img(id, xpos, ypos+16, 64, 48);
+		display_set_color(display_get_day_night_color());
 	}
 }
 
