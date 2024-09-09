@@ -1230,7 +1230,7 @@ void display_flush_framebuffer_to_buffer()
     */
     float x = 0; 
     float y = 0;
-    float w = (display_width * d / n)  / (float)gl_max_texture_size;
+    float w = (display_width * d / n)  / (float)gl_framebuffer_size;
     float h = (display_height * d / n) / (float)gl_framebuffer_size;
     
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -1256,8 +1256,7 @@ void display_flush_framebuffer_to_buffer()
     glTexCoord2f(x, h);
 	glVertex2i(0, display_height);
 
-	glEnd();    
-
+	glEnd();
 }
 
 
@@ -1310,6 +1309,11 @@ void sysgl_key_callback(GLFWwindow* window, int key, int scancode, int action, i
 void sysgl_window_close_callback(GLFWwindow* window);
 void sysgl_framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
+void log_gl_error(int error_code, const char *description) 
+{
+	printf("An OpenGL Error occured: %d -> %s\n", error_code, description);
+}
+
 
 bool simgraph_init(scr_size size, sint16)
 {
@@ -1317,7 +1321,7 @@ bool simgraph_init(scr_size size, sint16)
 	// glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
 	// glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
 
-	window = glfwCreateWindow(size.w, size.h, "Simutrans GL v0.09", NULL, NULL);
+	window = glfwCreateWindow(size.w, size.h, "Simutrans GL v0.10 (dev)", NULL, NULL);
 
 	dbg->message("simgraph_init()", "GLFW %d,%d -> window: %p", size.w, size.h, window);
 
@@ -1351,7 +1355,8 @@ bool simgraph_init(scr_size size, sint16)
 		glfwSetKeyCallback(window, sysgl_key_callback);
         glfwSetWindowCloseCallback(window, sysgl_window_close_callback);
         glfwSetFramebufferSizeCallback(window, sysgl_framebuffer_size_callback);
-        
+        glfwSetErrorCallback(log_gl_error);
+
         // 2D Initialization
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glEnable(GL_TEXTURE_2D);
@@ -1366,22 +1371,31 @@ bool simgraph_init(scr_size size, sint16)
 
         glGetIntegerv(GL_MAX_TEXTURE_SIZE, &gl_max_texture_size);
 
+        dbg->message("simgraph_init()", "GLFW max texture size is %d", gl_max_texture_size);
+
         // some drivers seems to lie here?
         // smaller textures work better
         if(gl_max_texture_size > 4096) gl_max_texture_size = 4096;
-
-        dbg->message("simgraph_init()", "GLFW max texture size is %d", gl_max_texture_size);
         
         // set up the frame buffer
         glGenFramebuffers(1, &gl_fbo);        
         glBindFramebuffer(GL_FRAMEBUFFER, gl_fbo);
         framebuffer_active = true;
-        gl_framebuffer_size = gl_max_texture_size;
+        gl_framebuffer_size = gl_max_texture_size * 2;
         
         // generate texture
         glGenTextures(1, &gl_texture_colorbuffer);
         glBindTexture(GL_TEXTURE_2D, gl_texture_colorbuffer);
+
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, gl_framebuffer_size, gl_framebuffer_size, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+
+		if(glGetError() == GL_OUT_OF_MEMORY)
+		{
+			dbg->warning("simgraph_init()", "Not enough vram for framebuffer of %d pixels, trying smaller buffer\n", gl_framebuffer_size);
+			gl_framebuffer_size /= 2;
+	        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, gl_framebuffer_size, gl_framebuffer_size, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+		}
+
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glBindTexture(GL_TEXTURE_2D, 0);
@@ -1394,6 +1408,43 @@ bool simgraph_init(scr_size size, sint16)
         if(status != GL_FRAMEBUFFER_COMPLETE)
         {
             dbg->message("simgraph_init()", "Frame buffer status is not complete: %x", status);
+
+			switch(status) {
+				case GL_FRAMEBUFFER_UNDEFINED:
+					dbg->message("simgraph_init()", "the specified framebuffer is the default read or draw framebuffer, but the default framebuffer does not exist.");
+					break;
+
+				case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
+					dbg->message("simgraph_init()", "any of the framebuffer attachment points are framebuffer incomplete.");
+					break;
+
+				case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
+					dbg->message("simgraph_init()", "the framebuffer does not have at least one image attached to it.");
+					break;
+				case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
+					dbg->message("simgraph_init()", "the value of GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE is GL_NONE for any color attachment point(s) named by GL_DRAW_BUFFERi.");
+					break;
+
+				case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
+					dbg->message("simgraph_init()", "GL_READ_BUFFER is not GL_NONE and the value of GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE is GL_NONE for the color attachment point named by GL_READ_BUFFER.");
+					break;
+
+				case GL_FRAMEBUFFER_UNSUPPORTED:
+					dbg->message("simgraph_init()", "the combination of internal formats of the attached images violates an implementation-dependent set of restrictions.");
+					break;
+/*
+				case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:
+					dbg->message("simgraph_init()", "the value of GL_RENDERBUFFER_SAMPLES is not the same for all attached renderbuffers; if the value of GL_TEXTURE_SAMPLES is the not same for all attached textures; or, if the attached images are a mix of renderbuffers and textures, the value of GL_RENDERBUFFER_SAMPLES does not match the value of GL_TEXTURE_SAMPLES.");
+					break;
+*/
+				case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:
+					dbg->message("simgraph_init()", "the value of GL_TEXTURE_FIXED_SAMPLE_LOCATIONS is not the same for all attached textures; or, if the attached images are a mix of renderbuffers and textures, the value of GL_TEXTURE_FIXED_SAMPLE_LOCATIONS is not GL_TRUE for all attached textures.");
+					break;
+
+				case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS:
+					dbg->message("simgraph_init()", "any framebuffer attachment is layered, and any populated attachment is not layered, or if all populated color attachments are not from textures of the same target.");
+					break;
+			}
         }
 
         // try to load the font given in the environment and if that fails,
@@ -1444,7 +1495,6 @@ void simgraph_resize(scr_size size)
     glLoadIdentity();
     glOrtho(0, size.w, size.h, 0, 1, -1);
     glViewport(0, 0, size.w, size.h);
-    
     
 	// only resize, if internal values are different
 	if(display_width != size.w || display_height != size.h) {
