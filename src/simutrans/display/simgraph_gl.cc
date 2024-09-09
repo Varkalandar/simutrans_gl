@@ -62,12 +62,6 @@ struct imd_t {
 	sint16 w; // current (zoomed) width
 	sint16 h; // current (zoomed) height
 
-	// uint8 recode_flags;
-	// uint16 player_flags; // bit # is player number, ==1 cache image needs recoding
-
-	// PIXVAL* data[MAX_PLAYER_COUNT]; // current data - zoomed and recolored (player + daynight)
-
-	// PIXVAL* zoom_data; // zoomed original data
 	uint32 len;    // current zoom image data size (or base if not zoomed) (used for allocation purposes only)
 
 	sint16 base_x; // min x offset
@@ -90,7 +84,7 @@ static struct imd_t* images = NULL;
 /*
  * Number of loaded images
  */
-static image_id anz_images = 0;
+static image_id image_count = 0;
 
 /*
  * Number of allocated entries for images
@@ -232,11 +226,6 @@ rgb888_t get_color_rgb(uint8 idx)
 
 	// Return black for anything else
 	return rgb888_t {0,0,0};
-}
-
-
-void env_t_rgb_to_system_colors()
-{
 }
 
 
@@ -557,28 +546,28 @@ void register_image(image_t * image_in, void (*postprocessor)(int w, int h, uint
 
 	/* valid image? */
 	if(image_in->len == 0 || image_in->h == 0) {
-		dbg->warning("register_image()", "Ignoring image %d because of missing data", anz_images);
+		dbg->warning("register_image()", "Ignoring image %d because of missing data", image_count);
 		image_in->imageid = IMG_EMPTY;
 		return;
 	}
 
-	if(anz_images == alloc_images) {
+	if(image_count == alloc_images) {
 		if(images==NULL) {
 			alloc_images = 510;
 		}
 		else {
 			alloc_images += 512;
 		}
-		if(anz_images > alloc_images) {
+		if(image_count > alloc_images) {
 			// overflow
-			dbg->fatal( "register_image", "*** Out of images (more than %li!) ***", anz_images );
+			dbg->fatal( "register_image", "*** Out of images (more than %li!) ***", image_count );
 		}
 		images = REALLOC(images, imd_t, alloc_images);
 	}
 
-	image_in->imageid = anz_images;
-	image = &images[anz_images];
-	anz_images++;
+	image_in->imageid = image_count;
+	image = &images[image_count];
+	image_count++;
 
 	// dbg->message("register_image()", "%d images, offset %d , %d, converting %dx%d pixels", anz_images, image_in->x, image_in->y, image_in->w, image_in->h);
 
@@ -587,7 +576,7 @@ void register_image(image_t * image_in, void (*postprocessor)(int w, int h, uint
     if(image_in->bpp == 32)
     {
         // a 32bit image
-        dbg->message("register_image()", "%d images, offset %d , %d, got %dx%d 32bpp pixels", anz_images, image_in->x, image_in->y, image_in->w, image_in->h);
+        dbg->message("register_image()", "%d images, offset %d , %d, got %dx%d 32bpp pixels", image_count, image_in->x, image_in->y, image_in->w, image_in->h);
 
         uint32 * in = (uint32 *)image_in->data;
         
@@ -691,7 +680,7 @@ bool display_snapshot(const scr_rect &)
 /** query offsets */
 void display_get_image_offset(image_id image, scr_coord_val *xoff, scr_coord_val *yoff, scr_coord_val *xw, scr_coord_val *yw)
 {
-	if(  image < anz_images  ) {
+	if(  image < image_count  ) {
 		*xoff = images[image].x;
 		*yoff = images[image].y;
 		*xw   = images[image].w;
@@ -703,7 +692,7 @@ void display_get_image_offset(image_id image, scr_coord_val *xoff, scr_coord_val
 /** query un-zoomed offsets */
 void display_get_base_image_offset(image_id image, scr_coord_val *xoff, scr_coord_val *yoff, scr_coord_val *xw, scr_coord_val *yw)
 {
-	if(  image < anz_images  ) {
+	if(  image < image_count  ) {
 		*xoff = images[image].base_x;
 		*yoff = images[image].base_y;
 		*xw   = images[image].base_w;
@@ -867,7 +856,7 @@ static void display_box_wh(int x, int y, int w, int h, rgba_t color)
 
 void display_color_img(const image_id id, scr_coord_val x, scr_coord_val y, const sint8 player_nr, scr_coord_val w, scr_coord_val h)
 {
-	if(id < anz_images)
+	if(id < image_count)
 	{
 		// debug clipping
 		// display_box_wh(clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h, rgba_t(1, 0, 0, 0.5f));
@@ -890,7 +879,7 @@ void display_color_img(const image_id id, scr_coord_val x, scr_coord_val y, cons
 
 static void display_img(const image_id id, scr_coord_val x, scr_coord_val y, const sint8 player_nr)
 {
-	if(id < anz_images)
+	if(id < image_count)
 	{
 		imd_t & imd = images[id];
         int n = zoom_num[zoom_level];
@@ -910,7 +899,7 @@ static void display_img(const image_id id, scr_coord_val x, scr_coord_val y, con
 
 void display_img(const image_id id, scr_coord_val x, scr_coord_val y, scr_coord_val w, scr_coord_val h)
 {
-	if(id < anz_images)
+	if(id < image_count)
 	{
 		imd_t & imd = images[id];
         display_tile_from_sheet(imd.texture, x, y, w, h,
@@ -921,7 +910,7 @@ void display_img(const image_id id, scr_coord_val x, scr_coord_val y, scr_coord_
 
 void display_light_img(const image_id id, scr_coord_val x, scr_coord_val y, scr_coord_val w, scr_coord_val h)
 {
-	if(id < anz_images)
+	if(id < image_count)
 	{
 		imd_t & imd = images[id];
 
@@ -940,7 +929,7 @@ void display_light_img(const image_id id, scr_coord_val x, scr_coord_val y, scr_
 
 void display_base_img(const image_id id, scr_coord_val x, scr_coord_val y, const sint8 player_nr, scr_coord_val w, scr_coord_val h)
 {
-	if(id < anz_images)
+	if(id < image_count)
 	{
 		imd_t & imd = images[id];
 
@@ -955,7 +944,7 @@ void display_base_img(const image_id id, scr_coord_val x, scr_coord_val y, const
 
 void display_base_img(const image_id id, scr_coord_val x, scr_coord_val y, const sint8 player_nr)
 {
-	if(id < anz_images)
+	if(id < image_count)
 	{
 		imd_t & imd = images[id];
 
@@ -1309,9 +1298,10 @@ void sysgl_key_callback(GLFWwindow* window, int key, int scancode, int action, i
 void sysgl_window_close_callback(GLFWwindow* window);
 void sysgl_framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
+
 void log_gl_error(int error_code, const char *description) 
 {
-	printf("An OpenGL Error occured: %d -> %s\n", error_code, description);
+	dbg->error("log_gl_error", "An OpenGL Error occured: %d -> %s\n", error_code, description);
 }
 
 
@@ -1336,7 +1326,6 @@ bool simgraph_init(scr_size size, sint16)
           dbg->message("simgraph_init()", "GLEW Error: %s\n", glewGetErrorString(err));
         }
         dbg->message("simgraph_init()", "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));        
-        
         
         int width, height;
         glfwGetWindowSize(window, &width, &height);
@@ -1391,7 +1380,7 @@ bool simgraph_init(scr_size size, sint16)
 
 		if(glGetError() == GL_OUT_OF_MEMORY)
 		{
-			dbg->warning("simgraph_init()", "Not enough vram for framebuffer of %d pixels, trying smaller buffer\n", gl_framebuffer_size);
+			dbg->warning("simgraph_init()", "Not enough vram for framebuffer of %dx%d pixels, trying smaller buffer\n", gl_framebuffer_size, gl_framebuffer_size);
 			gl_framebuffer_size /= 2;
 	        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, gl_framebuffer_size, gl_framebuffer_size, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 		}
@@ -1408,6 +1397,8 @@ bool simgraph_init(scr_size size, sint16)
         if(status != GL_FRAMEBUFFER_COMPLETE)
         {
             dbg->message("simgraph_init()", "Frame buffer status is not complete: %x", status);
+
+			// get a more detailed diagnosis
 
 			switch(status) {
 				case GL_FRAMEBUFFER_UNDEFINED:
@@ -1432,11 +1423,7 @@ bool simgraph_init(scr_size size, sint16)
 				case GL_FRAMEBUFFER_UNSUPPORTED:
 					dbg->message("simgraph_init()", "the combination of internal formats of the attached images violates an implementation-dependent set of restrictions.");
 					break;
-/*
-				case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:
-					dbg->message("simgraph_init()", "the value of GL_RENDERBUFFER_SAMPLES is not the same for all attached renderbuffers; if the value of GL_TEXTURE_SAMPLES is the not same for all attached textures; or, if the attached images are a mix of renderbuffers and textures, the value of GL_RENDERBUFFER_SAMPLES does not match the value of GL_TEXTURE_SAMPLES.");
-					break;
-*/
+
 				case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:
 					dbg->message("simgraph_init()", "the value of GL_TEXTURE_FIXED_SAMPLE_LOCATIONS is not the same for all attached textures; or, if the attached images are a mix of renderbuffers and textures, the value of GL_TEXTURE_FIXED_SAMPLE_LOCATIONS is not GL_TRUE for all attached textures.");
 					break;
@@ -1450,11 +1437,12 @@ bool simgraph_init(scr_size size, sint16)
         // try to load the font given in the environment and if that fails,
         // try to load the standard font which is bundled with Simutrans GL
        	if(!display_load_font(env_t::fontname.c_str()) &&
-	       !display_load_font(FONT_PATH_X "LiberationSans-Regular.ttf") ) {
+	       !display_load_font(FONT_PATH_X "LiberationSans-Regular.ttf")) {
             dr_fatal_notify("No fonts found!");
             return false;
         }
         
+		// buffer to emulate the old display_array functionality
         display_array_tex_buffer = gl_texture_t::create_texture(256, 256, NULL);
 	}
 
@@ -1600,7 +1588,7 @@ void display_signal_direction_rgb( scr_coord_val, scr_coord_val, uint8, uint8, r
 
 void display_img_aligned(const image_id n, scr_rect area, int align, sint8 player_nr, bool dirty)
 {
-	if(  n < anz_images  ) {
+	if(  n < image_count  ) {
 		scr_coord_val x,y;
 
 		// align the image horizontally
@@ -1633,7 +1621,7 @@ void display_proportional_ellipsis_rgb(scr_rect, const char *, int, rgba_t, bool
 
 image_id get_image_count()
 {
-	return anz_images;
+	return image_count;
 }
 
 void add_poly_clip(int, int, int, int, int)

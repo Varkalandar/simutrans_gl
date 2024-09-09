@@ -932,10 +932,6 @@ int simu_main(int argc, char** argv)
 		sound_set_mute(!ok);
     }
     
-    // now that the graphics system has already started
-	// the saved colours can be converted to the system format
-	env_t_rgb_to_system_colors();
-
 	// parse colours now that the graphics system has started
 	// default simuconf.tab
 	if(  found_simuconf  ) {

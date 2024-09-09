@@ -375,7 +375,7 @@ static struct imd* images = NULL;
 /*
  * Number of loaded images
  */
-static image_id anz_images = 0;
+static image_id image_count = 0;
 
 /*
  * Number of allocated entries for images
@@ -910,7 +910,7 @@ void mark_screen_dirty()
  */
 void display_mark_img_dirty(image_id image, scr_coord_val xp, scr_coord_val yp)
 {
-	if(  image < anz_images  ) {
+	if(  image < image_count  ) {
 		mark_rect_dirty_wc(
 			xp + images[image].x,
 			yp + images[image].y,
@@ -933,7 +933,7 @@ void display_mark_img_dirty(image_id image, scr_coord_val xp, scr_coord_val yp)
  */
 static void rezoom()
 {
-	for(  image_id n = 0;  n < anz_images;  n++  ) {
+	for(  image_id n = 0;  n < image_count;  n++  ) {
 		if(  (images[n].recode_flags & FLAG_ZOOMABLE) != 0  &&  images[n].base_h > 0  ) {
 			images[n].recode_flags |= FLAG_REZOOM;
 		}
@@ -1010,7 +1010,7 @@ static void activate_player_color(sint8 player_nr, bool daynight)
  */
 static void recode()
 {
-	for(  image_id n = 0;  n < anz_images;  n++  ) {
+	for(  image_id n = 0;  n < image_count;  n++  ) {
 		images[n].player_flags = 0xFFFF;  // recode all player colors
 	}
 }
@@ -1059,7 +1059,7 @@ static void recode_img_src_target(scr_coord_val h, PIXVAL *src, PIXVAL *target)
 
 image_id get_image_count()
 {
-	return anz_images;
+	return image_count;
 }
 
 
@@ -1810,7 +1810,7 @@ void register_image(image_t *image_in)
 	}
 
 	image_in->imageid = anz_images;
-	image = &images[anz_images];
+	image = &images[image_count];
 	anz_images++;
 
 	image->x = image_in->x;
@@ -2546,7 +2546,7 @@ static void display_color_img_wc_daytime(const PIXVAL* sp, scr_coord_val x, scr_
  */
 void display_color_img(const image_id n, scr_coord_val xp, scr_coord_val yp, sint8 player_nr_raw, const bool daynight, const bool dirty  CLIP_NUM_DEF)
 {
-	if(  n < anz_images  ) {
+	if(  n < image_count  ) {
 		// do we have to use a player nr?
 		const sint8 player_nr = (images[n].recode_flags & FLAG_HAS_PLAYER_COLOR) * player_nr_raw;
 		// first: size check
@@ -2621,7 +2621,7 @@ void display_base_img(const image_id n, scr_coord_val xp, scr_coord_val yp, cons
 		// same size => use standard routine
 		display_color_img( n, xp, yp, player_nr, daynight, dirty  CLIP_NUM_PAR);
 	}
-	else if(  n < anz_images  ) {
+	else if(  n < image_count  ) {
 		// now test if visible and clipping needed
 		const scr_coord_val x = images[n].base_x + xp;
 		      scr_coord_val y = images[n].base_y + yp;

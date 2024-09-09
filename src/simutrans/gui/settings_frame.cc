@@ -174,9 +174,6 @@ bool settings_frame_t::infowin_event(const event_t *ev)
 		economy.read( sets );
 		costs.read( sets );
 		climates.read( sets );
-
-		// only the rgb colours have been changed, the colours in system format must be updated
-		env_t_rgb_to_system_colors();
 	}
 	return gui_frame_t::infowin_event(ev);
 }

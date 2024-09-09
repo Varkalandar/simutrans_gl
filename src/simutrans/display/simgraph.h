@@ -69,11 +69,6 @@ rgba_t color_idx_to_rgba(int idx, int transparent_percent);
  */
 rgb888_t get_color_rgb(uint8 idx);
 
-/*
- * Environment colours from RGB888 to system format
- */
-void env_t_rgb_to_system_colors();
-
 /**
  * Helper functions for clipping along tile borders.
  */
