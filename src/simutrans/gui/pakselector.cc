@@ -79,14 +79,13 @@ void pak_set_panel_t::set_entries(slist_tpl<savegame_frame_t::dir_entry_t> * ent
 
 bool pak_set_panel_t::infowin_event(const event_t *ev)
 {
-	if(ev->ev_class == event_class_t::EVENT_CLICK ||
-	   ev->ev_class == event_class_t::EVENT_RELEASE)
+	if(ev->ev_class == event_class_t::EVENT_RELEASE &&
+	   ev->ev_code == MOUSE_LEFTBUTTON)
 	{
 		// Hajo: pass wheel event to the scrollpane,
 		// only handle "true" clicks here
 
 		if(ev->ev_code != MOUSE_WHEELUP && ev->ev_code != MOUSE_WHEELDOWN) {
-
 			// so, did we hit something?
 
 			const scr_coord_val xspace = 280;
