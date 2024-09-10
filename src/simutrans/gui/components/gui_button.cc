@@ -486,6 +486,12 @@ void button_t::draw(scr_coord offset)
 		default: ;
 	}
 
+	// highlight the button area
+	scr_coord mp = get_mouse_pos();
+	if(area.contains(mp)) {
+		display_fillbox_wh_clip_rgb(area.x, area.y, area.w, area.h, rgba_t(0, 0.5, 1, 0.1));
+	}
+
 	if(  translated_tooltip  &&  getroffen( get_mouse_pos() - offset )  ) {
 		win_set_tooltip( scr_coord{ get_mouse_pos().x, area.get_bottom() } + TOOLTIP_MOUSE_OFFSET, translated_tooltip, this);
 	}
