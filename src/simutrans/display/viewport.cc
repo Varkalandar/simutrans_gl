@@ -272,19 +272,23 @@ grund_t* viewport_t::get_ground_on_screen_coordinate(scr_coord screen_pos, sint3
 
 koord3d viewport_t::get_new_cursor_position( const scr_coord &screen_pos, bool grid_coordinates )
 {
-	const int rw4 = cached_img_size/4;
+	int offset_y;
 
-	int offset_y = 0;
 	if(world->get_zeiger()->get_yoff() == Z_PLAN) {
 		// already ok
+		offset_y = 0;
 	}
 	else {
 		// shifted by a quarter tile
-		offset_y += rw4;
+		offset_y += cached_img_size/4;
 	}
 
+	const int screen_w = display_get_width(); 
+	const int fb_w = display_get_fb_width(); 
+
+	const scr_coord pos (screen_pos.x * fb_w / screen_w, (screen_pos.y + offset_y)  * fb_w / screen_w);
 	sint32 grid_x, grid_y;
-	const grund_t *bd = get_ground_on_screen_coordinate(scr_coord(screen_pos.x, screen_pos.y + offset_y), grid_x, grid_y, grid_coordinates);
+	const grund_t *bd = get_ground_on_screen_coordinate(pos, grid_x, grid_y, grid_coordinates);
 
 	// no suitable location found (outside map, ...)
 	if (!bd) {
@@ -304,8 +308,8 @@ koord3d viewport_t::get_new_cursor_position( const scr_coord &screen_pos, bool g
 
 void viewport_t::metrics_updated()
 {
-	cached_disp_width = display_get_width();
-	cached_disp_height = display_get_height();
+	cached_disp_width = max(display_get_width(), display_get_fb_width());
+	cached_disp_height = max(display_get_height(), display_get_fb_height());
 	cached_img_size = get_tile_raster_width();
 
 	set_viewport_ij_offset(koord(

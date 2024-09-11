@@ -1577,7 +1577,7 @@ uint8 grund_t::display_obj_bg(const sint16 xpos, const sint16 ypos, const bool i
 			display_normal(ground_desc_t::get_marker_image( get_grund_hang(), true ), xpos, ypos, 0);
 			if(  !ist_karten_boden()  ) {
 				const grund_t *gr = welt->lookup_kartenboden(pos.get_2d());
-				const sint16 raster_tile_width = get_current_tile_raster_width();
+				const sint16 raster_tile_width = get_tile_raster_width();
 				if(  pos.z < gr->get_disp_height()  ) {
 					//display back part of marker for grunds in between
 					for(  sint8 z = pos.z + 1;  z < gr->get_disp_height();  z++  ) {
@@ -1792,12 +1792,6 @@ void display_text_label(sint16 xpos, sint16 ypos, const char* text, const player
 
 void grund_t::display_overlay(sint16 xpos, sint16 ypos)
 {
-    int n, d;
-    get_zoom_fraction(n, d);
-
-    xpos = xpos * d / n;
-    ypos = ypos * d / n;
-    
 	// marker/station text
 	if(  get_flag(has_text)  ) {
 		if(  env_t::show_names & 1  ) {
@@ -1871,13 +1865,13 @@ void grund_t::display_overlay(sint16 xpos, sint16 ypos)
 						c2 = color_idx_to_rgb( COL_ORANGE );
 					}
 				}
-				display_signal_direction_rgb( xpos, ypos + tile_raster_scale_y( w->get_yoff(), get_current_tile_raster_width() ),
+				display_signal_direction_rgb( xpos, ypos + tile_raster_scale_y( w->get_yoff(), get_tile_raster_width() ),
 					w->get_ribi_unmasked(), mask, c1, c2, w->is_diagonal(), get_weg_hang() );
 			}
 			else if( w->get_ribi_maske() ) {
 				rgba_t c1 = color_idx_to_rgb( COL_BLUE+2 );
 				rgba_t c2 = color_idx_to_rgb( COL_BLUE );
-				display_signal_direction_rgb( xpos, ypos + tile_raster_scale_y( w->get_yoff(), get_current_tile_raster_width() ),
+				display_signal_direction_rgb( xpos, ypos + tile_raster_scale_y( w->get_yoff(), get_tile_raster_width() ),
 					w->get_ribi_unmasked(), w->get_ribi_maske(), c1, c2, w->is_diagonal(), get_weg_hang() );
 			}
 		}

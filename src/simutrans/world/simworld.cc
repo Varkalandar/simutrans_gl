@@ -2869,7 +2869,7 @@ void karte_t::update_frame_sleep_time()
 				set_frame_time( 1+get_frame_time() );
 				// more than 1s since last zoom => check if zoom out is a way to improve it
 
-				if(  frame_end_time-last_interaction > 5000  &&  get_current_tile_raster_width() < 32  &&  realFPS <= 80  ) {
+				if(  frame_end_time-last_interaction > 5000  &&  get_tile_raster_width() < 32  &&  realFPS <= 80  ) {
 					zoom_level_up();
 
 					viewport->metrics_updated();

@@ -731,7 +731,7 @@ air_vehicle_t::air_vehicle_t(koord3d pos, const vehicle_desc_t* desc, player_t* 
 air_vehicle_t::~air_vehicle_t()
 {
 	// mark aircraft (after_image) dirty, since we have no "real" image
-	const int raster_width = get_current_tile_raster_width();
+	const int raster_width = get_tile_raster_width();
 	sint16 yoff = tile_raster_scale_y(-flying_height-get_hoff()-2, raster_width);
 
 	mark_image_dirty( image, yoff);
@@ -992,7 +992,7 @@ void air_vehicle_t::display_after(int xpos_org, int ypos_org, bool is_global) co
 	if(  image != IMG_EMPTY  &&  !is_on_ground()  ) {
 		int xpos = xpos_org, ypos = ypos_org;
 
-		const int raster_width = get_current_tile_raster_width();
+		const int raster_width = get_tile_raster_width();
 		const sint16 z = get_pos().z;
 		if(  z + flying_height/TILE_HEIGHT_STEP - 1 > grund_t::underground_level  ) {
 			return;
@@ -1025,7 +1025,7 @@ void air_vehicle_t::display_after(int xpos_org, int ypos_org, bool is_global) co
 void air_vehicle_t::display_overlay(int xpos_org, int ypos_org) const
 {
 	if(  image != IMG_EMPTY  &&  !is_on_ground()  ) {
-		const int raster_width = get_current_tile_raster_width();
+		const int raster_width = get_tile_raster_width();
 		const sint16 z = get_pos().z;
 		if(  z + flying_height/TILE_HEIGHT_STEP - 1 > grund_t::underground_level  ) {
 			return;

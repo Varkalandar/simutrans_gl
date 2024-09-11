@@ -221,12 +221,7 @@ void player_t::display_messages()
 
 	for(income_message_t* const m : messages) {
 
-		scr_coord scr_pos = vp->get_screen_coord(koord3d(m->pos,welt->lookup_hgt(m->pos)),koord(0,m->alter >> 4)) + scr_coord((get_tile_raster_width()-display_calc_proportional_string_len_width(m->str, 0x7FFF, 0, FS_NORMAL))/2,0);
-        int n, d;
-        get_zoom_fraction(n, d);
-
-        scr_pos.x = scr_pos.x * d / n;
-        scr_pos.y = scr_pos.y * d / n;
+		const scr_coord scr_pos = vp->get_screen_coord(koord3d(m->pos,welt->lookup_hgt(m->pos)),koord(0,m->alter >> 4)) + scr_coord((get_tile_raster_width()-display_calc_proportional_string_len_width(m->str, 0x7FFF, 0, FS_NORMAL))/2,0);
 
 		display_shadow_proportional_rgb(scr_pos.x, scr_pos.y, color_idx_to_rgb(player_color_1+3), color_idx_to_rgb(COL_BLACK), m->str, true);
 		if(  m->pos.x < 3  ||  m->pos.y < 3  ) {

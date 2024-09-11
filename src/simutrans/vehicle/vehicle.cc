@@ -1244,7 +1244,7 @@ void vehicle_t::display_after(int xpos, int ypos, bool is_global) const
 
 		// something to show?
 		if(  tooltip_text[0]  ) {
-			const int raster_width = get_current_tile_raster_width();
+			const int raster_width = get_tile_raster_width();
 			get_screen_offset( xpos, ypos, raster_width );
 			xpos += tile_raster_scale_x(get_xoff(), raster_width);
 			ypos += tile_raster_scale_y(get_yoff(), raster_width)+14;

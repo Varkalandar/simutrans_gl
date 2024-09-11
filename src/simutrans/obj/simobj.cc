@@ -196,7 +196,7 @@ void obj_t::display(int xpos, int ypos  CLIP_NUM_DEF) const
 	image_id image = get_image();
 	image_id const outline_image = get_outline_image();
 	if(  image!=IMG_EMPTY  ||  outline_image!=IMG_EMPTY  ) {
-		const int raster_width = get_current_tile_raster_width();
+		const int raster_width = get_tile_raster_width();
 		const bool is_dirty = get_flag(obj_t::dirty);
 
 		if (vehicle_base_t const* const v = obj_cast<vehicle_base_t>(this)) {
@@ -271,7 +271,7 @@ void obj_t::display_after(int xpos, int ypos, bool) const
 {
 	image_id image = get_front_image();
 	if(  image != IMG_EMPTY  ) {
-		const int raster_width = get_current_tile_raster_width();
+		const int raster_width = get_tile_raster_width();
 		const bool is_dirty = get_flag( obj_t::dirty );
 
 		xpos += tile_raster_scale_x( get_xoff(), raster_width );
