@@ -273,9 +273,9 @@ void interaction_t::interactive_event( const event_t &ev )
 		// zoom can fail if we are max zoomed in/out, so:
 		if (zoom_successful) {
 			// calculate offsets such that tile under cursor is still on the same screen position
-			// viewport->change_world_position(cursor_pos, koord(0,0), s);
+			viewport->change_world_position(cursor_pos, koord(0,0), s);
 
-			viewport->change_world_position(cursor_pos.get_2d(), viewport->get_x_off(), viewport->get_y_off());
+			// viewport->change_world_position(cursor_pos.get_2d(), viewport->get_x_off(), viewport->get_y_off());
 
 			//and move cursor to the new position under the mouse
 			move_cursor(ev);
