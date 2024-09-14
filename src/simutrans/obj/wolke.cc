@@ -51,7 +51,6 @@ wolke_t::wolke_t(koord3d pos, sint8 b_x_off, sint8 b_y_off, sint16 b_h_off, uint
 
 wolke_t::~wolke_t()
 {
-	mark_image_dirty( get_image(), calc_yoff() );
 }
 
 
@@ -105,7 +104,6 @@ sync_result wolke_t::sync_step(uint32 delta_t)
 	if(  insta_zeit >= lifetime  ) {
 		// delete wolke ...
 		set_flag( obj_t::dirty );
-		mark_image_dirty( old_img, old_yoff );
 		insta_zeit = lifetime;
 		return SYNC_DELETE;
 	}
@@ -116,12 +114,10 @@ sync_result wolke_t::sync_step(uint32 delta_t)
 	if(  new_img != old_img  ) {
 		// change cloud
 		set_flag( obj_t::dirty );
-		mark_image_dirty( old_img, old_yoff );
 	}
 	if( new_yoff != old_yoff ) {
 		// move cloud
 		set_flag( obj_t::dirty );
-		mark_image_dirty( old_img, old_yoff );
 		// wind effect
 		set_xoff( get_xoff() - sim_async_rand(2));
 	}

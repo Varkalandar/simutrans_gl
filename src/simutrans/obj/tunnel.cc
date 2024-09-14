@@ -206,16 +206,12 @@ void tunnel_t::cleanup( player_t *player2 )
 
 void tunnel_t::set_image( image_id b )
 {
-	mark_image_dirty( image, 0 );
-	mark_image_dirty( b, 0 );
 	image = b;
 }
 
 
 void tunnel_t::set_foreground_image( image_id b )
 {
-	mark_image_dirty( foreground_image, 0 );
-	mark_image_dirty( b, 0 );
 	foreground_image = b;
 }
 

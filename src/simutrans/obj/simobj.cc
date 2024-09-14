@@ -13,6 +13,7 @@
 #include "../display/simgraph.h"
 #include "../display/simimg.h"
 #include "../display/viewport.h"
+#include "../display/illumination_data.h"
 #include "../player/simplay.h"
 #include "../gui/obj_info.h"
 #include "../gui/simwin.h"
@@ -198,7 +199,6 @@ void obj_t::display(int xpos, int ypos  CLIP_NUM_DEF) const
 	image_id const outline_image = get_outline_image();
 	if(  image!=IMG_EMPTY  ||  outline_image!=IMG_EMPTY  ) {
 		const int raster_width = get_current_tile_raster_width();
-		const bool is_dirty = get_flag(obj_t::dirty);
 
 		if (vehicle_base_t const* const v = obj_cast<vehicle_base_t>(this)) {
 			// vehicles need finer steps to appear smoother
@@ -274,12 +274,21 @@ void obj_t::display_after(int xpos, int ypos, bool) const
 	image_id image = get_front_image();
 	if(  image != IMG_EMPTY  ) {
 		const int raster_width = get_current_tile_raster_width();
-		const bool is_dirty = get_flag( obj_t::dirty );
 
 		xpos += tile_raster_scale_x( get_xoff(), raster_width );
 		ypos += tile_raster_scale_y( get_yoff(), raster_width );
 
-        // display_set_color(RGBA_WHITE);
+		// lights inside a building
+		illumination_data_t * light_inside = get_light_inside(); 
+		if(light_inside) {
+
+			const skin_desc_t * sd = skinverwaltung_t::get_light(light_inside->light_id);
+			image_id id = sd->get_image_id(light_inside->light_index);
+
+			display_set_color(light_inside->light_color);
+			display_light_img(id, xpos, ypos+16, 64, 48);
+			display_set_color(display_get_day_night_color());
+		}
 
 		if(  owner_n != PLAYER_UNOWNED  ) {
 			if(  obj_t::show_owner  ) {
@@ -318,48 +327,22 @@ void obj_t::display_after(int xpos, int ypos, bool) const
 		display_light_img(id, xpos, ypos+16, 64, 48);
 		display_set_color(display_get_day_night_color());
 	}
-	else if(get_waytype() == maglev_wt && get_typ() == obj_t::gebaeude) {
-		const skin_desc_t * sd = skinverwaltung_t::get_light("light_test");
-		image_id id = sd->get_image_id(0);
 
-		display_set_color(rgba_t(0.4, 0.35, 0.15, 1.0));
+	illumination_data_t * light_above = get_light_above(); 
+	if(light_above) {
+
+		// printf("at %d,%d id=%s index=%d\n", get_pos().x, get_pos().y, light_above->light_id, light_above->light_index);
+
+		const skin_desc_t * sd = skinverwaltung_t::get_light(light_above->light_id);
+
+		// printf("sd=%s count=%d\n", sd->get_name(), sd->get_count());
+
+		image_id id = sd->get_image_id(light_above->light_index);
+
+		// printf("image id=%d\n", id);
+
+		display_set_color(light_above->light_color);
 		display_light_img(id, xpos, ypos+16, 64, 48);
 		display_set_color(display_get_day_night_color());
-	}
-}
-
-
-/*
- * when a vehicle moves or a cloud moves, it needs to mark the old spot as dirty (to copy to screen)
- * sometimes they have an extra offset, this is the yoff parameter
- */
-void obj_t::mark_image_dirty(image_id image, sint16 yoff) const
-{
-	if(  image != IMG_EMPTY  ) {
-		const sint16 rasterweite = get_tile_raster_width();
-		int xpos=0, ypos=0;
-		if(  is_moving()  ) {
-			vehicle_base_t const* const v = obj_cast<vehicle_base_t>(this);
-			// vehicles need finer steps to appear smoother
-			v->get_screen_offset( xpos, ypos, get_tile_raster_width() );
-		}
-
-		viewport_t *vp = welt->get_viewport();
-		scr_coord scr_pos = vp->get_screen_coord(get_pos(), koord(get_xoff(), get_yoff()));
-		// xpos, ypos, yoff are already in pixel units, no scaling needed
-
-		// mark the region after the image as dirty
-		display_mark_img_dirty( image, scr_pos.x + xpos, scr_pos.y + ypos + yoff);
-
-		// too close to border => set dirty to be sure (smoke, skyscrapers, birds, or the like)
-		scr_coord_val xbild = 0, ybild = 0, wbild = 0, hbild = 0;
-		display_get_image_offset( image, &xbild, &ybild, &wbild, &hbild );
-		const sint16 distance_to_border = 3 - (yoff+get_yoff()+ybild)/(rasterweite/4);
-		if(  pos.x <= distance_to_border  ||  pos.y <= distance_to_border  ) {
-			// but only if the image is actually visible ...
-			if(   scr_pos.x+xbild+wbild >= 0  &&  xpos <= display_get_width()  &&   scr_pos.y+ybild+hbild >= 0  &&  ypos+ybild < display_get_height()  ) {
-				welt->set_background_dirty();
-			}
-		}
 	}
 }

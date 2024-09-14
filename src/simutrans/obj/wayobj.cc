@@ -114,8 +114,6 @@ wayobj_t::~wayobj_t()
 		}
 	}
 
-	mark_image_dirty( get_front_image(), 0 );
-	mark_image_dirty( get_image(), 0 );
 	grund_t *gr = welt->lookup( get_pos() );
 	if( gr ) {
 		for( uint8 i = 0; i < 4; i++ ) {
@@ -125,11 +123,7 @@ wayobj_t::~wayobj_t()
 				if( gr->get_neighbour( next_gr, desc->get_wtyp(), ribi_t::nesw[i] ) ) {
 					wayobj_t *wo2 = next_gr->get_wayobj( desc->get_wtyp() );
 					if( wo2 ) {
-						wo2->mark_image_dirty( wo2->get_front_image(), 0 );
-						wo2->mark_image_dirty( wo2->get_image(), 0 );
 						wo2->set_dir( wo2->get_dir() & ~ribi_t::backward(ribi_t::nesw[i]) );
-						wo2->mark_image_dirty( wo2->get_front_image(), 0 );
-						wo2->mark_image_dirty( wo2->get_image(), 0 );
 						wo2->set_flag(obj_t::dirty);
 					}
 				}
@@ -378,8 +372,6 @@ void wayobj_t::extend_wayobj(koord3d pos, player_t *owner, ribi_t::ribi dir, con
 			else {
 				// extend this one instead
 				existing_wayobj->set_dir(dir|existing_wayobj->get_dir());
-				existing_wayobj->mark_image_dirty( existing_wayobj->get_front_image(), 0 );
-				existing_wayobj->mark_image_dirty( existing_wayobj->get_image(), 0 );
 				existing_wayobj->set_flag(obj_t::dirty);
 				return;
 			}
@@ -390,7 +382,6 @@ void wayobj_t::extend_wayobj(koord3d pos, player_t *owner, ribi_t::ribi dir, con
 		gr->obj_add(wo);
 		wo->finish_rd();
 		wo->calc_image();
-		wo->mark_image_dirty( wo->get_front_image(), 0 );
 		wo->set_flag(obj_t::dirty);
 		player_t::book_construction_costs( owner,  -desc->get_price(), pos.get_2d(), desc->get_wtyp());
 
@@ -402,9 +393,7 @@ void wayobj_t::extend_wayobj(koord3d pos, player_t *owner, ribi_t::ribi dir, con
 					wayobj_t *wo2 = next_gr->get_wayobj( desc->get_wtyp() );
 					if( wo2 ) {
 						wo2->set_dir( wo2->get_dir() | ribi_t::backward(ribi_t::nesw[i]) );
-						wo2->mark_image_dirty( wo2->get_front_image(), 0 );
 						wo->set_dir( wo->get_dir() | ribi_t::nesw[i] );
-						wo->mark_image_dirty( wo->get_front_image(), 0 );
 					}
 				}
 			}

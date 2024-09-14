@@ -254,7 +254,6 @@ public:
 		}
 		// always remove
 		if(  grund_t *old_gr = welt->lookup(current_stop_mark->get_pos())  ) {
-			current_stop_mark->mark_image_dirty( current_stop_mark->get_image(), 0 );
 			old_gr->obj_remove( current_stop_mark );
 			old_gr->set_flag( grund_t::dirty );
 			current_stop_mark->set_pos( koord3d::invalid );

@@ -313,10 +313,6 @@ void vehicle_t::initialise_journey(route_t::index_t start_route_index, bool reca
 	check_for_finish = false;
 	use_calc_height = true;
 
-	if(welt->is_within_limits(get_pos().get_2d())) {
-		mark_image_dirty( get_image(), 0 );
-	}
-
 	route_t const& r = *cnv->get_route();
 	if(!recalc) {
 		// always set pos_next

@@ -71,8 +71,6 @@ void crossing_t::rotate90()
 // changed state: mark dirty
 void crossing_t::state_changed()
 {
-	mark_image_dirty( image, 0 );
-	mark_image_dirty( foreground_image, 0 );
 	calc_image();
 }
 

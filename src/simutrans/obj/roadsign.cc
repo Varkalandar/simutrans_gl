@@ -145,20 +145,13 @@ DBG_MESSAGE("roadsign_t::set_dir()","ribi %i",dir);
 		}
 	}
 
-	// force redraw
-	mark_image_dirty(get_image(),0);
-	// some more magic to get left side images right ...
-	sint8 old_x = get_xoff();
-	set_xoff( after_xoffset );
-	mark_image_dirty(foreground_image,after_yoffset-get_yoff());
-	set_xoff( old_x );
-
 	image = IMG_EMPTY;
 	foreground_image = IMG_EMPTY;
 	calc_image();
 
-	if (preview)
+	if(preview) {
 		this->dir = olddir;
+	}
 }
 
 
@@ -456,8 +449,6 @@ sync_result roadsign_t::sync_step(uint32 /*delta_t*/)
 		if(  (1<<welt->get_active_player_nr()) & get_player_mask()  ) {
 			// gate open
 			image += 2;
-			// force redraw
-			mark_image_dirty(get_image(),0);
 		}
 		set_image( desc->get_image_id(image) );
 	}

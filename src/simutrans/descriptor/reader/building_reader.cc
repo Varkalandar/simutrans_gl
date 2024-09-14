@@ -46,6 +46,9 @@ obj_desc_t * tile_reader_t::read_node(FILE *fp, obj_node_info_t &node)
 
 	building_tile_desc_t *desc = new building_tile_desc_t();
 
+	desc->light_inside = 0;
+	desc->light_above = 0;
+
 	if(version == 2) {
 //  DBG_DEBUG("tile_reader_t::read_node()","version=1");
 		// Versioned node, version 1
@@ -80,8 +83,6 @@ obj_desc_t * tile_reader_t::read_node(FILE *fp, obj_node_info_t &node)
 
 	return desc;
 }
-
-
 
 
 void building_reader_t::register_obj(obj_desc_t *&data)
@@ -496,5 +497,4 @@ obj_desc_t * building_reader_t::read_node(FILE *fp, obj_node_info_t &node)
 	);
 
 	return desc;
-
 }

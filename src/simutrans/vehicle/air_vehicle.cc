@@ -733,9 +733,6 @@ air_vehicle_t::~air_vehicle_t()
 	// mark aircraft (after_image) dirty, since we have no "real" image
 	const int raster_width = get_current_tile_raster_width();
 	sint16 yoff = tile_raster_scale_y(-flying_height-get_hoff()-2, raster_width);
-
-	mark_image_dirty( image, yoff);
-	mark_image_dirty( image, 0 );
 }
 
 

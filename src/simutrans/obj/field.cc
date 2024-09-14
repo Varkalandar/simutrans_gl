@@ -31,15 +31,10 @@ field_t::field_t(koord3d p, player_t *player, const field_class_desc_t *desc, fa
 }
 
 
-
 field_t::~field_t()
 {
-	// mark field image area as dirty for removal
-	mark_image_dirty( get_image(), 0 );
-
 	fab->remove_field_at( get_pos().get_2d() );
 }
-
 
 
 const char *field_t::get_removal_error(const player_t *)
@@ -49,12 +44,10 @@ const char *field_t::get_removal_error(const player_t *)
 }
 
 
-
 // remove costs
 void field_t::cleanup(player_t *player)
 {
 	player_t::book_construction_costs(player, welt->get_settings().cst_multiply_remove_field, get_pos().get_2d(), ignore_wt);
-	mark_image_dirty( get_image(), 0 );
 }
 
 
@@ -72,9 +65,7 @@ image_id field_t::get_image() const
 		// resolution 1/8th month (0..95)
 		const uint32 yearsteps = (welt->get_current_month()%12)*8 + ((welt->get_ticks()>>(welt->ticks_per_world_month_shift-3))&7) + 1;
 		const image_id image = s->get_image_id( (count*yearsteps-1)/96 );
-		if((count*yearsteps-1)%96<count) {
-			mark_image_dirty( image, 0 );
-		}
+
 		return image;
 	}
 }

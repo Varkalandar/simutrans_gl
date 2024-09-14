@@ -242,11 +242,6 @@ void gebaeude_t::set_tile( const building_tile_desc_t *new_tile, bool start_with
 {
 	insta_zeit = welt->get_ticks();
 
-	if(!zeige_baugrube  &&  tile!=NULL) {
-		// mark old tile dirty
-		mark_images_dirty();
-	}
-
 	zeige_baugrube = !new_tile->get_desc()->no_construction_pit()  &&  start_with_construction;
 	if(sync) {
 		if(  new_tile->get_phases()<=1  &&  !zeige_baugrube  ) {
@@ -287,7 +282,6 @@ sync_result gebaeude_t::sync_step(uint32 delta_t)
 		// still under construction?
 		if(  welt->get_ticks() - insta_zeit > 5000  ) {
 			set_flag( obj_t::dirty );
-			mark_image_dirty( get_image(), 0 );
 			zeige_baugrube = false;
 			if(  tile->get_phases() <= 1  ) {
 				sync = false;
@@ -302,26 +296,9 @@ sync_result gebaeude_t::sync_step(uint32 delta_t)
 			if(  anim_time > tile->get_desc()->get_animation_time()  ) {
 				anim_time -= tile->get_desc()->get_animation_time();
 
-				// old positions need redraw
-				if(  background_animated  ) {
-					set_flag( obj_t::dirty );
-					mark_images_dirty();
-				}
-				else {
-					// try foreground
-					image_id image = tile->get_foreground( anim_frame, season );
-					mark_image_dirty( image, 0 );
-				}
-
 				anim_frame++;
 				if(  anim_frame >= tile->get_phases()  ) {
 					anim_frame = 0;
-				}
-
-				if(  !background_animated  ) {
-					// next phase must be marked dirty too ...
-					image_id image = tile->get_foreground( anim_frame, season );
-					mark_image_dirty( image, 0 );
 				}
 			}
 		}
@@ -422,6 +399,18 @@ rgba_t gebaeude_t::get_outline_colour() const
 	}
 
 	return disp_color;
+}
+
+
+illumination_data_t * gebaeude_t::get_light_inside() const 
+{ 
+	return tile->light_inside; 
+}
+
+
+illumination_data_t * gebaeude_t::get_light_above() const 
+{ 
+	return tile->light_above; 
 }
 
 
@@ -674,8 +663,6 @@ gebaeude_t* gebaeude_t::get_first_tile()
 
 void gebaeude_t::info(cbuffer_t & buf) const
 {
-	const char* name=tile->get_desc()->get_name();
-
 	if(is_factory  &&  ptr.fab != NULL) {
 		buf.append((char *)0);
 	}
@@ -1043,24 +1030,5 @@ void gebaeude_t::cleanup(player_t *player)
 				}
 			}
 		}
-	}
-	mark_images_dirty();
-}
-
-
-void gebaeude_t::mark_images_dirty() const
-{
-	// remove all traces from the screen
-	image_id img;
-	if(  zeige_baugrube  ||
-			(!env_t::hide_with_transparency  &&
-				env_t::hide_buildings>(is_city_building() ? env_t::NOT_HIDE : env_t::SOME_HIDDEN_BUILDING))  ) {
-		img = skinverwaltung_t::construction_site->get_image_id(0);
-	}
-	else {
-		img = tile->get_background( anim_frame, 0, season ) ;
-	}
-	for(  int i=0;  img!=IMG_EMPTY;  img=get_image(++i)  ) {
-		mark_image_dirty( img, -(i*get_tile_raster_width()) );
 	}
 }

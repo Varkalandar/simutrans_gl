@@ -97,10 +97,22 @@ public:
 	image_id get_image() const OVERRIDE;
 	image_id get_image(int nr) const OVERRIDE;
 	image_id get_front_image() const OVERRIDE;
-	void mark_images_dirty() const;
 
 	image_id get_outline_image() const OVERRIDE;
 	rgba_t get_outline_colour() const OVERRIDE;
+
+	/**
+	 * This light will be drawn between front and back image to give the impression
+	 * that the inside of the object is illuminated
+	 */
+	virtual illumination_data_t * get_light_inside() const OVERRIDE;
+
+	/**
+	 * This light will be drawn after (above) the front image to give the impression
+	 * that the object is illuminated from outside
+	 */
+	virtual illumination_data_t * get_light_above() const OVERRIDE;
+
 
 	// caches image at height 0
 	void calc_image() OVERRIDE;

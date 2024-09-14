@@ -10,13 +10,14 @@
 #include <assert.h>
 #include "image_array.h"
 #include "obj_base_desc.h"
-#include "skin_desc.h"
 #include "../dataobj/koord.h"
 
 class building_desc_t;
 class tool_t;
 class karte_t;
 class checksum_t;
+class illumination_data_t;
+class skin_desc_t;
 
 /**
  * Data for one tile of a potentially multi-tile building.
@@ -38,7 +39,10 @@ class building_tile_desc_t : public obj_desc_t {
 	uint16 index;
 
 public:
-	void set_desc(const building_desc_t *building_desc) { building = building_desc; }
+	illumination_data_t * light_inside;
+	illumination_data_t * light_above;
+
+	void set_desc(const building_desc_t *building_desc);
 
 	const building_desc_t *get_desc() const { return building; }
 
@@ -304,11 +308,9 @@ public:
 	uint8 adjust_layout(uint8 layout) const;
 
 	/**
-	* Skin: cursor (index 0) and icon (index 1)
-	*/
-	const skin_desc_t * get_cursor() const {
-		return flags & FLAG_HAS_CURSOR ? get_child<skin_desc_t>(2 + size.x * size.y * layouts) : 0;
-	}
+	 * Skin: cursor (index 0) and icon (index 1)
+	 */
+	const skin_desc_t * get_cursor() const;
 
 	// the right house for this area?
 	bool is_allowed_climate( climate cl ) const { return ((1<<cl)&allowed_climates)!=0; }

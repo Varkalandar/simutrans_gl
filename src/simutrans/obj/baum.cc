@@ -218,16 +218,12 @@ bool baum_t::check_season(const bool)
 
 	// tree will die after 704 months (i.e. 58 years 8 months)
 	if(  age >= baum_t::AGE_LIMIT  ) {
-		mark_image_dirty( get_image(), 0 );
 		return false;
 	}
 
 	// update seasonal image
 	const uint8 old_season = season;
 	calc_image();
-	if(  season != old_season  ) {
-		mark_image_dirty( get_image(), 0 );
-	}
 
 	return true;
 }
@@ -324,7 +320,6 @@ void baum_t::info(cbuffer_t &buf) const
 void baum_t::cleanup(player_t *player)
 {
 	player_t::book_construction_costs(player, welt->get_settings().cst_remove_tree, get_pos().get_2d(), ignore_wt);
-	mark_image_dirty( get_image(), 0 );
 }
 
 

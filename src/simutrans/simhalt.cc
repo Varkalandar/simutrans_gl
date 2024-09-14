@@ -3175,10 +3175,8 @@ void haltestelle_t::display_status(sint16 xpos, sint16 ypos)
 	}
 
 	// status color box below
-	bool dirty = false;
 	if(  get_status_farbe() != last_status_color  ) {
 		last_status_color = get_status_farbe();
-		dirty = true;
 	}
 	display_fillbox_wh_clip_rgb(x - 1 - 4, ypos, count * D_WAITINGBAR_WIDTH + 12 - 2, D_WAITINGBAR_WIDTH, get_status_farbe());
 }

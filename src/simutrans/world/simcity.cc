@@ -3387,7 +3387,6 @@ void stadt_t::renovate_city_building(gebaeude_t *gb)
 					default: break;
 				}
 				// exchange building; try to face it to street in front
-				oldgb->mark_images_dirty();
 				oldgb->set_tile( h->get_tile(rotation, x, y), true );
 				welt->lookup_kartenboden(kpos)->calc_image();
 				update_gebaeude_from_stadt(oldgb);
@@ -3657,7 +3656,6 @@ bool stadt_t::build_road(const koord k, player_t* player_, bool forced)
 						if( grund_t *bd_recalc = welt->lookup_kartenboden( k + koord( 1, 1 ) ) ) {
 							bd_recalc->check_update_underground();
 						}
-						bd->mark_image_dirty();
 					}
 				}
 				if((err==NULL||*err == 0)  &&   koord_distance( k, end.get_2d())<=5  &&  welt->is_within_limits((end+zv).get_2d())) {

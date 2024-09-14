@@ -521,10 +521,7 @@ void weg_t::calc_image()
 			}
 		}
 	}
-	if(  image!=old_image  ) {
-		mark_image_dirty(old_image, from->get_weg_yoff());
-		mark_image_dirty(image, from->get_weg_yoff());
-	}
+
 #ifdef MULTI_THREAD
 	pthread_mutex_unlock( &weg_calc_image_mutex );
 #endif

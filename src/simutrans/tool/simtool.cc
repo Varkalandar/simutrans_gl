@@ -1888,7 +1888,6 @@ void tool_set_climate_t::mark_tiles(player_t *, const koord3d &start, const koor
 			marker->set_foreground_image( ground_desc_t::marker->get_image( grund_hang % 27 ) );
 			marker->set_image( ground_desc_t::marker->get_image( back_hang ) );
 
-			marker->mark_image_dirty( marker->get_image(), 0 );
 			gr->obj_add( marker );
 			marked.insert( marker );
 		}
@@ -2768,7 +2767,6 @@ void tool_build_way_t::mark_tiles(  player_t *player, const koord3d &start, cons
 			gr->obj_add( way );
 			way->set_yoff(-gr->get_weg_yoff() );
 			marked.insert( way );
-			way->mark_image_dirty( way->get_image(), 0 );
 		}
 	}
 	else if(err) {
@@ -2910,7 +2908,7 @@ void tool_build_bridge_t::mark_tiles(  player_t *player, const koord3d &start, c
 		}
 	}
 	marked.insert( way );
-	way->mark_image_dirty( way->get_image(), 0 );
+
 	// loop
 	koord3d pos( start + zv + koord3d( 0, 0, max_height ) );
 	while (pos.get_2d()!=end.get_2d()) {
@@ -2927,7 +2925,6 @@ void tool_build_bridge_t::mark_tiles(  player_t *player, const koord3d &start, c
 		way->set_image(desc->get_background(desc->get_straight(ribi_mark,height-slope_t::max_diff(kb->get_grund_hang())),0));
 		way->set_foreground_image(desc->get_foreground(desc->get_straight(ribi_mark,height-slope_t::max_diff(kb->get_grund_hang())), 0));
 		marked.insert( way );
-		way->mark_image_dirty( way->get_image(), 0 );
 		pos = pos + zv;
 	}
 	costs += desc->get_price() * koord_distance(start, pos);
@@ -2951,7 +2948,6 @@ void tool_build_bridge_t::mark_tiles(  player_t *player, const koord3d &start, c
 			way->set_yoff( -TILE_HEIGHT_STEP * end_max_height );
 		}
 		marked.insert( way );
-		way->mark_image_dirty( way->get_image(), 0 );
 		costs += desc->get_price();
 	}
 	else {
@@ -3287,7 +3283,6 @@ void tool_build_tunnel_t::mark_tiles(  player_t *player, const koord3d &start, c
 			}
 			gr->obj_add( way );
 			marked.insert( way );
-			way->mark_image_dirty( way->get_image(), 0 );
 		}
 		welt->lookup(end)->set_flag(grund_t::marked);
 	}
@@ -3385,7 +3380,6 @@ void tool_wayremover_t::mark_tiles( player_t *player, const koord3d &start, cons
 		for(koord3d const& pos : verbindung.get_route()) {
 			zeiger_t *marker = new zeiger_t(pos, NULL );
 			marker->set_image( cursor );
-			marker->mark_image_dirty( marker->get_image(), 0 );
 			marked.insert( marker );
 			welt->lookup(pos)->obj_add( marker );
 		}
@@ -3565,7 +3559,6 @@ const char *tool_wayremover_t::do_work( player_t *player, const koord3d &start, 
 							gr->remove_everything_from_way(player,gr->get_weg_nr(0)->get_waytype(),ribi_t::none);
 						}
 						gr->obj_loesche_alle(player);
-						gr->mark_image_dirty();
 						if (gr->is_visible() && gr->get_typ()==grund_t::tunnelboden && i>0) { // visibility test does not influence execution
 							grund_t *bd = welt->access(verbindung.at(i-1).get_2d())->get_kartenboden();
 							bd->calc_image();
@@ -3595,7 +3588,6 @@ const char *tool_wayremover_t::do_work( player_t *player, const koord3d &start, 
 					// delete tunnel ground too, if empty
 					if (gr->get_typ()==grund_t::tunnelboden) {
 						gr->obj_loesche_alle(player);
-						gr->mark_image_dirty();
 						if (!gr->get_flag(grund_t::is_kartenboden)) {
 							welt->access(gr->get_pos().get_2d())->boden_entfernen(gr);
 							delete gr;
@@ -3793,7 +3785,6 @@ void tool_build_wayobj_t::mark_tiles( player_t* player, const koord3d &start, co
 				}
 			}
 			if( way_obj ) {
-				way_obj->mark_image_dirty( way_obj->get_image(), 0 );
 				gr->obj_add( way_obj );
 				marked.insert( way_obj );
 			}
@@ -5071,7 +5062,6 @@ const char *tool_rotate_building_t::work( player_t *player, koord3d pos )
 					bool sw = w->has_switched();
 					w->set_switched(!sw);
 					w->set_images(weg_t::image_switch, w->get_ribi_unmasked(), w->is_snow(), !sw);
-					gr->mark_image_dirty();
 				}
 			}
 		}
@@ -6389,7 +6379,6 @@ void tool_forest_t::mark_tiles(  player_t *, const koord3d &start, const koord3d
 			marker->set_foreground_image( ground_desc_t::marker->get_image( grund_hang % 27 ) );
 			marker->set_image( ground_desc_t::marker->get_image( back_hang ) );
 
-			marker->mark_image_dirty( marker->get_image(), 0 );
 			gr->obj_add( marker );
 			marked.insert( marker );
 		}

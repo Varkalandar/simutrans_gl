@@ -17,6 +17,7 @@
 class cbuffer_t;
 class karte_ptr_t;
 class player_t;
+class illumination_data_t;
 
 
 /**
@@ -255,6 +256,18 @@ public:
 	virtual image_id get_outline_image() const { return IMG_EMPTY; }
 
 	/**
+	 * This light will be drawn between front and back image to give the impression
+	 * that the inside of the object is illuminated
+	 */
+	virtual illumination_data_t * get_light_inside() const { return NULL; }
+
+	/**
+	 * This light will be drawn after (above) the front image to give the impression
+	 * that the object is illuminated from outside
+	 */
+	virtual illumination_data_t * get_light_above() const { return NULL; }
+
+	/**
 	 * Save and Load of object data in one routine
 	 */
 	virtual void rdwr(loadsave_t *file);
@@ -319,12 +332,6 @@ public:
 	virtual void display_overlay(int /*xpos*/, int /*ypos*/) const { return; }
 #endif
 
-	/**
-	* When a vehicle moves or a cloud moves, it needs to mark the old spot as dirty (to copy to screen).
-	* This routine already takes position, and offsets (x_off, y_off) into account.
-	* @param yoff extra y-offset, in most cases 0, in pixels.
-	*/
-	void mark_image_dirty(image_id image, sint16 yoff) const;
 
 	/**
 	 * Function for recalculating the image.

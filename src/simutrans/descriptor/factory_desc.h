@@ -36,9 +36,9 @@ private:
 	uint16 spawn_weight;
 
 public:
-	skin_desc_t const* get_images() const { return get_child<skin_desc_t>(0); }
-	const char *get_name() const { return get_images()->get_name(); }
-	const char *get_copyright() const { return get_images()->get_copyright(); }
+	skin_desc_t const* get_images() const;
+	const char *get_name() const;
+	const char *get_copyright() const;
 
 	uint8 has_snow_image() const { return snow_image; }
 	uint16 get_field_production() const { return production_per_field; }
@@ -103,9 +103,9 @@ private:
 	koord xy_off;
 
 public:
-	const char *get_name() const { return get_images()->get_name(); }
-	const char *get_copyright() const { return get_images()->get_copyright(); }
-	skin_desc_t const* get_images() const { return get_child<skin_desc_t>(0); }
+	const char *get_name() const;
+	const char *get_copyright() const;
+	skin_desc_t const* get_images() const;
 
 	// get the tile with the smoke
 	koord get_pos_off( koord size, uint8 rotation) const {
@@ -235,11 +235,11 @@ private:
 	uint32 sound_interval;
 
 public:
-	const char *get_name() const { return get_building()->get_name(); }
-	const char *get_copyright() const { return get_building()->get_copyright(); }
-	building_desc_t  const* get_building()  const { return get_child<building_desc_t>(0); }
+	const char * get_name() const;
+	const char * get_copyright() const;
+	building_desc_t const * get_building()  const { return get_child<building_desc_t>(0); }
 
-	smoke_desc_t const* get_smoke() const { return get_child<smoke_desc_t>(1); }
+	smoke_desc_t const * get_smoke() const { return get_child<smoke_desc_t>(1); }
 	void correct_smoke();
 	koord get_smoketile( uint8 rot ) const { return smoketile[ rot%smokerotations ]; }
 	koord get_smokeoffset( uint8 rot ) const { return smokeoffset[ rot%smokerotations ]; }

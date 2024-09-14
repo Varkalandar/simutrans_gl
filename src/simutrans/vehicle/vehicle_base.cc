@@ -234,10 +234,6 @@ uint32 vehicle_base_t::do_drive(uint32 distance)
 		return 0;
 	}
 	// ok, so moving ...
-	if(  !get_flag(obj_t::dirty)  ) {
-		mark_image_dirty( image, 0 );
-		set_flag( obj_t::dirty );
-	}
 
 	grund_t *gr = NULL; // if hopped, then this is new position
 

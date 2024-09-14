@@ -309,7 +309,6 @@ uint32 convoi_t::move_to(route_t::index_t const start_index)
 		vehicle_t& v = *fahr[i];
 
 		if(  grund_t const* gr = welt->lookup(v.get_pos())  ) {
-			v.mark_image_dirty(v.get_image(), 0);
 			v.leave_tile();
 			// maybe unreserve this
 			if(  schiene_t* const rails = obj_cast<schiene_t>(gr->get_weg(v.get_waytype()))  ) {
@@ -3057,7 +3056,6 @@ station_tile_search_ready: ;
 		}
 
 		if(  amount  ) {
-			v->mark_image_dirty(v->get_image(), 0);
 			v->calc_image();
 			changed_loading_level = true;
 		}

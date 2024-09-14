@@ -168,12 +168,8 @@ movingobj_t::movingobj_t(koord3d pos, const groundobj_desc_t *b ) : vehicle_base
 
 bool movingobj_t::check_season(const bool)
 {
-	const image_id old_image = get_image();
 	calc_image();
 
-	if(  get_image() != old_image  ) {
-		mark_image_dirty( get_image(), 0 );
-	}
 	return true;
 }
 
@@ -261,7 +257,6 @@ void movingobj_t::info(cbuffer_t & buf) const
 void movingobj_t::cleanup(player_t *player)
 {
 	player_t::book_construction_costs(player, -get_desc()->get_price(), get_pos().get_2d(), ignore_wt);
-	mark_image_dirty( get_image(), 0 );
 }
 
 

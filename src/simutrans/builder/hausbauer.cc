@@ -380,7 +380,6 @@ void hausbauer_t::remove( player_t *player, gebaeude_t *gb )
 				break;
 			}
 			leitung_t* sk = trans[0];
-			sk->mark_image_dirty( sk->get_image(), 0 );
 			delete sk;
 		}
 		// cleared transformers successfully, now remove factory.

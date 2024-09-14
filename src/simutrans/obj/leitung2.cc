@@ -165,7 +165,6 @@ leitung_t::~leitung_t()
 void leitung_t::cleanup(player_t *player)
 {
 	player_t::book_construction_costs(player, -desc->get_price()/2, get_pos().get_2d(), powerline_wt);
-	mark_image_dirty( image, 0 );
 }
 
 
@@ -295,9 +294,6 @@ void leitung_t::calc_image()
 				set_image( desc->get_image_id(ribi, snow));
 			}
 		}
-	}
-	if (old_image != get_image()) {
-		mark_image_dirty(old_image,0);
 	}
 }
 

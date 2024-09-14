@@ -1955,8 +1955,6 @@ sint64 grund_t::remove_trees()
 	sint64 cost=0;
 	// remove all trees ...
 	while (baum_t* const d = find<baum_t>(0)) {
-		// we must mark it by hand, since we want to join costs
-		d->mark_image_dirty( get_image(), 0 );
 		delete d;
 		cost -= welt->get_settings().cst_remove_tree;
 	}
@@ -2030,8 +2028,6 @@ sint32 grund_t::weg_entfernen(waytype_t wegtyp, bool ribi_rem)
 {
 	weg_t *weg = get_weg(wegtyp);
 	if(weg!=NULL) {
-
-		weg->mark_image_dirty(get_image(), 0);
 
 		if(ribi_rem) {
 			ribi_t::ribi ribi = weg->get_ribi();

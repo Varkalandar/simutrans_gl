@@ -9,7 +9,20 @@
 
 #include "building_desc.h"
 #include "../network/checksum.h"
+#include "../display/illumination_data.h"
 
+
+void building_tile_desc_t::set_desc(const building_desc_t *building_desc) 
+{ 
+	building = building_desc; 
+
+	printf("loaded an %s\n", building->get_name());
+
+	if(strcmp("hjm-maglev_station", building->get_name()) == 0) {
+		light_inside = new illumination_data_t(rgba_t(0.4, 0.35, 0.3, 1.0), "light_test", 0);
+		light_above = new illumination_data_t(rgba_t(0.4, 0.35, 0.3, 1.0), "light_test", 2);
+	}
+}
 
 
 /**
@@ -20,7 +33,6 @@ uint8 building_tile_desc_t::get_layout() const
 	koord size = get_desc()->get_size();
 	return index / (size.x * size.y);
 }
-
 
 
 /**
@@ -84,7 +96,6 @@ bool building_desc_t::is_connected_with_town() const
 }
 
 
-
 /**
  * Returns the correct tile image on that position depending on the layout
  */
@@ -122,6 +133,11 @@ uint8 building_desc_t::adjust_layout(uint8 layout) const
 		}
 	}
 	return layout;
+}
+
+
+const skin_desc_t * building_desc_t::get_cursor() const {
+	return flags & FLAG_HAS_CURSOR ? get_child<skin_desc_t>(2 + size.x * size.y * layouts) : 0;
 }
 
 

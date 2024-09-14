@@ -9,7 +9,7 @@
 #include "goods_desc.h"
 #include "../network/checksum.h"
 #include "../display/simgraph.h"
-
+#include "skin_desc.h"
 
 void field_class_desc_t::calc_checksum(checksum_t *chk) const
 {
@@ -48,6 +48,32 @@ void factory_product_desc_t::calc_checksum(checksum_t *chk) const
 	chk->input(get_output_type()->get_name());
 }
 
+
+skin_desc_t const * field_class_desc_t::get_images() const 
+{
+	return get_child<skin_desc_t>(0); 
+}
+
+const char * field_class_desc_t::get_name() const 
+{ 
+	return get_images()->get_name(); 
+}
+
+const char * field_class_desc_t::get_copyright() const 
+{ 
+	return get_images()->get_copyright(); 
+}
+
+
+const char * factory_desc_t::get_name() const 
+{ 
+	return get_building()->get_name(); 
+}
+
+const char * factory_desc_t::get_copyright() const 
+{ 
+	return get_building()->get_copyright();
+}
 
 void factory_desc_t::correct_smoke()
 {
@@ -113,6 +139,21 @@ void factory_desc_t::calc_checksum(checksum_t *chk) const
 rgb888_t factory_desc_t::get_color() const
 {
 	return get_color_rgb(color);
+}
+
+const char * smoke_desc_t::get_name() const 
+{ 
+	return get_images()->get_name(); 
+}
+
+const char * smoke_desc_t::get_copyright() const 
+{
+	return get_images()->get_copyright(); 
+}
+
+skin_desc_t const * smoke_desc_t::get_images() const 
+{ 
+	return get_child<skin_desc_t>(0); 
 }
 
 
