@@ -131,12 +131,6 @@ void viewport_t::change_world_position( const koord3d& new_ij )
 
 void viewport_t::change_world_position(const koord3d& pos, const koord& off, scr_coord sc)
 {
-	// adjust for framebuffer size
-	scr_coord_val fb_w = display_get_fb_width();
-	scr_coord_val dp_w = display_get_width();
-
-	sc = scr_coord(sc.x * fb_w / dp_w, sc.y * fb_w / dp_w);
-
 	switch_underground_mode(pos);
 	// see get_viewport_coord and update_cached_values
 	koord scr_pos_2d = pos.get_2d() - view_ij_off;
