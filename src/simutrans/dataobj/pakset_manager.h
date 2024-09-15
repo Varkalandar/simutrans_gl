@@ -16,6 +16,7 @@
 class obj_desc_t;
 class obj_reader_t;
 class cbuffer_t;
+class illumination_data_t;
 
 
 /// Missing things during loading:
@@ -100,6 +101,8 @@ public:
 	 */
 	static const char * get_extra_info_string(const cbuffer_t & key);
 	static int get_extra_info_int(const cbuffer_t & key);
+
+	static illumination_data_t * illumination_data_for(const char * name, const char * location);
 
 private:
 

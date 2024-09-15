@@ -23,10 +23,13 @@ public:
 	 */
 	int light_index;
 
-	illumination_data_t(rgba_t light_color, const char * light_id, int light_index) {
+	scr_rect area;
+
+	illumination_data_t(rgba_t light_color, const char * light_id, int light_index, scr_rect area) {
 		this->light_color = light_color;
 		this->light_id = light_id;
 		this->light_index = light_index;
+		this->area = area;
 	}
 };
 

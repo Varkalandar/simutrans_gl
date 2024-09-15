@@ -9,9 +9,6 @@
 #include "../descriptor/skin_desc.h"
 #include "../descriptor/spezial_obj_tpl.h"
 
-#include "../utils/cbuffer.h"
-#include "../display/illumination_data.h"
-
 #include "../ground/boden.h"
 #include "../ground/wasser.h"
 #include "../ground/fundament.h"
@@ -223,43 +220,6 @@ bool hausbauer_t::successfully_loaded()
 }
 
 
-static illumination_data_t * illumination_data_for(building_desc_t * desc, const char * location)
-{
-	cbuffer_t base("light.");
-	base.append(location);
-	base.append(".for.");
-	base.append(desc->get_name()); 
-
-	cbuffer_t key;
-
-	key.append(base);
-	key.append(".color");
-
-	const char * color_str = pakset_manager_t::get_extra_info_string(key);
-
-	printf("%s -> %s\n", key.get_str(), color_str);
-
-	if(color_str) {
-		rgba_t color = env_t::decode_color(color_str, RGBA_WHITE, 0);
-
-		key.set(base);
-		key.append(".key");
-		const char * light_id = pakset_manager_t::get_extra_info_string(key);
-		printf("light id: %s\n", light_id);
-
-		key.set(base);
-		key.append(".index");
-		const int light_index = pakset_manager_t::get_extra_info_int(key);
-		printf("light index: %d\n", light_index);
-
-		return new illumination_data_t(color, light_id+1, light_index);
-	}
-
-	return 0;
-}
-
-
-
 bool hausbauer_t::register_desc(building_desc_t *desc)
 {
 	::register_desc(special_objects, desc);
@@ -316,15 +276,15 @@ bool hausbauer_t::register_desc(building_desc_t *desc)
 	}
 	desc_table.put(desc->get_name(), desc);
 
-
-	/* Supply the tiles with a pointer back to the matching description.
+	/* 
+	 * Give the tiles with a pointer back to the matching description.
 	 * This is necessary since each building consists of separate tiles,
 	 * even if it is part of the same description (building_desc_t)
 	 */
 	const int max_index = desc->get_all_layouts()*desc->get_size().x*desc->get_size().y;
 	for( int i=0;  i<max_index;  i++  ) {
-		illumination_data_t * inside = illumination_data_for(desc, "inside");
-		illumination_data_t * above = illumination_data_for(desc, "above");
+		illumination_data_t * inside = pakset_manager_t::illumination_data_for(desc->get_name(), "inside");
+		illumination_data_t * above = pakset_manager_t::illumination_data_for(desc->get_name(), "above");
 		const_cast<building_tile_desc_t *>(desc->get_tile(i))->set_desc(desc, inside, above);
 	}
 

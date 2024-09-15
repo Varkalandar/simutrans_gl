@@ -7,6 +7,7 @@
 
 #include "../utils/searchfolder.h"
 #include "../display/simgraph.h"
+#include "../display/illumination_data.h"
 #include "../sys/simsys.h"
 #include "../simskin.h"
 #include "../simloadingscreen.h"
@@ -134,6 +135,54 @@ int pakset_manager_t::get_extra_info_int(const cbuffer_t & key)
 {
     return pak_gl_extra_info.get_int(key.get_str(), 0);
 }
+
+
+illumination_data_t * pakset_manager_t::illumination_data_for(const char * name, const char * location)
+{
+	cbuffer_t base("light.");
+	base.append(location);
+	base.append(".for.");
+	base.append(name); 
+
+	cbuffer_t key;
+
+	key.append(base);
+	key.append(".color");
+
+	const char * color_str = pakset_manager_t::get_extra_info_string(key);
+
+	printf("%s -> %s\n", key.get_str(), color_str);
+
+	if(color_str) {
+		rgba_t color = env_t::decode_color(color_str, RGBA_WHITE, 0);
+
+		key.set(base);
+		key.append(".key");
+		const char * light_id = pakset_manager_t::get_extra_info_string(key);
+		printf("light id: %s\n", light_id);
+
+		key.set(base);
+		key.append(".index");
+		const int light_index = pakset_manager_t::get_extra_info_int(key);
+		printf("light index: %d\n", light_index);
+
+		key.set(base);
+		key.append(".area");
+		const char * area_str = pakset_manager_t::get_extra_info_string(key);
+
+		printf("area_str: %s\n", area_str);
+
+		int x, y, w, h;
+		sscanf(area_str, " %d , %d , %d , %d ", &x, &y, &w, &h);
+
+		printf("area: %d, %d, %d, %d\n", x, y, w, h);
+
+		return new illumination_data_t(color, light_id+1, light_index, scr_rect(x, y, w, h));
+	}
+
+	return 0;
+}
+
 
 bool pakset_manager_t::load_paks_from_directory(const std::string &path, bool load_addons, const char *message)
 {
