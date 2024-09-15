@@ -42,7 +42,9 @@ public:
 	illumination_data_t * light_inside;
 	illumination_data_t * light_above;
 
-	void set_desc(const building_desc_t *building_desc);
+	void set_desc(const building_desc_t * building_desc, 
+	              illumination_data_t * inside,
+                  illumination_data_t * above);
 
 	const building_desc_t *get_desc() const { return building; }
 

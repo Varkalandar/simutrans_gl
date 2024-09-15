@@ -285,9 +285,14 @@ void obj_t::display_after(int xpos, int ypos, bool) const
 			const skin_desc_t * sd = skinverwaltung_t::get_light(light_inside->light_id);
 			image_id id = sd->get_image_id(light_inside->light_index);
 
-			display_set_color(light_inside->light_color);
-			display_light_img(id, xpos, ypos+16, 64, 48);
-			display_set_color(display_get_day_night_color());
+			if(sd) {
+				display_set_color(light_inside->light_color);
+				display_light_img(id, xpos, ypos+16, 64, 48);
+				display_set_color(display_get_day_night_color());
+			}
+			else {
+				dbg->warning("obj_t::display_after", "There is a light definition for %s, but not light for key %s", get_name(), light_inside->light_id);
+			}
 		}
 
 		if(  owner_n != PLAYER_UNOWNED  ) {
@@ -338,11 +343,15 @@ void obj_t::display_after(int xpos, int ypos, bool) const
 		// printf("sd=%s count=%d\n", sd->get_name(), sd->get_count());
 
 		image_id id = sd->get_image_id(light_above->light_index);
+		if(sd) {
+			// printf("image id=%d\n", id);
 
-		// printf("image id=%d\n", id);
-
-		display_set_color(light_above->light_color);
-		display_light_img(id, xpos, ypos+16, 64, 48);
-		display_set_color(display_get_day_night_color());
+			display_set_color(light_above->light_color);
+			display_light_img(id, xpos, ypos+16, 64, 48);
+			display_set_color(display_get_day_night_color());
+		}
+		else {
+			dbg->warning("obj_t::display_after", "There is a light definition for %s, but not light for key %s", get_name(), light_above->light_id);
+		}
 	}
 }

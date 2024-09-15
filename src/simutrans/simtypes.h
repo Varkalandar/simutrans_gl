@@ -87,7 +87,7 @@ enum sound_type_t {
 	FACTORY_SOUND  = 3,
 	CROSSING_SOUND = 4,
 	CASH_SOUND     = 5,
-        UI_SOUND       = 6,        
+    UI_SOUND       = 6,        
 	MAX_SOUND_TYPES,
 
 	ALL_SOUND = 0xFF

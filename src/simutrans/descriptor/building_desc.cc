@@ -12,16 +12,14 @@
 #include "../display/illumination_data.h"
 
 
-void building_tile_desc_t::set_desc(const building_desc_t *building_desc) 
+void building_tile_desc_t::set_desc(const building_desc_t * building_desc,
+                                    illumination_data_t * inside,
+                                    illumination_data_t * above) 
 { 
 	building = building_desc; 
 
-	printf("loaded an %s\n", building->get_name());
-
-	if(strcmp("hjm-maglev_station", building->get_name()) == 0) {
-		light_inside = new illumination_data_t(rgba_t(0.4, 0.35, 0.3, 1.0), "light_test", 0);
-		light_above = new illumination_data_t(rgba_t(0.4, 0.35, 0.3, 1.0), "light_test", 2);
-	}
+	light_inside = inside;
+	light_above = above;
 }
 
 

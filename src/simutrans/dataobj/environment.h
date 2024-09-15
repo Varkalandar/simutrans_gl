@@ -523,15 +523,15 @@ public:
 	 */
 	static void rdwr(loadsave_t *file);
 
-        /**
-         * Decodes a color string like #AARRGGBB.
-         * 
-         * @param color_string The color string to parse
-         * @param def The default value if string is null
-         * @param color_rgb optional storage for rgb888_t result
-         * @return the color
-         */
-        static rgba_t decode_color(const char * color_string, rgba_t def, rgb888_t *color_rgb);
+	/**
+	 * Decodes a color string like #AARRGGBB.
+	 * 
+	 * @param color_string The color string to parse
+	 * @param def The default value if string is null
+	 * @param color_rgb optional storage for rgb888_t result
+	 * @return the color
+	 */
+	static rgba_t decode_color(const char * color_string, rgba_t def, rgb888_t *color_rgb);
 
 	/// Name of tutorial scenario for the current pakset.
 	/// Defaults to "tutorial".

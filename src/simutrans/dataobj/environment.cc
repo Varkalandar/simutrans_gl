@@ -659,10 +659,8 @@ void env_t::rdwr(loadsave_t *file)
  */
 rgba_t env_t::decode_color(const char * color_string, rgba_t def, rgb888_t *color_rgb)
 {
-	// const char *value = contents.get_string(key,NULL);
-
 	if(color_string) {
-		// skip spaces/tabs
+		// skip whitespace
 		while (*color_string > 0 && *color_string <= 32) {
 			color_string ++;
 		}

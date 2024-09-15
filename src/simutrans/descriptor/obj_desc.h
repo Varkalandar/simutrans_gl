@@ -6,8 +6,6 @@
 #ifndef DESCRIPTOR_OBJ_DESC_H
 #define DESCRIPTOR_OBJ_DESC_H
 
-
-#include <cstddef>
 #include "../simtypes.h"
 
 /**

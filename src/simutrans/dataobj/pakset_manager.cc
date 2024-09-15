@@ -52,6 +52,24 @@ const char* pakset_manager_t::get_doubled_warning_message()
 
 void pakset_manager_t::load_pakset(bool load_addons)
 {
+    // Try to read optional extra pak set info for Simutrans GL
+	// This has to happen before loading the paks because some paks
+	// will be augmented with information from this configuration
+	
+    cbuffer_t extra_info_tab_file_name (env_t::pak_dir.c_str());
+    extra_info_tab_file_name.append("config/extra_gl_info.tab");
+    
+    dbg->message("pakset_manager_t::load_pakset", "Trying to open %s", extra_info_tab_file_name.get_str());
+
+    tabfile_t reader;
+    if(reader.open(extra_info_tab_file_name.get_str())) {
+        dbg->message("pakset_manager_t::load_pakset", "reading %s", extra_info_tab_file_name.get_str());
+        reader.read(pak_gl_extra_info);
+        reader.close();
+    }
+
+	// now load the actual paks
+
 	dbg->message("pakset_manager_t::load_pakset", "Reading object data from %s...", env_t::pak_dir.c_str());
 
 	if (!load_paks_from_directory( env_t::pak_dir.c_str(), load_addons, translator::translate("Loading paks ...") )) {
@@ -86,19 +104,6 @@ void pakset_manager_t::load_pakset(bool load_addons)
 	if (!finish_loading()) {
 		dbg->fatal("pakset_manager_t::load_pakset", "Failed to load pakset. Please re-download or select another pakset.");
 	}
-
-    // Try to read optional extra pak set info for Simutrans GL
-    cbuffer_t extra_info_tab_file_name (env_t::pak_dir.c_str());
-    extra_info_tab_file_name.append("config/extra_gl_info.tab");
-    
-    dbg->message("pakset_manager_t::load_pakset", "Trying to open %s", extra_info_tab_file_name.get_str());
-
-    tabfile_t reader;
-    if(reader.open(extra_info_tab_file_name.get_str())) {
-        dbg->message("pakset_manager_t::load_pakset", "reading %s", extra_info_tab_file_name.get_str());
-        reader.read(pak_gl_extra_info);
-        reader.close();
-    }
     
 	pakset_info_t::calculate_checksum();
 
@@ -125,6 +130,10 @@ const char * pakset_manager_t::get_extra_info_string(const cbuffer_t & key)
     return pak_gl_extra_info.get_string(key.get_str(), 0);
 }
 
+int pakset_manager_t::get_extra_info_int(const cbuffer_t & key) 
+{
+    return pak_gl_extra_info.get_int(key.get_str(), 0);
+}
 
 bool pakset_manager_t::load_paks_from_directory(const std::string &path, bool load_addons, const char *message)
 {

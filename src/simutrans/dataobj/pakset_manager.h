@@ -94,11 +94,12 @@ public:
 	//  Open a window to display the full warning
 	static void open_doubled_warning_window();
 
-        /**
-         * Accesses additional pakset configuration daat for Simutrans GL
-         * @param key The key used for data lookup.
-         */
-        static const char * get_extra_info_string(const cbuffer_t & key);
+	/**
+	 * Accesses additional pakset configuration data for Simutrans GL
+	 * @param key The key used for data lookup.
+	 */
+	static const char * get_extra_info_string(const cbuffer_t & key);
+	static int get_extra_info_int(const cbuffer_t & key);
 
 private:
 
