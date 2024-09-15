@@ -538,7 +538,7 @@ void roadsign_t::display_after(int xpos, int ypos, bool ) const
 #endif
 {
 	if(  foreground_image != IMG_EMPTY  ) {
-		const int raster_width = get_current_tile_raster_width();
+		const int raster_width = get_tile_raster_width();
 		xpos += tile_raster_scale_x( after_xoffset, raster_width );
 		ypos += tile_raster_scale_y( after_yoffset, raster_width );
 		// draw with owner

@@ -89,11 +89,11 @@ void main_view_t::display(bool force_dirty)
 
     display_set_color(display_get_day_night_color());
 
-	const sint16 disp_width = display_get_width();
-	const sint16 disp_real_height = display_get_height();
+	const sint16 disp_width = max(display_get_width(), display_get_fb_width());
+	const sint16 disp_real_height = max(display_get_height(), display_get_fb_height());
 	const sint16 IMG_SIZE = get_tile_raster_width();
 
-	const sint16 disp_height = display_get_height() - win_get_statusbar_height() - (!ticker::empty() ? TICKER_HEIGHT : 0);
+	const sint16 disp_height = disp_real_height - win_get_statusbar_height() - (!ticker::empty() ? TICKER_HEIGHT : 0);
 
 	scr_rect clip_rr(0, env_t::iconsize.w, disp_width, disp_height - env_t::iconsize.h);
 	switch (env_t::menupos) {
@@ -121,8 +121,8 @@ void main_view_t::display(bool force_dirty)
 		force_dirty = false;
 	}
 
-	const int dpy_width = display_get_width()/IMG_SIZE + 2;
-	const int dpy_height = (disp_real_height*4)/IMG_SIZE;
+	const int dpy_width = disp_width / IMG_SIZE + 2;
+	const int dpy_height = (disp_real_height * 4) /IMG_SIZE;
 
 	const int i_off = viewport->get_world_position().x + viewport->get_viewport_ij_offset().x;
 	const int j_off = viewport->get_world_position().y + viewport->get_viewport_ij_offset().y;
@@ -286,7 +286,7 @@ void main_view_t::display_region( koord lt, koord wh, sint16 y_min, sint16 y_max
 	const int const_x_off = viewport->get_x_off();
 	const int const_y_off = viewport->get_y_off();
 
-	const int dpy_width = display_get_width() / IMG_SIZE + 2;
+	const int dpy_width = max(display_get_width(), display_get_fb_width()) / IMG_SIZE + 2;
 
 	// to save calls to grund_t::get_disp_height
 	const sint8 hmax_ground = (grund_t::underground_mode == grund_t::ugm_level) ? grund_t::underground_level : 127;

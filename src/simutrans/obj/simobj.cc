@@ -189,6 +189,22 @@ void obj_t::rdwr(loadsave_t *file)
 }
 
 
+static void draw_illumination(const illumination_data_t * light, scr_coord_val xpos, scr_coord_val ypos)
+{
+	const skin_desc_t * sd = skinverwaltung_t::get_light(light->light_id);
+	image_id id = sd->get_image_id(light->light_index);
+
+	if(sd) {
+		display_set_color(light->light_color);
+		display_light_img(id, xpos + light->area.x, ypos + light->area.y, light->area.w, light->area.h);
+		display_set_color(display_get_day_night_color());
+	}
+	else {
+		dbg->warning("obj_t::display_after", "there is no light for key %s", light->light_id);
+	}
+}
+
+
 /**
  * draw the object
  * the dirty-flag is reset from objlist_t::display_obj_fg, or objlist_t::display_overlay when multithreaded
@@ -198,7 +214,7 @@ void obj_t::display(int xpos, int ypos  CLIP_NUM_DEF) const
 	image_id image = get_image();
 	image_id const outline_image = get_outline_image();
 	if(  image!=IMG_EMPTY  ||  outline_image!=IMG_EMPTY  ) {
-		const int raster_width = get_current_tile_raster_width();
+		const int raster_width = get_tile_raster_width();
 
 		if (vehicle_base_t const* const v = obj_cast<vehicle_base_t>(this)) {
 			// vehicles need finer steps to appear smoother
@@ -273,26 +289,15 @@ void obj_t::display_after(int xpos, int ypos, bool) const
 {
 	image_id image = get_front_image();
 	if(  image != IMG_EMPTY  ) {
-		const int raster_width = get_current_tile_raster_width();
+		const int raster_width = get_tile_raster_width();
 
 		xpos += tile_raster_scale_x( get_xoff(), raster_width );
 		ypos += tile_raster_scale_y( get_yoff(), raster_width );
 
 		// lights inside a building
-		illumination_data_t * light_inside = get_light_inside(); 
+		const illumination_data_t * light_inside = get_light_inside(); 
 		if(light_inside) {
-
-			const skin_desc_t * sd = skinverwaltung_t::get_light(light_inside->light_id);
-			image_id id = sd->get_image_id(light_inside->light_index);
-
-			if(sd) {
-				display_set_color(light_inside->light_color);
-				display_light_img(id, xpos, ypos+16, 64, 48);
-				display_set_color(display_get_day_night_color());
-			}
-			else {
-				dbg->warning("obj_t::display_after", "There is a light definition for %s, but not light for key %s", get_name(), light_inside->light_id);
-			}
+			draw_illumination(light_inside, xpos, ypos);
 		}
 
 		if(  owner_n != PLAYER_UNOWNED  ) {
@@ -333,25 +338,8 @@ void obj_t::display_after(int xpos, int ypos, bool) const
 		display_set_color(display_get_day_night_color());
 	}
 
-	illumination_data_t * light_above = get_light_above(); 
+	const illumination_data_t * light_above = get_light_above(); 
 	if(light_above) {
-
-		// printf("at %d,%d id=%s index=%d\n", get_pos().x, get_pos().y, light_above->light_id, light_above->light_index);
-
-		const skin_desc_t * sd = skinverwaltung_t::get_light(light_above->light_id);
-
-		// printf("sd=%s count=%d\n", sd->get_name(), sd->get_count());
-
-		image_id id = sd->get_image_id(light_above->light_index);
-		if(sd) {
-			// printf("image id=%d\n", id);
-
-			display_set_color(light_above->light_color);
-			display_light_img(id, xpos, ypos+16, 64, 48);
-			display_set_color(display_get_day_night_color());
-		}
-		else {
-			dbg->warning("obj_t::display_after", "There is a light definition for %s, but not light for key %s", get_name(), light_above->light_id);
-		}
+		draw_illumination(light_above, xpos, ypos);
 	}
 }

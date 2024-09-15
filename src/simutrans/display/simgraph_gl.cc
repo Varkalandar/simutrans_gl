@@ -42,10 +42,8 @@ static GLuint gl_texture_colorbuffer;
 static int gl_framebuffer_size;
 static bool framebuffer_active;
 
-scr_coord_val tile_raster_width = 16; // zoomed
-scr_coord_val base_tile_raster_width = 16; // original
-scr_coord_val current_tile_raster_width = 16;
-
+scr_coord_val tile_raster_width = 16;
+scr_coord_val base_tile_raster_width = 16;
 
 static scr_coord_val display_width;
 static scr_coord_val display_height;
@@ -237,8 +235,7 @@ scr_coord_val display_set_base_raster_width(scr_coord_val new_raster)
 	const scr_coord_val old = base_tile_raster_width;
 
 	base_tile_raster_width = new_raster;
-   	tile_raster_width = (new_raster *  zoom_num[zoom_level]) / zoom_den[zoom_level];
-    current_tile_raster_width = new_raster;
+   	tile_raster_width = new_raster;
     
 	return old;
 }
@@ -251,10 +248,7 @@ int set_zoom_level(int level)
 	// limit zoom so the render buffer can still cover the whole display
 	if((gl_framebuffer_size * zoom_num[level]) / zoom_den[level] > display_width) {
 		zoom_level = level;
-		tile_raster_width = (base_tile_raster_width * zoom_num[zoom_level]) / zoom_den[zoom_level];
-        current_tile_raster_width = tile_raster_width;
-		// dbg->message("set_zoom_level()", "Zoom level now %d (%i/%i) -> raster %d", 
-        //             zoom_level, zoom_num[zoom_level], zoom_den[zoom_level], current_tile_raster_width);
+		tile_raster_width = base_tile_raster_width;
     }
 
     return old_zoom;
@@ -279,13 +273,6 @@ int zoom_level_down()
 		return true;
 	}
 	return false;
-}
-
-
-void get_zoom_fraction(int &n, int &d)
-{
-    n = zoom_num[zoom_level];
-    d = zoom_den[zoom_level];    
 }
 
 
@@ -321,13 +308,15 @@ scr_coord_val display_get_height()
 }
 
 
-void display_set_height(scr_coord_val)
+scr_coord_val display_get_fb_width()
 {
+    return display_width * zoom_den[zoom_level] / zoom_num[zoom_level];
 }
 
 
-void display_set_actual_width(scr_coord_val)
+scr_coord_val display_get_fb_height()
 {
+    return display_height * zoom_den[zoom_level] / zoom_num[zoom_level];
 }
 
 
@@ -862,11 +851,9 @@ void display_color_img(const image_id id, scr_coord_val x, scr_coord_val y, cons
 		// display_box_wh(clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h, rgba_t(1, 0, 0, 0.5f));
 
 		imd_t & imd = images[id];
-        int n = zoom_num[zoom_level];
-        int d = zoom_den[zoom_level];
 
-		x = x * d / n + imd.base_x;
-		y = y * d / n + imd.base_y;
+		x = x + imd.base_x;
+		y = y + imd.base_y;
 
 		w = (w == 0) ? imd.base_w : w;
 		h = (h == 0) ? imd.base_h : h;
@@ -882,11 +869,9 @@ static void display_img(const image_id id, scr_coord_val x, scr_coord_val y, con
 	if(id < image_count)
 	{
 		imd_t & imd = images[id];
-        int n = zoom_num[zoom_level];
-        int d = zoom_den[zoom_level];
 
-		x = x * d / n + imd.base_x;
-		y = y * d / n + imd.base_y;
+		x = x + imd.base_x;
+		y = y + imd.base_y;
 
 		int w = imd.base_w;
 		int h = imd.base_h;
@@ -1064,8 +1049,7 @@ void display_img_stretch(const stretch_map_t &imag, scr_rect area)
 
 void display_img_alpha(const image_id image, const image_id alpha_map, scr_coord_val xp, scr_coord_val yp)
 {
-    display_set_color(rgba_t(1, 1, 1, 1));
-    // display_normal(image, xp, yp, 0);
+    display_set_color(display_get_day_night_color());
 
     display_set_color(display_get_day_night_color());
 

@@ -93,7 +93,6 @@ scr_coord_val display_set_base_raster_width(scr_coord_val new_raster);
 int set_zoom_level(int level);
 int zoom_level_up();
 int zoom_level_down();
-void get_zoom_fraction(int &numinator, int &denominator);
 
 /**
  * Initialises the graphics module
@@ -122,8 +121,10 @@ void mark_screen_dirty();
 
 scr_coord_val display_get_width();
 scr_coord_val display_get_height();
-void display_set_height(scr_coord_val);
-void display_set_actual_width(scr_coord_val);
+
+// the framebufer size is the size of the drawing area before zooming.
+scr_coord_val display_get_fb_width();
+scr_coord_val display_get_fb_height();
 
 void display_day_night_shift(float night);
 rgba_t display_get_day_night_color();
@@ -177,10 +178,6 @@ typedef void (*display_image_proc)(const image_id n, scr_coord_val xp, scr_coord
 // variables for storing currently used image procedure set and tile raster width
 extern display_image_proc display_normal;
 extern display_image_proc display_color;
-extern scr_coord_val current_tile_raster_width;
-
-// call this instead of referring to current_tile_raster_width directly
-#define get_current_tile_raster_width() (current_tile_raster_width)
 
 
 // Blends two colors
