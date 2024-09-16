@@ -14,6 +14,7 @@
 
 class checksum_t;
 class tool_t;
+class illumination_data_t;
 
 /**
  * Way type description. Contains all needed values to describe a
@@ -85,6 +86,9 @@ private:
 		}
 	}
 public:
+
+	illumination_data_t * light_inside;
+	illumination_data_t * light_above;
 
 	/**
 	* @return waytype used in finance stats (needed to distinguish \

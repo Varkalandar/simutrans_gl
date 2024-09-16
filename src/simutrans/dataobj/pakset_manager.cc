@@ -151,7 +151,7 @@ illumination_data_t * pakset_manager_t::illumination_data_for(const char * name,
 
 	const char * color_str = pakset_manager_t::get_extra_info_string(key);
 
-	printf("%s -> %s\n", key.get_str(), color_str);
+	// printf("%s -> %s\n", key.get_str(), color_str);
 
 	if(color_str) {
 		rgba_t color = env_t::decode_color(color_str, RGBA_WHITE, 0);

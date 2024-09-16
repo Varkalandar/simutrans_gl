@@ -285,6 +285,17 @@ public:
 	inline void set_foreground_image( image_id b ) { foreground_image = b; }
 	image_id get_front_image() const OVERRIDE {return foreground_image;}
 
+	/**
+	 * This light will be drawn between front and back image to give the impression
+	 * that the inside of the object is illuminated
+	 */
+	virtual illumination_data_t * get_light_inside() const OVERRIDE;
+
+	/**
+	 * This light will be drawn after (above) the front image to give the impression
+	 * that the object is illuminated from outside
+	 */
+	virtual illumination_data_t * get_light_above() const OVERRIDE;
 
 	// correct maintenance
 	void finish_rd() OVERRIDE;

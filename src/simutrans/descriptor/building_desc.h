@@ -39,6 +39,7 @@ class building_tile_desc_t : public obj_desc_t {
 	uint16 index;
 
 public:
+
 	illumination_data_t * light_inside;
 	illumination_data_t * light_above;
 

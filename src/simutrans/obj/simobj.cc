@@ -328,7 +328,7 @@ void obj_t::display_after(int xpos, int ypos, bool) const
 	}
 
 	// printf("%s\n", get_name());
-
+/*
 	if(strcmp("new_city_road", get_name()) == 0) {
 		const skin_desc_t * sd = skinverwaltung_t::get_light("light_test");
 		image_id id = sd->get_image_id(1);
@@ -337,6 +337,7 @@ void obj_t::display_after(int xpos, int ypos, bool) const
 		display_light_img(id, xpos, ypos+16, 64, 48);
 		display_set_color(display_get_day_night_color());
 	}
+*/
 
 	const illumination_data_t * light_above = get_light_above(); 
 	if(light_above) {

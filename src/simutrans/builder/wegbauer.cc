@@ -42,6 +42,7 @@
 #include "../dataobj/marker.h"
 #include "../dataobj/translator.h"
 #include "../dataobj/scenario.h"
+#include "../dataobj/pakset_manager.h"
 
 #include "../utils/simrandom.h"
 
@@ -133,7 +134,16 @@ bool way_builder_t::register_desc(way_desc_t *desc)
 	else {
 		desc->set_builder( NULL );
 	}
+	
 	desc_table.put(desc->get_name(), desc);
+
+	// augment the desc with illumination data
+	illumination_data_t * inside = pakset_manager_t::illumination_data_for(desc->get_name(), "inside");
+	illumination_data_t * above = pakset_manager_t::illumination_data_for(desc->get_name(), "above");
+
+	desc->light_inside = inside;
+	desc->light_above = above;
+
 	return true;
 }
 

@@ -579,6 +579,18 @@ void weg_t::new_month()
 }
 
 
+illumination_data_t * weg_t::get_light_inside() const 
+{ 
+	return desc->light_inside; 
+}
+
+
+illumination_data_t * weg_t::get_light_above() const 
+{ 
+	return desc->light_above; 
+}
+
+
 // correct speed and maintenance
 void weg_t::finish_rd()
 {
