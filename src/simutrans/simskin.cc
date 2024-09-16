@@ -236,16 +236,12 @@ bool skinverwaltung_t::register_desc(skintyp_t type, const skin_desc_t* desc)
 			// Hajo: at the moment, lights are coded as menus with a name starting
 			// with "light_"
 
-			printf("found a menu: %s\n", desc->get_name());
-
 			if(strncmp(desc->get_name(), "light_", 6) == 0) {
-
-				printf("found a light: %s\n", desc->get_name());
-				light_obj.insert( desc );
-
+				// printf("found a light: %s\n", desc->get_name());
+				light_obj.insert(desc);
 			}
 			else {
-				extra_menu_obj.insert( desc );
+				extra_menu_obj.insert(desc);
 			}
 		}
 		dbg->message( "skinverwaltung_t::register_desc()","Extra object %s added.", desc->get_name() );

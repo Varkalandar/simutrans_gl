@@ -287,8 +287,10 @@ void obj_t::display_after(int xpos, int ypos, const sint8 clip_num) const
 void obj_t::display_after(int xpos, int ypos, bool) const
 #endif
 {
-	image_id image = get_front_image();
-	if(  image != IMG_EMPTY  ) {
+	const rgba_t day_night_color = display_get_day_night_color();
+	const image_id image = get_front_image();
+	
+	if(image != IMG_EMPTY) {
 		const int raster_width = get_tile_raster_width();
 
 		xpos += tile_raster_scale_x( get_xoff(), raster_width );
@@ -296,51 +298,39 @@ void obj_t::display_after(int xpos, int ypos, bool) const
 
 		// lights inside a building
 		const illumination_data_t * light_inside = get_light_inside(); 
-		if(light_inside) {
+		if(light_inside && day_night_color.red < 0.6) {
 			draw_illumination(light_inside, xpos, ypos);
 		}
 
-		if(  owner_n != PLAYER_UNOWNED  ) {
-			if(  obj_t::show_owner  ) {
+		if(owner_n != PLAYER_UNOWNED) {
+			if(obj_t::show_owner) {
                 display_set_color(color_idx_to_rgb(welt->get_player(owner_n)->get_player_color1()+2));
 				display_color_img(image, xpos, ypos, owner_n);
-	            display_set_color(display_get_day_night_color());
+	            display_set_color(day_night_color);
         	}
-			else if(  obj_t::get_flag( highlight )  ) {
+			else if(obj_t::get_flag(highlight)) {
 				// highlight this tile
 				display_set_color(SYSCOL_OBJECT_HIGHLIGHT);
                 display_color_img(image, xpos, ypos, owner_n);
-                display_set_color(display_get_day_night_color());
+                display_set_color(day_night_color);
 			}
 			else {
 				display_color_img(image, xpos, ypos, owner_n);
 			}
 		}
-		else if(  obj_t::get_flag( highlight )  ) {
+		else if(obj_t::get_flag(highlight)) {
 			// highlight this tile
             display_set_color(SYSCOL_OBJECT_HIGHLIGHT);
 			display_color_img(image, xpos, ypos, owner_n);
-            display_set_color(display_get_day_night_color());
+            display_set_color(day_night_color);
 		}
 		else {
 			display_normal(image, xpos, ypos, 0);
 		}
 	}
 
-	// printf("%s\n", get_name());
-/*
-	if(strcmp("new_city_road", get_name()) == 0) {
-		const skin_desc_t * sd = skinverwaltung_t::get_light("light_test");
-		image_id id = sd->get_image_id(1);
-
-		display_set_color(rgba_t(0.5, 0.5, 0.5, 1.0));
-		display_light_img(id, xpos, ypos+16, 64, 48);
-		display_set_color(display_get_day_night_color());
-	}
-*/
-
 	const illumination_data_t * light_above = get_light_above(); 
-	if(light_above) {
+	if(light_above && day_night_color.red < 0.6) {
 		draw_illumination(light_above, xpos, ypos);
 	}
 }
