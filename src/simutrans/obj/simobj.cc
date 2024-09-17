@@ -211,8 +211,11 @@ static void draw_illumination(const illumination_data_t * light, scr_coord_val x
  */
 void obj_t::display(int xpos, int ypos  CLIP_NUM_DEF) const
 {
+	const int start_ypos = ypos;
+	const rgba_t day_night_color = display_get_day_night_color();
+	const image_id outline_image = get_outline_image();
 	image_id image = get_image();
-	image_id const outline_image = get_outline_image();
+
 	if(  image!=IMG_EMPTY  ||  outline_image!=IMG_EMPTY  ) {
 		const int raster_width = get_tile_raster_width();
 
@@ -223,14 +226,13 @@ void obj_t::display(int xpos, int ypos  CLIP_NUM_DEF) const
 		xpos += tile_raster_scale_x(get_xoff(), raster_width);
 		ypos += tile_raster_scale_y(get_yoff(), raster_width);
         
-		const int start_ypos = ypos;
 		for(  int j=0;  image!=IMG_EMPTY;  ) {
 
 			if(  owner_n != PLAYER_UNOWNED  ) {
 				if(  obj_t::show_owner  ) {
                     display_set_color(color_idx_to_rgb(welt->get_player(owner_n)->get_player_color1()+2));
 					display_color_img(image, xpos, ypos, owner_n);
-                    display_set_color(display_get_day_night_color());
+                    display_set_color(day_night_color);
 				}
 				else {
 					display_color(image, xpos, ypos, owner_n);
@@ -265,7 +267,14 @@ void obj_t::display(int xpos, int ypos  CLIP_NUM_DEF) const
 			display_color_img(get_image(), xpos, start_ypos, owner_n);
 		}
         
-        display_set_color(display_get_day_night_color());
+        display_set_color(day_night_color);
+	}
+
+	// lights inside a building
+	const illumination_data_t * light_inside = get_light_inside(); 
+	if(light_inside && day_night_color.red > light_inside->night) {
+		// display_fillbox_wh_rgb(xpos, start_ypos, 100, 100, RGBA_BLACK, true);
+		draw_illumination(light_inside, xpos, start_ypos);
 	}
 }
 
@@ -296,12 +305,6 @@ void obj_t::display_after(int xpos, int ypos, bool) const
 		xpos += tile_raster_scale_x( get_xoff(), raster_width );
 		ypos += tile_raster_scale_y( get_yoff(), raster_width );
 
-		// lights inside a building
-		const illumination_data_t * light_inside = get_light_inside(); 
-		if(light_inside && day_night_color.red < 0.6) {
-			draw_illumination(light_inside, xpos, ypos);
-		}
-
 		if(owner_n != PLAYER_UNOWNED) {
 			if(obj_t::show_owner) {
                 display_set_color(color_idx_to_rgb(welt->get_player(owner_n)->get_player_color1()+2));
@@ -330,7 +333,7 @@ void obj_t::display_after(int xpos, int ypos, bool) const
 	}
 
 	const illumination_data_t * light_above = get_light_above(); 
-	if(light_above && day_night_color.red < 0.6) {
+	if(light_above && day_night_color.red > light_above->night) {
 		draw_illumination(light_above, xpos, ypos);
 	}
 }

@@ -123,7 +123,7 @@ void pakset_manager_t::open_doubled_warning_window()
 
 
 /**
- * Accesses additional pakset configuration daat for Simutrans GL
+ * Accesses additional pakset configuration data for Simutrans GL
  * @param key The key used for data lookup.
  */
 const char * pakset_manager_t::get_extra_info_string(const cbuffer_t & key) 
@@ -142,7 +142,14 @@ illumination_data_t * pakset_manager_t::illumination_data_for(const char * name,
 	cbuffer_t base("light.");
 	base.append(location);
 	base.append(".for.");
-	base.append(name); 
+
+	for(size_t i = 0; i<strlen(name); i++)
+	{
+		char lower[2];
+		lower[0] = tolower(name[i]);
+		lower[1] = 0;
+		base.append(lower); 
+	}
 
 	cbuffer_t key;
 
@@ -151,9 +158,10 @@ illumination_data_t * pakset_manager_t::illumination_data_for(const char * name,
 
 	const char * color_str = pakset_manager_t::get_extra_info_string(key);
 
-	// printf("%s -> %s\n", key.get_str(), color_str);
+	printf("Illumination: %s -> %s\n", key.get_str(), color_str);
 
 	if(color_str) {
+
 		rgba_t color = env_t::decode_color(color_str, RGBA_WHITE, 0);
 
 		key.set(base);
@@ -177,7 +185,13 @@ illumination_data_t * pakset_manager_t::illumination_data_for(const char * name,
 
 		printf("area: %d, %d, %d, %d\n", x, y, w, h);
 
-		return new illumination_data_t(color, light_id+1, light_index, scr_rect(x, y, w, h));
+		key.set(base);
+		key.append(".night");
+		const int night = pakset_manager_t::get_extra_info_int(key);
+
+		printf("area_str: %s\n", area_str);
+
+		return new illumination_data_t(color, light_id+1, light_index, scr_rect(x, y, w, h), night/100.0);
 	}
 
 	return 0;

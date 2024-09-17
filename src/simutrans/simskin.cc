@@ -237,7 +237,7 @@ bool skinverwaltung_t::register_desc(skintyp_t type, const skin_desc_t* desc)
 			// with "light_"
 
 			if(strncmp(desc->get_name(), "light_", 6) == 0) {
-				// printf("found a light: %s\n", desc->get_name());
+				printf("found a light: %s\n", desc->get_name());
 				light_obj.insert(desc);
 			}
 			else {
